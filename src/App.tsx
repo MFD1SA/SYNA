@@ -15,9 +15,6 @@ import SubscriptionsPage from "./pages/Subscriptions";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import DashboardOverview from "./pages/DashboardOverview";
-import ProjectsPage from "./pages/DashboardProjects";
-import UnitsPage from "./pages/DashboardUnits";
-import LeasesPage from "./pages/DashboardLeases";
 
 const queryClient = new QueryClient();
 
@@ -53,9 +50,9 @@ const App: React.FC = () => (
               <Route path="/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
               <Route path="/register" element={<PublicOnlyRoute><RegisterPage /></PublicOnlyRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><DashboardOverview /></ProtectedRoute>} />
-              <Route path="/dashboard/projects" element={<ProtectedRoute><ProjectsPage /></ProtectedRoute>} />
-              <Route path="/dashboard/units" element={<ProtectedRoute><UnitsPage /></ProtectedRoute>} />
-              <Route path="/dashboard/leases" element={<ProtectedRoute><LeasesPage /></ProtectedRoute>} />
+              <Route path="/dashboard/projects" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard/units" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard/leases" element={<Navigate to="/dashboard" replace />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

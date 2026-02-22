@@ -24,10 +24,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: "نظرة عامة", labelEn: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { label: "المشاريع", labelEn: "Projects", href: "/dashboard/projects", icon: Building2 },
-  { label: "الوحدات", labelEn: "Units", href: "/dashboard/units", icon: DoorOpen },
-  { label: "العقود", labelEn: "Leases", href: "/dashboard/leases", icon: FileText },
+  { label: "لوحة التحكم", labelEn: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
 ];
 
 const DashboardSidebar: React.FC = () => {
