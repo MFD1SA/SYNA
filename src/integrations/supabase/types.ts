@@ -14,16 +14,265 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      leases: {
+        Row: {
+          created_at: string
+          duration_months: number | null
+          ejar_number: string | null
+          end_date: string
+          id: string
+          start_date: string
+          status: Database["public"]["Enums"]["lease_status"]
+          unit_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_months?: number | null
+          ejar_number?: string | null
+          end_date: string
+          id?: string
+          start_date: string
+          status?: Database["public"]["Enums"]["lease_status"]
+          unit_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_months?: number | null
+          ejar_number?: string | null
+          end_date?: string
+          id?: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["lease_status"]
+          unit_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leases_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_consents: {
+        Row: {
+          accepted_at: string
+          id: string
+          policy_type: string
+          policy_version: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          id?: string
+          policy_type: string
+          policy_version?: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          id?: string
+          policy_type?: string
+          policy_version?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          subscription_type: Database["public"]["Enums"]["subscription_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          subscription_type?: Database["public"]["Enums"]["subscription_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          subscription_type?: Database["public"]["Enums"]["subscription_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          apartment_count: number | null
+          city: string
+          created_at: string
+          district: string | null
+          expected_end_date: string | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          name: string
+          office_count: number | null
+          shop_count: number | null
+          showroom_count: number | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["project_status"]
+          street: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          apartment_count?: number | null
+          city: string
+          created_at?: string
+          district?: string | null
+          expected_end_date?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          office_count?: number | null
+          shop_count?: number | null
+          showroom_count?: number | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["project_status"]
+          street?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          apartment_count?: number | null
+          city?: string
+          created_at?: string
+          district?: string | null
+          expected_end_date?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          office_count?: number | null
+          shop_count?: number | null
+          showroom_count?: number | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["project_status"]
+          street?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      units: {
+        Row: {
+          area_sqm: number | null
+          commission_percentage: number | null
+          created_at: string
+          id: string
+          listing_duration_months: number | null
+          listing_price: number | null
+          project_id: string
+          transfer_tax_percentage: number | null
+          unit_type: Database["public"]["Enums"]["unit_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          area_sqm?: number | null
+          commission_percentage?: number | null
+          created_at?: string
+          id?: string
+          listing_duration_months?: number | null
+          listing_price?: number | null
+          project_id: string
+          transfer_tax_percentage?: number | null
+          unit_type: Database["public"]["Enums"]["unit_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          area_sqm?: number | null
+          commission_percentage?: number | null
+          created_at?: string
+          id?: string
+          listing_duration_months?: number | null
+          listing_price?: number | null
+          project_id?: string
+          transfer_tax_percentage?: number | null
+          unit_type?: Database["public"]["Enums"]["unit_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "units_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      lease_status: "active" | "expired" | "expiring_soon"
+      project_status: "under_construction" | "ready"
+      subscription_type:
+        | "individual"
+        | "brokerage"
+        | "brand"
+        | "property_management"
+        | "bank"
+      unit_type: "showroom" | "shop" | "office" | "apartment"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +399,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      lease_status: ["active", "expired", "expiring_soon"],
+      project_status: ["under_construction", "ready"],
+      subscription_type: [
+        "individual",
+        "brokerage",
+        "brand",
+        "property_management",
+        "bank",
+      ],
+      unit_type: ["showroom", "shop", "office", "apartment"],
+    },
   },
 } as const
