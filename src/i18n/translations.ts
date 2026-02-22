@@ -16,14 +16,14 @@ export const translations = {
     },
     hero: {
       title: "DOMA",
-      subtitle: "منصة شراكة التطوير العقاري",
-      description: "نربط بين ملاك الأراضي والمطورين العقاريين لإتمام شراكات تطوير ذكية — بتحقق تجاري، خصوصية كاملة، ومتابعة مراحل الصفقة حتى الإغلاق.",
+      subtitle: "نحو شراكات تطوير أكثر وضوحاً وإنتاجية",
+      description: "في ظل رسوم الأراضي البيضاء، يبحث ملاك الأراضي عن حلول لتحويل أصولهم إلى مشاريع منتجة. DOMA حلقة وصل ذكية تجمع المالك بالمطور العقاري ضمن بيئة منظمة — بتحقق تجاري، خصوصية كاملة، ومتابعة مراحل الصفقة حتى الإغلاق.",
       cta: "ابدأ الآن",
       learnMore: "كيف تعمل المنصة؟",
     },
     features: {
       title: "لماذا DOMA؟",
-      subtitle: "أدوات متكاملة صُممت لتسهيل شراكات التطوير العقاري بأمان وشفافية",
+      subtitle: "أدوات صُممت لتسهيل شراكات التطوير وتحويل الأراضي البيضاء إلى مشاريع منتجة",
       verification: "تحقق تجاري ذكي",
       verificationDesc: "استخراج تلقائي لبيانات السجل التجاري بالذكاء الاصطناعي ومطابقتها مع بيانات المطور لضمان المصداقية",
       privacy: "خصوصية كاملة",
@@ -57,7 +57,7 @@ export const translations = {
       rate: "2.50%",
     },
     logos: {
-      title: "القطاعات المستهدفة",
+      title: "الأطراف المستهدفة",
       disclaimer: "الشعارات المعروضة لأغراض توضيحية فقط ولا تعني وجود شراكة مع أي من هذه الجهات",
     },
     footer: {
@@ -65,7 +65,7 @@ export const translations = {
       company: "شركة دوما للتقنية",
       rights: "جميع الحقوق محفوظة",
       support: "مركز الدعم",
-      desc: "منصة شراكة التطوير العقاري — نربط ملاك الأراضي بالمطورين لإتمام صفقات تطوير ذكية",
+      desc: "حلقة وصل ذكية بين ملاك الأراضي والمطورين — لتحويل الأراضي البيضاء إلى مشاريع منتجة عبر شراكات تطوير واضحة",
     },
     terms: { title: "الشروط والأحكام" },
     privacy: { title: "سياسة الخصوصية" },
@@ -73,7 +73,7 @@ export const translations = {
     about: {
       title: "عن DOMA",
       version: "الإصدار 2.0.0",
-      description: "DOMA منصة متخصصة في شراكات التطوير العقاري، تربط بين ملاك الأراضي والمطورين العقاريين المعتمدين في المملكة العربية السعودية — بتحقق تجاري ذكي ومتابعة صفقات احترافية.",
+      description: "نؤمن بأن الأرض ليست مجرد مساحة خام، بل فرصة لبناء قيمة مستدامة. DOMA تسعى لتحويل الأفكار إلى شراكات حقيقية، وتحويل الأراضي إلى مشاريع منتجة تسهم في نمو المدن وتحفيز الاقتصاد العقاري.",
     },
     crm: {
       nav: {
@@ -262,14 +262,14 @@ export const translations = {
     },
     hero: {
       title: "DOMA",
-      subtitle: "Real Estate Development Partnership Platform",
-      description: "We connect landowners with verified real estate developers to form smart development partnerships — with commercial verification, full privacy, and deal tracking to closure.",
+      subtitle: "Towards Clearer & More Productive Development Partnerships",
+      description: "With white land fees driving change, landowners seek solutions to turn their assets into productive projects. DOMA is a smart bridge connecting landowners with real estate developers — with commercial verification, full privacy, and deal tracking to closure.",
       cta: "Get Started",
       learnMore: "How it Works",
     },
     features: {
       title: "Why DOMA?",
-      subtitle: "Integrated tools designed to facilitate secure and transparent development partnerships",
+      subtitle: "Tools designed to facilitate development partnerships and transform white lands into productive projects",
       verification: "Smart Verification",
       verificationDesc: "Automatic extraction of commercial register data using AI and matching with developer info to ensure credibility",
       privacy: "Full Privacy",
@@ -303,7 +303,7 @@ export const translations = {
       rate: "2.50%",
     },
     logos: {
-      title: "Target Sectors",
+      title: "Target Parties",
       disclaimer: "Logos displayed are for illustrative purposes only and do not imply partnership with any of these entities",
     },
     footer: {
@@ -311,7 +311,7 @@ export const translations = {
       company: "Doma Technology Company",
       rights: "All rights reserved",
       support: "Support Center",
-      desc: "Real Estate Development Partnership Platform — connecting landowners with developers for smart development deals",
+      desc: "A smart bridge between landowners and developers — transforming white lands into productive projects through clear partnerships",
     },
     terms: { title: "Terms & Conditions" },
     privacy: { title: "Privacy Policy" },
@@ -319,7 +319,7 @@ export const translations = {
     about: {
       title: "About DOMA",
       version: "Version 2.0.0",
-      description: "DOMA is a specialized platform for real estate development partnerships, connecting landowners with verified developers in Saudi Arabia — with smart commercial verification and professional deal tracking.",
+      description: "We believe land is not just raw space — it's an opportunity to build sustainable value. DOMA transforms ideas into real partnerships, and lands into productive projects that drive urban growth and stimulate the real estate economy.",
     },
     crm: {
       nav: {

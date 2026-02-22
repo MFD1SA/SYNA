@@ -1,18 +1,18 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Building2, Landmark, Home, HardHat, MapPin, Briefcase } from "lucide-react";
+import { Building2, Landmark, Home, HardHat, Ruler, Briefcase } from "lucide-react";
 
-const sectorIcons = [Building2, HardHat, Home, MapPin, Landmark, Briefcase];
+const sectorIcons = [Building2, HardHat, Home, Ruler, Landmark, Briefcase];
 
 const LogosSection: React.FC = () => {
   const { t, lang } = useLanguage();
 
   const sectors = lang === "ar"
-    ? ["المطورون العقاريون", "شركات المقاولات", "ملاك الأراضي", "المخططات السكنية", "جهات التمويل", "الاستشاريون"]
-    : ["Real Estate Developers", "Construction Firms", "Landowners", "Residential Plans", "Financing Entities", "Consultants"];
+    ? ["المطورون العقاريون", "شركات المقاولات", "ملاك الأراضي", "شركات التصميم والإشراف", "جهات التمويل", "الاستشاريون"]
+    : ["Real Estate Developers", "Construction Firms", "Landowners", "Design & Supervision", "Financing Entities", "Consultants"];
 
   return (
-    <section className="py-12 md:py-16">
+    <section className="py-8 md:py-12">
       <div className="container">
         <div className="mx-auto mb-6 max-w-xl text-center">
           <h2 className="mb-2 text-2xl font-medium text-foreground">
