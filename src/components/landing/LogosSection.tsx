@@ -1,8 +1,8 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Building2, Landmark, Home, HardHat, MapPin, Briefcase } from "lucide-react";
+import { Building2, Landmark, Home, HardHat, Ruler, Briefcase } from "lucide-react";
 
-const sectorIcons = [Building2, HardHat, Home, MapPin, Landmark, Briefcase];
+const sectorIcons = [Building2, HardHat, Home, Ruler, Landmark, Briefcase];
 
 const LogosSection: React.FC = () => {
   const { t, lang } = useLanguage();
