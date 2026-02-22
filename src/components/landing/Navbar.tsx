@@ -2,6 +2,7 @@ import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Link } from "react-router-dom";
 import { Globe, LogIn, UserPlus, Sun, Moon } from "lucide-react";
+import logoImg from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import type { BrandVariant } from "./BrandToggle";
 
@@ -18,9 +19,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = "portfolio", onToggleVariant 
     <nav className="sticky top-0 z-50 border-b border-border/60 doma-glass">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg doma-gradient">
-            <span className="text-sm font-medium text-primary-foreground">D</span>
-          </div>
+          <img src={logoImg} alt="DOMA" className="h-8 w-8 rounded-lg object-contain" />
           <span className="text-xl font-medium tracking-tight text-foreground">DOMA</span>
         </Link>
 
