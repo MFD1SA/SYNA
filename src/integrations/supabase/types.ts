@@ -58,6 +58,467 @@ export type Database = {
           },
         ]
       }
+      deal_logs: {
+        Row: {
+          action: string
+          created_at: string
+          deal_id: string
+          details: string | null
+          id: string
+          performed_by: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          deal_id: string
+          details?: string | null
+          id?: string
+          performed_by: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          deal_id?: string
+          details?: string | null
+          id?: string
+          performed_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_logs_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_meetings: {
+        Row: {
+          created_at: string
+          created_by: string
+          deal_id: string
+          duration_minutes: number
+          id: string
+          location: string | null
+          meet_link: string | null
+          meeting_type: Database["public"]["Enums"]["meeting_type"]
+          notes: string | null
+          scheduled_at: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          deal_id: string
+          duration_minutes?: number
+          id?: string
+          location?: string | null
+          meet_link?: string | null
+          meeting_type?: Database["public"]["Enums"]["meeting_type"]
+          notes?: string | null
+          scheduled_at: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          deal_id?: string
+          duration_minutes?: number
+          id?: string
+          location?: string | null
+          meet_link?: string | null
+          meeting_type?: Database["public"]["Enums"]["meeting_type"]
+          notes?: string | null
+          scheduled_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_meetings_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_requests: {
+        Row: {
+          attachments_urls: string[] | null
+          commission_accepted: boolean
+          commission_rate: number
+          created_at: string
+          developer_id: string
+          estimated_duration_months: number | null
+          id: string
+          land_id: string
+          needs_financing: boolean | null
+          owner_response_notes: string | null
+          proposal_summary: string
+          proposed_project_type: string
+          status: Database["public"]["Enums"]["request_status"]
+          updated_at: string
+        }
+        Insert: {
+          attachments_urls?: string[] | null
+          commission_accepted?: boolean
+          commission_rate?: number
+          created_at?: string
+          developer_id: string
+          estimated_duration_months?: number | null
+          id?: string
+          land_id: string
+          needs_financing?: boolean | null
+          owner_response_notes?: string | null
+          proposal_summary: string
+          proposed_project_type: string
+          status?: Database["public"]["Enums"]["request_status"]
+          updated_at?: string
+        }
+        Update: {
+          attachments_urls?: string[] | null
+          commission_accepted?: boolean
+          commission_rate?: number
+          created_at?: string
+          developer_id?: string
+          estimated_duration_months?: number | null
+          id?: string
+          land_id?: string
+          needs_financing?: boolean | null
+          owner_response_notes?: string | null
+          proposal_summary?: string
+          proposed_project_type?: string
+          status?: Database["public"]["Enums"]["request_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_requests_developer_id_fkey"
+            columns: ["developer_id"]
+            isOneToOne: false
+            referencedRelation: "developers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_requests_land_id_fkey"
+            columns: ["land_id"]
+            isOneToOne: false
+            referencedRelation: "lands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_stages_log: {
+        Row: {
+          changed_by: string
+          created_at: string
+          deal_id: string
+          from_stage: Database["public"]["Enums"]["deal_stage"] | null
+          id: string
+          notes: string | null
+          to_stage: Database["public"]["Enums"]["deal_stage"]
+        }
+        Insert: {
+          changed_by: string
+          created_at?: string
+          deal_id: string
+          from_stage?: Database["public"]["Enums"]["deal_stage"] | null
+          id?: string
+          notes?: string | null
+          to_stage: Database["public"]["Enums"]["deal_stage"]
+        }
+        Update: {
+          changed_by?: string
+          created_at?: string
+          deal_id?: string
+          from_stage?: Database["public"]["Enums"]["deal_stage"] | null
+          id?: string
+          notes?: string | null
+          to_stage?: Database["public"]["Enums"]["deal_stage"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_stages_log_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_tasks: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          created_by: string
+          deal_id: string
+          description: string | null
+          due_date: string | null
+          id: string
+          status: Database["public"]["Enums"]["deal_task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by: string
+          deal_id: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["deal_task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string
+          deal_id?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["deal_task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_tasks_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deals: {
+        Row: {
+          closed_at: string | null
+          commission_rate: number
+          commission_status: string
+          created_at: string
+          current_stage: Database["public"]["Enums"]["deal_stage"]
+          developer_id: string
+          health: Database["public"]["Enums"]["deal_health"]
+          id: string
+          land_id: string
+          owner_id: string
+          request_id: string
+          support_assignee: string | null
+          updated_at: string
+        }
+        Insert: {
+          closed_at?: string | null
+          commission_rate?: number
+          commission_status?: string
+          created_at?: string
+          current_stage?: Database["public"]["Enums"]["deal_stage"]
+          developer_id: string
+          health?: Database["public"]["Enums"]["deal_health"]
+          id?: string
+          land_id: string
+          owner_id: string
+          request_id: string
+          support_assignee?: string | null
+          updated_at?: string
+        }
+        Update: {
+          closed_at?: string | null
+          commission_rate?: number
+          commission_status?: string
+          created_at?: string
+          current_stage?: Database["public"]["Enums"]["deal_stage"]
+          developer_id?: string
+          health?: Database["public"]["Enums"]["deal_health"]
+          id?: string
+          land_id?: string
+          owner_id?: string
+          request_id?: string
+          support_assignee?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_developer_id_fkey"
+            columns: ["developer_id"]
+            isOneToOne: false
+            referencedRelation: "developers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_land_id_fkey"
+            columns: ["land_id"]
+            isOneToOne: false
+            referencedRelation: "lands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "deal_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      developers: {
+        Row: {
+          company_name: string
+          cr_extracted_name: string | null
+          cr_extracted_number: string | null
+          cr_file_url: string
+          cr_number: string
+          created_at: string
+          email: string | null
+          id: string
+          marketing_brand_name: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+          verification_notes: string | null
+          verification_status: Database["public"]["Enums"]["developer_verification_status"]
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          company_name: string
+          cr_extracted_name?: string | null
+          cr_extracted_number?: string | null
+          cr_file_url: string
+          cr_number: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          marketing_brand_name?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+          verification_notes?: string | null
+          verification_status?: Database["public"]["Enums"]["developer_verification_status"]
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          company_name?: string
+          cr_extracted_name?: string | null
+          cr_extracted_number?: string | null
+          cr_file_url?: string
+          cr_number?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          marketing_brand_name?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+          verification_notes?: string | null
+          verification_status?: Database["public"]["Enums"]["developer_verification_status"]
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
+      lands: {
+        Row: {
+          city: string
+          created_at: string
+          deed_number: string | null
+          developer_experience_requirements: string | null
+          district: string | null
+          exact_location_lat: number | null
+          exact_location_lng: number | null
+          expected_dev_duration_months: number | null
+          financing_preference: string | null
+          id: string
+          is_active: boolean
+          land_area_sqm: number
+          length_m: number | null
+          owner_id: string
+          owner_name: string | null
+          partnership_goal: Database["public"]["Enums"]["owner_partnership_goal"]
+          plan_number: string | null
+          plot_number: string | null
+          project_type: string | null
+          quality_level: string | null
+          revenue_model: string | null
+          street_width_m: number | null
+          tenant_id: string | null
+          updated_at: string
+          usage_type: Database["public"]["Enums"]["land_usage_type"]
+          vision_summary: string | null
+          width_m: number | null
+        }
+        Insert: {
+          city: string
+          created_at?: string
+          deed_number?: string | null
+          developer_experience_requirements?: string | null
+          district?: string | null
+          exact_location_lat?: number | null
+          exact_location_lng?: number | null
+          expected_dev_duration_months?: number | null
+          financing_preference?: string | null
+          id?: string
+          is_active?: boolean
+          land_area_sqm: number
+          length_m?: number | null
+          owner_id: string
+          owner_name?: string | null
+          partnership_goal?: Database["public"]["Enums"]["owner_partnership_goal"]
+          plan_number?: string | null
+          plot_number?: string | null
+          project_type?: string | null
+          quality_level?: string | null
+          revenue_model?: string | null
+          street_width_m?: number | null
+          tenant_id?: string | null
+          updated_at?: string
+          usage_type?: Database["public"]["Enums"]["land_usage_type"]
+          vision_summary?: string | null
+          width_m?: number | null
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          deed_number?: string | null
+          developer_experience_requirements?: string | null
+          district?: string | null
+          exact_location_lat?: number | null
+          exact_location_lng?: number | null
+          expected_dev_duration_months?: number | null
+          financing_preference?: string | null
+          id?: string
+          is_active?: boolean
+          land_area_sqm?: number
+          length_m?: number | null
+          owner_id?: string
+          owner_name?: string | null
+          partnership_goal?: Database["public"]["Enums"]["owner_partnership_goal"]
+          plan_number?: string | null
+          plot_number?: string | null
+          project_type?: string | null
+          quality_level?: string | null
+          revenue_model?: string | null
+          street_width_m?: number | null
+          tenant_id?: string | null
+          updated_at?: string
+          usage_type?: Database["public"]["Enums"]["land_usage_type"]
+          vision_summary?: string | null
+          width_m?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lands_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leases: {
         Row: {
           created_at: string
@@ -602,10 +1063,36 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user" | "viewer"
+      deal_health: "green" | "yellow" | "red"
+      deal_stage:
+        | "listed"
+        | "request_submitted"
+        | "owner_review"
+        | "owner_approved"
+        | "meeting_scheduled"
+        | "strategy_defined"
+        | "documents_exchanged"
+        | "agreements_prepared"
+        | "deal_closed"
+        | "deal_cancelled"
+      deal_task_status: "pending" | "in_progress" | "done"
+      developer_verification_status: "pending_review" | "verified" | "rejected"
+      land_usage_type:
+        | "residential"
+        | "commercial"
+        | "residential_commercial"
+        | "high_density"
       lease_status: "active" | "expired" | "expiring_soon"
+      meeting_type: "google_meet" | "in_person"
+      owner_partnership_goal:
+        | "develop_sell"
+        | "develop_rent"
+        | "develop_mixed"
+        | "develop_complex"
       project_status: "under_construction" | "ready"
       property_type: "residential" | "commercial" | "under_construction"
       receivable_status: "pending" | "paid" | "overdue" | "partial"
+      request_status: "pending" | "approved" | "rejected" | "info_requested"
       subscription_type:
         | "individual"
         | "brokerage"
@@ -745,10 +1232,39 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user", "viewer"],
+      deal_health: ["green", "yellow", "red"],
+      deal_stage: [
+        "listed",
+        "request_submitted",
+        "owner_review",
+        "owner_approved",
+        "meeting_scheduled",
+        "strategy_defined",
+        "documents_exchanged",
+        "agreements_prepared",
+        "deal_closed",
+        "deal_cancelled",
+      ],
+      deal_task_status: ["pending", "in_progress", "done"],
+      developer_verification_status: ["pending_review", "verified", "rejected"],
+      land_usage_type: [
+        "residential",
+        "commercial",
+        "residential_commercial",
+        "high_density",
+      ],
       lease_status: ["active", "expired", "expiring_soon"],
+      meeting_type: ["google_meet", "in_person"],
+      owner_partnership_goal: [
+        "develop_sell",
+        "develop_rent",
+        "develop_mixed",
+        "develop_complex",
+      ],
       project_status: ["under_construction", "ready"],
       property_type: ["residential", "commercial", "under_construction"],
       receivable_status: ["pending", "paid", "overdue", "partial"],
+      request_status: ["pending", "approved", "rejected", "info_requested"],
       subscription_type: [
         "individual",
         "brokerage",
