@@ -22,12 +22,16 @@ const RegisterPage: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [city, setCity] = useState("");
   const [subscriptionType, setSubscriptionType] = useState("individual");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const showCompanyField = subscriptionType !== "individual";
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,17 +54,14 @@ const RegisterPage: React.FC = () => {
         emailRedirectTo: window.location.origin,
         data: {
           full_name: fullName,
+          company_name: companyName || fullName,
           subscription_type: subscriptionType,
         },
       },
     });
 
     if (error) {
-      toast({
-        variant: "destructive",
-        title: t.nav.register,
-        description: error.message,
-      });
+      toast({ variant: "destructive", title: t.nav.register, description: error.message });
     } else {
       if (data.user) {
         await supabase
@@ -81,7 +82,7 @@ const RegisterPage: React.FC = () => {
           ? "تم إرسال رابط التفعيل إلى بريدك الإلكتروني"
           : "A verification link has been sent to your email",
       });
-      navigate("/login");
+      navigate("/auth/login");
     }
     setLoading(false);
   };
@@ -99,9 +100,7 @@ const RegisterPage: React.FC = () => {
             <span className="text-2xl font-medium text-primary-foreground">D</span>
           </div>
           <h2 className="text-3xl font-medium text-primary-foreground">DOMA</h2>
-          <p className="mt-2 text-sm font-light text-primary-foreground/70">
-            Real Estate Management
-          </p>
+          <p className="mt-2 text-sm font-light text-primary-foreground/70">Real Estate Management</p>
         </div>
       </div>
 
@@ -109,8 +108,7 @@ const RegisterPage: React.FC = () => {
       <div className="flex flex-1 items-center justify-center bg-background p-6">
         <div className="absolute top-4 end-4">
           <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-1.5 text-muted-foreground">
-            <Globe className="h-4 w-4" />
-            {t.nav.language}
+            <Globe className="h-4 w-4" />{t.nav.language}
           </Button>
         </div>
 
@@ -123,64 +121,31 @@ const RegisterPage: React.FC = () => {
           </Link>
 
           <h1 className="mb-2 text-2xl font-medium text-foreground">{t.nav.register}</h1>
-          <p className="mb-6 text-sm font-light text-muted-foreground">
-            {lang === "ar" ? "أنشئ حسابك للبدء" : "Create your account to get started"}
-          </p>
+          <p className="mb-6 text-sm font-light text-muted-foreground">{t.auth.registerSubtitle}</p>
 
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="fullName" className="font-light text-sm">
-                {lang === "ar" ? "الاسم الكامل" : "Full Name"}
-              </Label>
-              <Input
-                id="fullName"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-                className="h-11 rounded-xl border-border/60"
-              />
+              <Label htmlFor="fullName" className="font-light text-sm">{t.auth.fullName}</Label>
+              <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} required className="h-11 rounded-xl border-border/60" />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-light text-sm">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                dir="ltr"
-                className="h-11 rounded-xl border-border/60"
-              />
+              <Label htmlFor="email" className="font-light text-sm">{t.auth.email}</Label>
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required dir="ltr" className="h-11 rounded-xl border-border/60" />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="font-light text-sm">Password</Label>
+              <Label htmlFor="password" className="font-light text-sm">{t.auth.password}</Label>
               <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  dir="ltr"
-                  className="h-11 rounded-xl border-border/60"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
+                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} dir="ltr" className="h-11 rounded-xl border-border/60" />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="font-light text-sm">
-                {lang === "ar" ? "نوع الاشتراك" : "Subscription Type"}
-              </Label>
+              <Label className="font-light text-sm">{t.auth.subscriptionType}</Label>
               <div className="grid gap-2">
                 {subscriptionOptions.map((opt) => (
                   <label
@@ -191,46 +156,43 @@ const RegisterPage: React.FC = () => {
                         : "border-border/60 text-muted-foreground hover:border-primary/20"
                     }`}
                   >
-                    <input
-                      type="radio"
-                      name="subscription"
-                      value={opt.value}
-                      checked={subscriptionType === opt.value}
-                      onChange={(e) => setSubscriptionType(e.target.value)}
-                      className="accent-primary"
-                    />
+                    <input type="radio" name="subscription" value={opt.value} checked={subscriptionType === opt.value} onChange={(e) => setSubscriptionType(e.target.value)} className="accent-primary" />
                     {lang === "ar" ? opt.labelAr : opt.labelEn}
                   </label>
                 ))}
               </div>
             </div>
 
+            {showCompanyField && (
+              <div className="space-y-2">
+                <Label htmlFor="companyName" className="font-light text-sm">{t.auth.companyName}</Label>
+                <Input id="companyName" value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="h-11 rounded-xl border-border/60" />
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="city" className="font-light text-sm">{t.auth.city}</Label>
+              <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} className="h-11 rounded-xl border-border/60" />
+            </div>
+
             <div className="flex items-start gap-2">
-              <Checkbox
-                id="terms"
-                checked={acceptTerms}
-                onCheckedChange={(checked) => setAcceptTerms(checked === true)}
-              />
+              <Checkbox id="terms" checked={acceptTerms} onCheckedChange={(checked) => setAcceptTerms(checked === true)} />
               <label htmlFor="terms" className="text-sm font-light leading-relaxed text-muted-foreground">
-                {lang === "ar" ? (
-                  <>أوافق على <Link to="/terms" className="text-primary hover:underline">الشروط والأحكام</Link> و<Link to="/privacy" className="text-primary hover:underline">سياسة الخصوصية</Link></>
-                ) : (
-                  <>I agree to the <Link to="/terms" className="text-primary hover:underline">Terms & Conditions</Link> and <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link></>
-                )}
+                {t.auth.acceptTerms}{" "}
+                <Link to="/terms" className="text-primary hover:underline">{t.auth.termsAndConditions}</Link>
+                {" "}{t.auth.and}{" "}
+                <Link to="/privacy" className="text-primary hover:underline">{t.auth.privacyPolicy}</Link>
               </label>
             </div>
 
             <Button type="submit" className="h-11 w-full gap-2 rounded-xl doma-gradient doma-shadow" disabled={loading || !acceptTerms}>
-              <UserPlus className="h-4 w-4" />
-              {t.nav.register}
+              <UserPlus className="h-4 w-4" />{t.auth.createAccount}
             </Button>
           </form>
 
           <p className="mt-6 text-center text-sm font-light text-muted-foreground">
-            {lang === "ar" ? "لديك حساب؟ " : "Already have an account? "}
-            <Link to="/login" className="text-primary hover:underline">
-              {t.nav.login}
-            </Link>
+            {t.auth.alreadyHaveAccount}{" "}
+            <Link to="/auth/login" className="text-primary hover:underline">{t.nav.login}</Link>
           </p>
         </div>
       </div>
