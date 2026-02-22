@@ -9,6 +9,7 @@ import {
   Wrench, BarChart3, Settings, Globe, LogOut,
   ChevronLeft, ChevronRight,
 } from "lucide-react";
+import NotificationDropdown from "./NotificationDropdown";
 
 interface NavItem {
   labelKey: "dashboard" | "properties" | "units" | "leases" | "receivables" | "maintenance" | "reports" | "settings";
@@ -83,9 +84,12 @@ const CrmSidebar: React.FC = () => {
             )}
           </div>
         )}
-        <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} className="h-8 w-8 shrink-0 text-muted-foreground">
-          <CollapseIcon className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <NotificationDropdown />
+          <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} className="h-8 w-8 shrink-0 text-muted-foreground">
+            <CollapseIcon className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       {/* Navigation */}
