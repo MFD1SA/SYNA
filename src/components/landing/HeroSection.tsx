@@ -47,13 +47,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
 
         <div className="container relative">
           <div className="mx-auto max-w-4xl text-center">
-            {/* Top badge */}
-            <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-primary/15 bg-primary/[0.04] px-5 py-2">
-              <Zap className="h-3.5 w-3.5 text-accent" strokeWidth={2} />
-              <span className="text-xs font-light tracking-wide text-primary">
-                {isAr ? "إدارة عقارية ذكية — الجيل القادم" : "Smart Real Estate Management — Next Gen"}
-              </span>
-            </div>
 
             <h1 className="mb-6 text-5xl font-medium tracking-tight text-foreground md:text-6xl lg:text-7xl">
               <span className="doma-gradient-text">{t.hero.title}</span>
@@ -126,9 +119,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
 
       <div className="container relative z-10 py-24 md:py-32">
         <div className="mx-auto max-w-5xl text-center">
-          <p className="mb-6 text-sm font-light tracking-[0.2em] uppercase text-[hsl(187,55%,50%,0.7)]">
-            {isAr ? "إدارة عقارية ذكية — الجيل القادم" : "Smart Real Estate Management — Next Gen"}
-          </p>
+
+
 
           <h1 className="mb-6 text-7xl font-medium tracking-tight text-white md:text-8xl lg:text-9xl">
             DOMA
