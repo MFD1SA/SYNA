@@ -46,30 +46,37 @@ const DashboardSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`sticky top-0 flex h-screen flex-col border-e border-border bg-sidebar-background transition-all duration-200 ${
+      className={`sticky top-0 flex h-screen flex-col border-e border-border/60 bg-card transition-all duration-200 ${
         collapsed ? "w-16" : "w-60"
       }`}
     >
       {/* Header */}
-      <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
-        {!collapsed && <span className="text-lg font-medium text-sidebar-primary">DOMA</span>}
-        <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} className="h-8 w-8">
+      <div className="flex h-16 items-center justify-between border-b border-border/60 px-4">
+        {!collapsed && (
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg doma-gradient">
+              <span className="text-xs font-medium text-primary-foreground">D</span>
+            </div>
+            <span className="text-lg font-medium text-foreground">DOMA</span>
+          </div>
+        )}
+        <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} className="h-8 w-8 text-muted-foreground">
           <CollapseIcon className="h-4 w-4" />
         </Button>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 space-y-1 p-2">
+      <nav className="flex-1 space-y-1 p-3">
         {navItems.map((item) => {
           const isActive = location.pathname === item.href;
           return (
             <Link
               key={item.href}
               to={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-primary"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                  ? "bg-primary/10 text-primary doma-shadow"
+                  : "text-muted-foreground hover:bg-surface hover:text-foreground"
               }`}
             >
               <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
@@ -80,20 +87,20 @@ const DashboardSidebar: React.FC = () => {
       </nav>
 
       {/* Footer */}
-      <div className="space-y-1 border-t border-sidebar-border p-2">
+      <div className="space-y-1 border-t border-border/60 p-3">
         {!collapsed && (
           <p className="truncate px-3 py-1 text-xs font-light text-muted-foreground">{user?.email}</p>
         )}
         <button
           onClick={toggleLang}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-light text-sidebar-foreground hover:bg-sidebar-accent/50"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-light text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
         >
           <Globe className="h-4 w-4 shrink-0" strokeWidth={1.5} />
           {!collapsed && t.nav.language}
         </button>
         <button
           onClick={handleSignOut}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-light text-destructive hover:bg-destructive/5"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-light text-destructive transition-colors hover:bg-destructive/5"
         >
           <LogOut className="h-4 w-4 shrink-0" strokeWidth={1.5} />
           {!collapsed && (lang === "ar" ? "خروج" : "Logout")}

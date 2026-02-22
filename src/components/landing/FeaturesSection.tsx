@@ -13,19 +13,26 @@ const FeaturesSection: React.FC = () => {
   const { t } = useLanguage();
 
   return (
-    <section id="features" className="py-20 md:py-28">
-      <div className="container">
-        <h2 className="mb-14 text-center text-3xl font-medium text-foreground">
-          {t.features.title}
-        </h2>
+    <section id="features" className="relative py-24 md:py-32">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-surface/50 to-transparent" />
+      <div className="container relative">
+        <div className="mx-auto mb-16 max-w-xl text-center">
+          <h2 className="mb-3 text-3xl font-medium text-foreground">
+            {t.features.title}
+          </h2>
+          <div className="mx-auto h-1 w-12 rounded-full doma-gradient" />
+        </div>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map(({ key, icon: Icon }) => (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map(({ key, icon: Icon }, idx) => (
             <div
               key={key}
-              className="group rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-md"
+              className="group doma-card p-6"
+              style={{ animationDelay: `${idx * 100}ms` }}
             >
-              <Icon className="mb-4 h-6 w-6 text-primary" strokeWidth={1.5} />
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/5 transition-colors group-hover:bg-primary/10">
+                <Icon className="h-6 w-6 text-primary" strokeWidth={1.5} />
+              </div>
               <h3 className="mb-2 text-lg font-medium text-foreground">
                 {t.features[key]}
               </h3>

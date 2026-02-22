@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link, useNavigate } from "react-router-dom";
 import { Globe, UserPlus, Eye, EyeOff } from "lucide-react";
@@ -63,14 +62,12 @@ const RegisterPage: React.FC = () => {
         description: error.message,
       });
     } else {
-      // Update profile with subscription type
       if (data.user) {
         await supabase
           .from("profiles")
           .update({ subscription_type: subscriptionType as any, full_name: fullName })
           .eq("user_id", data.user.id);
 
-        // Record policy consent
         await supabase.from("policy_consents").insert([
           { user_id: data.user.id, policy_type: "terms", policy_version: "1.0.0" },
           { user_id: data.user.id, policy_type: "privacy", policy_version: "1.0.0" },
@@ -90,23 +87,49 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="absolute top-4 end-4">
-        <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-1.5">
-          <Globe className="h-4 w-4" />
-          {t.nav.language}
-        </Button>
+    <div className="flex min-h-screen">
+      {/* Left decorative panel */}
+      <div className="relative hidden w-2/5 overflow-hidden doma-gradient lg:flex lg:flex-col lg:items-center lg:justify-center">
+        <div className="pointer-events-none absolute inset-0 opacity-20">
+          <div className="absolute top-1/4 start-1/4 h-64 w-64 rounded-full bg-accent/30 blur-3xl" />
+          <div className="absolute bottom-1/4 end-1/4 h-48 w-48 rounded-full bg-primary-foreground/10 blur-3xl" />
+        </div>
+        <div className="relative text-center">
+          <div className="mb-4 flex h-16 w-16 mx-auto items-center justify-center rounded-2xl bg-primary-foreground/10">
+            <span className="text-2xl font-medium text-primary-foreground">D</span>
+          </div>
+          <h2 className="text-3xl font-medium text-primary-foreground">DOMA</h2>
+          <p className="mt-2 text-sm font-light text-primary-foreground/70">
+            Real Estate Management
+          </p>
+        </div>
       </div>
 
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <Link to="/" className="mb-4 inline-block text-2xl font-medium text-primary">DOMA</Link>
-          <CardTitle className="text-xl font-medium">{t.nav.register}</CardTitle>
-        </CardHeader>
-        <CardContent>
+      {/* Right form panel */}
+      <div className="flex flex-1 items-center justify-center bg-background p-6">
+        <div className="absolute top-4 end-4">
+          <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-1.5 text-muted-foreground">
+            <Globe className="h-4 w-4" />
+            {t.nav.language}
+          </Button>
+        </div>
+
+        <div className="w-full max-w-sm">
+          <Link to="/" className="mb-6 flex items-center gap-2 lg:hidden">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg doma-gradient">
+              <span className="text-sm font-medium text-primary-foreground">D</span>
+            </div>
+            <span className="text-xl font-medium text-foreground">DOMA</span>
+          </Link>
+
+          <h1 className="mb-2 text-2xl font-medium text-foreground">{t.nav.register}</h1>
+          <p className="mb-6 text-sm font-light text-muted-foreground">
+            {lang === "ar" ? "أنشئ حسابك للبدء" : "Create your account to get started"}
+          </p>
+
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="fullName" className="font-light">
+              <Label htmlFor="fullName" className="font-light text-sm">
                 {lang === "ar" ? "الاسم الكامل" : "Full Name"}
               </Label>
               <Input
@@ -114,11 +137,12 @@ const RegisterPage: React.FC = () => {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
+                className="h-11 rounded-xl border-border/60"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-light">Email</Label>
+              <Label htmlFor="email" className="font-light text-sm">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -126,11 +150,12 @@ const RegisterPage: React.FC = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 dir="ltr"
+                className="h-11 rounded-xl border-border/60"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="font-light">Password</Label>
+              <Label htmlFor="password" className="font-light text-sm">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -140,11 +165,12 @@ const RegisterPage: React.FC = () => {
                   required
                   minLength={6}
                   dir="ltr"
+                  className="h-11 rounded-xl border-border/60"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -152,17 +178,17 @@ const RegisterPage: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="font-light">
+              <Label className="font-light text-sm">
                 {lang === "ar" ? "نوع الاشتراك" : "Subscription Type"}
               </Label>
               <div className="grid gap-2">
                 {subscriptionOptions.map((opt) => (
                   <label
                     key={opt.value}
-                    className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 text-sm font-light transition-colors ${
+                    className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 text-sm font-light transition-all ${
                       subscriptionType === opt.value
-                        ? "border-primary bg-primary/5 text-foreground"
-                        : "border-border text-muted-foreground hover:border-primary/30"
+                        ? "border-primary/40 bg-primary/5 text-foreground"
+                        : "border-border/60 text-muted-foreground hover:border-primary/20"
                     }`}
                   >
                     <input
@@ -194,7 +220,7 @@ const RegisterPage: React.FC = () => {
               </label>
             </div>
 
-            <Button type="submit" className="w-full gap-2" disabled={loading || !acceptTerms}>
+            <Button type="submit" className="h-11 w-full gap-2 rounded-xl doma-gradient doma-shadow" disabled={loading || !acceptTerms}>
               <UserPlus className="h-4 w-4" />
               {t.nav.register}
             </Button>
@@ -206,8 +232,8 @@ const RegisterPage: React.FC = () => {
               {t.nav.login}
             </Link>
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

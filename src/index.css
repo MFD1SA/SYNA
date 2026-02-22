@@ -37,6 +37,11 @@
 
     --radius: 0.5rem;
 
+    /* DOMA extended tokens */
+    --primary-glow: 187 55% 38%;
+    --surface: 210 20% 96%;
+    --surface-hover: 210 18% 93%;
+
     --sidebar-background: 210 20% 97%;
     --sidebar-foreground: 210 10% 30%;
     --sidebar-primary: 187 65% 28%;
@@ -76,6 +81,10 @@
     --input: 210 20% 18%;
     --ring: 187 55% 42%;
 
+    --primary-glow: 187 50% 50%;
+    --surface: 210 22% 12%;
+    --surface-hover: 210 20% 16%;
+
     --sidebar-background: 210 25% 10%;
     --sidebar-foreground: 210 15% 85%;
     --sidebar-primary: 187 55% 42%;
@@ -109,5 +118,41 @@
 
   [dir="ltr"] {
     font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .doma-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+  }
+
+  .doma-gradient-text {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .doma-shadow {
+    box-shadow: 0 4px 24px -4px hsl(var(--primary) / 0.12);
+  }
+
+  .doma-shadow-lg {
+    box-shadow: 0 8px 40px -8px hsl(var(--primary) / 0.18);
+  }
+
+  .doma-card {
+    @apply rounded-xl border border-border bg-card transition-all duration-200;
+  }
+
+  .doma-card:hover {
+    @apply doma-shadow;
+    border-color: hsl(var(--primary) / 0.2);
+  }
+
+  .doma-glass {
+    background: hsl(var(--background) / 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 }
