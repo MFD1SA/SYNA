@@ -269,7 +269,7 @@ export const translations = {
     },
     features: {
       title: "Why DOMA?",
-      subtitle: "Integrated tools designed to facilitate secure and transparent development partnerships",
+      subtitle: "Tools designed to facilitate development partnerships and transform white lands into productive projects",
       verification: "Smart Verification",
       verificationDesc: "Automatic extraction of commercial register data using AI and matching with developer info to ensure credibility",
       privacy: "Full Privacy",
