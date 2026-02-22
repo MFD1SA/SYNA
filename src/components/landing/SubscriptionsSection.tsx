@@ -17,15 +17,12 @@ const SubscriptionsSection: React.FC = () => {
   const Arrow = lang === "ar" ? ArrowLeft : ArrowRight;
 
   return (
-    <section id="subscriptions" className="relative py-8 md:py-12">
+    <section id="subscriptions" className="relative py-4 md:py-6">
       <div className="container relative">
-        <div className="mx-auto mb-8 max-w-xl text-center">
-          <h2 className="mb-2 text-3xl font-medium text-foreground">
+        <div className="mx-auto mb-4 max-w-xl text-center">
+          <h2 className="text-2xl font-medium text-foreground">
             {t.subscriptions.title}
           </h2>
-          <p className="text-base font-light text-muted-foreground">
-            {t.subscriptions.subtitle}
-          </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
