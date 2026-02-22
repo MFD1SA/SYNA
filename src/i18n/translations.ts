@@ -83,7 +83,7 @@ export const translations = {
       language: "العربية",
     },
     hero: {
-      title: "DOMA Platform",
+      title: "DOMA",
       subtitle: "Real Estate Contract & Project Management in Saudi Arabia",
       description: "Interactive maps with heatmaps, comprehensive project and unit management, smart internal communication — all in one platform.",
       cta: "Get Started",
