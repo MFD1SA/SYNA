@@ -21,16 +21,28 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      toast({
-        variant: "destructive",
-        title: t.nav.login,
-        description: error.message,
-      });
-    } else {
-      navigate("/dashboard");
+      toast({ variant: "destructive", title: t.nav.login, description: error.message });
+      setLoading(false);
+      return;
+    }
+
+    // Check if admin
+    if (data.user) {
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (roleData) {
+        navigate("/admin/overview");
+      } else {
+        navigate("/crm/dashboard");
+      }
     }
     setLoading(false);
   };
@@ -48,9 +60,7 @@ const LoginPage: React.FC = () => {
             <span className="text-2xl font-medium text-primary-foreground">D</span>
           </div>
           <h2 className="text-3xl font-medium text-primary-foreground">DOMA</h2>
-          <p className="mt-2 text-sm font-light text-primary-foreground/70">
-            Real Estate Management
-          </p>
+          <p className="mt-2 text-sm font-light text-primary-foreground/70">Real Estate Management</p>
         </div>
       </div>
 
@@ -58,8 +68,7 @@ const LoginPage: React.FC = () => {
       <div className="flex flex-1 items-center justify-center bg-background p-6">
         <div className="absolute top-4 end-4">
           <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-1.5 text-muted-foreground">
-            <Globe className="h-4 w-4" />
-            {t.nav.language}
+            <Globe className="h-4 w-4" />{t.nav.language}
           </Button>
         </div>
 
@@ -72,56 +81,32 @@ const LoginPage: React.FC = () => {
           </Link>
 
           <h1 className="mb-2 text-2xl font-medium text-foreground">{t.nav.login}</h1>
-          <p className="mb-8 text-sm font-light text-muted-foreground">
-            {t.nav.login}
-          </p>
+          <p className="mb-8 text-sm font-light text-muted-foreground">{t.auth.loginSubtitle}</p>
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-light text-sm">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                dir="ltr"
-                className="h-11 rounded-xl border-border/60"
-              />
+              <Label htmlFor="email" className="font-light text-sm">{t.auth.email}</Label>
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required dir="ltr" className="h-11 rounded-xl border-border/60" />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="font-light text-sm">Password</Label>
+              <Label htmlFor="password" className="font-light text-sm">{t.auth.password}</Label>
               <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  dir="ltr"
-                  className="h-11 rounded-xl border-border/60"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
+                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required dir="ltr" className="h-11 rounded-xl border-border/60" />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
             <Button type="submit" className="h-11 w-full gap-2 rounded-xl doma-gradient doma-shadow" disabled={loading}>
-              <LogIn className="h-4 w-4" />
-              {t.nav.login}
+              <LogIn className="h-4 w-4" />{t.nav.login}
             </Button>
           </form>
 
           <p className="mt-8 text-center text-sm font-light text-muted-foreground">
-            <Link to="/register" className="text-primary hover:underline">
-              {t.nav.register}
-            </Link>
+            {t.auth.noAccount}{" "}
+            <Link to="/auth/register" className="text-primary hover:underline">{t.nav.register}</Link>
           </p>
         </div>
       </div>
