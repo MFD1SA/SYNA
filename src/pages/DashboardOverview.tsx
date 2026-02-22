@@ -53,10 +53,10 @@ const DashboardOverview: React.FC = () => {
   };
 
   const cards = [
-    { label: isAr ? "المشاريع" : "Projects", value: stats.projects, icon: Building2, gradient: "from-primary/10 to-primary/5" },
-    { label: isAr ? "الوحدات" : "Units", value: stats.units, icon: DoorOpen, gradient: "from-accent/10 to-accent/5" },
-    { label: isAr ? "العقود" : "Leases", value: stats.leases, icon: FileText, gradient: "from-primary/10 to-primary/5" },
-    { label: isAr ? "العقود النشطة" : "Active Leases", value: stats.activeLeases, icon: TrendingUp, gradient: "from-primary/10 to-accent/5" },
+    { label: isAr ? "المشاريع" : "Projects", value: stats.projects, icon: Building2 },
+    { label: isAr ? "الوحدات" : "Units", value: stats.units, icon: DoorOpen },
+    { label: isAr ? "العقود" : "Leases", value: stats.leases, icon: FileText },
+    { label: isAr ? "العقود النشطة" : "Active Leases", value: stats.activeLeases, icon: TrendingUp },
   ];
 
   return (
@@ -86,12 +86,10 @@ const DashboardOverview: React.FC = () => {
           <div key={card.label} className="doma-card p-5">
             <div className="mb-3 flex items-center justify-between">
               <span className="text-sm font-light text-muted-foreground">{card.label}</span>
-              <div className={`rounded-xl bg-gradient-to-br ${card.gradient} p-2`}>
-                <card.icon className="h-4 w-4 text-primary" strokeWidth={1.5} />
-              </div>
+              <card.icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
             </div>
-            <p className="text-2xl font-medium text-foreground">
-              {loading ? <span className="inline-block h-7 w-14 animate-pulse rounded-lg bg-muted" /> : card.value}
+            <p className="text-2xl font-medium text-foreground" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
+              {loading ? <span className="inline-block h-7 w-14 animate-pulse rounded-lg bg-muted" /> : card.value.toLocaleString("en-US")}
             </p>
           </div>
         ))}
