@@ -14,7 +14,7 @@ export const translations = {
     hero: {
       title: "DOMA",
       subtitle: "لإدارة العقود والمشاريع العقارية",
-      description: "خريطة تفاعلية ومؤشرات حرارية، إدارة شاملة للمشاريع والوحدات والعقود، وتواصل ذكي داخلي — كل ذلك في منصة واحدة.",
+      description: "خريطة تفاعلية ومؤشرات حرارية، إدارة شاملة للمشاريع والوحدات والعقود، وتواصل ذكي داخلي لتسهيل عملياتك العقارية.",
       cta: "ابدأ الآن",
       learnMore: "تعرّف أكثر",
     },
@@ -85,7 +85,7 @@ export const translations = {
     hero: {
       title: "DOMA",
       subtitle: "Real Estate Contract & Project Management in Saudi Arabia",
-      description: "Interactive maps with heatmaps, comprehensive project and unit management, smart internal communication — all in one platform.",
+      description: "Interactive maps with heatmaps, comprehensive project and unit management, and smart internal communication to streamline your real estate operations.",
       cta: "Get Started",
       learnMore: "Learn More",
     },
