@@ -1,11 +1,18 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Link } from "react-router-dom";
-import { Globe, LogIn, UserPlus } from "lucide-react";
+import { Globe, LogIn, UserPlus, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { BrandVariant } from "./BrandToggle";
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  variant?: BrandVariant;
+  onToggleVariant?: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ variant = "portfolio", onToggleVariant }) => {
   const { t, lang, toggleLang } = useLanguage();
+  const isDark = variant === "portfolio";
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border/60 doma-glass">
@@ -31,6 +38,12 @@ const Navbar: React.FC = () => {
             <Globe className="h-4 w-4" />
             <span className="text-sm">{t.nav.language}</span>
           </Button>
+
+          {onToggleVariant && (
+            <Button variant="ghost" size="icon" onClick={onToggleVariant} className="h-9 w-9 text-muted-foreground" title={isDark ? (lang === "ar" ? "الوضع النهاري" : "Light mode") : (lang === "ar" ? "الوضع الليلي" : "Dark mode")}>
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+          )}
 
           <Button variant="outline" size="sm" asChild className="gap-1.5 border-border/60">
             <Link to="/login">

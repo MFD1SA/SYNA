@@ -5,14 +5,18 @@ import FeaturesSection from "@/components/landing/FeaturesSection";
 import SubscriptionsSection from "@/components/landing/SubscriptionsSection";
 import LogosSection from "@/components/landing/LogosSection";
 import Footer from "@/components/landing/Footer";
-import BrandToggle, { type BrandVariant } from "@/components/landing/BrandToggle";
+import type { BrandVariant } from "@/components/landing/BrandToggle";
 
 const Index: React.FC = () => {
   const [variant, setVariant] = useState<BrandVariant>("portfolio");
 
+  const toggleVariant = () => {
+    setVariant((v) => (v === "portfolio" ? "doma" : "portfolio"));
+  };
+
   return (
     <div className="min-h-screen">
-      <Navbar />
+      <Navbar variant={variant} onToggleVariant={toggleVariant} />
       <main>
         <HeroSection variant={variant} />
         <FeaturesSection />
@@ -20,7 +24,6 @@ const Index: React.FC = () => {
         <LogosSection />
       </main>
       <Footer />
-      <BrandToggle variant={variant} onChange={setVariant} />
     </div>
   );
 };
