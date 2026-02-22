@@ -1,15 +1,15 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Building2, ShoppingBag, Wifi, GraduationCap, Heart, Cpu, Landmark, Home } from "lucide-react";
+import { Building2, Landmark, Home, HardHat, MapPin, Briefcase } from "lucide-react";
 
-const sectorIcons = [Building2, ShoppingBag, Wifi, GraduationCap, Heart, Cpu, Landmark, Home];
+const sectorIcons = [Building2, HardHat, Home, MapPin, Landmark, Briefcase];
 
 const LogosSection: React.FC = () => {
   const { t, lang } = useLanguage();
 
   const sectors = lang === "ar"
-    ? ["التجزئة", "المطاعم", "الاتصالات", "التعليم", "الصحة", "التقنية", "البنوك", "العقارات"]
-    : ["Retail", "Restaurants", "Telecom", "Education", "Healthcare", "Technology", "Banking", "Real Estate"];
+    ? ["المطورون العقاريون", "شركات المقاولات", "ملاك الأراضي", "المخططات السكنية", "جهات التمويل", "الاستشاريون"]
+    : ["Real Estate Developers", "Construction Firms", "Landowners", "Residential Plans", "Financing Entities", "Consultants"];
 
   return (
     <section className="py-12 md:py-16">
@@ -20,7 +20,7 @@ const LogosSection: React.FC = () => {
           </h2>
         </div>
 
-        <div className="mx-auto grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="mx-auto grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-3">
           {sectors.map((sector, idx) => {
             const Icon = sectorIcons[idx];
             return (
@@ -31,15 +31,11 @@ const LogosSection: React.FC = () => {
                 <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/5 transition-colors group-hover:bg-primary/10">
                   <Icon className="h-5 w-5 text-primary" strokeWidth={1.2} />
                 </div>
-                <span className="text-xs font-light text-foreground">{sector}</span>
+                <span className="text-xs font-light text-foreground text-center">{sector}</span>
               </div>
             );
           })}
         </div>
-
-        <p className="mt-4 text-center text-xs font-light text-muted-foreground">
-          {t.logos.disclaimer}
-        </p>
       </div>
     </section>
   );

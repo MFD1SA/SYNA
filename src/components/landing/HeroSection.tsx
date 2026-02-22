@@ -1,7 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Map, FileText, Building2, BarChart3, Shield } from "lucide-react";
+import { ArrowLeft, ArrowRight, ShieldCheck, Eye, Handshake, Video } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { BrandVariant } from "./BrandToggle";
 import logoImg from "@/assets/logo.png";
@@ -16,17 +16,16 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
   const isAr = lang === "ar";
 
   const stats = [
-    { value: "500+", label: isAr ? "مشروع عقاري" : "Real Estate Projects" },
-    { value: "1000+", label: isAr ? "وحدة مُدارة" : "Managed Units" },
-    { value: "99%", label: isAr ? "وقت التشغيل" : "Uptime" },
+    { value: "150+", label: isAr ? t.stats.verifiedDevelopers : t.stats.verifiedDevelopers },
+    { value: "300+", label: isAr ? t.stats.landListings : t.stats.landListings },
+    { value: "85+", label: isAr ? t.stats.closedDeals : t.stats.closedDeals },
   ];
 
   const pills = [
-    { icon: Map, label: isAr ? "خريطة تفاعلية" : "Interactive Map" },
-    { icon: FileText, label: isAr ? "إدارة العقود" : "Contract Management" },
-    { icon: Building2, label: isAr ? "إدارة المشاريع" : "Project Management" },
-    { icon: BarChart3, label: isAr ? "تحليلات فورية" : "Real-time Analytics" },
-    { icon: Shield, label: isAr ? "أمان متقدم" : "Advanced Security" },
+    { icon: ShieldCheck, label: isAr ? "تحقق تجاري ذكي" : "Smart Verification" },
+    { icon: Eye, label: isAr ? "خصوصية كاملة" : "Full Privacy" },
+    { icon: Handshake, label: isAr ? "متابعة الصفقات" : "Deal Tracking" },
+    { icon: Video, label: isAr ? "اجتماعات مدمجة" : "Integrated Meetings" },
   ];
 
   if (variant === "doma") {
@@ -63,7 +62,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild className="h-12 rounded-xl border-border/50 px-10 text-base hover:bg-surface">
-                <a href="#features">{t.hero.learnMore}</a>
+                <a href="#how-it-works">{t.hero.learnMore}</a>
               </Button>
             </div>
           </div>
@@ -88,6 +87,17 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
                 <span className="text-xs font-light text-foreground">{label}</span>
               </div>
             ))}
+          </div>
+
+          {/* Commission badge */}
+          <div className="mt-10 flex justify-center">
+            <div className="inline-flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-6 py-3">
+              <span className="text-2xl font-medium text-primary">{t.commission.rate}</span>
+              <div className="text-start">
+                <p className="text-sm font-medium text-foreground">{t.commission.title}</p>
+                <p className="text-xs font-light text-muted-foreground">{t.commission.desc}</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -137,7 +147,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
               </Link>
             </Button>
             <Button variant="outline" size="lg" asChild className="h-13 rounded-xl border-[hsl(210,20%,22%)] bg-transparent px-12 text-base text-[hsl(210,15%,75%)] hover:bg-[hsl(210,20%,14%)] hover:text-white">
-              <a href="#features">{t.hero.learnMore}</a>
+              <a href="#how-it-works">{t.hero.learnMore}</a>
             </Button>
           </div>
         </div>
@@ -160,6 +170,17 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
               <span className="text-xs font-light text-[hsl(210,15%,75%)]">{label}</span>
             </div>
           ))}
+        </div>
+
+        {/* Commission badge */}
+        <div className="mt-10 flex justify-center">
+          <div className="inline-flex items-center gap-3 rounded-2xl border border-[hsl(187,55%,30%,0.3)] bg-[hsl(210,25%,11%,0.8)] px-6 py-3">
+            <span className="text-2xl font-medium text-[hsl(187,55%,60%)]">{t.commission.rate}</span>
+            <div className="text-start">
+              <p className="text-sm font-medium text-white">{t.commission.title}</p>
+              <p className="text-xs font-light text-[hsl(210,15%,50%)]">{t.commission.desc}</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

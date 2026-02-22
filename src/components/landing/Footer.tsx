@@ -12,7 +12,6 @@ const Footer: React.FC = () => {
     { to: "/privacy", label: t.nav.privacy },
     { to: "/usage-policy", label: t.nav.usage },
     { to: "/about", label: t.nav.about },
-    { to: "/subscriptions", label: t.nav.subscriptions },
   ];
 
   return (
@@ -26,9 +25,7 @@ const Footer: React.FC = () => {
               <span className="text-lg font-medium text-foreground">DOMA</span>
             </div>
             <p className="max-w-xs text-sm font-light leading-relaxed text-muted-foreground">
-              {isAr
-                ? "منصة متكاملة لإدارة العقود والمشاريع العقارية في المملكة العربية السعودية"
-                : "An integrated platform for real estate contract & project management in Saudi Arabia"}
+              {t.footer.desc}
             </p>
           </div>
 
