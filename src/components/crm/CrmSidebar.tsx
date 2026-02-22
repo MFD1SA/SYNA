@@ -10,6 +10,7 @@ import {
   ChevronLeft, ChevronRight,
 } from "lucide-react";
 import NotificationDropdown from "./NotificationDropdown";
+import logoImg from "@/assets/logo.png";
 
 interface NavItem {
   labelKey: "dashboard" | "properties" | "units" | "leases" | "receivables" | "maintenance" | "reports" | "settings";
@@ -72,9 +73,7 @@ const CrmSidebar: React.FC = () => {
         {!collapsed && (
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg doma-gradient">
-                <span className="text-xs font-medium text-primary-foreground">D</span>
-              </div>
+              <img src={logoImg} alt="DOMA" className="h-7 w-7 rounded-lg object-contain" />
               <span className="text-lg font-medium text-foreground">DOMA</span>
             </div>
             {tenantName && (
