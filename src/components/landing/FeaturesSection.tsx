@@ -1,12 +1,12 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Map, FileText, BarChart3, MessageCircle, Shield, Zap, ArrowLeft, ArrowRight } from "lucide-react";
+import { ShieldCheck, Eye, Handshake, Video, Zap, ArrowLeft, ArrowRight } from "lucide-react";
 
 const features = [
-  { key: "map" as const, icon: Map },
-  { key: "contracts" as const, icon: FileText },
-  { key: "analytics" as const, icon: BarChart3 },
-  { key: "communication" as const, icon: MessageCircle },
+  { key: "verification" as const, icon: ShieldCheck },
+  { key: "privacy" as const, icon: Eye },
+  { key: "dealCrm" as const, icon: Handshake },
+  { key: "meetings" as const, icon: Video },
 ];
 
 const FeaturesSection: React.FC = () => {
@@ -17,7 +17,6 @@ const FeaturesSection: React.FC = () => {
   return (
     <section id="features" className="relative py-16 md:py-24">
       <div className="container relative">
-        {/* Section header */}
         <div className="mx-auto mb-12 max-w-2xl text-center">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5">
             <Zap className="h-3.5 w-3.5 text-primary" strokeWidth={1.5} />
@@ -29,13 +28,10 @@ const FeaturesSection: React.FC = () => {
             {t.features.title}
           </h2>
           <p className="text-base font-light text-muted-foreground">
-            {isAr
-              ? "أدوات متكاملة صُممت خصيصاً لقطاع العقارات في المملكة"
-              : "Integrated tools purpose-built for Saudi Arabia's real estate sector"}
+            {t.features.subtitle}
           </p>
         </div>
 
-        {/* Features grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {features.map(({ key, icon: Icon }) => (
             <div
@@ -63,11 +59,11 @@ const FeaturesSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Extra trust row */}
+        {/* Trust row */}
         <div className="mx-auto mt-12 flex max-w-xl flex-wrap items-center justify-center gap-6 text-center">
           {[
-            { icon: Shield, label: isAr ? "تشفير متقدم" : "Advanced Encryption" },
-            { icon: Zap, label: isAr ? "أداء فائق" : "High Performance" },
+            { icon: ShieldCheck, label: isAr ? "تحقق بالذكاء الاصطناعي" : "AI-powered Verification" },
+            { icon: Zap, label: isAr ? "إغلاق أسرع" : "Faster Closings" },
           ].map(({ icon: I2, label }) => (
             <div key={label} className="flex items-center gap-2 text-sm font-light text-muted-foreground">
               <I2 className="h-4 w-4 text-primary" strokeWidth={1.5} />

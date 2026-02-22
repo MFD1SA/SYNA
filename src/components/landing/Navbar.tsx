@@ -24,9 +24,9 @@ const Navbar: React.FC<NavbarProps> = ({ variant = "portfolio", onToggleVariant 
         </Link>
 
         <div className="flex items-center gap-2 md:gap-3">
-          <Link to="/subscriptions" className="hidden rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground md:block">
-            {t.nav.subscriptions}
-          </Link>
+          <a href="#how-it-works" className="hidden rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground md:block">
+            {t.nav.howItWorks}
+          </a>
           <Link to="/about" className="hidden rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground md:block">
             {t.nav.about}
           </Link>
