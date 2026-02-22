@@ -303,7 +303,7 @@ export const translations = {
       rate: "2.50%",
     },
     logos: {
-      title: "Target Sectors",
+      title: "Target Parties",
       disclaimer: "Logos displayed are for illustrative purposes only and do not imply partnership with any of these entities",
     },
     footer: {
@@ -311,7 +311,7 @@ export const translations = {
       company: "Doma Technology Company",
       rights: "All rights reserved",
       support: "Support Center",
-      desc: "Real Estate Development Partnership Platform — connecting landowners with developers for smart development deals",
+      desc: "A smart bridge between landowners and developers — transforming white lands into productive projects through clear partnerships",
     },
     terms: { title: "Terms & Conditions" },
     privacy: { title: "Privacy Policy" },
@@ -319,7 +319,7 @@ export const translations = {
     about: {
       title: "About DOMA",
       version: "Version 2.0.0",
-      description: "DOMA is a specialized platform for real estate development partnerships, connecting landowners with verified developers in Saudi Arabia — with smart commercial verification and professional deal tracking.",
+      description: "We believe land is not just raw space — it's an opportunity to build sustainable value. DOMA transforms ideas into real partnerships, and lands into productive projects that drive urban growth and stimulate the real estate economy.",
     },
     crm: {
       nav: {
