@@ -14,7 +14,7 @@ const HowItWorksSection: React.FC = () => {
   ];
 
   return (
-    <section id="how-it-works" className="relative py-16 md:py-24 bg-muted/30">
+    <section id="how-it-works" className="relative py-10 md:py-14 bg-muted/30">
       <div className="container relative">
         <div className="mx-auto mb-12 max-w-xl text-center">
           <h2 className="mb-2 text-3xl font-medium text-foreground md:text-4xl">

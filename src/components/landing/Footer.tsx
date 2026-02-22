@@ -15,16 +15,16 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="border-t border-border/60 bg-card/80">
+    <footer className="border-t border-[hsl(210,20%,16%)] bg-[hsl(210,25%,8%)] text-[hsl(210,15%,75%)]">
       <div className="container py-10">
         <div className="grid gap-8 md:grid-cols-3">
           {/* Brand */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2.5">
               <img src={logoImg} alt="DOMA" className="h-8 w-8 rounded-lg object-contain" />
-              <span className="text-lg font-medium text-foreground">DOMA</span>
+              <span className="text-lg font-medium text-white">DOMA</span>
             </div>
-            <p className="max-w-xs text-sm font-light leading-relaxed text-muted-foreground">
+            <p className="max-w-xs text-sm font-light leading-relaxed text-[hsl(210,15%,55%)]">
               {t.footer.desc}
             </p>
           </div>
