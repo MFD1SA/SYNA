@@ -15,19 +15,11 @@ const FeaturesSection: React.FC = () => {
   const Arrow = isAr ? ArrowLeft : ArrowRight;
 
   return (
-    <section id="features" className="relative py-24 md:py-32">
-      {/* Subtle bg */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-transparent" />
-
+    <section id="features" className="relative py-12 md:py-16">
       <div className="container relative">
         {/* Section header */}
-        <div className="mx-auto mb-16 max-w-2xl text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.04] px-4 py-1.5">
-            <span className="text-xs font-light text-primary">
-              {isAr ? "المزايا الرئيسية" : "Core Features"}
-            </span>
-          </div>
-          <h2 className="mb-4 text-3xl font-medium text-foreground md:text-4xl">
+        <div className="mx-auto mb-10 max-w-2xl text-center">
+          <h2 className="mb-3 text-3xl font-medium text-foreground md:text-4xl">
             {t.features.title}
           </h2>
           <p className="text-base font-light text-muted-foreground">
@@ -35,7 +27,6 @@ const FeaturesSection: React.FC = () => {
               ? "أدوات متكاملة صُممت خصيصاً لقطاع العقارات في المملكة"
               : "Integrated tools purpose-built for Saudi Arabia's real estate sector"}
           </p>
-          <div className="mx-auto mt-5 h-1 w-14 rounded-full doma-gradient" />
         </div>
 
         {/* Features grid */}
