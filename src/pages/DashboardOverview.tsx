@@ -46,49 +46,54 @@ const DashboardOverview: React.FC = () => {
       label: lang === "ar" ? "المشاريع" : "Projects",
       value: stats.projects,
       icon: Building2,
-      color: "text-primary",
-      bg: "bg-primary/5",
+      gradient: "from-primary/10 to-primary/5",
     },
     {
       label: lang === "ar" ? "الوحدات" : "Units",
       value: stats.units,
       icon: DoorOpen,
-      color: "text-accent",
-      bg: "bg-accent/5",
+      gradient: "from-accent/10 to-accent/5",
     },
     {
       label: lang === "ar" ? "العقود" : "Leases",
       value: stats.leases,
       icon: FileText,
-      color: "text-primary",
-      bg: "bg-primary/5",
+      gradient: "from-primary/10 to-primary/5",
     },
     {
       label: lang === "ar" ? "العقود النشطة" : "Active Leases",
       value: stats.activeLeases,
       icon: TrendingUp,
-      color: "text-green-600",
-      bg: "bg-green-50",
+      gradient: "from-primary/10 to-accent/5",
     },
   ];
 
   return (
     <DashboardLayout>
-      <h1 className="mb-8 text-2xl font-medium text-foreground">
-        {lang === "ar" ? "نظرة عامة" : "Overview"}
-      </h1>
+      <div className="mb-8">
+        <h1 className="text-2xl font-medium text-foreground">
+          {lang === "ar" ? "نظرة عامة" : "Overview"}
+        </h1>
+        <p className="mt-1 text-sm font-light text-muted-foreground">
+          {lang === "ar" ? "ملخص سريع لبياناتك" : "A quick summary of your data"}
+        </p>
+      </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card) => (
-          <div key={card.label} className="rounded-xl border border-border bg-card p-6">
+          <div key={card.label} className="doma-card p-6">
             <div className="mb-4 flex items-center justify-between">
               <span className="text-sm font-light text-muted-foreground">{card.label}</span>
-              <div className={`rounded-lg p-2 ${card.bg}`}>
-                <card.icon className={`h-4 w-4 ${card.color}`} strokeWidth={1.5} />
+              <div className={`rounded-xl bg-gradient-to-br ${card.gradient} p-2.5`}>
+                <card.icon className="h-4 w-4 text-primary" strokeWidth={1.5} />
               </div>
             </div>
             <p className="text-3xl font-medium text-foreground">
-              {loading ? "—" : card.value}
+              {loading ? (
+                <span className="inline-block h-8 w-16 animate-pulse rounded-lg bg-surface" />
+              ) : (
+                card.value
+              )}
             </p>
           </div>
         ))}
