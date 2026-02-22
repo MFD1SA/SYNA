@@ -262,8 +262,8 @@ export const translations = {
     },
     hero: {
       title: "DOMA",
-      subtitle: "Real Estate Development Partnership Platform",
-      description: "We connect landowners with verified real estate developers to form smart development partnerships — with commercial verification, full privacy, and deal tracking to closure.",
+      subtitle: "Towards Clearer & More Productive Development Partnerships",
+      description: "With white land fees driving change, landowners seek solutions to turn their assets into productive projects. DOMA is a smart bridge connecting landowners with real estate developers — with commercial verification, full privacy, and deal tracking to closure.",
       cta: "Get Started",
       learnMore: "How it Works",
     },
