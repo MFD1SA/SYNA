@@ -9,6 +9,7 @@ const Footer: React.FC = () => {
 
   const links = [
     { to: "/about", label: t.nav.about },
+    { to: "/contact", label: isAr ? "اتصل بنا" : "Contact Us" },
     { to: "/faq", label: isAr ? "الأسئلة الشائعة" : "FAQ" },
     { to: "/terms", label: t.nav.terms },
     { to: "/privacy", label: t.nav.privacy },

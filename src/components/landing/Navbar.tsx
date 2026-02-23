@@ -27,6 +27,9 @@ const Navbar: React.FC<NavbarProps> = ({ variant = "portfolio", onToggleVariant 
           <Link to="/about" className="hidden rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground md:block">
             {t.nav.about}
           </Link>
+          <Link to="/contact" className="hidden rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground md:block">
+            {lang === "ar" ? "اتصل بنا" : "Contact Us"}
+          </Link>
 
           <div className="mx-1 hidden h-5 w-px bg-border md:block" />
 
