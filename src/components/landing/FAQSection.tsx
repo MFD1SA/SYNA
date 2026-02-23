@@ -41,7 +41,7 @@ const FAQSection: React.FC = () => {
   const isAr = lang === "ar";
 
   return (
-    <section className="py-10 md:py-14">
+    <section className="py-6 md:py-8">
       <div className="container">
         <div className="mx-auto mb-6 max-w-xl text-center">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5">

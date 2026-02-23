@@ -60,14 +60,11 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-center gap-3 border-t border-[hsl(210,20%,16%)] pt-6 md:flex-row md:justify-between">
+        <div className="mt-8 border-t border-[hsl(210,20%,16%)] pt-6 text-center">
           <p className="text-xs font-light text-[hsl(210,15%,45%)]">
             {isAr
-              ? `جميع الحقوق محفوظة لـ دوما © ${new Date().getFullYear()} | DOMA`
-              : `All rights reserved for DOMA © ${new Date().getFullYear()} | DOMA`}
-          </p>
-          <p className="text-xs font-light text-[hsl(210,15%,45%)]">
-            {t.footer.version}
+              ? `جميع الحقوق محفوظة لـ © ${new Date().getFullYear()} | DOMA`
+              : `All rights reserved © ${new Date().getFullYear()} | DOMA`}
           </p>
         </div>
       </div>
