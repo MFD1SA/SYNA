@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
   return (
     <footer className="border-t border-[hsl(210,20%,16%)] bg-[hsl(210,25%,8%)]">
       <div className="container py-10">
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2.5">
@@ -34,12 +34,36 @@ const Footer: React.FC = () => {
             </p>
           </div>
 
-          {/* Links */}
+          {/* Quick Links */}
           <div className="flex flex-col gap-2">
             <h4 className="mb-1 text-sm font-medium text-white">
-              {isAr ? "روابط دوما" : "DOMA Links"}
+              {isAr ? "روابط سريعة" : "Quick Links"}
             </h4>
-            {links.map((link) => (
+            {[
+              { to: "/about", label: t.nav.about },
+              { to: "/faq", label: isAr ? "الأسئلة الشائعة" : "FAQ" },
+              { to: "/subscriptions", label: isAr ? "الاشتراكات" : "Subscriptions" },
+            ].map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="w-fit text-sm font-light text-[hsl(210,15%,55%)] transition-colors hover:text-[hsl(187,55%,50%)]"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Legal */}
+          <div className="flex flex-col gap-2">
+            <h4 className="mb-1 text-sm font-medium text-white">
+              {isAr ? "قانوني" : "Legal"}
+            </h4>
+            {[
+              { to: "/terms", label: t.nav.terms },
+              { to: "/privacy", label: t.nav.privacy },
+              { to: "/usage-policy", label: t.nav.usage },
+            ].map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
@@ -61,6 +85,12 @@ const Footer: React.FC = () => {
             <p className="text-sm font-light text-[hsl(210,15%,55%)]">
               {isAr ? "الدعم الفني" : "Support"}: support@doma.sa
             </p>
+            <Link
+              to="/contact"
+              className="w-fit text-sm font-light text-[hsl(187,55%,50%)] transition-colors hover:text-[hsl(187,55%,65%)]"
+            >
+              {isAr ? "اتصل بنا" : "Contact Us"} →
+            </Link>
           </div>
         </div>
 
