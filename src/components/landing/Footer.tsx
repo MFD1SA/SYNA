@@ -66,8 +66,8 @@ const Footer: React.FC = () => {
         <div className="mt-8 border-t border-[hsl(210,20%,16%)] pt-6 text-center">
           <p className="text-xs font-light text-[hsl(210,15%,45%)]">
             {isAr
-              ? `جميع الحقوق محفوظة لـ © ${new Date().getFullYear()} | DOMA`
-              : `All rights reserved © ${new Date().getFullYear()} | DOMA`}
+              ? `جميع الحقوق محفوظة لـ شركة دوما © ${new Date().getFullYear()}`
+              : `All rights reserved for DOMA © ${new Date().getFullYear()}`}
           </p>
         </div>
       </div>
