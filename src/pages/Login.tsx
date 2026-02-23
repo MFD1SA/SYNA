@@ -40,7 +40,7 @@ const LoginPage: React.FC = () => {
         .maybeSingle();
 
       if (roleData) {
-        navigate("/admin/overview");
+        navigate("/admincp");
       } else {
         navigate("/crm/dashboard");
       }
