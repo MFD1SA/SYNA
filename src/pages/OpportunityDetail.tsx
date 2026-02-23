@@ -7,7 +7,7 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { Button } from "@/components/ui/button";
 import { MapPin, Ruler, Layers, ArrowRight, ArrowLeft, Building2, Target, TrendingUp, Shield, CheckCircle2 } from "lucide-react";
-import type { BrandVariant } from "@/components/landing/BrandToggle";
+
 import landPlaceholder1 from "@/assets/land-placeholder-1.jpg";
 import landPlaceholder2 from "@/assets/land-placeholder-2.jpg";
 import landPlaceholder3 from "@/assets/land-placeholder-3.jpg";
@@ -67,7 +67,7 @@ const OpportunityDetail: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "تفاصيل الفرصة" : "Opportunity Details");
-  const [variant] = useState<BrandVariant>("portfolio");
+  
   const [land, setLand] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -89,7 +89,7 @@ const OpportunityDetail: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen">
-        <Navbar variant={variant} onToggleVariant={() => {}} />
+        <Navbar />
         <div className="flex items-center justify-center py-40 text-muted-foreground">
           {isAr ? "جاري التحميل..." : "Loading..."}
         </div>
@@ -100,7 +100,7 @@ const OpportunityDetail: React.FC = () => {
   if (!land) {
     return (
       <div className="min-h-screen">
-        <Navbar variant={variant} onToggleVariant={() => {}} />
+        <Navbar />
         <div className="flex flex-col items-center justify-center py-40 gap-4">
           <p className="text-muted-foreground">{isAr ? "لم يتم العثور على هذه الفرصة" : "Opportunity not found"}</p>
           <Button onClick={() => navigate("/")}>{isAr ? "العودة للرئيسية" : "Back to Home"}</Button>
@@ -137,7 +137,7 @@ const OpportunityDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <Navbar variant={variant} onToggleVariant={() => {}} />
+      <Navbar />
       <main className="pt-20">
         {/* Hero Image */}
         <div className="relative h-[50vh] min-h-[400px] overflow-hidden">

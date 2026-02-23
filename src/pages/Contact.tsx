@@ -54,7 +54,7 @@ const Contact: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar variant="portfolio" onToggleVariant={() => {}} />
+      <Navbar />
 
       {/* Hero Header */}
       <div className="relative w-full overflow-hidden bg-[hsl(210,25%,8%)]">
