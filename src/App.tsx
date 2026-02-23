@@ -17,6 +17,11 @@ import SubscriptionsPage from "./pages/Subscriptions";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import CrmDashboard from "./pages/crm/CrmDashboard";
+import CrmLands from "./pages/crm/CrmLands";
+import CrmRequests from "./pages/crm/CrmRequests";
+import CrmDeals from "./pages/crm/CrmDeals";
+import CrmBrowseLands from "./pages/crm/CrmBrowseLands";
+import CrmMyRequests from "./pages/crm/CrmMyRequests";
 import CrmProperties from "./pages/crm/CrmProperties";
 import CrmUnits from "./pages/crm/CrmUnits";
 import CrmLeases from "./pages/crm/CrmLeases";
@@ -77,6 +82,11 @@ const App: React.FC = () => (
 
               {/* CRM */}
               <Route path="/crm/dashboard" element={<ProtectedRoute><CrmDashboard /></ProtectedRoute>} />
+              <Route path="/crm/lands" element={<ProtectedRoute><CrmLands /></ProtectedRoute>} />
+              <Route path="/crm/requests" element={<ProtectedRoute><CrmRequests /></ProtectedRoute>} />
+              <Route path="/crm/deals" element={<ProtectedRoute><CrmDeals /></ProtectedRoute>} />
+              <Route path="/crm/browse" element={<ProtectedRoute><CrmBrowseLands /></ProtectedRoute>} />
+              <Route path="/crm/my-requests" element={<ProtectedRoute><CrmMyRequests /></ProtectedRoute>} />
               <Route path="/crm/properties" element={<ProtectedRoute><CrmProperties /></ProtectedRoute>} />
               <Route path="/crm/units" element={<ProtectedRoute><CrmUnits /></ProtectedRoute>} />
               <Route path="/crm/leases" element={<ProtectedRoute><CrmLeases /></ProtectedRoute>} />
