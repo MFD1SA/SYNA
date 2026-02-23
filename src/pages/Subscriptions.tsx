@@ -1,17 +1,27 @@
 import React from "react";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import PageHeader from "@/components/landing/PageHeader";
 import SubscriptionsSection from "@/components/landing/SubscriptionsSection";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { Handshake } from "lucide-react";
 
 const SubscriptionsPage: React.FC = () => {
   const { lang } = useLanguage();
-  usePageTitle(lang === "ar" ? "الاشتراكات" : "Subscriptions");
+  const isAr = lang === "ar";
+  usePageTitle(isAr ? "الشراكات" : "Partnerships");
 
   return (
     <div className="min-h-screen">
       <Navbar />
+      <PageHeader
+        icon={Handshake}
+        title={isAr ? "الشراكات" : "Partnerships"}
+        description={isAr
+          ? "كيف تعمل شراكات التطوير العقاري عبر منصة دوما"
+          : "How real estate development partnerships work through the DOMA platform"}
+      />
       <main>
         <SubscriptionsSection />
       </main>
