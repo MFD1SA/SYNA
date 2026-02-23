@@ -98,7 +98,7 @@ const App: React.FC = () => (
               <Route path="/crm/settings" element={<ProtectedRoute><CrmSettings /></ProtectedRoute>} />
 
               {/* Admin */}
-              <Route path="/admin/overview" element={<AdminRoute><AdminOverview /></AdminRoute>} />
+              <Route path="/admincp" element={<AdminRoute><AdminOverview /></AdminRoute>} />
 
               {/* Redirects */}
               <Route path="/dashboard" element={<Navigate to="/crm/dashboard" replace />} />
