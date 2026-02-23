@@ -38,8 +38,8 @@ const AboutPage: React.FC = () => {
             </p>
             <p className="mt-3 text-base font-light leading-relaxed text-muted-foreground">
               {isAr
-                ? "من هنا جاءت فكرة منصتنا… لتكون حلقة وصل ذكية تجمع بين مالك الأرض والمطور العقاري ضمن بيئة منظمة وواضحة من البداية."
-                : "This is where our platform comes in — a smart bridge connecting landowners with developers in an organized and clear environment from the start."}
+                ? "من هنا جاءت فكرة دوما… لتكون وجهة الشراكات التطويرية التي تجمع بين مالك الأرض والمطور العقاري ضمن بيئة منظمة وواضحة من البداية."
+                : "This is where DOMA comes in — the destination for development partnerships connecting landowners with developers in an organized and clear environment from the start."}
             </p>
           </div>
 
@@ -57,7 +57,7 @@ const AboutPage: React.FC = () => {
           {/* Why this platform */}
           <div className="mx-auto mt-10 max-w-2xl">
             <h2 className="mb-4 text-center text-xl font-medium text-foreground">
-              {isAr ? "لماذا هذه المنصة؟" : "Why This Platform?"}
+              {isAr ? "لماذا دوما؟" : "Why DOMA?"}
             </h2>
             <div className="space-y-3">
               {whyItems.map(({ icon: Icon, text }) => (
@@ -74,8 +74,8 @@ const AboutPage: React.FC = () => {
             <h2 className="mb-2 text-lg font-medium text-foreground">{isAr ? "رؤيتنا" : "Our Vision"}</h2>
             <p className="text-sm font-light leading-relaxed text-muted-foreground">
               {isAr
-                ? "نؤمن بأن الأرض ليست مجرد مساحة خام، بل فرصة لبناء قيمة مستدامة. من خلال هذه المنصة نسعى إلى تحويل الأفكار إلى شراكات حقيقية، وتحويل الأراضي إلى مشاريع منتجة تسهم في نمو المدن وتحفيز الاقتصاد العقاري بطريقة متوازنة واحترافية."
-                : "We believe land is not just raw space — it's an opportunity to build sustainable value. Through this platform, we aim to transform ideas into real partnerships and lands into productive projects that contribute to urban growth and stimulate the real estate economy in a balanced and professional manner."}
+                ? "نؤمن بأن الأرض ليست مجرد مساحة خام، بل فرصة لبناء قيمة مستدامة. من خلال دوما نسعى إلى تحويل الأفكار إلى شراكات حقيقية، وتحويل الأراضي إلى مشاريع منتجة تسهم في نمو المدن وتحفيز الاقتصاد العقاري بطريقة متوازنة واحترافية."
+                : "We believe land is not just raw space — it's an opportunity to build sustainable value. Through DOMA, we aim to transform ideas into real partnerships and lands into productive projects that contribute to urban growth and stimulate the real estate economy in a balanced and professional manner."}
             </p>
           </div>
         </div>
