@@ -47,7 +47,7 @@ const UsagePolicyPage: React.FC = () => {
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">6. الإبلاغ</h2>
-                <p>نشجع على الإبلاغ عن أي سلوك مخالف عبر مركز الدعم. جميع البلاغات تُعامل بسرية. للتواصل: support@doma.sa.</p>
+                <p>نشجع على الإبلاغ عن أي سلوك مخالف عبر مركز الدعم. جميع البلاغات تُعامل بسرية. للتواصل يرجى استخدام نموذج "اتصل بنا".</p>
               </section>
             </>
           ) : (
@@ -74,7 +74,7 @@ const UsagePolicyPage: React.FC = () => {
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">6. Reporting</h2>
-                <p>We encourage reporting any violating behavior through the Support Center. All reports are handled confidentially. Contact: support@doma.sa.</p>
+                <p>We encourage reporting any violating behavior through the Support Center. All reports are handled confidentially. Please use our "Contact Us" form.</p>
               </section>
             </>
           )}

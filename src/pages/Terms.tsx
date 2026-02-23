@@ -59,7 +59,7 @@ const TermsPage: React.FC = () => {
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">9. القانون الواجب التطبيق</h2>
-                <p>تخضع هذه الشروط لأنظمة المملكة العربية السعودية. للتواصل: support@doma.sa.</p>
+                <p>تخضع هذه الشروط لأنظمة المملكة العربية السعودية. للتواصل يرجى استخدام نموذج "اتصل بنا".</p>
               </section>
             </>
           ) : (
@@ -98,7 +98,7 @@ const TermsPage: React.FC = () => {
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">9. Governing Law</h2>
-                <p>These terms are governed by the laws of the Kingdom of Saudi Arabia. Contact: support@doma.sa.</p>
+                <p>These terms are governed by the laws of the Kingdom of Saudi Arabia. Please use our "Contact Us" form.</p>
               </section>
             </>
           )}
