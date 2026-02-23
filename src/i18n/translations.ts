@@ -24,8 +24,8 @@ export const translations = {
     features: {
       title: "لماذا DOMA؟",
       subtitle: "أدوات صُممت لتسهيل شراكات التطوير وتحويل الأراضي البيضاء إلى مشاريع منتجة",
-      verification: "تحقق تجاري موثوق",
-      verificationDesc: "يتم التحقق من بيانات السجل التجاري للمطور ومطابقتها مع المعلومات المُدخلة لضمان التعامل مع جهات موثوقة ومرخصة",
+      verification: "وصول منظم",
+      verificationDesc: "نظام وصول متدرج يتيح للمطور الاطلاع على تفاصيل الأرض بشكل تدريجي وفق مراحل واضحة تضمن حقوق جميع الأطراف",
       privacy: "خصوصية كاملة",
       privacyDesc: "بيانات الأرض الحساسة مثل رقم الصك والموقع الدقيق وهوية المالك تبقى مخفية حتى يوافق المالك صراحةً على طلب الشراكة",
       dealCrm: "متابعة الصفقات",
@@ -270,8 +270,8 @@ export const translations = {
     features: {
       title: "Why DOMA?",
       subtitle: "Tools designed to facilitate development partnerships and transform white lands into productive projects",
-      verification: "Verified Credentials",
-      verificationDesc: "Developer commercial register data is verified and matched with submitted information to ensure dealings with licensed and trustworthy entities",
+      verification: "Structured Access",
+      verificationDesc: "A tiered access system that allows developers to view land details progressively through clear stages ensuring all parties' rights",
       privacy: "Full Privacy",
       privacyDesc: "Sensitive land data such as deed number, exact location, and owner identity remain hidden until the owner explicitly approves the partnership request",
       dealCrm: "Deal Tracking",
