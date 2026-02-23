@@ -46,11 +46,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
               <span className="doma-gradient-text">{t.hero.title}</span>
             </h1>
 
-            <p className="mb-2 text-lg font-light text-primary/80 md:text-xl">
-              {t.hero.subtitle}
-            </p>
-
-            <p className="mb-4 text-sm font-light text-muted-foreground/70">
+            <p className="mb-4 text-lg font-medium text-primary md:text-xl">
               {isAr ? "دوما معكم دوماً" : "DOMA — Always with you"}
             </p>
 
@@ -125,11 +121,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
             DOMA
           </h1>
 
-          <p className="mb-2 text-xl font-light text-[hsl(187,55%,60%)] md:text-2xl">
-            {t.hero.subtitle}
-          </p>
-
-          <p className="mb-4 text-sm font-light text-[hsl(210,15%,50%)]">
+          <p className="mb-4 text-xl font-medium text-[hsl(187,55%,60%)] md:text-2xl">
             {isAr ? "دوما معكم دوماً" : "DOMA — Always with you"}
           </p>
 
