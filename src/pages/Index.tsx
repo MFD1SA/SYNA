@@ -21,8 +21,8 @@ const Index: React.FC = () => {
       <Navbar variant={variant} onToggleVariant={toggleVariant} />
       <main>
         <HeroSection variant={variant} />
-        <OpportunitiesSection />
         <FeaturesSection />
+        <OpportunitiesSection />
         <HowItWorksSection />
         <LogosSection />
         <FAQSection />
