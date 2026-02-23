@@ -125,7 +125,7 @@ const OpportunitiesSection: React.FC = () => {
           {isAr ? "فرص التطوير المتاحة" : "Available Development Opportunities"}
         </h2>
         <p className="mt-2 text-sm font-light text-muted-foreground text-center max-w-xl mx-auto">
-          {isAr ? "أراضٍ مختارة جاهزة للشراكات التطويرية عبر مدن المملكة" : "Selected lands ready for development partnerships across Saudi cities"}
+          {isAr ? "أراضي مختارة جاهزة للشراكات التطويرية عبر مدن المملكة" : "Selected lands ready for development partnerships across Saudi cities"}
         </p>
       </div>
 
