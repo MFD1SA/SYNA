@@ -147,12 +147,12 @@ const LoginPage: React.FC = () => {
 
       {/* Right form panel */}
       <div className="flex flex-1 items-center justify-center bg-background p-4 sm:p-6 overflow-y-auto">
-        <div className="absolute top-4 end-4 flex items-center gap-2">
-          <Button variant="ghost" size="sm" asChild className="gap-1.5 text-muted-foreground">
-            <Link to="/"><Home className="h-4 w-4" />{isAr ? "الرئيسية" : "Home"}</Link>
-          </Button>
+        <div className="absolute top-4 inset-x-4 flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-1.5 text-muted-foreground">
             <Globe className="h-4 w-4" />{t.nav.language}
+          </Button>
+          <Button variant="ghost" size="sm" asChild className="gap-1.5 text-muted-foreground">
+            <Link to="/"><Home className="h-4 w-4" />{isAr ? "الرئيسية" : "Home"}</Link>
           </Button>
         </div>
 
