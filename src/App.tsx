@@ -16,7 +16,7 @@ import FAQPage from "./pages/FAQ";
 import FeatureDetailPage from "./pages/FeatureDetail";
 import SubscriptionsPage from "./pages/Subscriptions";
 import LoginPage from "./pages/Login";
-import RegisterPage from "./pages/Register";
+// Register is now merged into Login page
 import CrmDashboard from "./pages/crm/CrmDashboard";
 import CrmLands from "./pages/crm/CrmLands";
 import CrmRequests from "./pages/crm/CrmRequests";
@@ -86,9 +86,9 @@ const App: React.FC = () => (
 
               {/* Auth */}
               <Route path="/auth/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
-              <Route path="/auth/register" element={<PublicOnlyRoute><RegisterPage /></PublicOnlyRoute>} />
+              <Route path="/auth/register" element={<Navigate to="/auth/login" replace />} />
               <Route path="/login" element={<Navigate to="/auth/login" replace />} />
-              <Route path="/register" element={<Navigate to="/auth/register" replace />} />
+              <Route path="/register" element={<Navigate to="/auth/login" replace />} />
 
               {/* CRM */}
               <Route path="/crm/dashboard" element={<ProtectedRoute><CrmDashboard /></ProtectedRoute>} />

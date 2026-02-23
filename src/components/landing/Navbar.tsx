@@ -1,7 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Link } from "react-router-dom";
-import { Globe, LogIn, UserPlus, Sun, Moon } from "lucide-react";
+import { Globe, Handshake, Sun, Moon } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import type { BrandVariant } from "./BrandToggle";
@@ -44,17 +44,10 @@ const Navbar: React.FC<NavbarProps> = ({ variant = "portfolio", onToggleVariant 
             </Button>
           )}
 
-          <Button variant="outline" size="sm" asChild className="gap-1.5 border-border/60">
-            <Link to="/login">
-              <LogIn className="h-4 w-4" />
-              {t.nav.login}
-            </Link>
-          </Button>
-
-          <Button size="sm" asChild className="hidden gap-1.5 doma-gradient sm:inline-flex">
-            <Link to="/register">
-              <UserPlus className="h-4 w-4" />
-              {t.nav.register}
+          <Button size="sm" asChild className="gap-1.5 doma-gradient">
+            <Link to="/auth/login">
+              <Handshake className="h-4 w-4" />
+              {lang === "ar" ? "بوابة الشركاء" : "Partners Portal"}
             </Link>
           </Button>
         </div>
