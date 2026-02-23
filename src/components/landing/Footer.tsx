@@ -79,17 +79,11 @@ const Footer: React.FC = () => {
             <h4 className="mb-1 text-sm font-medium text-white">
               {isAr ? "تواصل معنا" : "Contact Us"}
             </h4>
-            <p className="text-sm font-light text-[hsl(210,15%,55%)]">
-              {isAr ? "البريد الإلكتروني" : "Email"}: info@doma.sa
-            </p>
-            <p className="text-sm font-light text-[hsl(210,15%,55%)]">
-              {isAr ? "الدعم الفني" : "Support"}: support@doma.sa
-            </p>
             <Link
               to="/contact"
               className="w-fit text-sm font-light text-[hsl(187,55%,50%)] transition-colors hover:text-[hsl(187,55%,65%)]"
             >
-              {isAr ? "اتصل بنا" : "Contact Us"} →
+              {isAr ? "نموذج التواصل" : "Contact Form"} →
             </Link>
           </div>
         </div>
