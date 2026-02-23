@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link, useNavigate } from "react-router-dom";
-import { Globe, LogIn, UserPlus, Eye, EyeOff, Upload, FileText, Image, Handshake } from "lucide-react";
+import { Globe, LogIn, UserPlus, Eye, EyeOff, Upload, FileText, Image, Handshake, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.png";
 
@@ -153,7 +153,10 @@ const LoginPage: React.FC = () => {
 
       {/* Right form panel */}
       <div className="flex flex-1 items-center justify-center bg-background p-4 sm:p-6 overflow-y-auto">
-        <div className="absolute top-4 end-4">
+        <div className="absolute top-4 end-4 flex items-center gap-2">
+          <Button variant="ghost" size="sm" asChild className="gap-1.5 text-muted-foreground">
+            <Link to="/"><Home className="h-4 w-4" />{isAr ? "الرئيسية" : "Home"}</Link>
+          </Button>
           <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-1.5 text-muted-foreground">
             <Globe className="h-4 w-4" />{t.nav.language}
           </Button>
