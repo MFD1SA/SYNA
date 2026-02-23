@@ -33,7 +33,7 @@ const Footer: React.FC = () => {
           {/* Links */}
           <div className="flex flex-col gap-2">
             <h4 className="mb-1 text-sm font-medium text-white">
-              {isAr ? "روابط سريعة" : "Quick Links"}
+              {isAr ? "روابط دوما" : "DOMA Links"}
             </h4>
             {links.map((link) => (
               <Link
@@ -62,7 +62,9 @@ const Footer: React.FC = () => {
 
         <div className="mt-8 flex flex-col items-center gap-3 border-t border-[hsl(210,20%,16%)] pt-6 md:flex-row md:justify-between">
           <p className="text-xs font-light text-[hsl(210,15%,45%)]">
-            © {new Date().getFullYear()} {t.footer.company}. {t.footer.rights}.
+            {isAr
+              ? `جميع الحقوق محفوظة لـ دوما © ${new Date().getFullYear()} | DOMA`
+              : `All rights reserved for DOMA © ${new Date().getFullYear()} | DOMA`}
           </p>
           <p className="text-xs font-light text-[hsl(210,15%,45%)]">
             {t.footer.version}
