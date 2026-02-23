@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import CrmLayout from "@/components/crm/CrmLayout";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,6 +30,7 @@ const goalLabels: Record<string, { ar: string; en: string }> = {
 const CrmBrowseLands: React.FC = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
+  usePageTitle(lang === "ar" ? "تصفح الأراضي" : "Browse Lands");
   const { toast } = useToast();
   const isAr = lang === "ar";
   const [lands, setLands] = useState<any[]>([]);

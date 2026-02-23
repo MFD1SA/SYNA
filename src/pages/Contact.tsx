@@ -1,5 +1,6 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { Phone, Mail, Clock, MapPin, MessageCircle, Building2, Headphones } from "lucide-react";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 const Contact: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "اتصل بنا" : "Contact Us");
 
   const whatsappUrl = "https://wa.me/966504566777";
 

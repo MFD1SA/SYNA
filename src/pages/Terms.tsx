@@ -3,11 +3,13 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { FileText } from "lucide-react";
 
 const TermsPage: React.FC = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "الشروط والأحكام" : "Terms & Conditions");
 
   return (
     <div className="min-h-screen">

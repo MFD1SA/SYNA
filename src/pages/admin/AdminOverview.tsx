@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Users, Landmark, Handshake, HardHat, ShieldCheck, TrendingUp, FileText, CheckCircle2 } from "lucide-react";
 
 const AdminOverview: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "لوحة الإدارة" : "Admin Panel");
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({
     totalUsers: 0,

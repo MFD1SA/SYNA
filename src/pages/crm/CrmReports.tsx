@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTenant } from "@/hooks/useTenant";
 import CrmLayout from "@/components/crm/CrmLayout";
 import { BarChart3, TrendingUp, AlertTriangle, Users } from "lucide-react";
@@ -9,6 +10,7 @@ import { BarChart3, TrendingUp, AlertTriangle, Users } from "lucide-react";
 const CrmReports: React.FC = () => {
   const { user } = useAuth();
   const { t, lang } = useLanguage();
+  usePageTitle(lang === "ar" ? "التقارير" : "Reports");
   const { tenantId } = useTenant();
   const [data, setData] = useState({ totalUnits: 0, occupied: 0, activeLeases: 0, expiring30: 0, expiring60: 0, expiring90: 0, overdueCount: 0, overdueAmount: 0, employeeLeases: [] as { name: string; count: number }[] });
   const [loading, setLoading] = useState(true);

@@ -3,11 +3,13 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Scale } from "lucide-react";
 
 const UsagePolicyPage: React.FC = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "سياسة الاستخدام" : "Usage Policy");
 
   return (
     <div className="min-h-screen">

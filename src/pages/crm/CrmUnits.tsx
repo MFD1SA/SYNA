@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTenant } from "@/hooks/useTenant";
 import CrmLayout from "@/components/crm/CrmLayout";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ const statusColors: Record<string, string> = {
 const CrmUnits: React.FC = () => {
   const { user } = useAuth();
   const { t, lang } = useLanguage();
+  usePageTitle(lang === "ar" ? "الوحدات" : "Units");
   const { tenantId } = useTenant();
   const { toast } = useToast();
   const [units, setUnits] = useState<any[]>([]);

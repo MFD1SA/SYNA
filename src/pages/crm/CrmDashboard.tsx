@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import CrmLayout from "@/components/crm/CrmLayout";
 import {
@@ -13,6 +14,7 @@ const CrmDashboard: React.FC = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "لوحة التحكم" : "Dashboard");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [devKpi, setDevKpi] = useState({ browsedLands: 0, sentRequests: 0, activeDeals: 0, closedDeals: 0 });

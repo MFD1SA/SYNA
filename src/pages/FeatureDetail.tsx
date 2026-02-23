@@ -4,6 +4,7 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { Eye, Layers, Handshake, Video, CheckCircle2, type LucideIcon } from "lucide-react";
 
 interface FeatureContent {
@@ -159,6 +160,7 @@ const FeatureDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "المميزات" : "Features");
 
   const feature = slug ? featureData[slug] : null;
   if (!feature) return <Navigate to="/" replace />;

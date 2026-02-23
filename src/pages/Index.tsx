@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import Navbar from "@/components/landing/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
@@ -10,6 +11,7 @@ import OpportunitiesSection from "@/components/landing/OpportunitiesSection";
 import type { BrandVariant } from "@/components/landing/BrandToggle";
 
 const Index: React.FC = () => {
+  usePageTitle();
   const [variant, setVariant] = useState<BrandVariant>("portfolio");
 
   const toggleVariant = () => {

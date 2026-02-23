@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ const AdminDevelopers: React.FC = () => {
   const { lang } = useLanguage();
   const { toast } = useToast();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "إدارة المطورين" : "Manage Developers");
   const [devs, setDevs] = useState<Developer[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import CrmLayout from "@/components/crm/CrmLayout";
 import { Send, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 
@@ -16,6 +17,7 @@ const CrmMyRequests: React.FC = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "طلباتي" : "My Requests");
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 

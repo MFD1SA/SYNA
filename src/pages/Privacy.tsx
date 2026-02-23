@@ -3,11 +3,13 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { ShieldCheck } from "lucide-react";
 
 const PrivacyPage: React.FC = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "سياسة الخصوصية" : "Privacy Policy");
 
   return (
     <div className="min-h-screen">
