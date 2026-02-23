@@ -23,6 +23,9 @@ const goalLabels: Record<string, { ar: string; en: string }> = {
   develop_rent: { ar: "تطوير وتأجير", en: "Develop & Rent" },
   develop_mixed: { ar: "مختلط", en: "Mixed Development" },
   develop_complex: { ar: "مجمع متكامل", en: "Integrated Complex" },
+  sell_develop: { ar: "بيع وتطوير", en: "Sell & Develop" },
+  partial_exit: { ar: "تخارج جزئي", en: "Partial Exit" },
+  offplan_sell: { ar: "تطوير وبيع على الخارطة", en: "Off-Plan Sell" },
 };
 
 const cityNameAr: Record<string, string> = {

@@ -26,6 +26,16 @@ const usageLabels: Record<string, { ar: string; en: string }> = {
   high_density: { ar: "كثافة عالية", en: "High Density" },
 };
 
+const goalLabels: Record<string, { ar: string; en: string }> = {
+  develop_sell: { ar: "تطوير وبيع", en: "Develop & Sell" },
+  develop_rent: { ar: "تطوير وتأجير", en: "Develop & Rent" },
+  develop_mixed: { ar: "مختلط", en: "Mixed" },
+  develop_complex: { ar: "مجمع متكامل", en: "Integrated Complex" },
+  sell_develop: { ar: "بيع وتطوير", en: "Sell & Develop" },
+  partial_exit: { ar: "تخارج جزئي", en: "Partial Exit" },
+  offplan_sell: { ar: "تطوير وبيع على الخارطة", en: "Off-Plan Sell" },
+};
+
 const cityNameAr: Record<string, string> = {
   Riyadh: "الرياض", Jeddah: "جدة", Makkah: "مكة المكرمة", Madinah: "المدينة المنورة",
   Dammam: "الدمام", Khobar: "الخبر", Dhahran: "الظهران", Taif: "الطائف", Tabuk: "تبوك",
@@ -117,7 +127,7 @@ const OpportunitiesSection: React.FC = () => {
                 {/* Badge */}
                 <div className="absolute top-3 start-3">
                   <span className="rounded-full bg-primary px-3 py-1 text-[11px] font-medium text-primary-foreground">
-                    {isAr ? "للشراكة" : "Partnership"}
+                    {isAr ? (goalLabels[land.partnership_goal]?.ar || "للشراكة") : (goalLabels[land.partnership_goal]?.en || "Partnership")}
                   </span>
                 </div>
                 

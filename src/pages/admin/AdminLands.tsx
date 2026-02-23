@@ -25,7 +25,10 @@ const goalLabels: Record<string, { ar: string; en: string }> = {
   develop_sell: { ar: "تطوير وبيع", en: "Develop & Sell" },
   develop_rent: { ar: "تطوير وتأجير", en: "Develop & Rent" },
   develop_mixed: { ar: "مختلط", en: "Mixed" },
-  develop_complex: { ar: "مجمع", en: "Complex" },
+  develop_complex: { ar: "مجمع متكامل", en: "Integrated Complex" },
+  sell_develop: { ar: "بيع وتطوير", en: "Sell & Develop" },
+  partial_exit: { ar: "تخارج جزئي", en: "Partial Exit" },
+  offplan_sell: { ar: "تطوير وبيع على الخارطة", en: "Off-Plan Sell" },
 };
 
 const defaultForm = {
