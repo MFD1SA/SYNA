@@ -139,7 +139,7 @@ const OpportunityDetail: React.FC = () => {
       <main className="pt-20">
         {/* Hero Image */}
         <div className="relative h-[50vh] min-h-[400px] overflow-hidden">
-          <img src={imgSrc} alt={cityAr} className="h-full w-full object-cover" />
+          <img src={imgSrc} alt={cityAr} className="absolute inset-0 h-full w-full object-cover object-center" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           <div className="absolute bottom-0 inset-x-0 p-8 container">
             <Button
