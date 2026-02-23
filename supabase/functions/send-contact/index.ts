@@ -24,27 +24,44 @@ serve(async (req) => {
       );
     }
 
-    // Store in database
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { error: dbError } = await supabase.from("contact_submissions").insert({
-      name,
-      email,
-      subject: subject || null,
-      message,
+      name, email, subject: subject || null, message,
     });
+    if (dbError) console.error("DB error:", dbError);
 
-    if (dbError) {
-      console.error("DB error:", dbError);
-    }
-
-    // Send email notification via Lovable AI
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (lovableApiKey) {
-      // Use a simple fetch to send notification
-      console.log(`New contact form submission from ${name} (${email}): ${subject || "No subject"}`);
+    // Send email via Resend API
+    const resendApiKey = (Deno.env.get("RESEND_API_KEY") || "").trim();
+    if (resendApiKey) {
+      const headers = new Headers();
+      headers.set("Authorization", "Bearer " + resendApiKey);
+      headers.set("Content-Type", "application/json");
+      const emailRes = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          from: "DOMA Contact <onboarding@resend.dev>",
+          to: [ADMIN_EMAIL],
+          subject: `New message from ${name}: ${subject || "No subject"}`,
+          html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;direction:rtl">
+            <h2 style="color:#1a7a7a">DOMA - New Contact Message</h2>
+            <table style="width:100%;border-collapse:collapse;margin-top:16px">
+              <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #eee">Name:</td><td style="padding:8px;border-bottom:1px solid #eee">${name}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #eee">Email:</td><td style="padding:8px;border-bottom:1px solid #eee">${email}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #eee">Subject:</td><td style="padding:8px;border-bottom:1px solid #eee">${subject || "—"}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold">Message:</td><td style="padding:8px">${message}</td></tr>
+            </table></div>`,
+        }),
+      });
+      const emailData = await emailRes.json();
+      if (!emailRes.ok) {
+        console.error("Email error:", emailData);
+      } else {
+        console.log("Email sent successfully to", ADMIN_EMAIL);
+      }
     }
 
     return new Response(
