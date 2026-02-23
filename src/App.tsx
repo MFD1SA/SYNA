@@ -13,6 +13,7 @@ import PrivacyPage from "./pages/Privacy";
 import UsagePolicyPage from "./pages/UsagePolicy";
 import AboutPage from "./pages/About";
 import FAQPage from "./pages/FAQ";
+import FeatureDetailPage from "./pages/FeatureDetail";
 import SubscriptionsPage from "./pages/Subscriptions";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
@@ -73,6 +74,7 @@ const App: React.FC = () => (
               <Route path="/usage-policy" element={<UsagePolicyPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/faq" element={<FAQPage />} />
+              <Route path="/features/:slug" element={<FeatureDetailPage />} />
 
               {/* Auth */}
               <Route path="/auth/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
