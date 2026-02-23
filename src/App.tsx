@@ -12,6 +12,7 @@ import TermsPage from "./pages/Terms";
 import PrivacyPage from "./pages/Privacy";
 import UsagePolicyPage from "./pages/UsagePolicy";
 import AboutPage from "./pages/About";
+import FAQPage from "./pages/FAQ";
 import SubscriptionsPage from "./pages/Subscriptions";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
@@ -66,6 +67,7 @@ const App: React.FC = () => (
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/usage-policy" element={<UsagePolicyPage />} />
               <Route path="/about" element={<AboutPage />} />
+              <Route path="/faq" element={<FAQPage />} />
 
               {/* Auth */}
               <Route path="/auth/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
