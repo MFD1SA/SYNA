@@ -81,9 +81,15 @@ const Footer: React.FC = () => {
             </h4>
             <Link
               to="/contact"
-              className="w-fit text-sm font-light text-[hsl(187,55%,50%)] transition-colors hover:text-[hsl(187,55%,65%)]"
+              className="w-fit text-sm font-light text-[hsl(210,15%,55%)] transition-colors hover:text-[hsl(187,55%,50%)]"
             >
-              {isAr ? "نموذج التواصل" : "Contact Form"} →
+              {isAr ? "نموذج التواصل" : "Contact Form"}
+            </Link>
+            <Link
+              to="/subscriptions"
+              className="w-fit text-sm font-light text-[hsl(210,15%,55%)] transition-colors hover:text-[hsl(187,55%,50%)]"
+            >
+              {isAr ? "الشراكات" : "Partnerships"}
             </Link>
           </div>
         </div>
