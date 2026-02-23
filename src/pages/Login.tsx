@@ -175,32 +175,10 @@ const LoginPage: React.FC = () => {
               </p>
             </div>
             <p className="text-xs text-muted-foreground">
-              {isAr ? "سجّل دخولك أو أنشئ حساباً جديداً لبدء رحلة الشراكة" : "Sign in or create an account to start your partnership journey"}
+              {mode === "login"
+                ? (isAr ? "سجّل دخولك لبدء رحلة الشراكة" : "Sign in to start your partnership journey")
+                : (isAr ? "أنشئ حساباً جديداً لبدء رحلة الشراكة" : "Create an account to start your partnership journey")}
             </p>
-          </div>
-
-          {/* Mode Tabs */}
-          <div className="mb-6 flex rounded-xl border border-border/60 bg-muted/30 p-1">
-            <button
-              type="button"
-              onClick={() => setMode("login")}
-              className={`flex-1 rounded-lg py-2.5 text-sm font-medium transition-all ${
-                mode === "login" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <LogIn className="inline h-4 w-4 me-1.5" />
-              {isAr ? "تسجيل الدخول" : "Sign In"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode("register")}
-              className={`flex-1 rounded-lg py-2.5 text-sm font-medium transition-all ${
-                mode === "register" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <UserPlus className="inline h-4 w-4 me-1.5" />
-              {isAr ? "حساب جديد" : "New Account"}
-            </button>
           </div>
 
           {mode === "login" ? (
