@@ -14,10 +14,10 @@ const HowItWorksSection: React.FC = () => {
   ];
 
   return (
-    <section id="how-it-works" className="relative py-10 md:py-14 bg-muted/30">
+    <section id="how-it-works" className="relative py-10 md:py-12 bg-muted/30">
       <div className="container relative">
-        <div className="mx-auto mb-12 max-w-xl text-center">
-          <h2 className="mb-2 text-3xl font-medium text-foreground md:text-4xl">
+        <div className="mx-auto mb-8 max-w-xl text-center">
+          <h2 className="mb-1.5 text-3xl font-medium text-foreground md:text-4xl">
             {t.howItWorks.title}
           </h2>
           <p className="text-base font-light text-muted-foreground">
@@ -26,10 +26,10 @@ const HowItWorksSection: React.FC = () => {
         </div>
 
         <div className="mx-auto max-w-4xl">
-          <div className="grid gap-8 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2">
             {steps.map(({ num, icon: Icon, titleKey, descKey }) => (
-              <div key={num} className="group relative flex gap-4 doma-card p-6">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-lg font-medium text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+              <div key={num} className="group relative flex gap-4 doma-card p-5">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-medium text-primary border border-primary/20 transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                   {num}
                 </div>
                 <div>

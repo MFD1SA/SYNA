@@ -3,80 +3,76 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import CrmLayout from "@/components/crm/CrmLayout";
-import { Users, Building2, FileText, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Users, Landmark, Handshake, HardHat, ShieldCheck, TrendingUp, FileText, CheckCircle2 } from "lucide-react";
 
 const AdminOverview: React.FC = () => {
   const { user } = useAuth();
-  const { t, lang } = useLanguage();
-  const [data, setData] = useState({
-    totalProfiles: 0,
-    byType: {} as Record<string, number>,
-    totalTenants: 0,
-    totalLeases: 0,
-    leasesNoAttachment: 0,
-    unitsNoLease: 0,
-    profiles: [] as any[],
-  });
+  const { lang } = useLanguage();
+  const isAr = lang === "ar";
   const [loading, setLoading] = useState(true);
+  const [data, setData] = useState({
+    totalUsers: 0,
+    totalDevelopers: 0,
+    pendingVerification: 0,
+    totalLands: 0,
+    totalDeals: 0,
+    activeDeals: 0,
+    closedDeals: 0,
+    pendingRequests: 0,
+    recentUsers: [] as any[],
+    recentDeals: [] as any[],
+  });
 
   useEffect(() => {
     const fetch = async () => {
-      const [profilesRes, tenantsRes, leasesRes, unitsRes, attachmentsRes] = await Promise.all([
-        supabase.from("profiles").select("*"),
-        supabase.from("tenants").select("id", { count: "exact", head: true }),
-        supabase.from("leases").select("id"),
-        supabase.from("units").select("id"),
-        supabase.from("attachments").select("entity_id").eq("entity_type", "lease"),
+      const [profilesRes, devsRes, pendingDevsRes, landsRes, dealsRes, activeDealsRes, closedDealsRes, pendingReqRes] = await Promise.all([
+        supabase.from("profiles").select("id, full_name, email, subscription_type, created_at").order("created_at", { ascending: false }).limit(10),
+        supabase.from("developers").select("id", { count: "exact", head: true }),
+        supabase.from("developers").select("id", { count: "exact", head: true }).eq("verification_status", "pending_review"),
+        supabase.from("lands").select("id", { count: "exact", head: true }),
+        supabase.from("deals").select("id", { count: "exact", head: true }),
+        supabase.from("deals").select("id", { count: "exact", head: true }).neq("current_stage", "deal_closed").neq("current_stage", "deal_cancelled"),
+        supabase.from("deals").select("id", { count: "exact", head: true }).eq("current_stage", "deal_closed"),
+        supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
       ]);
 
-      const profiles = profilesRes.data || [];
-      const byType: Record<string, number> = {};
-      profiles.forEach((p: any) => {
-        byType[p.subscription_type] = (byType[p.subscription_type] || 0) + 1;
-      });
-
-      const leaseIds = (leasesRes.data || []).map((l: any) => l.id);
-      const attachedLeaseIds = new Set((attachmentsRes.data || []).map((a: any) => a.entity_id));
-      const leasesNoAttachment = leaseIds.filter((id: string) => !attachedLeaseIds.has(id)).length;
-
       setData({
-        totalProfiles: profiles.length,
-        byType,
-        totalTenants: tenantsRes.count ?? 0,
-        totalLeases: leaseIds.length,
-        leasesNoAttachment,
-        unitsNoLease: 0,
-        profiles: profiles.slice(0, 20),
+        totalUsers: profilesRes.data?.length ?? 0,
+        totalDevelopers: devsRes.count ?? 0,
+        pendingVerification: pendingDevsRes.count ?? 0,
+        totalLands: landsRes.count ?? 0,
+        totalDeals: dealsRes.count ?? 0,
+        activeDeals: activeDealsRes.count ?? 0,
+        closedDeals: closedDealsRes.count ?? 0,
+        pendingRequests: pendingReqRes.count ?? 0,
+        recentUsers: profilesRes.data || [],
+        recentDeals: [],
       });
       setLoading(false);
     };
     fetch();
   }, []);
 
-  const subTypeLabels: Record<string, { ar: string; en: string }> = {
-    individual: { ar: "أفراد", en: "Individual" },
-    brokerage: { ar: "وساطة", en: "Brokerage" },
-    brand: { ar: "براند", en: "Brand" },
-    property_management: { ar: "إدارة أملاك", en: "Property Mgmt" },
-    bank: { ar: "بنوك", en: "Banks" },
-  };
-
   const kpis = [
-    { label: t.admin.totalSubscribers, value: data.totalProfiles, icon: Users },
-    { label: lang === "ar" ? "المنشآت" : "Organizations", value: data.totalTenants, icon: Building2 },
-    { label: lang === "ar" ? "إجمالي العقود" : "Total Leases", value: data.totalLeases, icon: FileText },
-    { label: t.admin.leasesWithoutAttachments, value: data.leasesNoAttachment, icon: AlertTriangle },
+    { label: isAr ? "إجمالي المستخدمين" : "Total Users", value: data.totalUsers, icon: Users },
+    { label: isAr ? "المطورون المسجلون" : "Registered Developers", value: data.totalDevelopers, icon: HardHat },
+    { label: isAr ? "بانتظار التوثيق" : "Pending Verification", value: data.pendingVerification, icon: ShieldCheck },
+    { label: isAr ? "الأراضي المدرجة" : "Listed Lands", value: data.totalLands, icon: Landmark },
+    { label: isAr ? "طلبات معلقة" : "Pending Requests", value: data.pendingRequests, icon: FileText },
+    { label: isAr ? "صفقات نشطة" : "Active Deals", value: data.activeDeals, icon: Handshake },
+    { label: isAr ? "صفقات مُنجزة" : "Closed Deals", value: data.closedDeals, icon: CheckCircle2 },
+    { label: isAr ? "إجمالي الصفقات" : "Total Deals", value: data.totalDeals, icon: TrendingUp },
   ];
 
   return (
     <CrmLayout>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-5 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-medium text-foreground">
-            {lang === "ar" ? "لوحة تحكم الأدمن" : "Admin Dashboard"}
+            {isAr ? "لوحة تحكم الأدمن" : "Admin Dashboard"}
           </h1>
-          <p className="mt-1 text-sm font-light text-muted-foreground">
-            {lang === "ar" ? "مراقبة المشتركين وجودة البيانات" : "Monitor subscribers and data quality"}
+          <p className="mt-0.5 text-sm font-light text-muted-foreground">
+            {isAr ? "مراقبة سير العمل وقياس الأداء" : "Monitor workflow and measure performance"}
           </p>
         </div>
         <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5">
@@ -86,18 +82,17 @@ const AdminOverview: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => <div key={i} className="h-24 animate-pulse rounded-xl bg-muted" />)}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => <div key={i} className="h-20 animate-pulse rounded-xl bg-muted" />)}
         </div>
       ) : (
         <>
-          {/* KPI Cards */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {kpis.map((kpi) => (
-              <div key={kpi.label} className="doma-card p-5">
-                <div className="mb-3 flex items-center justify-between">
+              <div key={kpi.label} className="doma-card p-4">
+                <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-light text-muted-foreground">{kpi.label}</span>
-                  <kpi.icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                  <kpi.icon className="h-4 w-4 text-primary" strokeWidth={1.5} />
                 </div>
                 <p className="text-2xl font-medium text-foreground" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
                   {kpi.value.toLocaleString("en-US")}
@@ -106,42 +101,26 @@ const AdminOverview: React.FC = () => {
             ))}
           </div>
 
-          <div className="mt-6 grid gap-6 lg:grid-cols-2">
-            {/* Subscription Breakdown */}
-            <div className="doma-card p-6">
-              <h3 className="mb-4 text-sm font-medium text-foreground">
-                {lang === "ar" ? "توزيع المشتركين" : "Subscriber Breakdown"}
-              </h3>
-              <div className="space-y-3">
-                {Object.entries(data.byType).map(([type, count]) => (
-                  <div key={type} className="flex items-center justify-between border-b border-border/30 pb-2 last:border-0">
-                    <span className="text-sm font-light text-muted-foreground">
-                      {lang === "ar" ? subTypeLabels[type]?.ar : subTypeLabels[type]?.en}
-                    </span>
-                    <span className="text-sm font-medium text-foreground" dir="ltr">{count.toLocaleString("en-US")}</span>
+          {/* Recent Users */}
+          <div className="mt-5 doma-card p-5">
+            <h3 className="mb-3 text-sm font-medium text-foreground">
+              {isAr ? "آخر المسجلين" : "Recent Registrations"}
+            </h3>
+            <div className="space-y-2">
+              {data.recentUsers.map((p: any) => (
+                <div key={p.id} className="flex items-center justify-between rounded-lg border border-border/40 p-3">
+                  <div>
+                    <p className="text-sm font-light text-foreground">{p.full_name || p.email}</p>
+                    <p className="text-xs font-light text-muted-foreground">{p.email}</p>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Recent Subscribers */}
-            <div className="doma-card p-6">
-              <h3 className="mb-4 text-sm font-medium text-foreground">
-                {lang === "ar" ? "آخر المشتركين" : "Recent Subscribers"}
-              </h3>
-              <div className="space-y-2">
-                {data.profiles.map((p: any) => (
-                  <div key={p.id} className="flex items-center justify-between rounded-lg border border-border/40 p-3">
-                    <div>
-                      <p className="text-sm font-light text-foreground">{p.full_name || p.email}</p>
-                      <p className="text-xs font-light text-muted-foreground">{p.email}</p>
-                    </div>
-                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
-                      {lang === "ar" ? subTypeLabels[p.subscription_type]?.ar : subTypeLabels[p.subscription_type]?.en}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                  <span className="rounded-full border border-primary/20 px-2 py-0.5 text-xs text-primary">
+                    {p.subscription_type === "property_management" ? (isAr ? "مالك أرض" : "Landowner") : (isAr ? "مطور" : "Developer")}
+                  </span>
+                </div>
+              ))}
+              {data.recentUsers.length === 0 && (
+                <p className="text-sm font-light text-muted-foreground">{isAr ? "لا توجد بيانات" : "No data"}</p>
+              )}
             </div>
           </div>
         </>
