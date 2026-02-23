@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Search, MapPin, Ruler, Send } from "lucide-react";
+import LocationMap from "@/components/crm/LocationMap";
 
 const usageLabels: Record<string, { ar: string; en: string }> = {
   residential: { ar: "سكني", en: "Residential" },
@@ -35,6 +36,7 @@ const CrmBrowseLands: React.FC = () => {
   const [developerId, setDeveloperId] = useState<string | null>(null);
   const [isVerified, setIsVerified] = useState(false);
   const [requestDialog, setRequestDialog] = useState<string | null>(null);
+  const [mapDialog, setMapDialog] = useState<any>(null);
   const [requestForm, setRequestForm] = useState({ proposal_summary: "", proposed_project_type: "" });
 
   useEffect(() => {
@@ -120,6 +122,20 @@ const CrmBrowseLands: React.FC = () => {
               {l.vision_summary && (
                 <p className="mb-3 text-xs font-light text-muted-foreground line-clamp-2">{l.vision_summary}</p>
               )}
+
+              {/* Map button */}
+              {l.exact_location_lat && l.exact_location_lng && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mb-2 gap-1.5 text-xs"
+                  onClick={() => setMapDialog(l)}
+                >
+                  <MapPin className="h-3.5 w-3.5 text-primary" />
+                  {isAr ? "عرض الموقع على الخريطة" : "View on Map"}
+                </Button>
+              )}
+
               <Button
                 size="sm"
                 className="w-full gap-1.5 doma-gradient"
@@ -132,6 +148,27 @@ const CrmBrowseLands: React.FC = () => {
           ))}
         </div>
       )}
+
+      {/* Map Dialog */}
+      <Dialog open={!!mapDialog} onOpenChange={(o) => { if (!o) setMapDialog(null); }}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5 text-primary" />
+              {mapDialog?.city} {mapDialog?.district ? `- ${mapDialog.district}` : ""}
+            </DialogTitle>
+          </DialogHeader>
+          {mapDialog && (
+            <LocationMap
+              lat={mapDialog.exact_location_lat}
+              lng={mapDialog.exact_location_lng}
+              onChange={() => {}}
+              isAr={isAr}
+              readOnly
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Request Dialog */}
       <Dialog open={!!requestDialog} onOpenChange={(o) => { if (!o) { setRequestDialog(null); setRequestForm({ proposal_summary: "", proposed_project_type: "" }); } }}>
