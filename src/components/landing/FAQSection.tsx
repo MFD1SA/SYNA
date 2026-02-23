@@ -41,13 +41,9 @@ const FAQSection: React.FC = () => {
   const isAr = lang === "ar";
 
   return (
-    <section className="py-6 md:py-8">
+    <section className="py-4 md:py-6">
       <div className="container">
         <div className="mx-auto mb-6 max-w-xl text-center">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5">
-            <HelpCircle className="h-3.5 w-3.5 text-primary" strokeWidth={1.5} />
-            <span className="text-xs font-light text-primary">{isAr ? "أسئلة شائعة" : "FAQ"}</span>
-          </div>
           <h2 className="mb-1.5 text-3xl font-medium text-foreground md:text-4xl">
             {isAr ? "الأسئلة الشائعة" : "Frequently Asked Questions"}
           </h2>
