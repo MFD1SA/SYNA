@@ -17,6 +17,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [userRole, setUserRole] = useState<"admin" | "developer" | null>(null);
   const isAr = lang === "ar";
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -40,8 +41,12 @@ const LoginPage: React.FC = () => {
         .maybeSingle();
 
       if (roleData) {
+        setUserRole("admin");
+        toast({ title: isAr ? "أهلاً مدير النظام 👋" : "Welcome, System Admin 👋" });
         navigate("/admincp");
       } else {
+        setUserRole("developer");
+        toast({ title: isAr ? "أهلاً عزيزي المطور 👋" : "Welcome, Dear Developer 👋" });
         navigate("/crm/dashboard");
       }
     }
@@ -87,7 +92,7 @@ const LoginPage: React.FC = () => {
             {isAr ? "تسجيل الدخول" : "Sign In"}
           </h1>
           <p className="mb-8 text-sm font-light text-muted-foreground">
-            {isAr ? "أهلاً وسهلاً، دوما ترحب بك" : "Welcome to DOMA"}
+            {isAr ? "سجّل دخولك للوصول إلى لوحة التحكم" : "Sign in to access your dashboard"}
           </p>
 
           <form onSubmit={handleLogin} className="space-y-5">

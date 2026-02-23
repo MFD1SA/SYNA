@@ -197,12 +197,17 @@ const RegisterPage: React.FC = () => {
             <span className="mt-2 text-xl font-bold text-foreground tracking-wide">DOMA</span>
           </div>
 
+          <div className="mb-5 rounded-xl bg-primary/5 border border-primary/20 p-4 text-center">
+            <p className="text-base font-medium text-primary">
+              {isAr ? "نسعد بك عزيزي المطور 🏗️" : "We're glad to have you, Dear Developer 🏗️"}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {isAr ? "أكمل بياناتك لبدء رحلة الشراكة التطويرية" : "Complete your details to start your development partnership journey"}
+            </p>
+          </div>
           <h1 className="mb-1 text-xl font-semibold text-foreground">
             {isAr ? "تسجيل مطور عقاري" : "Developer Registration"} — DOMA
           </h1>
-          <p className="mb-5 text-sm font-light text-muted-foreground">
-            {isAr ? "أهلاً وسهلاً، دوما ترحب بك" : "Welcome to DOMA"}
-          </p>
 
           <form onSubmit={handleRegister} className="space-y-5">
             {/* Contact Info Section */}
