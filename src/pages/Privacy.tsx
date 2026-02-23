@@ -41,7 +41,7 @@ const PrivacyPage: React.FC = () => {
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">7. التحديثات</h2>
-                <p>قد نحدث سياسة الخصوصية من وقت لآخر. سنخطرك بأي تغييرات جوهرية. للتواصل: مركز الدعم أو الرقم 0504566777.</p>
+                <p>قد نحدث سياسة الخصوصية من وقت لآخر. سنخطرك بأي تغييرات جوهرية. للتواصل: support@doma.sa.</p>
               </section>
             </>
           ) : (
@@ -72,7 +72,7 @@ const PrivacyPage: React.FC = () => {
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">7. Updates</h2>
-                <p>We may update this privacy policy from time to time. We will notify you of any material changes. Contact: Support Center or call 0504566777.</p>
+                <p>We may update this privacy policy from time to time. We will notify you of any material changes. Contact: support@doma.sa.</p>
               </section>
             </>
           )}

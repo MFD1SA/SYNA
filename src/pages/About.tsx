@@ -10,7 +10,7 @@ const AboutPage: React.FC = () => {
 
   const values = [
     { icon: Handshake, label: isAr ? "شراكات حقيقية" : "Real Partnerships", desc: isAr ? "تحويل الأراضي البيضاء إلى مشاريع منتجة عبر شراكات تطوير واضحة" : "Transforming white lands into productive projects through clear partnerships" },
-    { icon: Target, label: isAr ? "شفافية كاملة" : "Full Transparency", desc: isAr ? "عمولة واضحة 2.50% ومراحل مُتابعة دقيقة من الطلب حتى الإغلاق" : "Clear 2.50% commission and precise tracking stages from request to closure" },
+    { icon: Target, label: isAr ? "شفافية كاملة" : "Full Transparency", desc: isAr ? "مراحل مُتابعة دقيقة ومنظمة من الطلب حتى الإغلاق" : "Precise and organized tracking stages from request to closure" },
     { icon: Users, label: isAr ? "ربط ذكي" : "Smart Matching", desc: isAr ? "جمع ملاك الأراضي بالمطورين العقاريين المؤهلين والموثقين" : "Connecting landowners with qualified and verified real estate developers" },
   ];
 

@@ -17,7 +17,7 @@ export const translations = {
     hero: {
       title: "DOMA",
       subtitle: "نحو شراكات تطوير أكثر وضوحاً وإنتاجية",
-      description: "في ظل رسوم الأراضي البيضاء، يبحث ملاك الأراضي عن حلول لتحويل أصولهم إلى مشاريع منتجة. DOMA حلقة وصل ذكية تجمع المالك بالمطور العقاري ضمن بيئة منظمة — بتحقق تجاري، خصوصية كاملة، ومتابعة مراحل الصفقة حتى الإغلاق.",
+      description: "تشهد المدن تحولاً عمرانياً متسارعاً يفتح آفاقاً جديدة لتطوير الأراضي وصناعة مشاريع مستدامة.\nDOMA منظومة رقمية تربط ملاك الأراضي بالمطورين ضمن بيئة منظمة تعزز وضوح الفرص وتحافظ على الخصوصية، وتمكّن من بناء شراكات تطويرية مدروسة حتى اكتمالها بثقة.",
       cta: "ابدأ الآن",
       learnMore: "كيف تعمل المنصة؟",
     },
@@ -263,7 +263,7 @@ export const translations = {
     hero: {
       title: "DOMA",
       subtitle: "Towards Clearer & More Productive Development Partnerships",
-      description: "With white land fees driving change, landowners seek solutions to turn their assets into productive projects. DOMA is a smart bridge connecting landowners with real estate developers — with commercial verification, full privacy, and deal tracking to closure.",
+      description: "Cities are witnessing rapid urban transformation, opening new horizons for land development and sustainable projects.\nDOMA is a digital ecosystem connecting landowners with developers in an organized environment that enhances opportunity clarity, preserves privacy, and enables building well-planned development partnerships to confident completion.",
       cta: "Get Started",
       learnMore: "How it Works",
     },
