@@ -1,7 +1,9 @@
 import React from "react";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { Scale } from "lucide-react";
 
 const UsagePolicyPage: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -10,9 +12,15 @@ const UsagePolicyPage: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
+      <PageHeader
+        icon={Scale}
+        title={isAr ? "سياسة الاستخدام" : "Usage Policy"}
+        description={isAr
+          ? "القواعد والضوابط التي تحكم استخدام منصة دوما لضمان بيئة آمنة واحترافية"
+          : "The rules and guidelines governing the use of the DOMA platform to ensure a safe and professional environment"}
+      />
       <main className="container py-10">
-        <h1 className="mb-6 text-3xl font-medium text-foreground">{t.usagePolicy.title}</h1>
-        <div className="max-w-3xl space-y-6 font-light leading-relaxed text-muted-foreground">
+        <div className="max-w-3xl mx-auto space-y-6 font-light leading-relaxed text-muted-foreground">
           {isAr ? (
             <>
               <section>

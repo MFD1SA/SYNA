@@ -1,6 +1,7 @@
 import React from "react";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
   Accordion,
@@ -104,21 +105,15 @@ const FAQPage: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
+      <PageHeader
+        icon={HelpCircle}
+        title={isAr ? "الأسئلة الشائعة" : "Frequently Asked Questions"}
+        description={isAr
+          ? "إجابات واضحة على أبرز الاستفسارات حول منصة دوما وآلية عملها"
+          : "Clear answers to the most common questions about the DOMA platform and how it works"}
+      />
       <main className="py-12 md:py-16">
         <div className="container">
-          <div className="mx-auto max-w-2xl text-center mb-8">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5">
-              <HelpCircle className="h-3.5 w-3.5 text-primary" strokeWidth={1.5} />
-              <span className="text-xs font-light text-primary">{isAr ? "الأسئلة الشائعة" : "FAQ"}</span>
-            </div>
-            <h1 className="mb-2 text-3xl font-medium text-foreground">
-              {isAr ? "الأسئلة الشائعة" : "Frequently Asked Questions"}
-            </h1>
-            <p className="text-base font-light text-muted-foreground">
-              {isAr ? "إجابات واضحة على أبرز الاستفسارات حول دوما" : "Clear answers to the most common questions about DOMA"}
-            </p>
-          </div>
-
           <div className="mx-auto max-w-2xl">
             <Accordion type="single" collapsible className="space-y-2">
               {faqData.map((item, idx) => (

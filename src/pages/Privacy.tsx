@@ -1,7 +1,9 @@
 import React from "react";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { ShieldCheck } from "lucide-react";
 
 const PrivacyPage: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -10,14 +12,20 @@ const PrivacyPage: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
+      <PageHeader
+        icon={ShieldCheck}
+        title={isAr ? "سياسة الخصوصية" : "Privacy Policy"}
+        description={isAr
+          ? "كيف نحمي بياناتك ونحافظ على خصوصيتك أثناء استخدام منصة دوما"
+          : "How we protect your data and maintain your privacy while using the DOMA platform"}
+      />
       <main className="container py-10">
-        <h1 className="mb-6 text-3xl font-medium text-foreground">{t.privacy.title}</h1>
-        <div className="max-w-3xl space-y-6 font-light leading-relaxed text-muted-foreground">
+        <div className="max-w-3xl mx-auto space-y-6 font-light leading-relaxed text-muted-foreground">
           {isAr ? (
             <>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">1. جمع البيانات</h2>
-                <p>نجمع البيانات التي تقدمها عند التسجيل: الاسم، البريد الإلكتروني، رقم الجوال. للمطورين نجمع أيضاً بيانات السجل التجاري. كما نجمع بيانات الاستخدام تلقائياً مثل عنوان IP وأوقات الوصول.</p>
+                <p>نجمع البيانات التي تقدمها عند التسجيل: الاسم، البريد الإلكتروني. للمطورين نجمع أيضاً بيانات السجل التجاري. كما نجمع بيانات الاستخدام تلقائياً مثل عنوان IP وأوقات الوصول.</p>
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">2. استخدام البيانات</h2>
@@ -48,7 +56,7 @@ const PrivacyPage: React.FC = () => {
             <>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">1. Data Collection</h2>
-                <p>We collect data you provide during registration: name, email, phone number. For developers, we also collect commercial register data. We automatically collect usage data such as IP address and access times.</p>
+                <p>We collect data you provide during registration: name, email. For developers, we also collect commercial register data. We automatically collect usage data such as IP address and access times.</p>
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">2. Data Usage</h2>
