@@ -8,7 +8,14 @@ interface LanguageContextType {
   toggleLang: () => void;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const defaultValue: LanguageContextType = {
+  lang: "ar",
+  dir: "rtl",
+  t: translations["ar"],
+  toggleLang: () => {},
+};
+
+const LanguageContext = createContext<LanguageContextType>(defaultValue);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [lang, setLang] = useState<Language>(() => {
@@ -37,7 +44,5 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 };
 
 export const useLanguage = () => {
-  const ctx = useContext(LanguageContext);
-  if (!ctx) throw new Error("useLanguage must be used within LanguageProvider");
-  return ctx;
+  return useContext(LanguageContext);
 };
