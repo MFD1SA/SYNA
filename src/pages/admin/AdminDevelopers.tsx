@@ -6,8 +6,10 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type Developer = Database["public"]["Tables"]["developers"]["Row"];
@@ -20,6 +22,16 @@ const AdminDevelopers: React.FC = () => {
   const [devs, setDevs] = useState<Developer[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [editDev, setEditDev] = useState<Developer | null>(null);
+  const [editForm, setEditForm] = useState({
+    company_name: "",
+    marketing_brand_name: "",
+    cr_number: "",
+    email: "",
+    phone: "",
+    verification_notes: "",
+  });
+  const [saving, setSaving] = useState(false);
 
   const fetchDevs = async () => {
     const { data } = await supabase.from("developers").select("*").order("created_at", { ascending: false });
@@ -28,6 +40,39 @@ const AdminDevelopers: React.FC = () => {
   };
 
   useEffect(() => { fetchDevs(); }, []);
+
+  const openEdit = (dev: Developer) => {
+    setEditDev(dev);
+    setEditForm({
+      company_name: dev.company_name || "",
+      marketing_brand_name: dev.marketing_brand_name || "",
+      cr_number: dev.cr_number || "",
+      email: dev.email || "",
+      phone: dev.phone || "",
+      verification_notes: dev.verification_notes || "",
+    });
+  };
+
+  const saveEdit = async () => {
+    if (!editDev) return;
+    setSaving(true);
+    const { error } = await supabase.from("developers").update({
+      company_name: editForm.company_name,
+      marketing_brand_name: editForm.marketing_brand_name || null,
+      cr_number: editForm.cr_number,
+      email: editForm.email || null,
+      phone: editForm.phone || null,
+      verification_notes: editForm.verification_notes || null,
+    }).eq("id", editDev.id);
+    setSaving(false);
+    if (error) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
+    } else {
+      toast({ title: isAr ? "تم تحديث البيانات" : "Updated successfully" });
+      setEditDev(null);
+      fetchDevs();
+    }
+  };
 
   const updateStatus = async (id: string, status: "verified" | "rejected") => {
     const { error } = await supabase.from("developers").update({
@@ -59,6 +104,15 @@ const AdminDevelopers: React.FC = () => {
     verified: { label: isAr ? "موثق" : "Verified", icon: CheckCircle2, variant: "default" as const, color: "text-green-600" },
     rejected: { label: isAr ? "مرفوض" : "Rejected", icon: XCircle, variant: "destructive" as const, color: "text-red-600" },
   };
+
+  const fields: { key: keyof typeof editForm; label: string; required?: boolean }[] = [
+    { key: "company_name", label: isAr ? "اسم الشركة" : "Company Name", required: true },
+    { key: "marketing_brand_name", label: isAr ? "الاسم التجاري" : "Brand Name" },
+    { key: "cr_number", label: isAr ? "رقم السجل التجاري" : "CR Number", required: true },
+    { key: "email", label: isAr ? "البريد الإلكتروني" : "Email" },
+    { key: "phone", label: isAr ? "الهاتف" : "Phone" },
+    { key: "verification_notes", label: isAr ? "ملاحظات التوثيق" : "Verification Notes" },
+  ];
 
   return (
     <AdminLayout>
@@ -123,6 +177,9 @@ const AdminDevelopers: React.FC = () => {
                       </Button>
                     </>
                   )}
+                  <Button size="sm" variant="outline" onClick={() => openEdit(dev)}>
+                    <Pencil className="h-3.5 w-3.5 me-1" />{isAr ? "تعديل" : "Edit"}
+                  </Button>
                   <Button variant="ghost" size="icon" onClick={() => deleteDev(dev.id)} className="text-destructive hover:bg-destructive/10">
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -133,6 +190,32 @@ const AdminDevelopers: React.FC = () => {
           {filtered.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">{isAr ? "لا يوجد مطورون" : "No developers found"}</p>}
         </div>
       )}
+
+      {/* Edit Dialog */}
+      <Dialog open={!!editDev} onOpenChange={(open) => !open && setEditDev(null)}>
+        <DialogContent className="max-w-md" dir={isAr ? "rtl" : "ltr"}>
+          <DialogHeader>
+            <DialogTitle>{isAr ? "تعديل بيانات المطور" : "Edit Developer"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            {fields.map(f => (
+              <div key={f.key} className="space-y-1.5">
+                <Label className="text-sm">{f.label} {f.required && <span className="text-destructive">*</span>}</Label>
+                <Input
+                  value={editForm[f.key]}
+                  onChange={e => setEditForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+                />
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDev(null)}>{isAr ? "إلغاء" : "Cancel"}</Button>
+            <Button onClick={saveEdit} disabled={saving || !editForm.company_name || !editForm.cr_number}>
+              {saving ? (isAr ? "جارٍ الحفظ..." : "Saving...") : (isAr ? "حفظ" : "Save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };
