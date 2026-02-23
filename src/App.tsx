@@ -35,6 +35,7 @@ import AdminLands from "./pages/admin/AdminLands";
 import AdminDevelopers from "./pages/admin/AdminDevelopers";
 import AdminDeals from "./pages/admin/AdminDeals";
 import AdminAI from "./pages/admin/AdminAI";
+import AdminLogin from "./pages/admin/AdminLogin";
 import OpportunityDetail from "./pages/OpportunityDetail";
 import Contact from "./pages/Contact";
 
@@ -51,8 +52,7 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
   const { isAdmin, loading: roleLoading } = useAdminRole();
   if (loading || roleLoading) return <div className="flex min-h-screen items-center justify-center text-muted-foreground">...</div>;
-  if (!user) return <Navigate to="/auth/login" replace />;
-  if (!isAdmin) return <Navigate to="/crm/dashboard" replace />;
+  if (!user || !isAdmin) return <Navigate to="/admincp" replace />;
   return <>{children}</>;
 };
 
@@ -106,7 +106,8 @@ const App: React.FC = () => (
               <Route path="/crm/settings" element={<ProtectedRoute><CrmSettings /></ProtectedRoute>} />
 
               {/* Admin */}
-              <Route path="/admincp" element={<AdminRoute><AdminOverview /></AdminRoute>} />
+              <Route path="/admincp" element={<AdminLogin />} />
+              <Route path="/admincp/overview" element={<AdminRoute><AdminOverview /></AdminRoute>} />
               <Route path="/admincp/lands" element={<AdminRoute><AdminLands /></AdminRoute>} />
               <Route path="/admincp/developers" element={<AdminRoute><AdminDevelopers /></AdminRoute>} />
               <Route path="/admincp/deals" element={<AdminRoute><AdminDeals /></AdminRoute>} />
