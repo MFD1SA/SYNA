@@ -23,7 +23,30 @@ const usageLabels: Record<string, { ar: string; en: string }> = {
   residential: { ar: "سكني", en: "Residential" },
   commercial: { ar: "تجاري", en: "Commercial" },
   residential_commercial: { ar: "سكني تجاري", en: "Mixed Use" },
-  high_density: { ar: "كثافة عالية", en: "High Density" },
+  high_density: { ar: "أبراج (سكني / تجاري / مكتبي)", en: "Towers (Residential / Commercial / Office)" },
+};
+
+const districtNameAr: Record<string, string> = {
+  "Al Malqa": "الملقا",
+  "Al Shati": "الشاطئ",
+  "Al Faisaliyah": "الفيصلية",
+  "Al Awali": "العوالي",
+  "Al Uyun": "العيون",
+  "Al Hada": "الهدا",
+  "Al Corniche": "الكورنيش",
+  "Al Muruj": "المروج",
+  "Al Sadd": "السد",
+  "Al Rawdah": "الروضة",
+  "Al Olaya": "العليا",
+  "Al Wurud": "الورود",
+  "Al Nakheel": "النخيل",
+  "Al Hamra": "الحمراء",
+  "Al Sulaimaniyah": "السليمانية",
+  "Al Rabwah": "الربوة",
+  "Al Zahra": "الزهراء",
+  "Al Aziziyah": "العزيزية",
+  "Al Khalidiyah": "الخالدية",
+  "Al Naseem": "النسيم",
 };
 
 const goalLabels: Record<string, { ar: string; en: string }> = {
@@ -145,7 +168,7 @@ const OpportunitiesSection: React.FC = () => {
                   </h3>
                   {land.district && (
                     <p className="text-xs text-white/80">
-                      {isAr ? `حي ${land.district}` : land.district}
+                      {isAr ? `حي ${districtNameAr[land.district] || land.district}` : land.district}
                     </p>
                   )}
                 </div>
