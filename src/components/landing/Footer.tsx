@@ -42,7 +42,7 @@ const Footer: React.FC = () => {
             {[
               { to: "/about", label: t.nav.about },
               { to: "/faq", label: isAr ? "الأسئلة الشائعة" : "FAQ" },
-              { to: "/subscriptions", label: isAr ? "الاشتراكات" : "Subscriptions" },
+              { to: "/subscriptions", label: isAr ? "الشراكات" : "Partnerships" },
             ].map((link) => (
               <Link
                 key={link.to}
