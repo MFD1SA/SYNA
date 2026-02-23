@@ -36,6 +36,7 @@ import AdminDevelopers from "./pages/admin/AdminDevelopers";
 import AdminDeals from "./pages/admin/AdminDeals";
 import AdminAI from "./pages/admin/AdminAI";
 import OpportunityDetail from "./pages/OpportunityDetail";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +82,7 @@ const App: React.FC = () => (
               <Route path="/faq" element={<FAQPage />} />
               <Route path="/features/:slug" element={<FeatureDetailPage />} />
               <Route path="/opportunity/:id" element={<OpportunityDetail />} />
+              <Route path="/contact" element={<Contact />} />
 
               {/* Auth */}
               <Route path="/auth/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
