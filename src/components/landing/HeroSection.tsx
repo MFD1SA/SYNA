@@ -89,16 +89,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
             ))}
           </div>
 
-          {/* Commission badge */}
-          <div className="mt-10 flex justify-center">
-            <div className="inline-flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-6 py-3">
-              <span className="text-2xl font-medium text-primary">{t.commission.rate}</span>
-              <div className="text-start">
-                <p className="text-sm font-medium text-foreground">{t.commission.title}</p>
-                <p className="text-xs font-light text-muted-foreground">{t.commission.desc}</p>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
     );
@@ -172,16 +162,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
           ))}
         </div>
 
-        {/* Commission badge */}
-        <div className="mt-10 flex justify-center">
-          <div className="inline-flex items-center gap-3 rounded-2xl border border-[hsl(187,55%,30%,0.3)] bg-[hsl(210,25%,11%,0.8)] px-6 py-3">
-            <span className="text-2xl font-medium text-[hsl(187,55%,60%)]">{t.commission.rate}</span>
-            <div className="text-start">
-              <p className="text-sm font-medium text-white">{t.commission.title}</p>
-              <p className="text-xs font-light text-[hsl(210,15%,50%)]">{t.commission.desc}</p>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );
