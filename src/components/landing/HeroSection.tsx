@@ -1,7 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, ShieldCheck, Eye, Handshake, Video } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, Handshake, Video } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { BrandVariant } from "./BrandToggle";
 import logoImg from "@/assets/logo.png";
@@ -15,14 +15,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
   const Arrow = lang === "ar" ? ArrowLeft : ArrowRight;
   const isAr = lang === "ar";
 
-  const stats = [
-    { value: "150+", label: isAr ? t.stats.verifiedDevelopers : t.stats.verifiedDevelopers },
-    { value: "300+", label: isAr ? t.stats.landListings : t.stats.landListings },
-    { value: "85+", label: isAr ? t.stats.closedDeals : t.stats.closedDeals },
-  ];
 
   const pills = [
-    { icon: ShieldCheck, label: isAr ? "تحقق تجاري ذكي" : "Smart Verification" },
+    { icon: Eye, label: isAr ? "خصوصية كاملة" : "Full Privacy" },
     { icon: Eye, label: isAr ? "خصوصية كاملة" : "Full Privacy" },
     { icon: Handshake, label: isAr ? "متابعة الصفقات" : "Deal Tracking" },
     { icon: Video, label: isAr ? "اجتماعات مدمجة" : "Integrated Meetings" },
@@ -67,17 +62,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="mx-auto mt-16 max-w-2xl">
-            <div className="grid grid-cols-3 divide-x divide-border/50 rtl:divide-x-reverse">
-              {stats.map((stat) => (
-                <div key={stat.label} className="px-6 text-center">
-                  <p className="text-2xl font-medium text-foreground md:text-3xl">{stat.value}</p>
-                  <p className="mt-1 text-xs font-light text-muted-foreground">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
 
           {/* Pills */}
           <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
@@ -142,16 +126,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
           </div>
         </div>
 
-        <div className="mx-auto mt-10 max-w-2xl">
-          <div className="grid grid-cols-3 divide-x divide-[hsl(210,20%,18%)] rtl:divide-x-reverse">
-            {stats.map((stat) => (
-              <div key={stat.label} className="px-6 text-center">
-                <p className="text-2xl font-medium text-white md:text-3xl">{stat.value}</p>
-                <p className="mt-1.5 text-xs font-light text-[hsl(210,15%,50%)]">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           {pills.map(({ icon: Icon, label }) => (
