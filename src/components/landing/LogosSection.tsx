@@ -26,7 +26,7 @@ const LogosSection: React.FC = () => {
       ];
 
   return (
-    <section className="py-6 md:py-8">
+    <section className="py-4 md:py-6">
       <div className="container">
         <div className="mx-auto mb-5 max-w-xl text-center">
           <h2 className="mb-1.5 text-2xl font-medium text-foreground">
@@ -34,7 +34,7 @@ const LogosSection: React.FC = () => {
           </h2>
         </div>
 
-        <div className="mx-auto grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="mx-auto grid max-w-4xl grid-cols-2 gap-4">
           {sectors.map((sector, idx) => {
             const Icon = sectorIcons[idx];
             return (

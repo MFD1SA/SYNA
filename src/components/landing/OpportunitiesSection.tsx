@@ -96,7 +96,7 @@ const OpportunitiesSection: React.FC = () => {
   const items = [...lands, ...lands];
 
   return (
-    <section className="py-16 overflow-hidden bg-muted/30">
+    <section className="py-6 md:py-8 overflow-hidden bg-muted/30">
       <div className="container mb-10">
         <h2 className="text-2xl md:text-3xl font-medium text-foreground text-center">
           {isAr ? "فرص التطوير المتاحة" : "Available Development Opportunities"}

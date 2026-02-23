@@ -18,7 +18,7 @@ const FeaturesSection: React.FC = () => {
   const Arrow = isAr ? ArrowLeft : ArrowRight;
 
   return (
-    <section id="features" className="relative py-6 md:py-8">
+    <section id="features" className="relative py-4 md:py-6">
       <div className="container relative">
         <div className="mx-auto mb-8 max-w-2xl text-center">
           <h2 className="mb-2 text-3xl font-medium text-foreground md:text-4xl">
