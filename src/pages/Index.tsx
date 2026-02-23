@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import Navbar from "@/components/landing/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
-import SubscriptionsSection from "@/components/landing/SubscriptionsSection";
+import HowItWorksSection from "@/components/landing/SubscriptionsSection";
 import LogosSection from "@/components/landing/LogosSection";
+import FAQSection from "@/components/landing/FAQSection";
 import Footer from "@/components/landing/Footer";
 import type { BrandVariant } from "@/components/landing/BrandToggle";
 
@@ -20,8 +21,9 @@ const Index: React.FC = () => {
       <main>
         <HeroSection variant={variant} />
         <FeaturesSection />
-        <SubscriptionsSection />
+        <HowItWorksSection />
         <LogosSection />
+        <FAQSection />
       </main>
       <Footer />
     </div>

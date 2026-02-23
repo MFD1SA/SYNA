@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useNavigate } from "react-router-dom";
 import CrmLayout from "@/components/crm/CrmLayout";
 import {
   Landmark, FileText, Handshake, TrendingUp,
@@ -12,6 +13,7 @@ const CrmDashboard: React.FC = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  const navigate = useNavigate();
   const [isDeveloper, setIsDeveloper] = useState(false);
   const [loading, setLoading] = useState(true);
   const [ownerKpi, setOwnerKpi] = useState({ lands: 0, pendingRequests: 0, activeDeals: 0, closedDeals: 0 });
@@ -125,14 +127,14 @@ const CrmDashboard: React.FC = () => {
         <div className="grid gap-3 sm:grid-cols-2">
           {isDeveloper ? (
             <>
-              <div className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
+              <div onClick={() => navigate("/crm/properties")} className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
                 <Search className="h-5 w-5 text-primary" strokeWidth={1.5} />
                 <div>
                   <p className="text-sm font-medium text-foreground">{isAr ? "استعراض الأراضي" : "Browse Lands"}</p>
                   <p className="text-xs font-light text-muted-foreground">{isAr ? "ابحث عن فرص تطوير جديدة" : "Find new development opportunities"}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
+              <div onClick={() => navigate("/crm/leases")} className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
                 <FileText className="h-5 w-5 text-primary" strokeWidth={1.5} />
                 <div>
                   <p className="text-sm font-medium text-foreground">{isAr ? "متابعة طلباتي" : "Track My Requests"}</p>
@@ -142,14 +144,14 @@ const CrmDashboard: React.FC = () => {
             </>
           ) : (
             <>
-              <div className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
+              <div onClick={() => navigate("/crm/properties")} className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
                 <Landmark className="h-5 w-5 text-primary" strokeWidth={1.5} />
                 <div>
                   <p className="text-sm font-medium text-foreground">{isAr ? "إضافة أرض" : "Add Land"}</p>
                   <p className="text-xs font-light text-muted-foreground">{isAr ? "أدرج أرضك لاستقبال طلبات المطورين" : "List your land to receive developer requests"}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
+              <div onClick={() => navigate("/crm/leases")} className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
                 <FileText className="h-5 w-5 text-primary" strokeWidth={1.5} />
                 <div>
                   <p className="text-sm font-medium text-foreground">{isAr ? "مراجعة الطلبات" : "Review Requests"}</p>

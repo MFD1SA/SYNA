@@ -8,10 +8,11 @@ const Footer: React.FC = () => {
   const isAr = lang === "ar";
 
   const links = [
+    { to: "/about", label: t.nav.about },
+    { to: "/faq", label: isAr ? "الأسئلة الشائعة" : "FAQ" },
     { to: "/terms", label: t.nav.terms },
     { to: "/privacy", label: t.nav.privacy },
     { to: "/usage-policy", label: t.nav.usage },
-    { to: "/about", label: t.nav.about },
   ];
 
   return (
