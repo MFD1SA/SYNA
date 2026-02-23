@@ -54,14 +54,8 @@ const LoginPage: React.FC = () => {
       return;
     }
     if (data.user) {
-      const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id).eq("role", "admin").maybeSingle();
-      if (roleData) {
-        toast({ title: isAr ? "أهلاً مدير النظام 👋" : "Welcome, System Admin 👋" });
-        navigate("/admincp");
-      } else {
-        toast({ title: isAr ? "أهلاً عزيزي المطور 👋" : "Welcome, Dear Developer 👋" });
-        navigate("/crm/dashboard");
-      }
+      toast({ title: isAr ? "أهلاً عزيزي المطور 👋" : "Welcome, Dear Developer 👋" });
+      navigate("/crm/dashboard");
     }
     setLoading(false);
   };

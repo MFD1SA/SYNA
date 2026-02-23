@@ -34,7 +34,7 @@ const AdminSidebar: React.FC = () => {
     : (collapsed ? ChevronRight : ChevronLeft);
 
   const navItems: NavItem[] = [
-    { label: { ar: "نظرة عامة", en: "Overview" }, href: "/admincp", icon: LayoutDashboard },
+    { label: { ar: "نظرة عامة", en: "Overview" }, href: "/admincp/overview", icon: LayoutDashboard },
     { label: { ar: "إدارة الأراضي", en: "Manage Lands" }, href: "/admincp/lands", icon: Landmark },
     { label: { ar: "إدارة المطورين", en: "Manage Developers" }, href: "/admincp/developers", icon: HardHat },
     { label: { ar: "الطلبات والصفقات", en: "Requests & Deals" }, href: "/admincp/deals", icon: Handshake },
