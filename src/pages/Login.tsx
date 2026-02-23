@@ -57,7 +57,7 @@ const LoginPage: React.FC = () => {
           <div className="absolute bottom-1/4 end-1/4 h-48 w-48 rounded-full bg-primary-foreground/10 blur-3xl" />
         </div>
         <div className="relative text-center">
-          <img src={logo} alt="DOMA" className="mx-auto mb-5 h-20 w-20 rounded-2xl object-contain" />
+          <img src={logo} alt="DOMA" className="mx-auto mb-6 h-28 w-28 rounded-2xl object-contain" />
           <h2 className="text-3xl font-bold text-primary-foreground tracking-wide">DOMA</h2>
           <p className="mt-2 text-sm font-light text-primary-foreground/70">
             {isAr ? "شراكات تطوير عقاري" : "Real Estate Development Partnerships"}
