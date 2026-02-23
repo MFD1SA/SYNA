@@ -28,6 +28,9 @@ const Footer: React.FC = () => {
             <p className="max-w-xs text-sm font-light leading-relaxed text-[hsl(210,15%,55%)]">
               {t.footer.desc}
             </p>
+            <p className="text-sm font-medium text-[hsl(187,55%,50%)]">
+              {isAr ? "دوما معكم دوماً" : "DOMA — Always with you"}
+            </p>
           </div>
 
           {/* Links */}
