@@ -7,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const ADMIN_EMAIL = "Mfdalsulis@gmail.com";
+const ADMIN_EMAIL = "mfdalsulis@gmail.com";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -36,7 +36,6 @@ serve(async (req) => {
     // Send email via Resend API
     const rawKey = Deno.env.get("RESEND_API_KEY") || "";
     const resendApiKey = rawKey.replace(/[^\x20-\x7E]/g, "").trim();
-    console.log("Key length:", resendApiKey.length, "starts with:", resendApiKey.substring(0, 5));
     if (resendApiKey) {
       const emailRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
