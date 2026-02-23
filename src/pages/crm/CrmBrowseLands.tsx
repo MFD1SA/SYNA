@@ -45,6 +45,17 @@ const CrmBrowseLands: React.FC = () => {
   const [submittedLands, setSubmittedLands] = useState<Record<string, string>>({});
   const [cityFilter, setCityFilter] = useState("all");
   const [usageFilter, setUsageFilter] = useState("all");
+  const [areaFilter, setAreaFilter] = useState("all");
+
+  const areaRanges = [
+    { value: "all", ar: "الكل", en: "All" },
+    { value: "0-1000", ar: "1 - 1,000 م²", en: "1 - 1,000 sqm", min: 0, max: 1000 },
+    { value: "1000-5000", ar: "1,000 - 5,000 م²", en: "1,000 - 5,000 sqm", min: 1000, max: 5000 },
+    { value: "5000-10000", ar: "5,000 - 10,000 م²", en: "5,000 - 10,000 sqm", min: 5000, max: 10000 },
+    { value: "10000-50000", ar: "10,000 - 50,000 م²", en: "10,000 - 50,000 sqm", min: 10000, max: 50000 },
+    { value: "50000-100000", ar: "50,000 - 100,000 م²", en: "50,000 - 100,000 sqm", min: 50000, max: 100000 },
+    { value: "100000+", ar: "100,000+ م²", en: "100,000+ sqm", min: 100000, max: Infinity },
+  ];
 
   const fetchMyRequests = async (devId: string) => {
     const { data } = await supabase.from("deal_requests").select("land_id, status").eq("developer_id", devId);
@@ -132,8 +143,19 @@ const CrmBrowseLands: React.FC = () => {
             ))}
           </SelectContent>
         </Select>
-        {(cityFilter !== "all" || usageFilter !== "all") && (
-          <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={() => { setCityFilter("all"); setUsageFilter("all"); }}>
+        <Select value={areaFilter} onValueChange={setAreaFilter}>
+          <SelectTrigger className="w-[200px] h-9">
+            <Ruler className="h-3.5 w-3.5 me-1.5 text-muted-foreground" />
+            <SelectValue placeholder={isAr ? "المساحة" : "Area"} />
+          </SelectTrigger>
+          <SelectContent>
+            {areaRanges.map((r) => (
+              <SelectItem key={r.value} value={r.value}>{isAr ? r.ar : r.en}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {(cityFilter !== "all" || usageFilter !== "all" || areaFilter !== "all") && (
+          <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={() => { setCityFilter("all"); setUsageFilter("all"); setAreaFilter("all"); }}>
             {isAr ? "إعادة ضبط" : "Reset"}
           </Button>
         )}
@@ -143,7 +165,15 @@ const CrmBrowseLands: React.FC = () => {
         const filtered = lands.filter(l => {
           const cityMatch = cityFilter === "all" || l.city?.toLowerCase().includes(cityFilter.toLowerCase()) || l.district?.toLowerCase().includes(cityFilter.toLowerCase());
           const usageMatch = usageFilter === "all" || l.usage_type === usageFilter;
-          return cityMatch && usageMatch;
+          let areaMatch = true;
+          if (areaFilter !== "all") {
+            const range = areaRanges.find(r => r.value === areaFilter);
+            if (range) {
+              const area = Number(l.land_area_sqm);
+              areaMatch = area >= range.min! && area < range.max!;
+            }
+          }
+          return cityMatch && usageMatch && areaMatch;
         });
 
         if (loading) return (
