@@ -43,7 +43,7 @@ export const translations = {
       step3Title: "طلب الشراكة",
       step3Desc: "المطور يقدم طلب شراكة رسمي — المالك يراجع ويوافق أو يطلب معلومات إضافية",
       step4Title: "متابعة حتى الإغلاق",
-      step4Desc: "مراحل واضحة، اجتماعات، مستندات، وعمولة شفافة 2.50% — كل شيء داخل المنصة",
+      step4Desc: "مراحل واضحة، اجتماعات، مستندات — كل شيء مُدار داخل المنصة حتى إتمام الشراكة",
     },
     stats: {
       verifiedDevelopers: "مطور موثق",
@@ -289,7 +289,7 @@ export const translations = {
       step3Title: "Request Partnership",
       step3Desc: "Developer submits a formal partnership request — owner reviews and approves or requests more info",
       step4Title: "Track to Closure",
-      step4Desc: "Clear stages, meetings, documents, and transparent 2.50% commission — everything within the platform",
+      step4Desc: "Clear stages, meetings, documents — everything managed within the platform until partnership completion",
     },
     stats: {
       verifiedDevelopers: "Verified Developers",
