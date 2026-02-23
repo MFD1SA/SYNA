@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import CrmLayout from "@/components/crm/CrmLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,7 @@ const CrmLands: React.FC = () => {
   const { lang } = useLanguage();
   const { toast } = useToast();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "أراضي" : "Lands");
   const [lands, setLands] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);

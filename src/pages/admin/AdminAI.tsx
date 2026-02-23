@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ const AdminAI: React.FC = () => {
   const { lang } = useLanguage();
   const { toast } = useToast();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "الذكاء الاصطناعي" : "AI Assistant");
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);

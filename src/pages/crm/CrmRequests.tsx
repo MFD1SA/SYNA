@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import CrmLayout from "@/components/crm/CrmLayout";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +20,7 @@ const CrmRequests: React.FC = () => {
   const { lang } = useLanguage();
   const { toast } = useToast();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "الطلبات الواردة" : "Requests");
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 

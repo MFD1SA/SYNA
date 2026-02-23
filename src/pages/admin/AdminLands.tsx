@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,7 @@ const AdminLands: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "إدارة الأراضي" : "Manage Lands");
   const [lands, setLands] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");

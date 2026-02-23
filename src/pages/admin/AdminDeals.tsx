@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { Search, FileText, Handshake, Clock, CheckCircle2, XCircle, AlertCircle 
 const AdminDeals: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "إدارة الصفقات" : "Manage Deals");
   const [requests, setRequests] = useState<any[]>([]);
   const [deals, setDeals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

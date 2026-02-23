@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import logo from "@/assets/logo.png";
 
 const LoginPage: React.FC = () => {
   const { t, lang, toggleLang } = useLanguage();
+  usePageTitle(lang === "ar" ? "تسجيل الدخول" : "Login");
   const { toast } = useToast();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");

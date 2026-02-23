@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ const DIGITS_ONLY_REGEX = /^[0-9]*$/;
 
 const RegisterPage: React.FC = () => {
   const { t, lang, toggleLang } = useLanguage();
+  usePageTitle(lang === "ar" ? "إنشاء حساب" : "Register");
   const { toast } = useToast();
   const navigate = useNavigate();
   const isAr = lang === "ar";

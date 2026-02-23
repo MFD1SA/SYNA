@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import CrmLayout from "@/components/crm/CrmLayout";
 import { Handshake, TrendingUp } from "lucide-react";
 
@@ -27,6 +28,7 @@ const healthColors: Record<string, string> = {
 const CrmDeals: React.FC = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
+  usePageTitle(lang === "ar" ? "الصفقات" : "Deals");
   const isAr = lang === "ar";
   const [deals, setDeals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

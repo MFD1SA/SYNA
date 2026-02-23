@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,7 @@ const OpportunityDetail: React.FC = () => {
   const navigate = useNavigate();
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "تفاصيل الفرصة" : "Opportunity Details");
   const [variant] = useState<BrandVariant>("portfolio");
   const [land, setLand] = useState<any>(null);
   const [loading, setLoading] = useState(true);

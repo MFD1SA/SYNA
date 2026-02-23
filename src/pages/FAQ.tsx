@@ -3,6 +3,7 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import {
   Accordion,
   AccordionContent,
@@ -101,6 +102,7 @@ const faqData = [
 const FAQPage: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  usePageTitle(isAr ? "الأسئلة الشائعة" : "FAQ");
 
   return (
     <div className="min-h-screen">

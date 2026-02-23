@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import CrmLayout from "@/components/crm/CrmLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { Building2, FileText, Lock, Eye, EyeOff, Shield, Download } from "lucide
 const CrmSettings: React.FC = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
+  usePageTitle(lang === "ar" ? "الإعدادات" : "Settings");
   const { toast } = useToast();
   const [developer, setDeveloper] = useState<any>(null);
   const [loading, setLoading] = useState(true);

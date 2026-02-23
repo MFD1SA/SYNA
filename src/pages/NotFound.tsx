@@ -1,12 +1,14 @@
 import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const NotFound = () => {
   const location = useLocation();
   const { lang } = useLanguage();
+  usePageTitle(lang === "ar" ? "الصفحة غير موجودة" : "Page Not Found");
   const Arrow = lang === "ar" ? ArrowRight : ArrowLeft;
 
   useEffect(() => {

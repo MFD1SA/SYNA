@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTenant } from "@/hooks/useTenant";
 import CrmLayout from "@/components/crm/CrmLayout";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import { Plus, Building2, Pencil, Trash2 } from "lucide-react";
 const CrmProperties: React.FC = () => {
   const { user } = useAuth();
   const { t, lang } = useLanguage();
+  usePageTitle(lang === "ar" ? "المشاريع" : "Properties");
   const { tenantId } = useTenant();
   const { toast } = useToast();
   const [properties, setProperties] = useState<any[]>([]);
