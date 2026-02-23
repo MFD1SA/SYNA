@@ -6,6 +6,7 @@ import HowItWorksSection from "@/components/landing/SubscriptionsSection";
 import LogosSection from "@/components/landing/LogosSection";
 import FAQSection from "@/components/landing/FAQSection";
 import Footer from "@/components/landing/Footer";
+import OpportunitiesSection from "@/components/landing/OpportunitiesSection";
 import type { BrandVariant } from "@/components/landing/BrandToggle";
 
 const Index: React.FC = () => {
@@ -20,6 +21,7 @@ const Index: React.FC = () => {
       <Navbar variant={variant} onToggleVariant={toggleVariant} />
       <main>
         <HeroSection variant={variant} />
+        <OpportunitiesSection />
         <FeaturesSection />
         <HowItWorksSection />
         <LogosSection />

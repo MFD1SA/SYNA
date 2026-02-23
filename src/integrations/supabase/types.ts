@@ -434,6 +434,7 @@ export type Database = {
           financing_preference: string | null
           id: string
           is_active: boolean
+          is_featured: boolean
           land_area_sqm: number
           length_m: number | null
           owner_id: string
@@ -463,6 +464,7 @@ export type Database = {
           financing_preference?: string | null
           id?: string
           is_active?: boolean
+          is_featured?: boolean
           land_area_sqm: number
           length_m?: number | null
           owner_id: string
@@ -492,6 +494,7 @@ export type Database = {
           financing_preference?: string | null
           id?: string
           is_active?: boolean
+          is_featured?: boolean
           land_area_sqm?: number
           length_m?: number | null
           owner_id?: string

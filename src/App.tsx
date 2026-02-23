@@ -31,6 +31,10 @@ import CrmMaintenance from "./pages/crm/CrmMaintenance";
 import CrmReports from "./pages/crm/CrmReports";
 import CrmSettings from "./pages/crm/CrmSettings";
 import AdminOverview from "./pages/admin/AdminOverview";
+import AdminLands from "./pages/admin/AdminLands";
+import AdminDevelopers from "./pages/admin/AdminDevelopers";
+import AdminDeals from "./pages/admin/AdminDeals";
+import AdminAI from "./pages/admin/AdminAI";
 
 const queryClient = new QueryClient();
 
@@ -99,6 +103,10 @@ const App: React.FC = () => (
 
               {/* Admin */}
               <Route path="/admincp" element={<AdminRoute><AdminOverview /></AdminRoute>} />
+              <Route path="/admincp/lands" element={<AdminRoute><AdminLands /></AdminRoute>} />
+              <Route path="/admincp/developers" element={<AdminRoute><AdminDevelopers /></AdminRoute>} />
+              <Route path="/admincp/deals" element={<AdminRoute><AdminDeals /></AdminRoute>} />
+              <Route path="/admincp/ai" element={<AdminRoute><AdminAI /></AdminRoute>} />
 
               {/* Redirects */}
               <Route path="/dashboard" element={<Navigate to="/crm/dashboard" replace />} />
