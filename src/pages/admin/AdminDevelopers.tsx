@@ -34,9 +34,14 @@ const AdminDevelopers: React.FC = () => {
   const [saving, setSaving] = useState(false);
 
   const fetchDevs = async () => {
-    const { data } = await supabase.from("developers").select("*").order("created_at", { ascending: false });
-    setDevs(data || []);
-    setLoading(false);
+    try {
+      const { data } = await supabase.from("developers").select("*").order("created_at", { ascending: false });
+      setDevs(data || []);
+    } catch (err) {
+      console.error("fetchDevs error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchDevs(); }, []);
@@ -75,14 +80,20 @@ const AdminDevelopers: React.FC = () => {
   };
 
   const updateStatus = async (id: string, status: "verified" | "rejected") => {
-    const { error } = await supabase.from("developers").update({
-      verification_status: status,
-      verified_at: status === "verified" ? new Date().toISOString() : null,
-    }).eq("id", id);
-    if (error) {
-      toast({ variant: "destructive", title: "Error", description: error.message });
-    } else {
-      toast({ title: isAr ? (status === "verified" ? "تم التوثيق" : "تم الرفض") : (status === "verified" ? "Verified" : "Rejected") });
+    try {
+      const { error } = await supabase.from("developers").update({
+        verification_status: status,
+        verified_at: status === "verified" ? new Date().toISOString() : null,
+      }).eq("id", id);
+      if (error) {
+        toast({ variant: "destructive", title: "Error", description: error.message });
+      } else {
+        toast({ title: isAr ? (status === "verified" ? "تم التوثيق" : "تم الرفض") : (status === "verified" ? "Verified" : "Rejected") });
+      }
+    } catch (err) {
+      console.error("updateStatus error:", err);
+      toast({ variant: "destructive", title: "Error", description: String(err) });
+    } finally {
       fetchDevs();
     }
   };

@@ -27,59 +27,85 @@ const AdminDeals: React.FC = () => {
   const [actionLoading, setActionLoading] = useState(false);
 
   const fetchAll = async () => {
-    const [reqRes, dealRes] = await Promise.all([
-      supabase.from("deal_requests").select("*, lands(city, district, land_area_sqm, usage_type, partnership_goal, owner_name), developers(company_name, marketing_brand_name, cr_number, email, phone)").order("created_at", { ascending: false }),
-      supabase.from("deals").select("*, lands(city, district), developers(company_name)").order("created_at", { ascending: false }),
-    ]);
-    setRequests(reqRes.data || []);
-    setDeals(dealRes.data || []);
-    setLoading(false);
+    try {
+      const [reqRes, dealRes] = await Promise.all([
+        supabase.from("deal_requests").select("*, lands(city, district, land_area_sqm, usage_type, partnership_goal, owner_name, owner_id), developers(company_name, marketing_brand_name, cr_number, email, phone)").order("created_at", { ascending: false }),
+        supabase.from("deals").select("*, lands(city, district), developers(company_name)").order("created_at", { ascending: false }),
+      ]);
+      setRequests(reqRes.data || []);
+      setDeals(dealRes.data || []);
+    } catch (err) {
+      console.error("fetchAll error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchAll(); }, []);
 
   const handleApprove = async (req: any) => {
     setActionLoading(true);
-    // Update request status
-    const { error: updateErr } = await supabase.from("deal_requests").update({ status: "approved" }).eq("id", req.id);
-    if (updateErr) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: updateErr.message });
+    try {
+      // Update request status
+      const { error: updateErr } = await supabase.from("deal_requests").update({ status: "approved" }).eq("id", req.id);
+      if (updateErr) {
+        toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: updateErr.message });
+        return;
+      }
+      // Get owner_id from the joined data or fetch it
+      let ownerId = req.lands?.owner_id;
+      if (!ownerId) {
+        const { data: landData } = await supabase.from("lands").select("owner_id").eq("id", req.land_id).single();
+        ownerId = landData?.owner_id;
+      }
+      if (!ownerId) {
+        toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "لم يتم العثور على مالك الأرض" : "Land owner not found" });
+        return;
+      }
+      // Create a deal
+      const { error: dealErr } = await supabase.from("deals").insert({
+        request_id: req.id,
+        land_id: req.land_id,
+        developer_id: req.developer_id,
+        owner_id: ownerId,
+        commission_rate: req.commission_rate,
+      });
+      if (dealErr) {
+        toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: dealErr.message });
+      } else {
+        toast({ title: isAr ? "تمت الموافقة وإنشاء الصفقة" : "Approved and deal created" });
+      }
+    } catch (err) {
+      console.error("handleApprove error:", err);
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: String(err) });
+    } finally {
+      setViewReq(null);
       setActionLoading(false);
-      return;
+      fetchAll();
     }
-    // Create a deal
-    const { error: dealErr } = await supabase.from("deals").insert({
-      request_id: req.id,
-      land_id: req.land_id,
-      developer_id: req.developer_id,
-      owner_id: req.lands?.owner_id || (await supabase.from("lands").select("owner_id").eq("id", req.land_id).single()).data?.owner_id,
-      commission_rate: req.commission_rate,
-    });
-    if (dealErr) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: dealErr.message });
-    } else {
-      toast({ title: isAr ? "تمت الموافقة وإنشاء الصفقة" : "Approved and deal created" });
-    }
-    setViewReq(null);
-    setActionLoading(false);
-    fetchAll();
   };
 
   const handleReject = async (req: any) => {
     setActionLoading(true);
-    const { error } = await supabase.from("deal_requests").update({
-      status: "rejected",
-      owner_response_notes: rejectNotes || null,
-    }).eq("id", req.id);
-    if (error) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
-    } else {
-      toast({ title: isAr ? "تم رفض الطلب" : "Request rejected" });
+    try {
+      const { error } = await supabase.from("deal_requests").update({
+        status: "rejected",
+        owner_response_notes: rejectNotes || null,
+      }).eq("id", req.id);
+      if (error) {
+        toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
+      } else {
+        toast({ title: isAr ? "تم رفض الطلب" : "Request rejected" });
+      }
+    } catch (err) {
+      console.error("handleReject error:", err);
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: String(err) });
+    } finally {
+      setViewReq(null);
+      setRejectNotes("");
+      setActionLoading(false);
+      fetchAll();
     }
-    setViewReq(null);
-    setRejectNotes("");
-    setActionLoading(false);
-    fetchAll();
   };
 
   const stageLabels: Record<string, { ar: string; en: string }> = {
