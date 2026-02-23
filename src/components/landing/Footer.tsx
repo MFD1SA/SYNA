@@ -7,14 +7,6 @@ const Footer: React.FC = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
 
-  const links = [
-    { to: "/about", label: t.nav.about },
-    { to: "/contact", label: isAr ? "اتصل بنا" : "Contact Us" },
-    { to: "/faq", label: isAr ? "الأسئلة الشائعة" : "FAQ" },
-    { to: "/terms", label: t.nav.terms },
-    { to: "/privacy", label: t.nav.privacy },
-    { to: "/usage-policy", label: t.nav.usage },
-  ];
 
   return (
     <footer className="border-t border-[hsl(210,20%,16%)] bg-[hsl(210,25%,8%)]">
@@ -84,12 +76,6 @@ const Footer: React.FC = () => {
               className="w-fit text-sm font-light text-[hsl(210,15%,55%)] transition-colors hover:text-[hsl(187,55%,50%)]"
             >
               {isAr ? "نموذج التواصل" : "Contact Form"}
-            </Link>
-            <Link
-              to="/subscriptions"
-              className="w-fit text-sm font-light text-[hsl(210,15%,55%)] transition-colors hover:text-[hsl(187,55%,50%)]"
-            >
-              {isAr ? "الشراكات" : "Partnerships"}
             </Link>
           </div>
         </div>
