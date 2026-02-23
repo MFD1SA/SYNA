@@ -2,66 +2,87 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useTenant } from "@/hooks/useTenant";
 import CrmLayout from "@/components/crm/CrmLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Users, User } from "lucide-react";
-
-const roleLabels: Record<string, { ar: string; en: string }> = {
-  owner: { ar: "مالك", en: "Owner" },
-  manager: { ar: "مدير", en: "Manager" },
-  staff: { ar: "موظف", en: "Staff" },
-  viewer: { ar: "مشاهد", en: "Viewer" },
-};
+import { Building2, FileText, Lock, Eye, EyeOff, Shield, Download } from "lucide-react";
 
 const CrmSettings: React.FC = () => {
   const { user } = useAuth();
-  const { t, lang } = useLanguage();
-  const { tenantId, tenantName, tenantRole } = useTenant();
+  const { lang } = useLanguage();
   const { toast } = useToast();
-  const [members, setMembers] = useState<any[]>([]);
-  const [tenantData, setTenantData] = useState({ name: "", currency: "SAR", language: "ar" });
+  const [developer, setDeveloper] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const isAr = lang === "ar";
 
   useEffect(() => {
-    if (!tenantId) { setLoading(false); return; }
-    const fetch = async () => {
-      const [memRes, tenRes] = await Promise.all([
-        supabase.from("tenant_members").select("*, profiles(full_name, email)").eq("tenant_id", tenantId),
-        supabase.from("tenants").select("*").eq("id", tenantId).maybeSingle(),
-      ]);
-      setMembers(memRes.data || []);
-      if (tenRes.data) setTenantData({ name: tenRes.data.name, currency: tenRes.data.currency, language: tenRes.data.language });
+    if (!user) return;
+    const fetchDev = async () => {
+      const { data } = await supabase
+        .from("developers")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      setDeveloper(data);
       setLoading(false);
     };
-    fetch();
-  }, [tenantId]);
+    fetchDev();
+  }, [user]);
 
-  const handleSaveTenant = async () => {
-    if (!tenantId) return;
-    const { error } = await supabase.from("tenants").update(tenantData).eq("id", tenantId);
-    if (error) toast({ variant: "destructive", title: "Error", description: error.message });
-    else toast({ title: lang === "ar" ? "تم الحفظ" : "Saved" });
+  const handlePasswordChange = async () => {
+    if (password.length < 8) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "كلمة المرور يجب أن تكون 8 أحرف على الأقل" : "Password must be at least 8 characters" });
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "كلمات المرور غير متطابقة" : "Passwords do not match" });
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase.auth.updateUser({ password });
+    setSaving(false);
+    if (error) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
+    } else {
+      toast({ title: isAr ? "تم التحديث" : "Updated", description: isAr ? "تم تغيير كلمة المرور بنجاح" : "Password changed successfully" });
+      setPassword("");
+      setConfirmPassword("");
+    }
   };
 
-  const handleRoleChange = async (memberId: string, newRole: string) => {
-    await supabase.from("tenant_members").update({ role: newRole as any }).eq("id", memberId);
-    const { data } = await supabase.from("tenant_members").select("*, profiles(full_name, email)").eq("tenant_id", tenantId!);
-    setMembers(data || []);
+  const statusLabel = (status: string) => {
+    const map: Record<string, { ar: string; en: string; color: string }> = {
+      pending_review: { ar: "قيد المراجعة", en: "Pending Review", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
+      verified: { ar: "موثّق", en: "Verified", color: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400" },
+      rejected: { ar: "مرفوض", en: "Rejected", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+    };
+    const s = map[status] || map.pending_review;
+    return <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${s.color}`}><Shield className="h-3 w-3" />{isAr ? s.ar : s.en}</span>;
   };
 
-  const isOwner = tenantRole === "owner";
+  const getFileUrl = (url: string) => {
+    if (!url) return null;
+    // If it's a storage path, generate public URL
+    if (!url.startsWith("http")) {
+      const { data } = supabase.storage.from("developer-docs").getPublicUrl(url);
+      return data?.publicUrl;
+    }
+    return url;
+  };
 
   return (
     <CrmLayout>
       <div className="mb-6">
-        <h1 className="text-2xl font-medium text-foreground">{t.crm.nav.settings}</h1>
+        <h1 className="text-2xl font-medium text-foreground">{isAr ? "الإعدادات" : "Settings"}</h1>
         <p className="mt-1 text-sm font-light text-muted-foreground">
-          {lang === "ar" ? "إعدادات المنشأة والفريق" : "Organization and team settings"}
+          {isAr ? "بيانات حسابك وإعدادات الأمان" : "Your account details and security settings"}
         </p>
       </div>
 
@@ -69,83 +90,161 @@ const CrmSettings: React.FC = () => {
         <div className="h-64 animate-pulse rounded-xl bg-muted" />
       ) : (
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Organization Settings */}
+          {/* Company Information - Read Only */}
           <div className="doma-card p-6">
-            <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-foreground">
-              <Settings className="h-4 w-4 text-primary" strokeWidth={1.5} />
-              {t.crm.settings.preferences}
+            <h3 className="mb-5 flex items-center gap-2 text-sm font-medium text-foreground">
+              <Building2 className="h-4 w-4 text-primary" strokeWidth={1.5} />
+              {isAr ? "بيانات الشركة" : "Company Information"}
+              {developer && statusLabel(developer.verification_status)}
             </h3>
+
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>{t.crm.settings.companyName}</Label>
-                <Input value={tenantData.name} onChange={(e) => setTenantData({ ...tenantData, name: e.target.value })} disabled={!isOwner} />
+              {/* Company Name */}
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">{isAr ? "اسم الشركة" : "Company Name"}</Label>
+                <div className="rounded-lg border border-border/40 bg-muted/30 px-3 py-2.5 text-sm text-foreground">
+                  {developer?.company_name || "—"}
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  {isAr ? "لا يمكن تعديل الاسم إلا عن طريق الإدارة" : "Name can only be changed by admin"}
+                </p>
               </div>
+
+              {/* Brand Name */}
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">{isAr ? "الاسم التجاري" : "Brand Name"}</Label>
+                <div className="rounded-lg border border-border/40 bg-muted/30 px-3 py-2.5 text-sm text-foreground">
+                  {developer?.marketing_brand_name || "—"}
+                </div>
+              </div>
+
+              {/* CR Number */}
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">{isAr ? "رقم السجل التجاري" : "CR Number"}</Label>
+                <div className="rounded-lg border border-border/40 bg-muted/30 px-3 py-2.5 text-sm font-mono text-foreground" dir="ltr">
+                  {developer?.cr_number || "—"}
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  {isAr ? "لا يمكن تعديل رقم السجل التجاري" : "CR number cannot be modified"}
+                </p>
+              </div>
+
+              {/* Email & Phone */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>{t.crm.settings.currency}</Label>
-                  <Select value={tenantData.currency} onValueChange={(v) => setTenantData({ ...tenantData, currency: v })} disabled={!isOwner}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="SAR">SAR</SelectItem>
-                      <SelectItem value="USD">USD</SelectItem>
-                      <SelectItem value="AED">AED</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">{isAr ? "البريد الإلكتروني" : "Email"}</Label>
+                  <div className="rounded-lg border border-border/40 bg-muted/30 px-3 py-2.5 text-sm text-foreground truncate" dir="ltr">
+                    {developer?.email || user?.email || "—"}
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>{t.crm.settings.language}</Label>
-                  <Select value={tenantData.language} onValueChange={(v) => setTenantData({ ...tenantData, language: v })} disabled={!isOwner}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ar">العربية</SelectItem>
-                      <SelectItem value="en">English</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">{isAr ? "رقم الجوال" : "Phone"}</Label>
+                  <div className="rounded-lg border border-border/40 bg-muted/30 px-3 py-2.5 text-sm text-foreground" dir="ltr">
+                    {developer?.phone || "—"}
+                  </div>
                 </div>
               </div>
-              {isOwner && (
-                <Button onClick={handleSaveTenant} className="doma-gradient">{t.crm.actions.save}</Button>
-              )}
             </div>
           </div>
 
-          {/* Team Members */}
-          <div className="doma-card p-6">
-            <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-foreground">
-              <Users className="h-4 w-4 text-primary" strokeWidth={1.5} />
-              {t.crm.settings.teamMembers}
-              <span className="ms-auto text-xs font-light text-muted-foreground" dir="ltr">
-                {members.length}
-              </span>
-            </h3>
-            <div className="space-y-3">
-              {members.map((m) => (
-                <div key={m.id} className="flex items-center justify-between rounded-lg border border-border/40 p-3">
+          {/* Attached Documents - Read Only */}
+          <div className="space-y-6">
+            <div className="doma-card p-6">
+              <h3 className="mb-5 flex items-center gap-2 text-sm font-medium text-foreground">
+                <FileText className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                {isAr ? "المستندات المرفقة" : "Attached Documents"}
+              </h3>
+
+              <div className="space-y-3">
+                {/* CR File */}
+                <div className="flex items-center justify-between rounded-lg border border-border/40 p-3">
                   <div className="flex items-center gap-3">
-                    <User className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
+                      <FileText className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                    </div>
                     <div>
-                      <p className="text-sm font-light text-foreground">
-                        {(m as any).profiles?.full_name || (m as any).profiles?.email || m.user_id.slice(0, 8)}
-                      </p>
-                      <p className="text-xs font-light text-muted-foreground">{(m as any).profiles?.email}</p>
+                      <p className="text-sm font-light text-foreground">{isAr ? "السجل التجاري" : "Commercial Registration"}</p>
+                      <p className="text-[11px] text-muted-foreground">PDF</p>
                     </div>
                   </div>
-                  {isOwner && m.user_id !== user?.id ? (
-                    <Select value={m.role} onValueChange={(v) => handleRoleChange(m.id, v)}>
-                      <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(roleLabels).map(([value, labels]) => (
-                          <SelectItem key={value} value={value}>{lang === "ar" ? labels.ar : labels.en}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  {developer?.cr_file_url ? (
+                    <a href={getFileUrl(developer.cr_file_url) || "#"} target="_blank" rel="noopener noreferrer">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </a>
                   ) : (
-                    <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs text-primary">
-                      {lang === "ar" ? roleLabels[m.role]?.ar : roleLabels[m.role]?.en}
-                    </span>
+                    <span className="text-xs text-muted-foreground">{isAr ? "غير متوفر" : "N/A"}</span>
                   )}
                 </div>
-              ))}
+
+                <p className="text-[11px] text-muted-foreground">
+                  {isAr ? "لا يمكن حذف أو تعديل المستندات إلا عن طريق الإدارة" : "Documents can only be removed or modified by admin"}
+                </p>
+              </div>
+            </div>
+
+            {/* Password Change */}
+            <div className="doma-card p-6">
+              <h3 className="mb-5 flex items-center gap-2 text-sm font-medium text-foreground">
+                <Lock className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                {isAr ? "تغيير كلمة المرور" : "Change Password"}
+              </h3>
+
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">{isAr ? "كلمة المرور الجديدة" : "New Password"}</Label>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder={isAr ? "أدخل كلمة المرور الجديدة" : "Enter new password"}
+                      className="pe-10"
+                      dir="ltr"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">{isAr ? "8 أحرف على الأقل" : "At least 8 characters"}</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">{isAr ? "تأكيد كلمة المرور" : "Confirm Password"}</Label>
+                  <div className="relative">
+                    <Input
+                      type={showConfirm ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder={isAr ? "أعد إدخال كلمة المرور" : "Re-enter password"}
+                      className="pe-10"
+                      dir="ltr"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirm(!showConfirm)}
+                      className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={handlePasswordChange}
+                  disabled={!password || !confirmPassword || saving}
+                  className="doma-gradient w-full"
+                >
+                  {saving
+                    ? (isAr ? "جاري الحفظ..." : "Saving...")
+                    : (isAr ? "تحديث كلمة المرور" : "Update Password")}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
