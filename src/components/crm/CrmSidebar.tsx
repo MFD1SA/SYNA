@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTenant } from "@/hooks/useTenant";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
-  LayoutDashboard, Landmark, Search, FileText, Handshake,
+  LayoutDashboard, Search, FileText, Handshake,
   Settings, Globe, LogOut, ChevronLeft, ChevronRight, HardHat,
 } from "lucide-react";
 import NotificationDropdown from "./NotificationDropdown";
@@ -25,21 +24,7 @@ const CrmSidebar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
-  const [isDeveloper, setIsDeveloper] = useState(false);
   const isAr = lang === "ar";
-
-  useEffect(() => {
-    if (!user) return;
-    // Check if user has a developer profile
-    supabase
-      .from("developers")
-      .select("id")
-      .eq("user_id", user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        setIsDeveloper(!!data);
-      });
-  }, [user]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -50,25 +35,14 @@ const CrmSidebar: React.FC = () => {
     ? (collapsed ? ChevronLeft : ChevronRight)
     : (collapsed ? ChevronRight : ChevronLeft);
 
-  // Owner navigation
-  const ownerNav: NavItem[] = [
+  // Developer-only navigation (no owner view since admin represents owners)
+  const navItems: NavItem[] = [
     { label: { ar: "لوحة التحكم", en: "Dashboard" }, href: "/crm/dashboard", icon: LayoutDashboard },
-    { label: { ar: "أراضيي", en: "My Lands" }, href: "/crm/lands", icon: Landmark },
-    { label: { ar: "طلبات الشراكة", en: "Partnership Requests" }, href: "/crm/requests", icon: FileText },
-    { label: { ar: "الصفقات", en: "Deals" }, href: "/crm/deals", icon: Handshake },
-    { label: { ar: "الإعدادات", en: "Settings" }, href: "/crm/settings", icon: Settings },
-  ];
-
-  // Developer navigation
-  const developerNav: NavItem[] = [
-    { label: { ar: "لوحة التحكم", en: "Dashboard" }, href: "/crm/dashboard", icon: LayoutDashboard },
-    { label: { ar: "استعراض الأراضي", en: "Browse Lands" }, href: "/crm/browse", icon: Search },
+    { label: { ar: "استعراض الفرص", en: "Browse Opportunities" }, href: "/crm/browse", icon: Search },
     { label: { ar: "طلباتي", en: "My Requests" }, href: "/crm/my-requests", icon: FileText },
     { label: { ar: "الصفقات", en: "Deals" }, href: "/crm/deals", icon: Handshake },
     { label: { ar: "الإعدادات", en: "Settings" }, href: "/crm/settings", icon: Settings },
   ];
-
-  const navItems = isDeveloper ? developerNav : ownerNav;
 
   return (
     <aside
@@ -102,15 +76,9 @@ const CrmSidebar: React.FC = () => {
       {/* Role badge */}
       {!collapsed && (
         <div className="mx-3 mt-3 mb-1 flex items-center gap-2 rounded-lg border border-border/40 px-3 py-1.5">
-          {isDeveloper ? (
-            <HardHat className="h-3.5 w-3.5 text-primary" strokeWidth={1.5} />
-          ) : (
-            <Landmark className="h-3.5 w-3.5 text-primary" strokeWidth={1.5} />
-          )}
+          <HardHat className="h-3.5 w-3.5 text-primary" strokeWidth={1.5} />
           <span className="text-xs font-light text-muted-foreground">
-            {isDeveloper
-              ? (isAr ? "مطور عقاري" : "Developer")
-              : (isAr ? "مالك أرض" : "Landowner")}
+            {isAr ? "مطور عقاري" : "Developer"}
           </span>
         </div>
       )}
