@@ -5,17 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
-import { Globe, LogIn, Eye, EyeOff } from "lucide-react";
+import { Globe, LogIn, Eye, EyeOff, HardHat } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const LoginPage: React.FC = () => {
-  const { t, toggleLang } = useLanguage();
+  const { t, lang, toggleLang } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const isAr = lang === "ar";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,11 +57,11 @@ const LoginPage: React.FC = () => {
           <div className="absolute bottom-1/4 end-1/4 h-48 w-48 rounded-full bg-primary-foreground/10 blur-3xl" />
         </div>
         <div className="relative text-center">
-          <div className="mb-4 flex h-16 w-16 mx-auto items-center justify-center rounded-2xl bg-primary-foreground/10">
-            <span className="text-2xl font-medium text-primary-foreground">D</span>
-          </div>
+          <HardHat className="mx-auto mb-4 h-12 w-12 text-primary-foreground/80" strokeWidth={1.5} />
           <h2 className="text-3xl font-medium text-primary-foreground">DOMA</h2>
-          <p className="mt-2 text-sm font-light text-primary-foreground/70">Real Estate Management</p>
+          <p className="mt-2 text-sm font-light text-primary-foreground/70">
+            {isAr ? "بوابة المطورين العقاريين" : "Developer Portal"}
+          </p>
         </div>
       </div>
 
@@ -80,8 +81,12 @@ const LoginPage: React.FC = () => {
             <span className="text-xl font-medium text-foreground">DOMA</span>
           </Link>
 
-          <h1 className="mb-2 text-2xl font-medium text-foreground">{t.nav.login}</h1>
-          <p className="mb-8 text-sm font-light text-muted-foreground">{t.auth.loginSubtitle}</p>
+          <h1 className="mb-1 text-2xl font-medium text-foreground">
+            {isAr ? "دخول المطور" : "Developer Login"}
+          </h1>
+          <p className="mb-8 text-sm font-light text-muted-foreground">
+            {isAr ? "سجّل دخولك كمطور عقاري للوصول إلى فرص التطوير" : "Sign in as a developer to access development opportunities"}
+          </p>
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-2">
@@ -100,12 +105,13 @@ const LoginPage: React.FC = () => {
             </div>
 
             <Button type="submit" className="h-11 w-full gap-2 rounded-xl doma-gradient doma-shadow" disabled={loading}>
-              <LogIn className="h-4 w-4" />{t.nav.login}
+              <LogIn className="h-4 w-4" />
+              {isAr ? "دخول" : "Sign In"}
             </Button>
           </form>
 
           <p className="mt-8 text-center text-sm font-light text-muted-foreground">
-            {t.auth.noAccount}{" "}
+            {isAr ? "ليس لديك حساب مطور؟" : "Don't have a developer account?"}{" "}
             <Link to="/auth/register" className="text-primary hover:underline">{t.nav.register}</Link>
           </p>
         </div>
