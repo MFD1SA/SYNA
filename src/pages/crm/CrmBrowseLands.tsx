@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, MapPin, Ruler, Send } from "lucide-react";
+import { Search, MapPin, Ruler, Send, CheckCircle2, Clock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import LocationMap from "@/components/crm/LocationMap";
 
 const usageLabels: Record<string, { ar: string; en: string }> = {
@@ -40,20 +41,31 @@ const CrmBrowseLands: React.FC = () => {
   const [requestDialog, setRequestDialog] = useState<string | null>(null);
   const [mapDialog, setMapDialog] = useState<any>(null);
   const [requestForm, setRequestForm] = useState({ proposal_summary: "", proposed_project_type: "" });
+  const [submittedLands, setSubmittedLands] = useState<Record<string, string>>({});
+
+  const fetchMyRequests = async (devId: string) => {
+    const { data } = await supabase.from("deal_requests").select("land_id, status").eq("developer_id", devId);
+    if (data) {
+      const map: Record<string, string> = {};
+      data.forEach(r => { map[r.land_id] = r.status; });
+      setSubmittedLands(map);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
-    const fetch = async () => {
+    const fetchAll = async () => {
       const { data: dev } = await supabase.from("developers").select("id, verification_status").eq("user_id", user.id).maybeSingle();
       if (dev) {
         setDeveloperId(dev.id);
         setIsVerified(dev.verification_status === "verified");
+        await fetchMyRequests(dev.id);
       }
       const { data } = await supabase.from("lands").select("*").eq("is_active", true).order("created_at", { ascending: false });
       setLands(data || []);
       setLoading(false);
     };
-    fetch();
+    fetchAll();
   }, [user]);
 
   const handleSubmitRequest = async () => {
@@ -75,6 +87,7 @@ const CrmBrowseLands: React.FC = () => {
       toast({ title: isAr ? "تم إرسال الطلب بنجاح" : "Request submitted successfully" });
       setRequestDialog(null);
       setRequestForm({ proposal_summary: "", proposed_project_type: "" });
+      if (developerId) fetchMyRequests(developerId);
     }
   };
 
@@ -138,14 +151,35 @@ const CrmBrowseLands: React.FC = () => {
                 </Button>
               )}
 
-              <Button
-                size="sm"
-                className="w-full gap-1.5 doma-gradient"
-                disabled={!isVerified}
-                onClick={() => setRequestDialog(l.id)}
-              >
-                <Send className="h-3.5 w-3.5" />{isAr ? "تقديم طلب شراكة" : "Submit Partnership Request"}
-              </Button>
+              {submittedLands[l.id] ? (
+                <div className="w-full rounded-lg border border-primary/20 bg-primary/5 p-3 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium text-primary">{isAr ? "تم التقديم" : "Request Submitted"}</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-1.5">
+                    <Clock className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs font-light text-muted-foreground">
+                      {submittedLands[l.id] === "pending"
+                        ? (isAr ? "بانتظار الرد" : "Awaiting Response")
+                        : submittedLands[l.id] === "approved"
+                        ? (isAr ? "تمت الموافقة" : "Approved")
+                        : submittedLands[l.id] === "rejected"
+                        ? (isAr ? "تم الرفض" : "Rejected")
+                        : (isAr ? "طلب معلومات إضافية" : "Info Requested")}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  size="sm"
+                  className="w-full gap-1.5 doma-gradient"
+                  disabled={!isVerified}
+                  onClick={() => setRequestDialog(l.id)}
+                >
+                  <Send className="h-3.5 w-3.5" />{isAr ? "تقديم طلب شراكة" : "Submit Partnership Request"}
+                </Button>
+              )}
             </div>
           ))}
         </div>
