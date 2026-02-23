@@ -1,19 +1,12 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Link } from "react-router-dom";
-import { Globe, Handshake, Sun, Moon } from "lucide-react";
+import { Globe, Handshake } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
-import type { BrandVariant } from "./BrandToggle";
 
-interface NavbarProps {
-  variant?: BrandVariant;
-  onToggleVariant?: () => void;
-}
-
-const Navbar: React.FC<NavbarProps> = ({ variant = "portfolio", onToggleVariant }) => {
+const Navbar: React.FC = () => {
   const { t, lang, toggleLang } = useLanguage();
-  const isDark = variant === "portfolio";
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border/60 doma-glass">
@@ -37,12 +30,6 @@ const Navbar: React.FC<NavbarProps> = ({ variant = "portfolio", onToggleVariant 
             <Globe className="h-4 w-4" />
             <span className="text-sm">{t.nav.language}</span>
           </Button>
-
-          {onToggleVariant && (
-            <Button variant="ghost" size="icon" onClick={onToggleVariant} className="h-9 w-9 text-muted-foreground" title={isDark ? (lang === "ar" ? "الوضع النهاري" : "Light mode") : (lang === "ar" ? "الوضع الليلي" : "Dark mode")}>
-              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
-          )}
 
           <Button size="sm" asChild className="gap-1.5 doma-gradient">
             <Link to="/auth/login">

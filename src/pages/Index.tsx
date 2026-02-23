@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import Navbar from "@/components/landing/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
@@ -8,21 +8,15 @@ import LogosSection from "@/components/landing/LogosSection";
 import FAQSection from "@/components/landing/FAQSection";
 import Footer from "@/components/landing/Footer";
 import OpportunitiesSection from "@/components/landing/OpportunitiesSection";
-import type { BrandVariant } from "@/components/landing/BrandToggle";
 
 const Index: React.FC = () => {
   usePageTitle();
-  const [variant, setVariant] = useState<BrandVariant>("portfolio");
-
-  const toggleVariant = () => {
-    setVariant((v) => (v === "portfolio" ? "doma" : "portfolio"));
-  };
 
   return (
     <div className="min-h-screen">
-      <Navbar variant={variant} onToggleVariant={toggleVariant} />
+      <Navbar />
       <main>
-        <HeroSection variant={variant} />
+        <HeroSection variant="portfolio" />
         <FeaturesSection />
         <OpportunitiesSection />
         <HowItWorksSection />
