@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, MapPin, Ruler, Send, CheckCircle2, Clock } from "lucide-react";
+import { Search, MapPin, Ruler, Send, CheckCircle2, Clock, Filter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import LocationMap from "@/components/crm/LocationMap";
 
@@ -42,6 +43,8 @@ const CrmBrowseLands: React.FC = () => {
   const [mapDialog, setMapDialog] = useState<any>(null);
   const [requestForm, setRequestForm] = useState({ proposal_summary: "", proposed_project_type: "" });
   const [submittedLands, setSubmittedLands] = useState<Record<string, string>>({});
+  const [cityFilter, setCityFilter] = useState("all");
+  const [usageFilter, setUsageFilter] = useState("all");
 
   const fetchMyRequests = async (devId: string) => {
     const { data } = await supabase.from("deal_requests").select("land_id, status").eq("developer_id", devId);
@@ -106,18 +109,59 @@ const CrmBrowseLands: React.FC = () => {
         </div>
       )}
 
-      {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((i) => <div key={i} className="h-40 animate-pulse rounded-xl bg-muted" />)}
+      {/* Filters */}
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <div className="relative flex-1 min-w-[180px] max-w-xs">
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            className="ps-9 h-9"
+            placeholder={isAr ? "بحث بالمدينة أو الحي..." : "Search city or district..."}
+            value={cityFilter === "all" ? "" : cityFilter}
+            onChange={e => setCityFilter(e.target.value || "all")}
+          />
         </div>
-      ) : lands.length === 0 ? (
-        <div className="flex flex-col items-center py-16 text-center">
-          <Search className="mb-4 h-12 w-12 text-muted-foreground/30" strokeWidth={1} />
-          <p className="text-sm font-light text-muted-foreground">{isAr ? "لا توجد أراضٍ متاحة حالياً" : "No lands available currently"}</p>
-        </div>
-      ) : (
+        <Select value={usageFilter} onValueChange={setUsageFilter}>
+          <SelectTrigger className="w-[180px] h-9">
+            <Filter className="h-3.5 w-3.5 me-1.5 text-muted-foreground" />
+            <SelectValue placeholder={isAr ? "نوع الاستخدام" : "Usage Type"} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{isAr ? "الكل" : "All"}</SelectItem>
+            {Object.entries(usageLabels).map(([key, val]) => (
+              <SelectItem key={key} value={key}>{isAr ? val.ar : val.en}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {(cityFilter !== "all" || usageFilter !== "all") && (
+          <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={() => { setCityFilter("all"); setUsageFilter("all"); }}>
+            {isAr ? "إعادة ضبط" : "Reset"}
+          </Button>
+        )}
+      </div>
+
+      {(() => {
+        const filtered = lands.filter(l => {
+          const cityMatch = cityFilter === "all" || l.city?.toLowerCase().includes(cityFilter.toLowerCase()) || l.district?.toLowerCase().includes(cityFilter.toLowerCase());
+          const usageMatch = usageFilter === "all" || l.usage_type === usageFilter;
+          return cityMatch && usageMatch;
+        });
+
+        if (loading) return (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => <div key={i} className="h-40 animate-pulse rounded-xl bg-muted" />)}
+          </div>
+        );
+
+        if (filtered.length === 0) return (
+          <div className="flex flex-col items-center py-16 text-center">
+            <Search className="mb-4 h-12 w-12 text-muted-foreground/30" strokeWidth={1} />
+            <p className="text-sm font-light text-muted-foreground">{isAr ? "لا توجد أراضٍ مطابقة للفلتر" : "No lands match the selected filters"}</p>
+          </div>
+        );
+
+        return (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {lands.map((l) => (
+          {filtered.map((l) => (
             <div key={l.id} className="doma-card p-5">
               <div className="mb-3">
                 <div className="flex items-center gap-2 mb-1">
@@ -183,7 +227,8 @@ const CrmBrowseLands: React.FC = () => {
             </div>
           ))}
         </div>
-      )}
+        );
+      })()}
 
       {/* Map Dialog */}
       <Dialog open={!!mapDialog} onOpenChange={(o) => { if (!o) setMapDialog(null); }}>
