@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useAuth } from "@/contexts/AuthContext";
-import CrmLayout from "@/components/crm/CrmLayout";
+import AdminLayout from "@/components/admin/AdminLayout";
 import { Users, Landmark, Handshake, HardHat, ShieldCheck, TrendingUp, FileText, CheckCircle2 } from "lucide-react";
 
 const AdminOverview: React.FC = () => {
-  const { user } = useAuth();
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const [loading, setLoading] = useState(true);
@@ -20,11 +18,10 @@ const AdminOverview: React.FC = () => {
     closedDeals: 0,
     pendingRequests: 0,
     recentUsers: [] as any[],
-    recentDeals: [] as any[],
   });
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchData = async () => {
       const [profilesRes, devsRes, pendingDevsRes, landsRes, dealsRes, activeDealsRes, closedDealsRes, pendingReqRes] = await Promise.all([
         supabase.from("profiles").select("id, full_name, email, subscription_type, created_at").order("created_at", { ascending: false }).limit(10),
         supabase.from("developers").select("id", { count: "exact", head: true }),
@@ -46,55 +43,48 @@ const AdminOverview: React.FC = () => {
         closedDeals: closedDealsRes.count ?? 0,
         pendingRequests: pendingReqRes.count ?? 0,
         recentUsers: profilesRes.data || [],
-        recentDeals: [],
       });
       setLoading(false);
     };
-    fetch();
+    fetchData();
   }, []);
 
   const kpis = [
-    { label: isAr ? "إجمالي المستخدمين" : "Total Users", value: data.totalUsers, icon: Users },
-    { label: isAr ? "المطورون المسجلون" : "Registered Developers", value: data.totalDevelopers, icon: HardHat },
-    { label: isAr ? "بانتظار التوثيق" : "Pending Verification", value: data.pendingVerification, icon: ShieldCheck },
-    { label: isAr ? "الأراضي المدرجة" : "Listed Lands", value: data.totalLands, icon: Landmark },
-    { label: isAr ? "طلبات معلقة" : "Pending Requests", value: data.pendingRequests, icon: FileText },
-    { label: isAr ? "صفقات نشطة" : "Active Deals", value: data.activeDeals, icon: Handshake },
-    { label: isAr ? "صفقات مُنجزة" : "Closed Deals", value: data.closedDeals, icon: CheckCircle2 },
-    { label: isAr ? "إجمالي الصفقات" : "Total Deals", value: data.totalDeals, icon: TrendingUp },
+    { label: isAr ? "إجمالي المستخدمين" : "Total Users", value: data.totalUsers, icon: Users, color: "text-blue-500" },
+    { label: isAr ? "المطورون المسجلون" : "Registered Developers", value: data.totalDevelopers, icon: HardHat, color: "text-amber-500" },
+    { label: isAr ? "بانتظار التوثيق" : "Pending Verification", value: data.pendingVerification, icon: ShieldCheck, color: "text-orange-500" },
+    { label: isAr ? "الأراضي المدرجة" : "Listed Lands", value: data.totalLands, icon: Landmark, color: "text-emerald-500" },
+    { label: isAr ? "طلبات معلقة" : "Pending Requests", value: data.pendingRequests, icon: FileText, color: "text-purple-500" },
+    { label: isAr ? "صفقات نشطة" : "Active Deals", value: data.activeDeals, icon: Handshake, color: "text-primary" },
+    { label: isAr ? "صفقات مُنجزة" : "Closed Deals", value: data.closedDeals, icon: CheckCircle2, color: "text-green-500" },
+    { label: isAr ? "إجمالي الصفقات" : "Total Deals", value: data.totalDeals, icon: TrendingUp, color: "text-indigo-500" },
   ];
 
   return (
-    <CrmLayout>
-      <div className="mb-5 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-medium text-foreground">
-            {isAr ? "لوحة تحكم الأدمن" : "Admin Dashboard"}
-          </h1>
-          <p className="mt-0.5 text-sm font-light text-muted-foreground">
-            {isAr ? "مراقبة سير العمل وقياس الأداء" : "Monitor workflow and measure performance"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5">
-          <ShieldCheck className="h-3.5 w-3.5 text-primary" strokeWidth={1.5} />
-          <span className="text-xs font-light text-muted-foreground">Admin</span>
-        </div>
+    <AdminLayout>
+      <div className="mb-6">
+        <h1 className="text-2xl font-medium text-foreground">
+          {isAr ? "لوحة تحكم المدير" : "Admin Dashboard"}
+        </h1>
+        <p className="mt-1 text-sm font-light text-muted-foreground">
+          {isAr ? "مراقبة سير العمل وقياس الأداء" : "Monitor workflow and measure performance"}
+        </p>
       </div>
 
       {loading ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => <div key={i} className="h-20 animate-pulse rounded-xl bg-muted" />)}
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => <div key={i} className="h-24 animate-pulse rounded-xl bg-muted" />)}
         </div>
       ) : (
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {kpis.map((kpi) => (
-              <div key={kpi.label} className="doma-card p-4">
+              <div key={kpi.label} className="doma-card group p-4 transition-all hover:doma-shadow">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-light text-muted-foreground">{kpi.label}</span>
-                  <kpi.icon className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                  <kpi.icon className={`h-4 w-4 ${kpi.color}`} strokeWidth={1.5} />
                 </div>
-                <p className="text-2xl font-medium text-foreground" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
+                <p className="text-3xl font-medium text-foreground" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
                   {kpi.value.toLocaleString("en-US")}
                 </p>
               </div>
@@ -102,7 +92,7 @@ const AdminOverview: React.FC = () => {
           </div>
 
           {/* Recent Users */}
-          <div className="mt-5 doma-card p-5">
+          <div className="mt-6 doma-card p-5">
             <h3 className="mb-3 text-sm font-medium text-foreground">
               {isAr ? "آخر المسجلين" : "Recent Registrations"}
             </h3>
@@ -125,7 +115,7 @@ const AdminOverview: React.FC = () => {
           </div>
         </>
       )}
-    </CrmLayout>
+    </AdminLayout>
   );
 };
 
