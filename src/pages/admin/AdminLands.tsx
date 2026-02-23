@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, LocateFixed } from "lucide-react";
+import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, LocateFixed, ImagePlus } from "lucide-react";
 import { saudiCities } from "@/data/saudiCities";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +34,7 @@ const defaultForm = {
   exact_location_lat: "", exact_location_lng: "", owner_name: "",
   plot_number: "", plan_number: "", deed_number: "",
   length_m: "", width_m: "", street_width_m: "",
+  image_url: "",
 };
 
 const AdminLands: React.FC = () => {
@@ -48,6 +49,7 @@ const AdminLands: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ ...defaultForm });
   const [locating, setLocating] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const fetchLands = async () => {
     const { data } = await supabase.from("lands").select("*").order("created_at", { ascending: false });
@@ -98,6 +100,7 @@ const AdminLands: React.FC = () => {
       length_m: form.length_m ? parseFloat(form.length_m) : null,
       width_m: form.width_m ? parseFloat(form.width_m) : null,
       street_width_m: form.street_width_m ? parseFloat(form.street_width_m) : null,
+      image_url: form.image_url || null,
       is_featured: true,
       is_active: true,
     };
@@ -124,6 +127,22 @@ const AdminLands: React.FC = () => {
     setForm({ ...defaultForm });
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const ext = file.name.split('.').pop();
+    const path = `${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("land-images").upload(path, file);
+    if (error) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
+    } else {
+      const { data: urlData } = supabase.storage.from("land-images").getPublicUrl(path);
+      setForm(f => ({ ...f, image_url: urlData.publicUrl }));
+    }
+    setUploading(false);
+  };
+
   const openEdit = (land: any) => {
     setEditingId(land.id);
     setForm({
@@ -143,6 +162,7 @@ const AdminLands: React.FC = () => {
       length_m: land.length_m ? String(land.length_m) : "",
       width_m: land.width_m ? String(land.width_m) : "",
       street_width_m: land.street_width_m ? String(land.street_width_m) : "",
+      image_url: land.image_url || "",
     });
     setShowAdd(true);
   };
@@ -317,6 +337,24 @@ const AdminLands: React.FC = () => {
                 <Label className="text-xs">{isAr ? "ملخص الرؤية" : "Vision Summary"}</Label>
                 <Textarea value={form.vision_summary} onChange={e => setForm(f => ({ ...f, vision_summary: e.target.value }))} rows={3} />
               </div>
+
+              {/* Image Upload */}
+              <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
+                <Label className="text-sm font-medium mb-2 block">{isAr ? "صورة الأرض" : "Land Image"}</Label>
+                {form.image_url && (
+                  <div className="mb-3 overflow-hidden rounded-xl">
+                    <img src={form.image_url} alt="Land" className="h-40 w-full object-cover rounded-xl" />
+                  </div>
+                )}
+                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border/60 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
+                  <ImagePlus className="h-5 w-5 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
+                    {uploading ? (isAr ? "جاري الرفع..." : "Uploading...") : (isAr ? "اختر صورة" : "Choose Image")}
+                  </span>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+                </label>
+              </div>
+
               <Button onClick={handleSubmit} className="w-full doma-gradient">
                 {isAr ? (editingId ? "تحديث" : "إدراج الأرض") : (editingId ? "Update" : "Add Land")}
               </Button>

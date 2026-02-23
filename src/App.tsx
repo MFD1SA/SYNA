@@ -35,6 +35,7 @@ import AdminLands from "./pages/admin/AdminLands";
 import AdminDevelopers from "./pages/admin/AdminDevelopers";
 import AdminDeals from "./pages/admin/AdminDeals";
 import AdminAI from "./pages/admin/AdminAI";
+import OpportunityDetail from "./pages/OpportunityDetail";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +80,7 @@ const App: React.FC = () => (
               <Route path="/about" element={<AboutPage />} />
               <Route path="/faq" element={<FAQPage />} />
               <Route path="/features/:slug" element={<FeatureDetailPage />} />
+              <Route path="/opportunity/:id" element={<OpportunityDetail />} />
 
               {/* Auth */}
               <Route path="/auth/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />

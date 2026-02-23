@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { MapPin, Ruler, Layers, Calendar, LinkIcon } from "lucide-react";
-import { format } from "date-fns";
-import { ar } from "date-fns/locale";
+import { MapPin, Ruler, ArrowLeft, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import landPlaceholder1 from "@/assets/land-placeholder-1.jpg";
+import landPlaceholder2 from "@/assets/land-placeholder-2.jpg";
+import landPlaceholder3 from "@/assets/land-placeholder-3.jpg";
 
 interface FeaturedLand {
   id: string;
@@ -14,34 +16,14 @@ interface FeaturedLand {
   project_type: string | null;
   partnership_goal: string;
   created_at: string;
+  image_url: string | null;
 }
 
 const usageLabels: Record<string, { ar: string; en: string }> = {
   residential: { ar: "سكني", en: "Residential" },
   commercial: { ar: "تجاري", en: "Commercial" },
-  residential_commercial: { ar: "سكني تجاري", en: "Mixed" },
+  residential_commercial: { ar: "سكني تجاري", en: "Mixed Use" },
   high_density: { ar: "كثافة عالية", en: "High Density" },
-};
-
-const regionMap: Record<string, { ar: string; en: string }> = {
-  Riyadh: { ar: "منطقة الرياض", en: "Riyadh Region" },
-  Jeddah: { ar: "منطقة مكة المكرمة", en: "Makkah Region" },
-  Makkah: { ar: "منطقة مكة المكرمة", en: "Makkah Region" },
-  Madinah: { ar: "منطقة المدينة المنورة", en: "Madinah Region" },
-  Dammam: { ar: "المنطقة الشرقية", en: "Eastern Province" },
-  Khobar: { ar: "المنطقة الشرقية", en: "Eastern Province" },
-  Dhahran: { ar: "المنطقة الشرقية", en: "Eastern Province" },
-  Jubail: { ar: "المنطقة الشرقية", en: "Eastern Province" },
-  "Al Ahsa": { ar: "المنطقة الشرقية", en: "Eastern Province" },
-  Taif: { ar: "منطقة مكة المكرمة", en: "Makkah Region" },
-  Tabuk: { ar: "منطقة تبوك", en: "Tabuk Region" },
-  Buraidah: { ar: "منطقة القصيم", en: "Qassim Region" },
-  "Khamis Mushait": { ar: "منطقة عسير", en: "Asir Region" },
-  Abha: { ar: "منطقة عسير", en: "Asir Region" },
-  Hail: { ar: "منطقة حائل", en: "Hail Region" },
-  Najran: { ar: "منطقة نجران", en: "Najran Region" },
-  Jazan: { ar: "منطقة جازان", en: "Jazan Region" },
-  Yanbu: { ar: "منطقة المدينة المنورة", en: "Madinah Region" },
 };
 
 const cityNameAr: Record<string, string> = {
@@ -51,20 +33,23 @@ const cityNameAr: Record<string, string> = {
   Najran: "نجران", Jazan: "جازان", Yanbu: "ينبع", Jubail: "الجبيل", "Al Ahsa": "الأحساء",
 };
 
+const placeholders = [landPlaceholder1, landPlaceholder2, landPlaceholder3];
+
 const OpportunitiesSection: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  const navigate = useNavigate();
   const [lands, setLands] = useState<FeaturedLand[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     supabase
       .from("lands")
-      .select("id, city, district, land_area_sqm, usage_type, project_type, partnership_goal, created_at")
+      .select("id, city, district, land_area_sqm, usage_type, project_type, partnership_goal, created_at, image_url")
       .eq("is_active", true)
       .eq("is_featured", true)
       .order("created_at", { ascending: false })
-      .limit(20)
+      .limit(10)
       .then(({ data }) => setLands(data || []));
   }, []);
 
@@ -111,67 +96,74 @@ const OpportunitiesSection: React.FC = () => {
         </p>
       </div>
 
-      <div ref={scrollRef} className="flex gap-5 overflow-hidden px-4" style={{ scrollBehavior: "auto" }}>
+      <div ref={scrollRef} className="flex gap-6 overflow-hidden px-4" style={{ scrollBehavior: "auto" }}>
         {items.map((land, i) => {
-          const region = regionMap[land.city];
-          const dateStr = format(new Date(land.created_at), "yyyy/M/d");
+          const imgSrc = land.image_url || placeholders[i % placeholders.length];
 
           return (
             <div
               key={`${land.id}-${i}`}
-              className="min-w-[300px] max-w-[300px] shrink-0 rounded-2xl border border-border/60 bg-card overflow-hidden transition-all hover:shadow-lg hover:border-primary/30"
+              className="min-w-[320px] max-w-[320px] shrink-0 rounded-2xl border border-border/60 bg-card overflow-hidden transition-all hover:shadow-xl hover:border-primary/30 group"
             >
-              {/* Dark header with region */}
-              <div className="relative bg-[hsl(187,65%,15%)] p-4 pb-12 text-white">
-                <div className="flex items-center justify-between text-xs">
-                  <LinkIcon className="h-4 w-4 opacity-60" />
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] opacity-80">{isAr ? "متاحة" : "Available"}</span>
-                    <span className="text-[11px] opacity-60">{dateStr}</span>
-                  </div>
-                </div>
-                <div className="absolute inset-x-0 bottom-0 translate-y-1/2 mx-auto w-fit">
-                  <span className="rounded-full bg-primary px-4 py-1 text-xs font-medium text-primary-foreground">
+              {/* Image */}
+              <div className="relative h-44 overflow-hidden">
+                <img
+                  src={imgSrc}
+                  alt={`${isAr ? cityNameAr[land.city] || land.city : land.city} land`}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                
+                {/* Badge */}
+                <div className="absolute top-3 start-3">
+                  <span className="rounded-full bg-primary px-3 py-1 text-[11px] font-medium text-primary-foreground">
                     {isAr ? "للشراكة" : "Partnership"}
                   </span>
                 </div>
-                <div className="mt-6 text-center">
-                  <p className="text-lg font-medium">{isAr ? (region?.ar || land.city) : (region?.en || land.city)}</p>
-                  <p className="text-[11px] uppercase tracking-wider opacity-60">
-                    {isAr ? (region?.ar || "") : (region?.en || "SAUDI ARABIA")}
-                  </p>
+                
+                {/* Usage badge */}
+                <div className="absolute top-3 end-3">
+                  <span className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-medium text-foreground backdrop-blur-sm">
+                    {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
+                  </span>
+                </div>
+
+                {/* City name overlay */}
+                <div className="absolute bottom-3 start-4">
+                  <h3 className="text-lg font-medium text-white">
+                    {isAr ? (cityNameAr[land.city] || land.city) : land.city}
+                  </h3>
+                  {land.district && (
+                    <p className="text-xs text-white/80">
+                      {isAr ? `حي ${land.district}` : land.district}
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* Card body */}
-              <div className="p-5 pt-8">
-                <h3 className="text-sm font-medium text-foreground mb-3 line-clamp-2 text-center">
-                  {isAr
-                    ? `أرض ${land.district ? `حي ${land.district} ب` : ""}${cityNameAr[land.city] || land.city}`
-                    : `Land${land.district ? ` in ${land.district},` : ""} ${land.city}`
-                  }
-                </h3>
-
-                <div className="space-y-2 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <Layers className="h-3.5 w-3.5 text-primary" />
-                    <span>{isAr ? "نوع الأصل: أرض" : "Asset: Land"}</span>
-                    <span className="ms-auto flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
+              <div className="p-4">
+                <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
+                  <div className="flex items-center gap-1.5">
                     <MapPin className="h-3.5 w-3.5 text-primary" />
                     <span>{isAr ? "المدينة:" : "City:"} {isAr ? (cityNameAr[land.city] || land.city) : land.city}</span>
-                    <span className="ms-auto flex items-center gap-1">
-                      <Ruler className="h-3 w-3" />
-                      {land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}
-                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Ruler className="h-3.5 w-3.5 text-primary" />
+                    <span>{land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}</span>
                   </div>
                 </div>
 
-                <button className="mt-4 w-full rounded-lg bg-primary py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+                {land.project_type && (
+                  <p className="text-xs text-muted-foreground mb-3 line-clamp-1">
+                    {isAr ? "نوع المشروع:" : "Project:"} {land.project_type}
+                  </p>
+                )}
+
+                <button
+                  onClick={() => navigate(`/opportunity/${land.id}`)}
+                  className="w-full rounded-xl bg-primary py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                >
                   {isAr ? "التفاصيل" : "Details"}
                 </button>
               </div>
