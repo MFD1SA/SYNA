@@ -10,93 +10,85 @@ const TermsPage: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main className="container py-16">
-        <h1 className="mb-8 text-3xl font-medium text-foreground">{t.terms.title}</h1>
-        <div className="max-w-3xl space-y-8 font-light leading-relaxed text-muted-foreground">
+      <main className="container py-10">
+        <h1 className="mb-6 text-3xl font-medium text-foreground">{t.terms.title}</h1>
+        <div className="max-w-3xl space-y-6 font-light leading-relaxed text-muted-foreground">
           {isAr ? (
             <>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">1. مقدمة</h2>
-                <p>مرحباً بك في DOMA، المنصة المتكاملة لإدارة العقود والمشاريع العقارية في المملكة العربية السعودية، والمملوكة لشركة دوما للتقنية. باستخدامك لهذه المنصة فإنك توافق على الالتزام بهذه الشروط والأحكام.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">1. مقدمة</h2>
+                <p>مرحباً بك في DOMA، المنصة المتخصصة في تسهيل شراكات التطوير العقاري بين ملاك الأراضي والمطورين في المملكة العربية السعودية، والمملوكة لشركة دوما للتقنية. باستخدامك لهذه المنصة فإنك توافق على الالتزام بهذه الشروط والأحكام.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">2. التعريفات</h2>
-                <p>"المنصة" تشير إلى DOMA وجميع الخدمات المرتبطة بها. "المستخدم" يشير إلى أي شخص أو جهة تستخدم المنصة. "الخدمات" تشمل جميع الوظائف المتاحة عبر المنصة بما فيها الخريطة التفاعلية وإدارة العقود والتقارير.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">2. التعريفات</h2>
+                <p>"المنصة" تشير إلى DOMA وجميع الخدمات المرتبطة بها. "مالك الأرض" يشير إلى من يسجل أرضه للبحث عن شريك تطوير. "المطور" يشير إلى الشركة المسجلة تجارياً والتي تبحث عن فرص تطوير. "الصفقة" تشمل دورة الشراكة من الطلب حتى الإغلاق.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">3. شروط الاستخدام</h2>
-                <p>يجب أن يكون عمر المستخدم 18 عاماً على الأقل. يلتزم المستخدم بتقديم معلومات صحيحة ودقيقة عند التسجيل. يتحمل المستخدم مسؤولية الحفاظ على سرية بيانات حسابه وكلمة المرور.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">3. شروط الاستخدام</h2>
+                <p>يجب أن يكون عمر المستخدم 18 عاماً على الأقل. يلتزم المطور بتقديم سجل تجاري ساري المفعول. يلتزم مالك الأرض بتقديم بيانات صحيحة عن أرضه. يتحمل كل طرف مسؤولية الحفاظ على سرية بيانات حسابه.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">4. الاشتراكات والدفع</h2>
-                <p>تقدم المنصة خطط اشتراك متنوعة حسب نوع المستخدم. يتم تجديد الاشتراكات تلقائياً ما لم يتم الإلغاء قبل تاريخ التجديد. تحتفظ الشركة بحق تعديل أسعار الاشتراكات مع إشعار المستخدمين مسبقاً.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">4. العمولة والرسوم</h2>
+                <p>تفرض المنصة عمولة بنسبة 2.50% تُدفع من المطور عند إتمام الصفقة بنجاح. لا توجد رسوم تسجيل أو اشتراك شهري. العمولة مستحقة فقط عند إغلاق الاتفاق بين الطرفين.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">5. الملكية الفكرية</h2>
-                <p>جميع المحتويات والتصاميم والعلامات التجارية وبراءات الاختراع المتعلقة بالمنصة هي ملك لشركة دوما للتقنية. لا يجوز نسخ أو تعديل أو توزيع أي محتوى من المنصة دون إذن كتابي مسبق.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">5. الخصوصية والسرية</h2>
+                <p>بيانات مالك الأرض الحساسة (رقم الصك، الموقع الدقيق، هوية المالك) لا تُعرض للمطور إلا بعد موافقة المالك صراحةً. أي محاولة للتحايل على نظام الخصوصية تعرض الحساب للإيقاف الفوري.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">6. حدود المسؤولية</h2>
-                <p>تقدم المنصة خدماتها "كما هي" ولا تتحمل الشركة أي مسؤولية عن الأضرار المباشرة أو غير المباشرة الناتجة عن استخدام المنصة. لا تضمن الشركة دقة البيانات المقدمة من أطراف ثالثة.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">6. الملكية الفكرية</h2>
+                <p>جميع المحتويات والتصاميم والعلامات التجارية المتعلقة بالمنصة هي ملك لشركة دوما للتقنية. لا يجوز نسخ أو تعديل أو توزيع أي محتوى من المنصة دون إذن كتابي مسبق.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">7. إنهاء الحساب</h2>
-                <p>يحق للشركة تعليق أو إنهاء حساب المستخدم في حالة مخالفة هذه الشروط. يمكن للمستخدم إلغاء حسابه في أي وقت من خلال إعدادات الحساب.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">7. حدود المسؤولية</h2>
+                <p>المنصة وسيط تقني فقط ولا تتحمل مسؤولية نتائج الشراكات أو الاتفاقات بين الأطراف. لا تضمن الشركة دقة البيانات المقدمة من المستخدمين.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">8. القانون الواجب التطبيق</h2>
-                <p>تخضع هذه الشروط لأنظمة المملكة العربية السعودية. أي نزاع ينشأ عن استخدام المنصة يتم حله وفقاً للأنظمة المعمول بها في المملكة.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">8. إنهاء الحساب</h2>
+                <p>يحق للشركة تعليق أو إنهاء حساب المستخدم في حالة مخالفة هذه الشروط. يمكن للمستخدم إلغاء حسابه في أي وقت.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">9. التعديلات</h2>
-                <p>تحتفظ الشركة بحق تعديل هذه الشروط في أي وقت. سيتم إشعار المستخدمين بأي تغييرات جوهرية عبر البريد الإلكتروني أو من خلال إشعار داخل المنصة.</p>
-              </section>
-              <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">10. التواصل</h2>
-                <p>للاستفسارات المتعلقة بهذه الشروط، يمكنكم التواصل معنا عبر مركز الدعم أو الاتصال على الرقم 0504566777.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">9. القانون الواجب التطبيق</h2>
+                <p>تخضع هذه الشروط لأنظمة المملكة العربية السعودية. للتواصل: مركز الدعم أو الرقم 0504566777.</p>
               </section>
             </>
           ) : (
             <>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">1. Introduction</h2>
-                <p>Welcome to DOMA, an integrated platform for real estate contract and project management in Saudi Arabia, owned by Doma Technology Company. By using this platform, you agree to comply with these Terms and Conditions.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">1. Introduction</h2>
+                <p>Welcome to DOMA, a platform specializing in facilitating real estate development partnerships between landowners and developers in Saudi Arabia, owned by Doma Technology Company. By using this platform, you agree to comply with these Terms and Conditions.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">2. Definitions</h2>
-                <p>"Platform" refers to DOMA and all associated services. "User" refers to any person or entity using the platform. "Services" include all functionalities available through the platform, including interactive maps, contract management, and reports.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">2. Definitions</h2>
+                <p>"Platform" refers to DOMA and all associated services. "Landowner" refers to those who list their land seeking a development partner. "Developer" refers to a commercially registered company seeking development opportunities. "Deal" encompasses the partnership cycle from request to closure.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">3. Terms of Use</h2>
-                <p>Users must be at least 18 years old. Users are required to provide accurate and truthful information during registration. Users are responsible for maintaining the confidentiality of their account credentials.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">3. Terms of Use</h2>
+                <p>Users must be at least 18 years old. Developers must provide a valid commercial register. Landowners must provide accurate land data. Each party is responsible for maintaining account confidentiality.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">4. Subscriptions & Payment</h2>
-                <p>The platform offers various subscription plans based on user type. Subscriptions are automatically renewed unless canceled before the renewal date. The company reserves the right to modify subscription prices with prior notice to users.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">4. Commission & Fees</h2>
+                <p>The platform charges a 2.50% commission paid by the developer upon successful deal closure. There are no registration or monthly subscription fees. Commission is due only upon agreement closure between both parties.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">5. Intellectual Property</h2>
-                <p>All content, designs, trademarks, and patents related to the platform are the property of Doma Technology Company. No content from the platform may be copied, modified, or distributed without prior written permission.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">5. Privacy & Confidentiality</h2>
+                <p>Sensitive landowner data (deed number, exact location, owner identity) is not shown to developers until explicit owner approval. Any attempt to circumvent the privacy system results in immediate account suspension.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">6. Limitation of Liability</h2>
-                <p>The platform provides its services "as is" and the company bears no responsibility for direct or indirect damages resulting from the use of the platform. The company does not guarantee the accuracy of data provided by third parties.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">6. Intellectual Property</h2>
+                <p>All content, designs, and trademarks related to the platform are the property of Doma Technology Company.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">7. Account Termination</h2>
-                <p>The company reserves the right to suspend or terminate a user's account in case of violation of these terms. Users can cancel their account at any time through account settings.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">7. Limitation of Liability</h2>
+                <p>The platform is a technical intermediary only and bears no responsibility for partnership outcomes or agreements between parties.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">8. Governing Law</h2>
-                <p>These terms are governed by the laws of the Kingdom of Saudi Arabia. Any disputes arising from the use of the platform shall be resolved in accordance with applicable Saudi regulations.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">8. Account Termination</h2>
+                <p>The company reserves the right to suspend or terminate accounts for violations. Users can cancel their account at any time.</p>
               </section>
               <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">9. Modifications</h2>
-                <p>The company reserves the right to modify these terms at any time. Users will be notified of any material changes via email or through an in-platform notification.</p>
-              </section>
-              <section>
-                <h2 className="mb-3 text-lg font-medium text-foreground">10. Contact</h2>
-                <p>For inquiries regarding these terms, please contact us through our Support Center or call 0504566777.</p>
+                <h2 className="mb-2 text-lg font-medium text-foreground">9. Governing Law</h2>
+                <p>These terms are governed by the laws of the Kingdom of Saudi Arabia. Contact: Support Center or call 0504566777.</p>
               </section>
             </>
           )}

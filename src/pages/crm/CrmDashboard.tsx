@@ -2,125 +2,113 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useTenant } from "@/hooks/useTenant";
 import CrmLayout from "@/components/crm/CrmLayout";
 import {
-  Building2, DoorOpen, FileText, TrendingUp, AlertTriangle,
-  Wrench, Receipt, BarChart3,
+  Landmark, FileText, Handshake, TrendingUp,
+  HardHat, Search, Send, CheckCircle2,
 } from "lucide-react";
-
-interface KPI {
-  totalProperties: number;
-  totalUnits: number;
-  occupiedUnits: number;
-  vacantUnits: number;
-  activeLeases: number;
-  expiringLeases: number;
-  openTickets: number;
-  arrears: number;
-}
 
 const CrmDashboard: React.FC = () => {
   const { user } = useAuth();
-  const { t, lang } = useLanguage();
-  const { tenantId } = useTenant();
-  const [kpi, setKpi] = useState<KPI>({
-    totalProperties: 0, totalUnits: 0, occupiedUnits: 0, vacantUnits: 0,
-    activeLeases: 0, expiringLeases: 0, openTickets: 0, arrears: 0,
-  });
-  const [expiringList, setExpiringList] = useState<any[]>([]);
-  const [overdueList, setOverdueList] = useState<any[]>([]);
+  const { lang } = useLanguage();
+  const isAr = lang === "ar";
+  const [isDeveloper, setIsDeveloper] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [ownerKpi, setOwnerKpi] = useState({ lands: 0, pendingRequests: 0, activeDeals: 0, closedDeals: 0 });
+  const [devKpi, setDevKpi] = useState({ browsedLands: 0, sentRequests: 0, activeDeals: 0, closedDeals: 0 });
 
   useEffect(() => {
     if (!user) return;
-    const fetch = async () => {
-      const thirtyDays = new Date();
-      thirtyDays.setDate(thirtyDays.getDate() + 30);
+    const fetchData = async () => {
+      // Check developer status
+      const { data: devProfile } = await supabase
+        .from("developers")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
 
-      let pq = supabase.from("projects").select("id", { count: "exact", head: true });
-      let uq = supabase.from("units").select("id, status");
-      let lq = supabase.from("leases").select("id, status, end_date, unit_id");
-      if (tenantId) {
-        pq = pq.eq("tenant_id", tenantId);
-        uq = uq.eq("tenant_id", tenantId);
-        lq = lq.eq("tenant_id", tenantId);
-      } else if (user) {
-        pq = pq.eq("user_id", user.id);
-        uq = uq.eq("user_id", user.id);
-        lq = lq.eq("user_id", user.id);
+      const isDevUser = !!devProfile;
+      setIsDeveloper(isDevUser);
+
+      if (isDevUser && devProfile) {
+        // Developer KPIs
+        const [landsRes, reqRes, dealsActive, dealsClosed] = await Promise.all([
+          supabase.from("lands").select("id", { count: "exact", head: true }).eq("is_active", true),
+          supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id),
+          supabase.from("deals").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).neq("current_stage", "deal_closed").neq("current_stage", "deal_cancelled"),
+          supabase.from("deals").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).eq("current_stage", "deal_closed"),
+        ]);
+        setDevKpi({
+          browsedLands: landsRes.count ?? 0,
+          sentRequests: reqRes.count ?? 0,
+          activeDeals: dealsActive.count ?? 0,
+          closedDeals: dealsClosed.count ?? 0,
+        });
+      } else {
+        // Owner KPIs
+        const [landsRes, reqRes, dealsActive, dealsClosed] = await Promise.all([
+          supabase.from("lands").select("id", { count: "exact", head: true }).eq("owner_id", user.id),
+          supabase.from("deal_requests").select("id, land_id, lands!inner(owner_id)", { count: "exact", head: true }).eq("status", "pending"),
+          supabase.from("deals").select("id", { count: "exact", head: true }).eq("owner_id", user.id).neq("current_stage", "deal_closed").neq("current_stage", "deal_cancelled"),
+          supabase.from("deals").select("id", { count: "exact", head: true }).eq("owner_id", user.id).eq("current_stage", "deal_closed"),
+        ]);
+        setOwnerKpi({
+          lands: landsRes.count ?? 0,
+          pendingRequests: reqRes.count ?? 0,
+          activeDeals: dealsActive.count ?? 0,
+          closedDeals: dealsClosed.count ?? 0,
+        });
       }
-
-      const [props, units, leases, tickets, receivables] = await Promise.all([
-        pq,
-        uq,
-        lq,
-        tenantId
-          ? supabase.from("maintenance_tickets").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId).eq("status", "open")
-          : Promise.resolve({ count: 0 } as any),
-        tenantId
-          ? supabase.from("receivables").select("*").eq("tenant_id", tenantId).eq("status", "overdue")
-          : Promise.resolve({ data: [] } as any),
-      ]);
-
-      const unitsData = units.data || [];
-      const leasesData = leases.data || [];
-      const occupied = unitsData.filter((u: any) => u.status === "occupied").length;
-      const active = leasesData.filter((l: any) => l.status === "active").length;
-      const expiring = leasesData.filter((l: any) => {
-        const end = new Date(l.end_date);
-        return l.status === "active" && end <= thirtyDays && end >= new Date();
-      });
-
-      setKpi({
-        totalProperties: props.count ?? 0,
-        totalUnits: unitsData.length,
-        occupiedUnits: occupied,
-        vacantUnits: unitsData.filter((u: any) => u.status === "vacant").length,
-        activeLeases: active,
-        expiringLeases: expiring.length,
-        openTickets: (tickets as any).count ?? 0,
-        arrears: ((receivables as any).data || []).length,
-      });
-
-      setExpiringList(expiring.slice(0, 10));
-      setOverdueList(((receivables as any).data || []).slice(0, 10));
       setLoading(false);
     };
-    fetch();
-  }, [user, tenantId]);
+    fetchData();
+  }, [user]);
 
-  const occupancyRate = kpi.totalUnits > 0
-    ? Math.round((kpi.occupiedUnits / kpi.totalUnits) * 100)
-    : 0;
-
-  const cards = [
-    { label: t.crm.kpi.totalProperties, value: kpi.totalProperties, icon: Building2 },
-    { label: t.crm.kpi.totalUnits, value: kpi.totalUnits, icon: DoorOpen },
-    { label: t.crm.kpi.occupancyRate, value: `${occupancyRate}%`, icon: BarChart3 },
-    { label: t.crm.kpi.vacantUnits, value: kpi.vacantUnits, icon: DoorOpen },
-    { label: t.crm.kpi.activeLeases, value: kpi.activeLeases, icon: FileText },
-    { label: t.crm.kpi.expiringLeases, value: kpi.expiringLeases, icon: AlertTriangle },
-    { label: t.crm.kpi.openTickets, value: kpi.openTickets, icon: Wrench },
-    { label: t.crm.kpi.arrears, value: kpi.arrears, icon: Receipt },
+  const ownerCards = [
+    { label: isAr ? "أراضيي المدرجة" : "My Listed Lands", value: ownerKpi.lands, icon: Landmark },
+    { label: isAr ? "طلبات قيد المراجعة" : "Pending Requests", value: ownerKpi.pendingRequests, icon: FileText },
+    { label: isAr ? "صفقات نشطة" : "Active Deals", value: ownerKpi.activeDeals, icon: Handshake },
+    { label: isAr ? "صفقات مُنجزة" : "Closed Deals", value: ownerKpi.closedDeals, icon: CheckCircle2 },
   ];
+
+  const devCards = [
+    { label: isAr ? "أراضٍ متاحة" : "Available Lands", value: devKpi.browsedLands, icon: Search },
+    { label: isAr ? "طلباتي المقدمة" : "My Requests", value: devKpi.sentRequests, icon: Send },
+    { label: isAr ? "صفقات نشطة" : "Active Deals", value: devKpi.activeDeals, icon: Handshake },
+    { label: isAr ? "صفقات مُنجزة" : "Closed Deals", value: devKpi.closedDeals, icon: CheckCircle2 },
+  ];
+
+  const cards = isDeveloper ? devCards : ownerCards;
 
   return (
     <CrmLayout>
-      <div className="mb-6">
-        <h1 className="text-2xl font-medium text-foreground">{t.crm.nav.dashboard}</h1>
-        <p className="mt-1 text-sm font-light text-muted-foreground">
-          {lang === "ar" ? "ملخص شامل لأداء العقارات والعقود" : "Comprehensive overview of property and lease performance"}
+      <div className="mb-5">
+        <div className="flex items-center gap-2 mb-1">
+          {isDeveloper ? (
+            <HardHat className="h-5 w-5 text-primary" strokeWidth={1.5} />
+          ) : (
+            <Landmark className="h-5 w-5 text-primary" strokeWidth={1.5} />
+          )}
+          <h1 className="text-2xl font-medium text-foreground">
+            {isDeveloper
+              ? (isAr ? "لوحة تحكم المطور" : "Developer Dashboard")
+              : (isAr ? "لوحة تحكم المالك" : "Landowner Dashboard")}
+          </h1>
+        </div>
+        <p className="text-sm font-light text-muted-foreground">
+          {isDeveloper
+            ? (isAr ? "متابعة الفرص والصفقات وطلبات الشراكة" : "Track opportunities, deals, and partnership requests")
+            : (isAr ? "إدارة أراضيك ومتابعة طلبات الشراكة والصفقات" : "Manage your lands and track partnership requests and deals")}
         </p>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card) => (
-          <div key={card.label} className="doma-card p-5">
-            <div className="mb-3 flex items-center justify-between">
+          <div key={card.label} className="doma-card p-4">
+            <div className="mb-2 flex items-center justify-between">
               <span className="text-sm font-light text-muted-foreground">{card.label}</span>
-              <card.icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
+              <card.icon className="h-4 w-4 text-primary" strokeWidth={1.5} />
             </div>
             <p className="text-2xl font-medium text-foreground" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
               {loading ? <span className="inline-block h-7 w-14 animate-pulse rounded-lg bg-muted" /> : card.value.toLocaleString("en-US")}
@@ -129,54 +117,77 @@ const CrmDashboard: React.FC = () => {
         ))}
       </div>
 
-      {/* Widgets */}
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        {/* Expiring Leases */}
-        <div className="doma-card p-5">
-          <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-foreground">
-            <AlertTriangle className="h-4 w-4 text-accent" strokeWidth={1.5} />
-            {lang === "ar" ? "أقرب العقود للانتهاء" : "Leases Expiring Soon"}
-          </h3>
-          {expiringList.length === 0 ? (
-            <p className="text-sm font-light text-muted-foreground">{t.crm.actions.noData}</p>
-          ) : (
-            <div className="space-y-2">
-              {expiringList.map((lease: any) => (
-                <div key={lease.id} className="flex items-center justify-between rounded-lg border border-border/40 p-3">
-                  <span className="text-sm font-light text-foreground" dir="ltr">
-                    {lease.ejar_number || lease.id.slice(0, 8)}
-                  </span>
-                  <span className="text-xs font-light text-accent" dir="ltr">
-                    {new Date(lease.end_date).toLocaleDateString("en-US")}
-                  </span>
+      {/* Quick Actions */}
+      <div className="mt-5 doma-card p-5">
+        <h3 className="mb-3 text-sm font-medium text-foreground">
+          {isAr ? "إجراءات سريعة" : "Quick Actions"}
+        </h3>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {isDeveloper ? (
+            <>
+              <div className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
+                <Search className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                <div>
+                  <p className="text-sm font-medium text-foreground">{isAr ? "استعراض الأراضي" : "Browse Lands"}</p>
+                  <p className="text-xs font-light text-muted-foreground">{isAr ? "ابحث عن فرص تطوير جديدة" : "Find new development opportunities"}</p>
                 </div>
-              ))}
-            </div>
+              </div>
+              <div className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
+                <FileText className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                <div>
+                  <p className="text-sm font-medium text-foreground">{isAr ? "متابعة طلباتي" : "Track My Requests"}</p>
+                  <p className="text-xs font-light text-muted-foreground">{isAr ? "تابع حالة طلبات الشراكة" : "Monitor partnership request status"}</p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
+                <Landmark className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                <div>
+                  <p className="text-sm font-medium text-foreground">{isAr ? "إضافة أرض" : "Add Land"}</p>
+                  <p className="text-xs font-light text-muted-foreground">{isAr ? "أدرج أرضك لاستقبال طلبات المطورين" : "List your land to receive developer requests"}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
+                <FileText className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                <div>
+                  <p className="text-sm font-medium text-foreground">{isAr ? "مراجعة الطلبات" : "Review Requests"}</p>
+                  <p className="text-xs font-light text-muted-foreground">{isAr ? "راجع طلبات المطورين ووافق أو ارفض" : "Review developer requests and approve or reject"}</p>
+                </div>
+              </div>
+            </>
           )}
         </div>
+      </div>
 
-        {/* Overdue Payments */}
-        <div className="doma-card p-5">
-          <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-foreground">
-            <Receipt className="h-4 w-4 text-destructive" strokeWidth={1.5} />
-            {lang === "ar" ? "مستحقات متأخرة" : "Overdue Payments"}
-          </h3>
-          {overdueList.length === 0 ? (
-            <p className="text-sm font-light text-muted-foreground">{t.crm.actions.noData}</p>
-          ) : (
-            <div className="space-y-2">
-              {overdueList.map((r: any) => (
-                <div key={r.id} className="flex items-center justify-between rounded-lg border border-border/40 p-3">
-                  <span className="text-sm font-light text-foreground" dir="ltr">
-                    SAR {Number(r.amount).toLocaleString("en-US")}
-                  </span>
-                  <span className="text-xs font-light text-destructive" dir="ltr">
-                    {new Date(r.due_date).toLocaleDateString("en-US")}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+      {/* Deal Flow Visual */}
+      <div className="mt-5 doma-card p-5">
+        <h3 className="mb-3 text-sm font-medium text-foreground">
+          {isAr ? "مسار الصفقة" : "Deal Flow"}
+        </h3>
+        <div className="flex items-center gap-1 overflow-x-auto pb-2">
+          {[
+            { ar: "مدرجة", en: "Listed" },
+            { ar: "طلب مقدم", en: "Request" },
+            { ar: "مراجعة المالك", en: "Owner Review" },
+            { ar: "تمت الموافقة", en: "Approved" },
+            { ar: "اجتماع", en: "Meeting" },
+            { ar: "استراتيجية", en: "Strategy" },
+            { ar: "مستندات", en: "Documents" },
+            { ar: "إغلاق", en: "Closed" },
+          ].map((stage, idx, arr) => (
+            <React.Fragment key={stage.en}>
+              <div className="flex shrink-0 items-center justify-center rounded-lg border border-border/40 bg-card px-3 py-1.5">
+                <span className="text-[10px] font-light text-muted-foreground whitespace-nowrap">
+                  {isAr ? stage.ar : stage.en}
+                </span>
+              </div>
+              {idx < arr.length - 1 && (
+                <TrendingUp className="h-3 w-3 shrink-0 text-border" strokeWidth={1.5} />
+              )}
+            </React.Fragment>
+          ))}
         </div>
       </div>
     </CrmLayout>
