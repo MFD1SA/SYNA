@@ -34,14 +34,16 @@ serve(async (req) => {
     if (dbError) console.error("DB error:", dbError);
 
     // Send email via Resend API
-    const resendApiKey = (Deno.env.get("RESEND_API_KEY") || "").trim();
+    const rawKey = Deno.env.get("RESEND_API_KEY") || "";
+    const resendApiKey = rawKey.replace(/[^\x20-\x7E]/g, "").trim();
+    console.log("Key length:", resendApiKey.length, "starts with:", resendApiKey.substring(0, 5));
     if (resendApiKey) {
-      const headers = new Headers();
-      headers.set("Authorization", "Bearer " + resendApiKey);
-      headers.set("Content-Type", "application/json");
       const emailRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
-        headers,
+        headers: new Headers([
+          ["Authorization", "Bearer " + resendApiKey],
+          ["Content-Type", "application/json"],
+        ]),
         body: JSON.stringify({
           from: "DOMA Contact <onboarding@resend.dev>",
           to: [ADMIN_EMAIL],
