@@ -15,7 +15,30 @@ const usageLabels: Record<string, { ar: string; en: string }> = {
   residential: { ar: "سكني", en: "Residential" },
   commercial: { ar: "تجاري", en: "Commercial" },
   residential_commercial: { ar: "سكني تجاري", en: "Mixed Use" },
-  high_density: { ar: "كثافة عالية", en: "High Density" },
+  high_density: { ar: "أبراج (سكني / تجاري / مكتبي)", en: "Towers (Residential / Commercial / Office)" },
+};
+
+const districtNameAr: Record<string, string> = {
+  "Al Malqa": "الملقا",
+  "Al Shati": "الشاطئ",
+  "Al Faisaliyah": "الفيصلية",
+  "Al Awali": "العوالي",
+  "Al Uyun": "العيون",
+  "Al Hada": "الهدا",
+  "Al Corniche": "الكورنيش",
+  "Al Muruj": "المروج",
+  "Al Sadd": "السد",
+  "Al Rawdah": "الروضة",
+  "Al Olaya": "العليا",
+  "Al Wurud": "الورود",
+  "Al Nakheel": "النخيل",
+  "Al Hamra": "الحمراء",
+  "Al Sulaimaniyah": "السليمانية",
+  "Al Rabwah": "الربوة",
+  "Al Zahra": "الزهراء",
+  "Al Aziziyah": "العزيزية",
+  "Al Khalidiyah": "الخالدية",
+  "Al Naseem": "النسيم",
 };
 
 const goalLabels: Record<string, { ar: string; en: string }> = {
@@ -134,7 +157,7 @@ const OpportunityDetail: React.FC = () => {
                 </span>
                 <h1 className="mt-3 text-3xl md:text-4xl font-medium text-white">
                   {isAr
-                    ? `أرض ${land.district ? `حي ${land.district} — ` : ""}${cityAr}`
+                    ? `أرض ${land.district ? `حي ${districtNameAr[land.district] || land.district} — ` : ""}${cityAr}`
                     : `Land${land.district ? ` in ${land.district},` : ""} ${land.city}`
                   }
                 </h1>
@@ -178,7 +201,7 @@ const OpportunityDetail: React.FC = () => {
                 <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
                   <p>
                     {isAr
-                      ? `تتوفر أرض ${usageLabels[land.usage_type]?.ar || ""} بمساحة ${land.land_area_sqm?.toLocaleString()} متر مربع في ${land.district ? `حي ${land.district} ب` : ""}${cityAr}، وهي فرصة استثمارية مميزة لتطوير ${land.project_type || "مشروع عقاري"} يلبي الطلب المتنامي على العقارات في المنطقة.`
+                      ? `تتوفر أرض ${usageLabels[land.usage_type]?.ar || ""} بمساحة ${land.land_area_sqm?.toLocaleString()} متر مربع في ${land.district ? `حي ${districtNameAr[land.district] || land.district} ب` : ""}${cityAr}، وهي فرصة استثمارية مميزة لتطوير ${land.project_type || "مشروع عقاري"} يلبي الطلب المتنامي على العقارات في المنطقة.`
                       : `A ${usageLabels[land.usage_type]?.en || ""} land spanning ${land.land_area_sqm?.toLocaleString()} sqm is available in ${land.district ? `${land.district}, ` : ""}${land.city}. This is a premium investment opportunity to develop ${land.project_type || "a real estate project"} that meets the growing demand in the area.`
                     }
                   </p>
@@ -261,7 +284,7 @@ const OpportunityDetail: React.FC = () => {
                   {land.district && (
                     <div className="flex justify-between py-2 border-b border-border/40">
                       <span className="text-muted-foreground">{isAr ? "الحي" : "District"}</span>
-                      <span className="font-medium text-foreground">{land.district}</span>
+                      <span className="font-medium text-foreground">{isAr ? (districtNameAr[land.district] || land.district) : land.district}</span>
                     </div>
                   )}
                   <div className="flex justify-between py-2 border-b border-border/40">
