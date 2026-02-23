@@ -1,7 +1,9 @@
 import React from "react";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { FileText } from "lucide-react";
 
 const TermsPage: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -10,9 +12,15 @@ const TermsPage: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
+      <PageHeader
+        icon={FileText}
+        title={isAr ? "الشروط والأحكام" : "Terms & Conditions"}
+        description={isAr
+          ? "الشروط والأحكام التي تنظّم استخدام منصة دوما والعلاقة بين الأطراف"
+          : "The terms and conditions governing the use of the DOMA platform and the relationship between parties"}
+      />
       <main className="container py-10">
-        <h1 className="mb-6 text-3xl font-medium text-foreground">{t.terms.title}</h1>
-        <div className="max-w-3xl space-y-6 font-light leading-relaxed text-muted-foreground">
+        <div className="max-w-3xl mx-auto space-y-6 font-light leading-relaxed text-muted-foreground">
           {isAr ? (
             <>
               <section>

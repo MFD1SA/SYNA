@@ -1,8 +1,9 @@
 import React from "react";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Handshake, Target, Users, Landmark, ShieldCheck, TrendingUp } from "lucide-react";
+import { Handshake, Target, Users, Landmark, ShieldCheck, TrendingUp, Info } from "lucide-react";
 
 const AboutPage: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -23,14 +24,16 @@ const AboutPage: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
+      <PageHeader
+        icon={Info}
+        title={isAr ? "عن دوما" : "About DOMA"}
+        description={isAr
+          ? "تعرّف على رؤية دوما ودورها في تنظيم شراكات التطوير العقاري بين ملاك الأراضي والمطورين"
+          : "Learn about DOMA's vision and its role in organizing real estate development partnerships between landowners and developers"}
+      />
       <main className="py-12 md:py-16">
         <div className="container">
           <div className="mx-auto max-w-2xl text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5">
-              <div className="h-1.5 w-1.5 rounded-full bg-accent" />
-              <span className="text-xs font-light text-primary">{t.about.version}</span>
-            </div>
-            <h1 className="mb-3 text-3xl font-medium text-foreground">{t.about.title}</h1>
             <p className="text-base font-light leading-relaxed text-muted-foreground">
               {isAr
                 ? "في ظل التغيرات التنظيمية ورسوم الأراضي البيضاء، أصبح كثير من ملاك الأراضي يبحثون عن حلول عملية لتحويل أصولهم إلى مشاريع منتجة دون الدخول في تعقيدات البيع أو تحمل تكاليف التطوير بمفردهم."
@@ -43,7 +46,6 @@ const AboutPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Values */}
           <div className="mx-auto mt-10 grid max-w-3xl gap-4 sm:grid-cols-3">
             {values.map(({ icon: Icon, label, desc }) => (
               <div key={label} className="doma-card p-5 text-center">
@@ -54,7 +56,6 @@ const AboutPage: React.FC = () => {
             ))}
           </div>
 
-          {/* Why this platform */}
           <div className="mx-auto mt-10 max-w-2xl">
             <h2 className="mb-4 text-center text-xl font-medium text-foreground">
               {isAr ? "لماذا دوما؟" : "Why DOMA?"}
@@ -69,7 +70,6 @@ const AboutPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Vision */}
           <div className="mx-auto mt-10 max-w-2xl rounded-xl border border-primary/20 bg-primary/5 p-6 text-center">
             <h2 className="mb-2 text-lg font-medium text-foreground">{isAr ? "رؤيتنا" : "Our Vision"}</h2>
             <p className="text-sm font-light leading-relaxed text-muted-foreground">
