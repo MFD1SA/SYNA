@@ -433,6 +433,7 @@ export type Database = {
           expected_dev_duration_months: number | null
           financing_preference: string | null
           id: string
+          image_url: string | null
           is_active: boolean
           is_featured: boolean
           land_area_sqm: number
@@ -463,6 +464,7 @@ export type Database = {
           expected_dev_duration_months?: number | null
           financing_preference?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
           is_featured?: boolean
           land_area_sqm: number
@@ -493,6 +495,7 @@ export type Database = {
           expected_dev_duration_months?: number | null
           financing_preference?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
           is_featured?: boolean
           land_area_sqm?: number
