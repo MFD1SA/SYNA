@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
-import { Globe, LogIn, Eye, EyeOff, HardHat } from "lucide-react";
+import { Globe, LogIn, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import logo from "@/assets/logo.png";
 
 const LoginPage: React.FC = () => {
   const { t, lang, toggleLang } = useLanguage();
@@ -30,7 +31,6 @@ const LoginPage: React.FC = () => {
       return;
     }
 
-    // Check if admin
     if (data.user) {
       const { data: roleData } = await supabase
         .from("user_roles")
@@ -57,10 +57,10 @@ const LoginPage: React.FC = () => {
           <div className="absolute bottom-1/4 end-1/4 h-48 w-48 rounded-full bg-primary-foreground/10 blur-3xl" />
         </div>
         <div className="relative text-center">
-          <HardHat className="mx-auto mb-4 h-12 w-12 text-primary-foreground/80" strokeWidth={1.5} />
-          <h2 className="text-3xl font-medium text-primary-foreground">DOMA</h2>
+          <img src={logo} alt="DOMA" className="mx-auto mb-5 h-20 w-20 rounded-2xl object-contain" />
+          <h2 className="text-3xl font-bold text-primary-foreground tracking-wide">DOMA</h2>
           <p className="mt-2 text-sm font-light text-primary-foreground/70">
-            {isAr ? "بوابة المطورين العقاريين" : "Developer Portal"}
+            {isAr ? "شراكات تطوير عقاري" : "Real Estate Development Partnerships"}
           </p>
         </div>
       </div>
@@ -74,18 +74,20 @@ const LoginPage: React.FC = () => {
         </div>
 
         <div className="w-full max-w-sm">
-          <Link to="/" className="mb-8 flex items-center gap-2 lg:hidden">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg doma-gradient">
-              <span className="text-sm font-medium text-primary-foreground">D</span>
-            </div>
-            <span className="text-xl font-medium text-foreground">DOMA</span>
-          </Link>
+          {/* Mobile logo + welcome */}
+          <div className="mb-6 flex flex-col items-center lg:hidden">
+            <img src={logo} alt="DOMA" className="h-16 w-16 rounded-xl object-contain" />
+            <span className="mt-2 text-xl font-bold text-foreground tracking-wide">DOMA</span>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {isAr ? "أهلاً وسهلاً، دوما ترحب بك" : "Welcome to DOMA"}
+            </p>
+          </div>
 
           <h1 className="mb-1 text-2xl font-medium text-foreground">
-            {isAr ? "دخول المطور" : "Developer Login"}
+            {isAr ? "تسجيل الدخول" : "Sign In"}
           </h1>
           <p className="mb-8 text-sm font-light text-muted-foreground">
-            {isAr ? "سجّل دخولك كمطور عقاري للوصول إلى فرص التطوير" : "Sign in as a developer to access development opportunities"}
+            {isAr ? "أهلاً وسهلاً، دوما ترحب بك" : "Welcome to DOMA"}
           </p>
 
           <form onSubmit={handleLogin} className="space-y-5">
@@ -111,7 +113,7 @@ const LoginPage: React.FC = () => {
           </form>
 
           <p className="mt-8 text-center text-sm font-light text-muted-foreground">
-            {isAr ? "ليس لديك حساب مطور؟" : "Don't have a developer account?"}{" "}
+            {isAr ? "ليس لديك حساب؟" : "Don't have an account?"}{" "}
             <Link to="/auth/register" className="text-primary hover:underline">{t.nav.register}</Link>
           </p>
         </div>
