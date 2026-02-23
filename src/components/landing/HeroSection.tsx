@@ -1,7 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Eye, Handshake, Video } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, Layers, Handshake, Video } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { BrandVariant } from "./BrandToggle";
 import logoImg from "@/assets/logo.png";
@@ -18,7 +18,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
 
   const pills = [
     { icon: Eye, label: isAr ? "خصوصية كاملة" : "Full Privacy" },
-    { icon: Eye, label: isAr ? "خصوصية كاملة" : "Full Privacy" },
+    { icon: Layers, label: isAr ? "وصول منظم" : "Structured Access" },
     { icon: Handshake, label: isAr ? "متابعة الصفقات" : "Deal Tracking" },
     { icon: Video, label: isAr ? "اجتماعات مدمجة" : "Integrated Meetings" },
   ];
