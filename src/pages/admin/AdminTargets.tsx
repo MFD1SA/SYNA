@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import {
   Plus, Globe, Building2, Trash2, Newspaper, RefreshCw, Loader2,
-  UserCheck, Phone, User, ImageIcon,
+  UserCheck, Phone, User, ImagePlus,
 } from "lucide-react";
 
 type TargetCompany = {
@@ -63,6 +63,23 @@ const AdminTargets: React.FC = () => {
     contact_person_name: "",
     contact_phone: "",
   });
+  const [uploading, setUploading] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const ext = file.name.split('.').pop();
+    const path = `targets/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("land-images").upload(path, file);
+    if (error) {
+      toast({ variant: "destructive", title: isAr ? "خطأ في الرفع" : "Upload Error", description: error.message });
+    } else {
+      const { data: urlData } = supabase.storage.from("land-images").getPublicUrl(path);
+      setForm(f => ({ ...f, image_url: urlData.publicUrl }));
+    }
+    setUploading(false);
+  };
 
   const callAI = async (prompt: string): Promise<string> => {
     const resp = await fetch(
@@ -201,8 +218,19 @@ const AdminTargets: React.FC = () => {
                 <Input dir="ltr" placeholder="https://example.com" value={form.website} onChange={e => setForm(f => ({ ...f, website: e.target.value }))} />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-sm">{isAr ? "صورة / شعار الشركة (رابط)" : "Company Image (URL)"}</Label>
-                <Input dir="ltr" placeholder="https://example.com/logo.png" value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} />
+                <Label className="text-sm">{isAr ? "صورة / شعار الشركة" : "Company Logo/Image"}</Label>
+                {form.image_url && (
+                  <div className="mb-2 overflow-hidden rounded-lg">
+                    <img src={form.image_url} alt="Preview" className="h-24 w-full object-contain rounded-lg bg-muted" />
+                  </div>
+                )}
+                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border/60 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
+                  <ImagePlus className="h-5 w-5 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
+                    {uploading ? (isAr ? "جاري الرفع..." : "Uploading...") : (isAr ? "اختر صورة" : "Choose Image")}
+                  </span>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+                </label>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-sm">{isAr ? "اسم المسؤول" : "Contact Person"}</Label>
