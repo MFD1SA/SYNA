@@ -49,6 +49,35 @@ const LoginPage: React.FC = () => {
   const [verifying, setVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState<{ success: boolean; message: string } | null>(null);
 
+  const detectAndRedirect = async (userId: string) => {
+    // Check user type from database and redirect accordingly
+    const [adminRes, devRes, landsRes] = await Promise.all([
+      supabase.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle(),
+      supabase.from("developers").select("id").eq("user_id", userId).maybeSingle(),
+      supabase.from("lands").select("id").eq("owner_id", userId).limit(1),
+    ]);
+
+    if (adminRes.data) {
+      toast({ title: isAr ? "أهلاً مدير النظام 👋" : "Welcome, Admin 👋" });
+      navigate("/admincp/overview");
+    } else if (devRes.data) {
+      toast({ title: isAr ? "أهلاً عزيزي المطور 👋" : "Welcome, Dear Developer 👋" });
+      navigate("/crm/dashboard");
+    } else if (landsRes.data && landsRes.data.length > 0) {
+      toast({ title: isAr ? "أهلاً بك 👋" : "Welcome 👋" });
+      navigate("/owner/dashboard");
+    } else {
+      // Fallback: use the portal type selection
+      if (portalType === "owner") {
+        toast({ title: isAr ? "أهلاً بك 👋" : "Welcome 👋" });
+        navigate("/owner/dashboard");
+      } else {
+        toast({ title: isAr ? "أهلاً عزيزي المطور 👋" : "Welcome, Dear Developer 👋" });
+        navigate("/crm/dashboard");
+      }
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -59,13 +88,7 @@ const LoginPage: React.FC = () => {
       return;
     }
     if (data.user) {
-      if (portalType === "owner") {
-        toast({ title: isAr ? "أهلاً بك 👋" : "Welcome 👋" });
-        navigate("/owner/dashboard");
-      } else {
-        toast({ title: isAr ? "أهلاً عزيزي المطور 👋" : "Welcome, Dear Developer 👋" });
-        navigate("/crm/dashboard");
-      }
+      await detectAndRedirect(data.user.id);
     }
     setLoading(false);
   };

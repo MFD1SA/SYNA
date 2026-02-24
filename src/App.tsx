@@ -7,8 +7,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { useAdminRole } from "@/hooks/useAdminRole";
+import { useUserType } from "@/hooks/useUserType";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import NoAccess from "./pages/NoAccess";
 import TermsPage from "./pages/Terms";
 import PrivacyPage from "./pages/Privacy";
 import UsagePolicyPage from "./pages/UsagePolicy";
@@ -17,7 +19,6 @@ import FAQPage from "./pages/FAQ";
 import FeatureDetailPage from "./pages/FeatureDetail";
 import SubscriptionsPage from "./pages/Subscriptions";
 import LoginPage from "./pages/Login";
-// Register is now merged into Login page
 import CrmDashboard from "./pages/crm/CrmDashboard";
 import CrmLands from "./pages/crm/CrmLands";
 import CrmRequests from "./pages/crm/CrmRequests";
@@ -46,25 +47,63 @@ import OwnerDashboard from "./pages/owner/OwnerDashboard";
 
 const queryClient = new QueryClient();
 
+const LoadingScreen = () => (
+  <div className="flex min-h-screen items-center justify-center text-muted-foreground">...</div>
+);
+
+// Basic auth check
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div className="flex min-h-screen items-center justify-center text-muted-foreground">...</div>;
+  if (loading) return <LoadingScreen />;
   if (!user) return <Navigate to="/auth/login" replace />;
   return <>{children}</>;
 };
 
+// Admin-only route
 const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
   const { isAdmin, loading: roleLoading } = useAdminRole();
-  if (loading || roleLoading) return <div className="flex min-h-screen items-center justify-center text-muted-foreground">...</div>;
+  if (loading || roleLoading) return <LoadingScreen />;
   if (!user || !isAdmin) return <Navigate to="/admincp" replace />;
   return <>{children}</>;
 };
 
+// Developer-only route: must have a record in `developers` table
+const DeveloperRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, loading: authLoading } = useAuth();
+  const { userType, loading: typeLoading } = useUserType();
+  if (authLoading || typeLoading) return <LoadingScreen />;
+  if (!user) return <Navigate to="/auth/login" replace />;
+  // Admin can also access developer routes for testing/oversight
+  if (userType === "developer" || userType === "admin") return <>{children}</>;
+  if (userType === "owner") return <Navigate to="/owner/dashboard" replace />;
+  return <Navigate to="/no-access" replace />;
+};
+
+// Owner-only route: must have lands linked to their user_id
+const OwnerRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, loading: authLoading } = useAuth();
+  const { userType, loading: typeLoading } = useUserType();
+  if (authLoading || typeLoading) return <LoadingScreen />;
+  if (!user) return <Navigate to="/auth/login" replace />;
+  // Admin can also access owner routes for testing/oversight
+  if (userType === "owner" || userType === "admin") return <>{children}</>;
+  if (userType === "developer") return <Navigate to="/crm/dashboard" replace />;
+  return <Navigate to="/no-access" replace />;
+};
+
+// Public-only route (redirect if already logged in)
 const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
-  if (loading) return <div className="flex min-h-screen items-center justify-center text-muted-foreground">...</div>;
-  if (user) return <Navigate to="/crm/dashboard" replace />;
+  const { user, loading: authLoading } = useAuth();
+  const { userType, loading: typeLoading } = useUserType();
+  if (authLoading || typeLoading) return <LoadingScreen />;
+  if (user) {
+    // Redirect based on user type
+    if (userType === "admin") return <Navigate to="/admincp/overview" replace />;
+    if (userType === "developer") return <Navigate to="/crm/dashboard" replace />;
+    if (userType === "owner") return <Navigate to="/owner/dashboard" replace />;
+    return <Navigate to="/no-access" replace />;
+  }
   return <>{children}</>;
 };
 
@@ -89,6 +128,7 @@ const App: React.FC = () => (
               <Route path="/features/:slug" element={<FeatureDetailPage />} />
               <Route path="/opportunity/:id" element={<OpportunityDetail />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/no-access" element={<NoAccess />} />
 
               {/* Auth */}
               <Route path="/auth/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
@@ -96,20 +136,21 @@ const App: React.FC = () => (
               <Route path="/login" element={<Navigate to="/auth/login" replace />} />
               <Route path="/register" element={<Navigate to="/auth/login" replace />} />
 
-              {/* CRM */}
-              <Route path="/crm/dashboard" element={<ProtectedRoute><CrmDashboard /></ProtectedRoute>} />
-              <Route path="/crm/lands" element={<ProtectedRoute><CrmLands /></ProtectedRoute>} />
-              <Route path="/crm/requests" element={<ProtectedRoute><CrmRequests /></ProtectedRoute>} />
-              <Route path="/crm/deals" element={<ProtectedRoute><CrmDeals /></ProtectedRoute>} />
-              <Route path="/crm/browse" element={<ProtectedRoute><CrmBrowseLands /></ProtectedRoute>} />
-              <Route path="/crm/my-requests" element={<ProtectedRoute><CrmMyRequests /></ProtectedRoute>} />
-              <Route path="/crm/properties" element={<ProtectedRoute><CrmProperties /></ProtectedRoute>} />
-              <Route path="/crm/units" element={<ProtectedRoute><CrmUnits /></ProtectedRoute>} />
-              <Route path="/crm/leases" element={<ProtectedRoute><CrmLeases /></ProtectedRoute>} />
-              <Route path="/crm/receivables" element={<ProtectedRoute><CrmReceivables /></ProtectedRoute>} />
-              <Route path="/crm/maintenance" element={<ProtectedRoute><CrmMaintenance /></ProtectedRoute>} />
-              <Route path="/crm/reports" element={<ProtectedRoute><CrmReports /></ProtectedRoute>} />
-              <Route path="/crm/settings" element={<ProtectedRoute><CrmSettings /></ProtectedRoute>} />
+              {/* CRM — Developer Only */}
+              <Route path="/crm/dashboard" element={<DeveloperRoute><CrmDashboard /></DeveloperRoute>} />
+              <Route path="/crm/browse" element={<DeveloperRoute><CrmBrowseLands /></DeveloperRoute>} />
+              <Route path="/crm/my-requests" element={<DeveloperRoute><CrmMyRequests /></DeveloperRoute>} />
+              <Route path="/crm/deals" element={<DeveloperRoute><CrmDeals /></DeveloperRoute>} />
+              <Route path="/crm/settings" element={<DeveloperRoute><CrmSettings /></DeveloperRoute>} />
+              {/* Legacy CRM routes — kept for now, developer-protected */}
+              <Route path="/crm/lands" element={<DeveloperRoute><CrmLands /></DeveloperRoute>} />
+              <Route path="/crm/requests" element={<DeveloperRoute><CrmRequests /></DeveloperRoute>} />
+              <Route path="/crm/properties" element={<DeveloperRoute><CrmProperties /></DeveloperRoute>} />
+              <Route path="/crm/units" element={<DeveloperRoute><CrmUnits /></DeveloperRoute>} />
+              <Route path="/crm/leases" element={<DeveloperRoute><CrmLeases /></DeveloperRoute>} />
+              <Route path="/crm/receivables" element={<DeveloperRoute><CrmReceivables /></DeveloperRoute>} />
+              <Route path="/crm/maintenance" element={<DeveloperRoute><CrmMaintenance /></DeveloperRoute>} />
+              <Route path="/crm/reports" element={<DeveloperRoute><CrmReports /></DeveloperRoute>} />
 
               {/* Admin */}
               <Route path="/admincp" element={<AdminLogin />} />
@@ -122,8 +163,8 @@ const App: React.FC = () => (
               <Route path="/admincp/audit" element={<AdminRoute><AdminAuditLog /></AdminRoute>} />
               <Route path="/admincp/content" element={<AdminRoute><AdminContent /></AdminRoute>} />
 
-              {/* Owner */}
-              <Route path="/owner/dashboard" element={<ProtectedRoute><OwnerDashboard /></ProtectedRoute>} />
+              {/* Owner — Owner Only */}
+              <Route path="/owner/dashboard" element={<OwnerRoute><OwnerDashboard /></OwnerRoute>} />
 
               {/* Redirects */}
               <Route path="/dashboard" element={<Navigate to="/crm/dashboard" replace />} />
