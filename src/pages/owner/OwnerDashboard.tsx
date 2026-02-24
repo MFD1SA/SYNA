@@ -6,13 +6,17 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import {
   Landmark, MapPin, Globe, LogOut, CheckCircle2,
   Radar, Brain, TrendingUp, Shield, FileText,
   ThumbsUp, ThumbsDown, AlertTriangle, ChevronDown, ChevronUp,
   Loader2, BarChart3, Users, GitCompareArrows, ExternalLink,
-  User, Info,
+  User, Info, XCircle, CalendarClock, Clock,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import DevWebsiteAnalysis from "@/components/owner/DevWebsiteAnalysis";
@@ -99,6 +103,13 @@ const OwnerDashboard: React.FC = () => {
   const [analyzingLand, setAnalyzingLand] = useState<string | null>(null);
   const [expandedDev, setExpandedDev] = useState<string | null>(null);
   const [showCompare, setShowCompare] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [rejectDialog, setRejectDialog] = useState<{ requestId: string; devName: string; devEmail: string; landCity: string; landDistrict?: string } | null>(null);
+  const [rejectNotes, setRejectNotes] = useState("");
+  const [meetingDialog, setMeetingDialog] = useState<{ requestId: string; devName: string; devEmail: string; landCity: string; landDistrict?: string; approvedAt: string } | null>(null);
+  const [meetingDate, setMeetingDate] = useState("");
+  const [meetingTime, setMeetingTime] = useState("13:00");
+  const [meetingNotes, setMeetingNotes] = useState("");
 
   useEffect(() => {
     if (!user) return;
@@ -188,6 +199,147 @@ const OwnerDashboard: React.FC = () => {
   };
 
   const totalRequests = Object.values(requests).reduce((a, b) => a + b, 0);
+
+  const handleApproveRequest = async (a: DeveloperAnalysis, landCity: string, landDistrict?: string) => {
+    setActionLoading(true);
+    try {
+      const { error } = await supabase.from("deal_requests").update({ status: "approved" }).eq("id", a.request_id);
+      if (error) throw error;
+      toast({ title: isAr ? "تمت الموافقة على الطلب" : "Request approved" });
+      // Send email to developer
+      try {
+        await supabase.functions.invoke("send-deal-notification", {
+          body: {
+            type: "request_approved",
+            developer_name: a.developer_name,
+            developer_email: "", // will be fetched
+            owner_name: ownerName,
+            land_city: landCity,
+            land_district: landDistrict,
+          },
+        });
+        // Get developer email and send
+        const { data: devInfo } = await supabase.from("developers").select("email").eq("id", a.developer_id).maybeSingle();
+        if (devInfo?.email) {
+          await supabase.functions.invoke("send-deal-notification", {
+            body: {
+              type: "request_approved",
+              developer_name: a.developer_name,
+              developer_email: devInfo.email,
+              owner_name: ownerName,
+              land_city: landCity,
+              land_district: landDistrict,
+            },
+          });
+        }
+      } catch (e) { console.error("Notification error:", e); }
+      // Show meeting scheduling dialog
+      const { data: devInfo } = await supabase.from("developers").select("email").eq("id", a.developer_id).maybeSingle();
+      setMeetingDialog({
+        requestId: a.request_id,
+        devName: a.developer_name,
+        devEmail: devInfo?.email || "",
+        landCity,
+        landDistrict,
+        approvedAt: new Date().toISOString(),
+      });
+      // Refresh analyses
+      setAnalyses(prev => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach(key => {
+          updated[key] = updated[key].map(item =>
+            item.request_id === a.request_id ? { ...item, status: "approved" } : item
+          );
+        });
+        return updated;
+      });
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRejectRequest = async () => {
+    if (!rejectDialog) return;
+    setActionLoading(true);
+    try {
+      const { error } = await supabase.from("deal_requests").update({
+        status: "rejected",
+        owner_response_notes: rejectNotes || null,
+      }).eq("id", rejectDialog.requestId);
+      if (error) throw error;
+      toast({ title: isAr ? "تم رفض الطلب" : "Request rejected" });
+      // Send email
+      try {
+        await supabase.functions.invoke("send-deal-notification", {
+          body: {
+            type: "request_rejected",
+            developer_name: rejectDialog.devName,
+            developer_email: rejectDialog.devEmail,
+            owner_name: ownerName,
+            land_city: rejectDialog.landCity,
+            land_district: rejectDialog.landDistrict,
+            reject_reason: rejectNotes,
+          },
+        });
+      } catch (e) { console.error("Notification error:", e); }
+      setAnalyses(prev => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach(key => {
+          updated[key] = updated[key].map(item =>
+            item.request_id === rejectDialog.requestId ? { ...item, status: "rejected" } : item
+          );
+        });
+        return updated;
+      });
+      setRejectDialog(null);
+      setRejectNotes("");
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const getMinMeetingDate = (approvedAt: string) => {
+    const d = new Date(approvedAt);
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split("T")[0];
+  };
+
+  const handleScheduleMeeting = async () => {
+    if (!meetingDialog || !meetingDate || !meetingTime) {
+      toast({ variant: "destructive", title: isAr ? "يرجى تحديد التاريخ والوقت" : "Please select date and time" });
+      return;
+    }
+    setActionLoading(true);
+    try {
+      // Send notification to admin
+      await supabase.functions.invoke("send-deal-notification", {
+        body: {
+          type: "meeting_scheduled",
+          developer_name: meetingDialog.devName,
+          developer_email: meetingDialog.devEmail,
+          owner_name: ownerName,
+          owner_email: user?.email,
+          land_city: meetingDialog.landCity,
+          land_district: meetingDialog.landDistrict,
+          meeting_date: meetingDate,
+          meeting_time: meetingTime,
+        },
+      });
+      toast({ title: isAr ? "تم إرسال طلب الاجتماع للمدير" : "Meeting request sent to admin" });
+      setMeetingDialog(null);
+      setMeetingDate("");
+      setMeetingTime("13:00");
+      setMeetingNotes("");
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-background" dir={isAr ? "rtl" : "ltr"}>
@@ -633,6 +785,76 @@ const OwnerDashboard: React.FC = () => {
                                         </div>
                                       )}
                                     </div>
+
+                                    {/* Action Buttons */}
+                                    {a.status === "pending" && (
+                                      <div className="border-t border-border/40 pt-4 flex items-center gap-2">
+                                        <Button
+                                          size="sm"
+                                          className="flex-1 gap-1.5 doma-gradient"
+                                          disabled={actionLoading}
+                                          onClick={() => handleApproveRequest(a, land.city, land.district)}
+                                        >
+                                          <CheckCircle2 className="h-3.5 w-3.5" />
+                                          {isAr ? "قبول الطلب" : "Approve"}
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="destructive"
+                                          className="flex-1 gap-1.5"
+                                          disabled={actionLoading}
+                                          onClick={async () => {
+                                            const { data: devInfo } = await supabase.from("developers").select("email").eq("id", a.developer_id).maybeSingle();
+                                            setRejectDialog({
+                                              requestId: a.request_id,
+                                              devName: a.developer_name,
+                                              devEmail: devInfo?.email || "",
+                                              landCity: land.city,
+                                              landDistrict: land.district,
+                                            });
+                                          }}
+                                        >
+                                          <XCircle className="h-3.5 w-3.5" />
+                                          {isAr ? "رفض الطلب" : "Reject"}
+                                        </Button>
+                                      </div>
+                                    )}
+                                    {a.status === "approved" && (
+                                      <div className="border-t border-border/40 pt-4">
+                                        <div className="flex items-center gap-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 mb-2">
+                                          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                                          <span className="text-xs font-medium text-emerald-700">{isAr ? "تمت الموافقة" : "Approved"}</span>
+                                        </div>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="w-full gap-1.5"
+                                          disabled={actionLoading}
+                                          onClick={async () => {
+                                            const { data: devInfo } = await supabase.from("developers").select("email").eq("id", a.developer_id).maybeSingle();
+                                            setMeetingDialog({
+                                              requestId: a.request_id,
+                                              devName: a.developer_name,
+                                              devEmail: devInfo?.email || "",
+                                              landCity: land.city,
+                                              landDistrict: land.district,
+                                              approvedAt: new Date().toISOString(),
+                                            });
+                                          }}
+                                        >
+                                          <CalendarClock className="h-3.5 w-3.5 text-primary" />
+                                          {isAr ? "جدولة اجتماع" : "Schedule Meeting"}
+                                        </Button>
+                                      </div>
+                                    )}
+                                    {a.status === "rejected" && (
+                                      <div className="border-t border-border/40 pt-4">
+                                        <div className="flex items-center gap-2 rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2">
+                                          <XCircle className="h-4 w-4 text-destructive" />
+                                          <span className="text-xs font-medium text-destructive">{isAr ? "تم رفض الطلب" : "Request Rejected"}</span>
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
                                 )}
                               </div>
@@ -648,6 +870,109 @@ const OwnerDashboard: React.FC = () => {
           </div>
         )}
       </main>
+
+      {/* Reject Dialog */}
+      <Dialog open={!!rejectDialog} onOpenChange={o => { if (!o) { setRejectDialog(null); setRejectNotes(""); } }}>
+        <DialogContent className="max-w-md" dir={isAr ? "rtl" : "ltr"}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <XCircle className="h-5 w-5 text-destructive" />
+              {isAr ? "رفض الطلب" : "Reject Request"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              {isAr ? `هل تريد رفض طلب ${rejectDialog?.devName}؟` : `Reject ${rejectDialog?.devName}'s request?`}
+            </p>
+            <div className="space-y-1.5">
+              <Label className="text-xs">{isAr ? "سبب الرفض (اختياري)" : "Rejection Reason (optional)"}</Label>
+              <Textarea value={rejectNotes} onChange={e => setRejectNotes(e.target.value)} rows={3} placeholder={isAr ? "أدخل سبب الرفض..." : "Enter rejection reason..."} />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => { setRejectDialog(null); setRejectNotes(""); }}>{isAr ? "إلغاء" : "Cancel"}</Button>
+            <Button variant="destructive" onClick={handleRejectRequest} disabled={actionLoading}>
+              {actionLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin me-1" /> : <XCircle className="h-3.5 w-3.5 me-1" />}
+              {isAr ? "تأكيد الرفض" : "Confirm Reject"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Meeting Scheduling Dialog */}
+      <Dialog open={!!meetingDialog} onOpenChange={o => { if (!o) { setMeetingDialog(null); setMeetingDate(""); setMeetingTime("13:00"); setMeetingNotes(""); } }}>
+        <DialogContent className="max-w-md" dir={isAr ? "rtl" : "ltr"}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CalendarClock className="h-5 w-5 text-primary" />
+              {isAr ? "جدولة اجتماع" : "Schedule Meeting"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+              <p className="text-xs text-primary font-medium mb-1">{isAr ? "تنبيه" : "Note"}</p>
+              <p className="text-xs text-muted-foreground">
+                {isAr
+                  ? "سيتم إرسال تفاصيل الاجتماع إلى مدير النظام للتنسيق مع المطور. الأوقات المتاحة من 1 ظهراً إلى 5 عصراً."
+                  : "Meeting details will be sent to the admin to coordinate with the developer. Available times: 1 PM - 5 PM."}
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">{isAr ? "المطور" : "Developer"}</Label>
+              <p className="text-sm text-foreground bg-muted/30 rounded-lg p-2.5 border border-border/40">{meetingDialog?.devName}</p>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">{isAr ? "تاريخ الاجتماع" : "Meeting Date"}</Label>
+              <Input
+                type="date"
+                dir="ltr"
+                value={meetingDate}
+                onChange={e => setMeetingDate(e.target.value)}
+                min={meetingDialog ? getMinMeetingDate(meetingDialog.approvedAt) : ""}
+              />
+              <p className="text-[10px] text-muted-foreground">
+                {isAr ? "يجب أن يكون بعد القبول بيوم على الأقل" : "Must be at least 1 day after approval"}
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">{isAr ? "وقت الاجتماع" : "Meeting Time"}</Label>
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <select
+                  className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                  value={meetingTime}
+                  onChange={e => setMeetingTime(e.target.value)}
+                >
+                  <option value="13:00">{isAr ? "1:00 ظهراً" : "1:00 PM"}</option>
+                  <option value="13:30">{isAr ? "1:30 ظهراً" : "1:30 PM"}</option>
+                  <option value="14:00">{isAr ? "2:00 ظهراً" : "2:00 PM"}</option>
+                  <option value="14:30">{isAr ? "2:30 ظهراً" : "2:30 PM"}</option>
+                  <option value="15:00">{isAr ? "3:00 عصراً" : "3:00 PM"}</option>
+                  <option value="15:30">{isAr ? "3:30 عصراً" : "3:30 PM"}</option>
+                  <option value="16:00">{isAr ? "4:00 عصراً" : "4:00 PM"}</option>
+                  <option value="16:30">{isAr ? "4:30 عصراً" : "4:30 PM"}</option>
+                  <option value="17:00">{isAr ? "5:00 عصراً" : "5:00 PM"}</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">{isAr ? "ملاحظات (اختياري)" : "Notes (optional)"}</Label>
+              <Textarea value={meetingNotes} onChange={e => setMeetingNotes(e.target.value)} rows={2} placeholder={isAr ? "ملاحظات إضافية..." : "Additional notes..."} />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => { setMeetingDialog(null); setMeetingDate(""); setMeetingTime("13:00"); setMeetingNotes(""); }}>{isAr ? "إلغاء" : "Cancel"}</Button>
+            <Button onClick={handleScheduleMeeting} disabled={actionLoading || !meetingDate} className="doma-gradient gap-1.5">
+              {actionLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CalendarClock className="h-3.5 w-3.5" />}
+              {isAr ? "إرسال طلب الاجتماع" : "Send Meeting Request"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
