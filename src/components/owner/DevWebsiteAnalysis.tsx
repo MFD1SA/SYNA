@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,6 +62,16 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<WebsiteAnalysis | null>(null);
   const [scrapedUrl, setScrapedUrl] = useState("");
+
+  // Auto-fetch developer website from DB if no autoUrl provided
+  useEffect(() => {
+    if (autoUrl || url) return;
+    const fetchWebsite = async () => {
+      const { data } = await supabase.from("developers").select("website").eq("id", developerId).maybeSingle();
+      if (data?.website) setUrl(data.website);
+    };
+    fetchWebsite();
+  }, [developerId, autoUrl]);
 
   const analyze = async () => {
     if (!url.trim()) { toast({ variant: "destructive", title: isAr ? "أدخل رابط الموقع" : "Enter website URL" }); return; }

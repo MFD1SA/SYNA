@@ -204,9 +204,6 @@ const AdminDeals: React.FC = () => {
                     <p className="text-sm font-medium text-foreground">
                       {deal.developers?.company_name || "—"} → {deal.lands?.city}{deal.lands?.district ? ` / ${deal.lands?.district}` : ""}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      {isAr ? "العمولة:" : "Commission:"} {deal.commission_rate}%
-                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`rounded-full px-2 py-0.5 text-xs ${healthColors[deal.health as keyof typeof healthColors]}`}>
@@ -267,16 +264,6 @@ const AdminDeals: React.FC = () => {
                 <p className="text-sm text-foreground bg-muted/30 rounded-lg p-3 border border-border/40 whitespace-pre-wrap">{viewReq.proposal_summary}</p>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div className="rounded-lg border border-border/40 bg-muted/30 p-2 text-center">
-                  <p className="text-muted-foreground">{isAr ? "نسبة العمولة" : "Commission"}</p>
-                  <p className="font-medium text-foreground">{viewReq.commission_rate}%</p>
-                </div>
-                <div className="rounded-lg border border-border/40 bg-muted/30 p-2 text-center">
-                  <p className="text-muted-foreground">{isAr ? "التمويل" : "Financing"}</p>
-                  <p className="font-medium text-foreground">{viewReq.needs_financing ? (isAr ? "مطلوب" : "Required") : (isAr ? "غير مطلوب" : "Not Required")}</p>
-                </div>
-              </div>
 
               {/* Developer Website Analysis */}
               <div className="border-t border-border/40 pt-3">
