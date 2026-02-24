@@ -12,6 +12,7 @@ import {
   Radar, Brain, TrendingUp, Shield, FileText,
   ThumbsUp, ThumbsDown, AlertTriangle, ChevronDown, ChevronUp,
   Loader2, BarChart3, Users, GitCompareArrows, ExternalLink,
+  User, Info,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import DevWebsiteAnalysis from "@/components/owner/DevWebsiteAnalysis";
@@ -85,9 +86,10 @@ const OwnerDashboard: React.FC = () => {
   const { lang, toggleLang } = useLanguage();
   const { toast } = useToast();
   const isAr = lang === "ar";
-  usePageTitle(isAr ? "لوحة المالك" : "Owner Dashboard");
+  usePageTitle(isAr ? "صفحة مالك الأرض" : "Landowner Dashboard");
   const navigate = useNavigate();
 
+  const [ownerName, setOwnerName] = useState("");
   const [lands, setLands] = useState<any[]>([]);
   const [requests, setRequests] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -101,33 +103,40 @@ const OwnerDashboard: React.FC = () => {
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
+      // Fetch owner name from profiles
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      
+      // Also check if owner has a name in lands table
       const { data: landsData } = await supabase
         .from("lands")
         .select("*")
         .eq("owner_id", user.id)
         .order("created_at", { ascending: false });
 
+      // Set owner name: profile name > first land owner_name > email
+      const profileName = profile?.full_name;
+      const landOwnerName = landsData?.[0]?.owner_name;
+      setOwnerName(profileName || landOwnerName || user.email?.split("@")[0] || "");
+
       setLands(landsData || []);
 
       if (landsData && landsData.length > 0) {
         const landIds = landsData.map(l => l.id);
-        const { data: reqData } = await supabase
-          .from("deal_requests")
-          .select("land_id")
-          .in("land_id", landIds);
+        const [reqRes, pulseRes] = await Promise.all([
+          supabase.from("deal_requests").select("land_id").in("land_id", landIds),
+          supabase.from("land_pulse_snapshots").select("*").in("land_id", landIds).order("created_at", { ascending: false }),
+        ]);
 
         const counts: Record<string, number> = {};
-        reqData?.forEach(r => { counts[r.land_id] = (counts[r.land_id] || 0) + 1; });
+        reqRes.data?.forEach(r => { counts[r.land_id] = (counts[r.land_id] || 0) + 1; });
         setRequests(counts);
 
-        const { data: pulseData } = await supabase
-          .from("land_pulse_snapshots")
-          .select("*")
-          .in("land_id", landIds)
-          .order("created_at", { ascending: false });
-
         const snapMap: Record<string, any> = {};
-        pulseData?.forEach(s => { if (!snapMap[s.land_id]) snapMap[s.land_id] = s; });
+        pulseRes.data?.forEach(s => { if (!snapMap[s.land_id]) snapMap[s.land_id] = s; });
         setPulseSnapshots(snapMap);
       }
       setLoading(false);
@@ -178,6 +187,8 @@ const OwnerDashboard: React.FC = () => {
     return { ar: "ضعيف", en: "Weak" };
   };
 
+  const totalRequests = Object.values(requests).reduce((a, b) => a + b, 0);
+
   return (
     <div className="flex min-h-screen bg-background" dir={isAr ? "rtl" : "ltr"}>
       {/* Sidebar */}
@@ -197,7 +208,11 @@ const OwnerDashboard: React.FC = () => {
           </div>
         </nav>
         <div className="space-y-0.5 border-t border-border/60 p-3">
-          <p className="truncate px-3 py-1 text-xs font-light text-muted-foreground">{user?.email}</p>
+          <div className="flex items-center gap-2 px-3 py-1">
+            <User className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.5} />
+            <span className="truncate text-xs font-light text-muted-foreground">{ownerName || user?.email}</span>
+          </div>
+          <p className="truncate px-3 py-0.5 text-[10px] font-light text-muted-foreground/60">{user?.email}</p>
           <button onClick={toggleLang} className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-light text-muted-foreground transition-colors hover:bg-muted/50">
             <Globe className="h-4 w-4 shrink-0" strokeWidth={1.5} />
             {isAr ? "English" : "العربية"}
@@ -211,12 +226,54 @@ const OwnerDashboard: React.FC = () => {
 
       {/* Main content */}
       <main className="flex-1 p-6">
+        {/* Welcome header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-medium text-foreground">{isAr ? "أراضيي" : "My Lands"}</h1>
+          <h1 className="text-2xl font-medium text-foreground">
+            {isAr ? `مرحباً، ${ownerName || "مالك الأرض"}` : `Welcome, ${ownerName || "Landowner"}`}
+          </h1>
           <p className="mt-1 text-sm font-light text-muted-foreground">
-            {isAr ? "تابع حالة أراضيك واستعرض تحليلات المطورين المهتمين بالذكاء الاصطناعي" : "Track your lands and review AI-powered developer analyses"}
+            {isAr ? "صفحة مالك الأرض — تابع حالة أراضيك واستعرض تحليلات المطورين المهتمين" : "Landowner Dashboard — Track your lands and review developer analyses"}
           </p>
         </div>
+
+        {/* Summary Stats */}
+        {!loading && lands.length > 0 && (
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="doma-card p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-light text-muted-foreground">{isAr ? "أراضيي" : "My Lands"}</span>
+                <Landmark className="h-4 w-4 text-primary" strokeWidth={1.5} />
+              </div>
+              <p className="text-2xl font-medium text-foreground">{lands.length}</p>
+            </div>
+            <div className="doma-card p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-light text-muted-foreground">{isAr ? "مطورون مهتمون" : "Interested Devs"}</span>
+                <Users className="h-4 w-4 text-primary" strokeWidth={1.5} />
+              </div>
+              <p className="text-2xl font-medium text-foreground">{totalRequests}</p>
+            </div>
+            <div className="doma-card p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-light text-muted-foreground">{isAr ? "أراضي موافق عليها" : "Approved Lands"}</span>
+                <CheckCircle2 className="h-4 w-4 text-emerald-500" strokeWidth={1.5} />
+              </div>
+              <p className="text-2xl font-medium text-foreground">{lands.filter(l => l.owner_approved).length}</p>
+            </div>
+          </div>
+        )}
+
+        {/* AI Disclaimer */}
+        {!loading && lands.length > 0 && (
+          <div className="mb-4 flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
+            <Info className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+            <p className="text-xs font-light text-amber-800">
+              {isAr
+                ? "تحليلات الذكاء الاصطناعي استرشادية وتعتمد على البيانات المسجلة في النظام. ننصح بالتحقق المستقل قبل اتخاذ أي قرار."
+                : "AI analyses are advisory and based on system-registered data. Independent verification is recommended before any decision."}
+            </p>
+          </div>
+        )}
 
         {loading ? (
           <div className="grid gap-4">
@@ -226,7 +283,7 @@ const OwnerDashboard: React.FC = () => {
           <div className="flex flex-col items-center py-16 text-center">
             <Landmark className="mb-4 h-12 w-12 text-muted-foreground/30" strokeWidth={1} />
             <p className="text-sm font-light text-muted-foreground">
-              {isAr ? "لا توجد أراضي — تواصل مع مدير النظام" : "No lands — contact admin"}
+              {isAr ? "لا توجد أراضي مسجلة حالياً — تواصل مع مدير النظام لربط أراضيك" : "No lands registered — contact admin to link your lands"}
             </p>
           </div>
         ) : (
@@ -269,7 +326,6 @@ const OwnerDashboard: React.FC = () => {
                         </div>
                       )}
 
-                      {/* Developer interest button */}
                       <Button
                         variant="outline"
                         size="sm"
@@ -337,19 +393,25 @@ const OwnerDashboard: React.FC = () => {
                             )}
                           </div>
 
-                          {/* === Compare All Section === */}
+                          {/* === Enhanced Compare All Section === */}
                           {showCompare === land.id && landAnalyses.length > 1 && (
-                            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-3">
+                            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-4">
                               <h5 className="text-sm font-medium text-primary flex items-center gap-2">
                                 <GitCompareArrows className="h-4 w-4" />
                                 {isAr ? "مقارنة المطورين المهتمين" : "Developers Comparison"}
                               </h5>
+
+                              {/* Comparison Table */}
                               <div className="overflow-x-auto">
                                 <table className="w-full text-xs">
                                   <thead>
                                     <tr className="border-b border-border/40">
                                       <th className="py-2 pe-3 text-start font-medium text-muted-foreground">{isAr ? "المطور" : "Developer"}</th>
                                       <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "التقييم" : "Score"}</th>
+                                      <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "البروفايل" : "Profile"}</th>
+                                      <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "الإنجازات" : "Track"}</th>
+                                      <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "المقترح" : "Proposal"}</th>
+                                      <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "الموثوقية" : "Reliab."}</th>
                                       <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "التوصية" : "Rec."}</th>
                                       <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "صفقات ناجحة" : "Deals"}</th>
                                       <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "العمولة" : "Comm."}</th>
@@ -357,16 +419,26 @@ const OwnerDashboard: React.FC = () => {
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {[...landAnalyses].filter(a => !a.error).sort((a, b) => b.ai_analysis.overall_score - a.ai_analysis.overall_score).map((a) => {
+                                    {[...landAnalyses].filter(a => !a.error).sort((a, b) => b.ai_analysis.overall_score - a.ai_analysis.overall_score).map((a, idx) => {
                                       const rec = recLabels[a.ai_analysis.recommendation] || recLabels.cautious;
+                                      const isBest = idx === 0;
                                       return (
-                                        <tr key={a.request_id} className="border-b border-border/20">
-                                          <td className="py-2 pe-3 font-medium text-foreground">{a.developer_brand || a.developer_name}</td>
+                                        <tr key={a.request_id} className={`border-b border-border/20 ${isBest ? "bg-emerald-500/5" : ""}`}>
+                                          <td className="py-2 pe-3 font-medium text-foreground">
+                                            <div className="flex items-center gap-1.5">
+                                              {isBest && <span className="text-[10px] text-emerald-600">★</span>}
+                                              {a.developer_brand || a.developer_name}
+                                            </div>
+                                          </td>
                                           <td className="py-2 px-2 text-center">
                                             <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold text-white ${getScoreColor(a.ai_analysis.overall_score)}`}>
                                               {a.ai_analysis.overall_score}
                                             </span>
                                           </td>
+                                          <td className="py-2 px-2 text-center text-foreground">{a.ai_analysis.profile_score}/20</td>
+                                          <td className="py-2 px-2 text-center text-foreground">{a.ai_analysis.track_record_score}/30</td>
+                                          <td className="py-2 px-2 text-center text-foreground">{a.ai_analysis.proposal_score}/25</td>
+                                          <td className="py-2 px-2 text-center text-foreground">{a.ai_analysis.reliability_score}/25</td>
                                           <td className="py-2 px-2 text-center">
                                             <Badge variant="outline" className={`text-[10px] ${rec.color}`}>{isAr ? rec.ar : rec.en}</Badge>
                                           </td>
@@ -383,6 +455,25 @@ const OwnerDashboard: React.FC = () => {
                                   </tbody>
                                 </table>
                               </div>
+
+                              {/* Visual Score Comparison */}
+                              <div className="space-y-3 pt-2 border-t border-border/40">
+                                <h6 className="text-xs font-medium text-foreground">{isAr ? "مقارنة بصرية للتقييمات" : "Visual Score Comparison"}</h6>
+                                {[...landAnalyses].filter(a => !a.error).sort((a, b) => b.ai_analysis.overall_score - a.ai_analysis.overall_score).map((a) => (
+                                  <div key={a.request_id} className="space-y-1">
+                                    <div className="flex items-center justify-between text-xs">
+                                      <span className="font-light text-muted-foreground truncate max-w-[150px]">{a.developer_brand || a.developer_name}</span>
+                                      <span className="font-medium text-foreground">{a.ai_analysis.overall_score}/100</span>
+                                    </div>
+                                    <div className="h-3 w-full rounded-full bg-muted">
+                                      <div
+                                        className={`h-3 rounded-full ${getScoreColor(a.ai_analysis.overall_score)} transition-all duration-700`}
+                                        style={{ width: `${a.ai_analysis.overall_score}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           )}
 
@@ -392,17 +483,14 @@ const OwnerDashboard: React.FC = () => {
                             const ai = a.ai_analysis;
                             const rec = recLabels[ai.recommendation] || recLabels.cautious;
                             const RecIcon = rec.icon;
-                            const scoreLabel = getScoreLabel(ai.overall_score);
                             const isDevExpanded = expandedDev === a.request_id;
 
                             return (
                               <div key={a.request_id} className="rounded-xl border border-border/60 bg-card overflow-hidden">
-                                {/* Developer summary card (always visible) */}
                                 <button
                                   className="w-full p-4 flex items-center gap-4 text-start hover:bg-muted/30 transition-colors"
                                   onClick={() => setExpandedDev(isDevExpanded ? null : a.request_id)}
                                 >
-                                  {/* Score circle */}
                                   <div className={`relative h-14 w-14 shrink-0 rounded-full border-4 ${ai.overall_score >= 75 ? "border-emerald-500" : ai.overall_score >= 50 ? "border-amber-500" : "border-red-500"} flex items-center justify-center`}>
                                     <span className="text-base font-bold text-foreground">{ai.overall_score}</span>
                                   </div>
@@ -432,7 +520,6 @@ const OwnerDashboard: React.FC = () => {
                                 {/* Expanded developer details */}
                                 {isDevExpanded && (
                                   <div className="border-t border-border/40 p-5 space-y-4">
-                                    {/* Recommendation */}
                                     <div className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${rec.color}`}>
                                       <RecIcon className="h-4 w-4" />
                                       <span className="text-sm font-medium">{isAr ? rec.ar : rec.en}</span>
@@ -479,7 +566,6 @@ const OwnerDashboard: React.FC = () => {
                                       <p className="text-xs font-light text-muted-foreground">{a.proposal_summary}</p>
                                     </div>
 
-                                    {/* AI Summary */}
                                     <p className="text-sm font-light text-foreground leading-relaxed">{ai.summary_ar}</p>
 
                                     {/* Strengths & Weaknesses */}
@@ -530,7 +616,6 @@ const OwnerDashboard: React.FC = () => {
                                             <a href={a.developer_website.startsWith("http") ? a.developer_website : `https://${a.developer_website}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                                               {a.developer_website}
                                             </a>
-                                            <Badge variant="secondary" className="text-[10px]">{isAr ? "مُسجل تلقائياً" : "Auto-registered"}</Badge>
                                           </div>
                                           <DevWebsiteAnalysis
                                             developerName={a.developer_name}
