@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.radius900]
 verify_jwt = false
+
+[functions.analyze-developer]
+verify_jwt = false
