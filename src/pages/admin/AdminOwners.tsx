@@ -6,9 +6,9 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Landmark, Mail, User, Eye, EyeOff, Copy } from "lucide-react";
+import { Plus, Landmark, Mail, User, Eye, EyeOff, Copy, KeyRound, Pencil, Trash2 } from "lucide-react";
 
 const AdminOwners: React.FC = () => {
   const { lang } = useLanguage();
@@ -24,14 +24,22 @@ const AdminOwners: React.FC = () => {
   const [form, setForm] = useState({ full_name: "", email: "", password: "" });
   const [createdInfo, setCreatedInfo] = useState<{ email: string; password: string } | null>(null);
 
+  // Password reset state
+  const [passwordDialog, setPasswordDialog] = useState<{ owner_id: string; name: string } | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [updatingPassword, setUpdatingPassword] = useState(false);
+
+  // Delete state
+  const [deleteDialog, setDeleteDialog] = useState<{ owner_id: string; name: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   const fetchOwners = async () => {
-    // Get all lands with distinct owner_ids that are not the admin
     const { data: landsData } = await supabase
       .from("lands")
       .select("owner_id, owner_name, city, district, land_area_sqm, owner_approved")
       .order("created_at", { ascending: false });
 
-    // Group by owner_id
     const ownerMap: Record<string, { owner_id: string; owner_name: string; lands: any[] }> = {};
     landsData?.forEach((l) => {
       if (!ownerMap[l.owner_id]) {
@@ -40,7 +48,6 @@ const AdminOwners: React.FC = () => {
       ownerMap[l.owner_id].lands.push(l);
     });
 
-    // Also get profiles for owner emails
     const ownerIds = Object.keys(ownerMap);
     if (ownerIds.length > 0) {
       const { data: profiles } = await supabase
@@ -65,17 +72,11 @@ const AdminOwners: React.FC = () => {
   const handleCreate = async () => {
     if (!form.email || !form.password) return;
     setCreating(true);
-
     try {
-      const { data: session } = await supabase.auth.getSession();
       const res = await supabase.functions.invoke("create-owner", {
         body: { email: form.email, password: form.password, full_name: form.full_name },
       });
-
-      if (res.error || res.data?.error) {
-        throw new Error(res.data?.error || res.error?.message || "Unknown error");
-      }
-
+      if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
       toast({ title: isAr ? "تم إنشاء حساب المالك" : "Owner account created" });
       setCreatedInfo({ email: form.email, password: form.password });
       setForm({ full_name: "", email: "", password: "" });
@@ -84,6 +85,40 @@ const AdminOwners: React.FC = () => {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
     }
     setCreating(false);
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!passwordDialog || !newPassword) return;
+    setUpdatingPassword(true);
+    try {
+      const res = await supabase.functions.invoke("create-owner", {
+        body: { action: "update_password", user_id: passwordDialog.owner_id, new_password: newPassword },
+      });
+      if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      toast({ title: isAr ? "تم تحديث كلمة المرور" : "Password updated successfully" });
+      setPasswordDialog(null);
+      setNewPassword("");
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    }
+    setUpdatingPassword(false);
+  };
+
+  const handleDeleteOwner = async () => {
+    if (!deleteDialog) return;
+    setDeleting(true);
+    try {
+      const res = await supabase.functions.invoke("create-owner", {
+        body: { action: "delete_user", user_id: deleteDialog.owner_id },
+      });
+      if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      toast({ title: isAr ? "تم حذف الحساب" : "Account deleted" });
+      setDeleteDialog(null);
+      fetchOwners();
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    }
+    setDeleting(false);
   };
 
   const copyCredentials = () => {
@@ -109,51 +144,35 @@ const AdminOwners: React.FC = () => {
             <DialogHeader>
               <DialogTitle>{isAr ? "إنشاء حساب مالك أرض" : "Create Land Owner Account"}</DialogTitle>
             </DialogHeader>
-
             {createdInfo ? (
               <div className="space-y-4 py-4">
                 <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4 text-center">
                   <p className="text-sm font-medium text-emerald-700 mb-2">
                     {isAr ? "✅ تم إنشاء الحساب بنجاح" : "✅ Account created successfully"}
                   </p>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    {isAr ? "أرسل بيانات الدخول للمالك:" : "Send these credentials to the owner:"}
-                  </p>
                   <div className="rounded-lg border border-border bg-muted/50 p-3 text-start space-y-1" dir="ltr">
                     <p className="text-sm"><span className="text-muted-foreground">Email:</span> {createdInfo.email}</p>
                     <p className="text-sm"><span className="text-muted-foreground">Password:</span> {createdInfo.password}</p>
                   </div>
                   <Button variant="outline" size="sm" className="mt-3 gap-2" onClick={copyCredentials}>
-                    <Copy className="h-3.5 w-3.5" />
-                    {isAr ? "نسخ البيانات" : "Copy Credentials"}
+                    <Copy className="h-3.5 w-3.5" />{isAr ? "نسخ البيانات" : "Copy Credentials"}
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground text-center">
-                  {isAr
-                    ? "الخطوة التالية: اذهب لـ إدارة الأراضي واربط الأرض بهذا المالك"
-                    : "Next: Go to Manage Lands and link a land to this owner"}
-                </p>
               </div>
             ) : (
               <div className="space-y-4 py-4">
                 <div>
                   <Label className="text-xs">{isAr ? "اسم المالك" : "Owner Name"}</Label>
-                  <Input value={form.full_name} onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))} placeholder={isAr ? "محمد عبدالله" : "John Doe"} />
+                  <Input value={form.full_name} onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))} />
                 </div>
                 <div>
                   <Label className="text-xs">{isAr ? "البريد الإلكتروني" : "Email"}</Label>
-                  <Input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="owner@example.com" dir="ltr" />
+                  <Input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} dir="ltr" />
                 </div>
                 <div>
                   <Label className="text-xs">{isAr ? "كلمة المرور" : "Password"}</Label>
                   <div className="relative">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      value={form.password}
-                      onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                      placeholder="••••••••"
-                      dir="ltr"
-                    />
+                    <Input type={showPassword ? "text" : "password"} value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} dir="ltr" />
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -178,21 +197,28 @@ const AdminOwners: React.FC = () => {
           <p className="text-sm font-light text-muted-foreground">
             {isAr ? "لا يوجد ملاك مسجلين حالياً" : "No owners registered yet"}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            {isAr ? "أنشئ حساب مالك ثم اربطه بأرض من صفحة إدارة الأراضي" : "Create an owner account then link it to a land"}
-          </p>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {owners.map((owner) => (
             <div key={owner.owner_id} className="doma-card p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
-                  <User className="h-4 w-4 text-primary" />
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{owner.owner_name || (isAr ? "بدون اسم" : "No name")}</p>
+                    <p className="text-xs text-muted-foreground">{(owner as any).email || owner.owner_id.slice(0, 8)}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">{owner.owner_name || (isAr ? "بدون اسم" : "No name")}</p>
-                  <p className="text-xs text-muted-foreground">{(owner as any).email || owner.owner_id.slice(0, 8)}</p>
+                <div className="flex items-center gap-1">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => setPasswordDialog({ owner_id: owner.owner_id, name: owner.owner_name })}>
+                    <KeyRound className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => setDeleteDialog({ owner_id: owner.owner_id, name: owner.owner_name })}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
               <div className="space-y-1">
@@ -211,6 +237,59 @@ const AdminOwners: React.FC = () => {
           ))}
         </div>
       )}
+
+      {/* Password Reset Dialog */}
+      <Dialog open={!!passwordDialog} onOpenChange={(open) => { if (!open) { setPasswordDialog(null); setNewPassword(""); } }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{isAr ? "تغيير كلمة المرور" : "Change Password"}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {isAr ? `تغيير كلمة مرور: ${passwordDialog?.name || ""}` : `Change password for: ${passwordDialog?.name || ""}`}
+          </p>
+          <div className="space-y-2">
+            <Label className="text-xs">{isAr ? "كلمة المرور الجديدة" : "New Password"}</Label>
+            <div className="relative">
+              <Input
+                type={showNewPassword ? "text" : "password"}
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+                placeholder="••••••••"
+                dir="ltr"
+              />
+              <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPasswordDialog(null)}>{isAr ? "إلغاء" : "Cancel"}</Button>
+            <Button onClick={handleUpdatePassword} disabled={updatingPassword || newPassword.length < 6}>
+              {updatingPassword ? (isAr ? "جارٍ التحديث..." : "Updating...") : (isAr ? "تحديث" : "Update")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteDialog} onOpenChange={(open) => !open && setDeleteDialog(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">{isAr ? "حذف حساب المالك" : "Delete Owner Account"}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {isAr
+              ? `هل أنت متأكد من حذف حساب "${deleteDialog?.name || ""}"؟ لا يمكن التراجع عن هذا الإجراء.`
+              : `Are you sure you want to delete "${deleteDialog?.name || ""}"? This cannot be undone.`}
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialog(null)}>{isAr ? "إلغاء" : "Cancel"}</Button>
+            <Button variant="destructive" onClick={handleDeleteOwner} disabled={deleting}>
+              {deleting ? (isAr ? "جارٍ الحذف..." : "Deleting...") : (isAr ? "حذف" : "Delete")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };

@@ -35,10 +35,44 @@ Deno.serve(async (req) => {
 
     if (!roleData) throw new Error("Not admin");
 
-    const { email, password, full_name } = await req.json();
+    const body = await req.json();
+    const { action } = body;
+
+    // UPDATE PASSWORD
+    if (action === "update_password") {
+      const { user_id, new_password } = body;
+      if (!user_id || !new_password) throw new Error("user_id and new_password required");
+      if (new_password.length < 6) throw new Error("Password must be at least 6 characters");
+
+      const { error } = await adminClient.auth.admin.updateUserById(user_id, {
+        password: new_password,
+      });
+      if (error) throw error;
+
+      return new Response(
+        JSON.stringify({ success: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // DELETE USER
+    if (action === "delete_user") {
+      const { user_id } = body;
+      if (!user_id) throw new Error("user_id required");
+
+      const { error } = await adminClient.auth.admin.deleteUser(user_id);
+      if (error) throw error;
+
+      return new Response(
+        JSON.stringify({ success: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // CREATE USER (default action)
+    const { email, password, full_name } = body;
     if (!email || !password) throw new Error("Email and password required");
 
-    // Create user via admin API
     const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
       email,
       password,
