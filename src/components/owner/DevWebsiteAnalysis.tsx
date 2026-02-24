@@ -31,7 +31,7 @@ interface WebsiteAnalysis {
   news_intelligence?: NewsIntelligence;
 }
 
-interface Props { developerName: string; developerId: string; isAr: boolean; }
+interface Props { developerName: string; developerId: string; isAr: boolean; autoUrl?: string; }
 
 const recStyles: Record<string, { ar: string; en: string; color: string }> = {
   strong: { ar: "حضور قوي", en: "Strong Presence", color: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" },
@@ -56,9 +56,9 @@ const coverageStyles: Record<string, { ar: string; color: string }> = {
 const sentimentIcon = { positive: ThumbsUp, negative: ThumbsDown, neutral: Minus };
 const sentimentColor = { positive: "text-emerald-600", negative: "text-red-600", neutral: "text-muted-foreground" };
 
-const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr }) => {
+const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr, autoUrl }) => {
   const { toast } = useToast();
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(autoUrl || "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<WebsiteAnalysis | null>(null);
   const [scrapedUrl, setScrapedUrl] = useState("");

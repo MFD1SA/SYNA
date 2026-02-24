@@ -6,13 +6,12 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Landmark, MapPin, Eye, Globe, LogOut, CheckCircle2,
-  Radar, Users, Brain, TrendingUp, Shield, FileText,
+  Landmark, MapPin, Globe, LogOut, CheckCircle2,
+  Radar, Brain, TrendingUp, Shield, FileText,
   ThumbsUp, ThumbsDown, AlertTriangle, ChevronDown, ChevronUp,
-  Loader2, BarChart3
+  Loader2, BarChart3, Users, GitCompareArrows, ExternalLink,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import DevWebsiteAnalysis from "@/components/owner/DevWebsiteAnalysis";
@@ -35,6 +34,7 @@ interface DeveloperAnalysis {
   developer_id: string;
   developer_name: string;
   developer_brand?: string;
+  developer_website?: string;
   verification_status: string;
   proposed_project_type: string;
   proposal_summary: string;
@@ -95,6 +95,8 @@ const OwnerDashboard: React.FC = () => {
   const [expandedLand, setExpandedLand] = useState<string | null>(null);
   const [analyses, setAnalyses] = useState<Record<string, DeveloperAnalysis[]>>({});
   const [analyzingLand, setAnalyzingLand] = useState<string | null>(null);
+  const [expandedDev, setExpandedDev] = useState<string | null>(null);
+  const [showCompare, setShowCompare] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -322,144 +324,236 @@ const OwnerDashboard: React.FC = () => {
                         </p>
                       ) : (
                         <div className="space-y-4">
-                          <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
-                            <BarChart3 className="h-4 w-4 text-primary" />
-                            {isAr ? `تحليل ${landAnalyses.length} مطور مهتم` : `Analysis of ${landAnalyses.length} interested developers`}
-                          </h4>
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
+                              <Users className="h-4 w-4 text-primary" />
+                              {isAr ? `${landAnalyses.length} مطور مهتم` : `${landAnalyses.length} interested developers`}
+                            </h4>
+                            {landAnalyses.length > 1 && (
+                              <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setShowCompare(showCompare === land.id ? null : land.id)}>
+                                <GitCompareArrows className="h-3.5 w-3.5 text-primary" />
+                                <span className="text-xs">{isAr ? "مقارنة الجميع" : "Compare All"}</span>
+                              </Button>
+                            )}
+                          </div>
 
+                          {/* === Compare All Section === */}
+                          {showCompare === land.id && landAnalyses.length > 1 && (
+                            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-3">
+                              <h5 className="text-sm font-medium text-primary flex items-center gap-2">
+                                <GitCompareArrows className="h-4 w-4" />
+                                {isAr ? "مقارنة المطورين المهتمين" : "Developers Comparison"}
+                              </h5>
+                              <div className="overflow-x-auto">
+                                <table className="w-full text-xs">
+                                  <thead>
+                                    <tr className="border-b border-border/40">
+                                      <th className="py-2 pe-3 text-start font-medium text-muted-foreground">{isAr ? "المطور" : "Developer"}</th>
+                                      <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "التقييم" : "Score"}</th>
+                                      <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "التوصية" : "Rec."}</th>
+                                      <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "صفقات ناجحة" : "Deals"}</th>
+                                      <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "العمولة" : "Comm."}</th>
+                                      <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "التوثيق" : "Verified"}</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {[...landAnalyses].filter(a => !a.error).sort((a, b) => b.ai_analysis.overall_score - a.ai_analysis.overall_score).map((a) => {
+                                      const rec = recLabels[a.ai_analysis.recommendation] || recLabels.cautious;
+                                      return (
+                                        <tr key={a.request_id} className="border-b border-border/20">
+                                          <td className="py-2 pe-3 font-medium text-foreground">{a.developer_brand || a.developer_name}</td>
+                                          <td className="py-2 px-2 text-center">
+                                            <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold text-white ${getScoreColor(a.ai_analysis.overall_score)}`}>
+                                              {a.ai_analysis.overall_score}
+                                            </span>
+                                          </td>
+                                          <td className="py-2 px-2 text-center">
+                                            <Badge variant="outline" className={`text-[10px] ${rec.color}`}>{isAr ? rec.ar : rec.en}</Badge>
+                                          </td>
+                                          <td className="py-2 px-2 text-center text-foreground">{a.stats.closed_deals}</td>
+                                          <td className="py-2 px-2 text-center text-foreground">{a.commission_rate}%</td>
+                                          <td className="py-2 px-2 text-center">
+                                            {a.verification_status === "verified"
+                                              ? <CheckCircle2 className="mx-auto h-3.5 w-3.5 text-emerald-500" />
+                                              : <span className="text-muted-foreground">—</span>}
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* === Individual Developer Cards === */}
                           {landAnalyses.map((a) => {
                             if (a.error) return null;
                             const ai = a.ai_analysis;
                             const rec = recLabels[ai.recommendation] || recLabels.cautious;
                             const RecIcon = rec.icon;
                             const scoreLabel = getScoreLabel(ai.overall_score);
+                            const isDevExpanded = expandedDev === a.request_id;
 
                             return (
-                              <div key={a.request_id} className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
-                                {/* Developer header */}
-                                <div className="flex items-start justify-between">
-                                  <div>
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <h5 className="font-medium text-foreground">{a.developer_name}</h5>
+                              <div key={a.request_id} className="rounded-xl border border-border/60 bg-card overflow-hidden">
+                                {/* Developer summary card (always visible) */}
+                                <button
+                                  className="w-full p-4 flex items-center gap-4 text-start hover:bg-muted/30 transition-colors"
+                                  onClick={() => setExpandedDev(isDevExpanded ? null : a.request_id)}
+                                >
+                                  {/* Score circle */}
+                                  <div className={`relative h-14 w-14 shrink-0 rounded-full border-4 ${ai.overall_score >= 75 ? "border-emerald-500" : ai.overall_score >= 50 ? "border-amber-500" : "border-red-500"} flex items-center justify-center`}>
+                                    <span className="text-base font-bold text-foreground">{ai.overall_score}</span>
+                                  </div>
+
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-0.5">
+                                      <h5 className="font-medium text-foreground truncate">{a.developer_brand || a.developer_name}</h5>
                                       {a.verification_status === "verified" && (
-                                        <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 border-emerald-500/20">
-                                          <Shield className="h-2.5 w-2.5 me-1" />
-                                          {isAr ? "موثق" : "Verified"}
+                                        <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 border-emerald-500/20 shrink-0">
+                                          <Shield className="h-2.5 w-2.5 me-1" />{isAr ? "موثق" : "Verified"}
                                         </Badge>
                                       )}
                                     </div>
-                                    {a.developer_brand && (
-                                      <p className="text-xs font-light text-muted-foreground">{a.developer_brand}</p>
-                                    )}
+                                    <p className="text-xs font-light text-muted-foreground truncate">{a.proposed_project_type} • {a.commission_rate}% {isAr ? "عمولة" : "comm."} • {a.stats.closed_deals} {isAr ? "صفقات" : "deals"}</p>
+                                    <p className="text-xs font-light text-muted-foreground mt-0.5 line-clamp-1">{ai.summary_ar}</p>
                                   </div>
-                                  {/* Overall score */}
-                                  <div className="flex flex-col items-center">
-                                    <div className={`relative h-16 w-16 rounded-full border-4 ${ai.overall_score >= 75 ? "border-emerald-500" : ai.overall_score >= 50 ? "border-amber-500" : "border-red-500"} flex items-center justify-center`}>
-                                      <span className="text-lg font-bold text-foreground">{ai.overall_score}</span>
+
+                                  <div className="flex items-center gap-2 shrink-0">
+                                    <Badge variant="outline" className={`text-[10px] ${rec.color}`}>
+                                      <RecIcon className="h-2.5 w-2.5 me-1" />
+                                      {isAr ? rec.ar : rec.en}
+                                    </Badge>
+                                    {isDevExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                                  </div>
+                                </button>
+
+                                {/* Expanded developer details */}
+                                {isDevExpanded && (
+                                  <div className="border-t border-border/40 p-5 space-y-4">
+                                    {/* Recommendation */}
+                                    <div className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${rec.color}`}>
+                                      <RecIcon className="h-4 w-4" />
+                                      <span className="text-sm font-medium">{isAr ? rec.ar : rec.en}</span>
+                                      <span className="text-xs font-light">— {ai.recommendation_reason_ar}</span>
                                     </div>
-                                    <span className="mt-1 text-[10px] font-light text-muted-foreground">
-                                      {isAr ? scoreLabel.ar : scoreLabel.en}
-                                    </span>
-                                  </div>
-                                </div>
 
-                                {/* Recommendation badge */}
-                                <div className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${rec.color}`}>
-                                  <RecIcon className="h-4 w-4" />
-                                  <span className="text-sm font-medium">{isAr ? rec.ar : rec.en}</span>
-                                  <span className="text-xs font-light">— {ai.recommendation_reason_ar}</span>
-                                </div>
-
-                                {/* Score breakdown */}
-                                <div className="grid grid-cols-2 gap-3">
-                                  <ScoreBar label={isAr ? "قوة البروفايل" : "Profile Strength"} score={ai.profile_score} max={20} color={getScoreColor(ai.profile_score * 5)} />
-                                  <ScoreBar label={isAr ? "سجل الإنجازات" : "Track Record"} score={ai.track_record_score} max={30} color={getScoreColor(ai.track_record_score * 3.33)} />
-                                  <ScoreBar label={isAr ? "جودة المقترح" : "Proposal Quality"} score={ai.proposal_score} max={25} color={getScoreColor(ai.proposal_score * 4)} />
-                                  <ScoreBar label={isAr ? "الموثوقية" : "Reliability"} score={ai.reliability_score} max={25} color={getScoreColor(ai.reliability_score * 4)} />
-                                </div>
-
-                                {/* Stats KPIs */}
-                                <div className="grid grid-cols-3 gap-2">
-                                  {[
-                                    { label: isAr ? "صفقات ناجحة" : "Closed Deals", value: a.stats.closed_deals, icon: TrendingUp },
-                                    { label: isAr ? "صفقات نشطة" : "Active Deals", value: a.stats.active_deals, icon: BarChart3 },
-                                    { label: isAr ? "نسبة الصحة" : "Health Ratio", value: `${a.stats.health_ratio}%`, icon: Shield },
-                                  ].map((kpi, i) => (
-                                    <div key={i} className="rounded-lg border border-border/40 bg-muted/20 p-2.5 text-center">
-                                      <kpi.icon className="mx-auto mb-1 h-3.5 w-3.5 text-muted-foreground" />
-                                      <p className="text-lg font-medium text-foreground">{kpi.value}</p>
-                                      <p className="text-[10px] font-light text-muted-foreground">{kpi.label}</p>
+                                    {/* Score breakdown */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <ScoreBar label={isAr ? "قوة البروفايل" : "Profile Strength"} score={ai.profile_score} max={20} color={getScoreColor(ai.profile_score * 5)} />
+                                      <ScoreBar label={isAr ? "سجل الإنجازات" : "Track Record"} score={ai.track_record_score} max={30} color={getScoreColor(ai.track_record_score * 3.33)} />
+                                      <ScoreBar label={isAr ? "جودة المقترح" : "Proposal Quality"} score={ai.proposal_score} max={25} color={getScoreColor(ai.proposal_score * 4)} />
+                                      <ScoreBar label={isAr ? "الموثوقية" : "Reliability"} score={ai.reliability_score} max={25} color={getScoreColor(ai.reliability_score * 4)} />
                                     </div>
-                                  ))}
-                                </div>
 
-                                {/* Proposal details */}
-                                <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-2">
-                                  <div className="flex items-center gap-1.5">
-                                    <FileText className="h-3.5 w-3.5 text-primary" />
-                                    <span className="text-xs font-medium text-foreground">{isAr ? "تفاصيل المقترح" : "Proposal Details"}</span>
-                                  </div>
-                                  <div className="grid grid-cols-2 gap-2 text-xs font-light text-muted-foreground">
-                                    <span>{isAr ? "نوع المشروع:" : "Type:"} {a.proposed_project_type}</span>
-                                    <span>{isAr ? "العمولة:" : "Commission:"} {a.commission_rate}%</span>
-                                    {a.estimated_duration_months && (
-                                      <span>{isAr ? "المدة:" : "Duration:"} {a.estimated_duration_months} {isAr ? "شهر" : "months"}</span>
+                                    {/* Stats KPIs */}
+                                    <div className="grid grid-cols-3 gap-2">
+                                      {[
+                                        { label: isAr ? "صفقات ناجحة" : "Closed Deals", value: a.stats.closed_deals, icon: TrendingUp },
+                                        { label: isAr ? "صفقات نشطة" : "Active Deals", value: a.stats.active_deals, icon: BarChart3 },
+                                        { label: isAr ? "نسبة الصحة" : "Health Ratio", value: `${a.stats.health_ratio}%`, icon: Shield },
+                                      ].map((kpi, i) => (
+                                        <div key={i} className="rounded-lg border border-border/40 bg-muted/20 p-2.5 text-center">
+                                          <kpi.icon className="mx-auto mb-1 h-3.5 w-3.5 text-muted-foreground" />
+                                          <p className="text-lg font-medium text-foreground">{kpi.value}</p>
+                                          <p className="text-[10px] font-light text-muted-foreground">{kpi.label}</p>
+                                        </div>
+                                      ))}
+                                    </div>
+
+                                    {/* Proposal details */}
+                                    <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-2">
+                                      <div className="flex items-center gap-1.5">
+                                        <FileText className="h-3.5 w-3.5 text-primary" />
+                                        <span className="text-xs font-medium text-foreground">{isAr ? "تفاصيل المقترح" : "Proposal Details"}</span>
+                                      </div>
+                                      <div className="grid grid-cols-2 gap-2 text-xs font-light text-muted-foreground">
+                                        <span>{isAr ? "نوع المشروع:" : "Type:"} {a.proposed_project_type}</span>
+                                        <span>{isAr ? "العمولة:" : "Commission:"} {a.commission_rate}%</span>
+                                        {a.estimated_duration_months && (
+                                          <span>{isAr ? "المدة:" : "Duration:"} {a.estimated_duration_months} {isAr ? "شهر" : "months"}</span>
+                                        )}
+                                        <span>{isAr ? "تمويل:" : "Financing:"} {a.needs_financing ? (isAr ? "مطلوب" : "Needed") : (isAr ? "غير مطلوب" : "Not needed")}</span>
+                                      </div>
+                                      <p className="text-xs font-light text-muted-foreground">{a.proposal_summary}</p>
+                                    </div>
+
+                                    {/* AI Summary */}
+                                    <p className="text-sm font-light text-foreground leading-relaxed">{ai.summary_ar}</p>
+
+                                    {/* Strengths & Weaknesses */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <div className="space-y-1.5">
+                                        <span className="text-xs font-medium text-emerald-700">{isAr ? "نقاط القوة" : "Strengths"}</span>
+                                        {ai.strengths_ar?.map((s, i) => (
+                                          <div key={i} className="flex items-start gap-1.5 text-xs font-light text-muted-foreground">
+                                            <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-emerald-500" />
+                                            <span>{s}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                      <div className="space-y-1.5">
+                                        <span className="text-xs font-medium text-red-700">{isAr ? "نقاط الضعف" : "Weaknesses"}</span>
+                                        {ai.weaknesses_ar?.map((w, i) => (
+                                          <div key={i} className="flex items-start gap-1.5 text-xs font-light text-muted-foreground">
+                                            <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-red-500" />
+                                            <span>{w}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+
+                                    {/* Negotiation tips */}
+                                    {ai.negotiation_tips_ar && ai.negotiation_tips_ar.length > 0 && (
+                                      <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-1.5">
+                                        <span className="text-xs font-medium text-primary">{isAr ? "نصائح للتفاوض" : "Negotiation Tips"}</span>
+                                        {ai.negotiation_tips_ar.map((t, i) => (
+                                          <div key={i} className="flex items-start gap-1.5 text-xs font-light text-foreground">
+                                            <span className="shrink-0 text-primary">{i + 1}.</span>
+                                            <span>{t}</span>
+                                          </div>
+                                        ))}
+                                      </div>
                                     )}
-                                    <span>{isAr ? "تمويل:" : "Financing:"} {a.needs_financing ? (isAr ? "مطلوب" : "Needed") : (isAr ? "غير مطلوب" : "Not needed")}</span>
-                                  </div>
-                                  <p className="text-xs font-light text-muted-foreground">{a.proposal_summary}</p>
-                                </div>
 
-                                {/* AI Summary */}
-                                <p className="text-sm font-light text-foreground leading-relaxed">{ai.summary_ar}</p>
-
-                                {/* Strengths & Weaknesses */}
-                                <div className="grid grid-cols-2 gap-3">
-                                  <div className="space-y-1.5">
-                                    <span className="text-xs font-medium text-emerald-700">{isAr ? "نقاط القوة" : "Strengths"}</span>
-                                    {ai.strengths_ar?.map((s, i) => (
-                                      <div key={i} className="flex items-start gap-1.5 text-xs font-light text-muted-foreground">
-                                        <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-emerald-500" />
-                                        <span>{s}</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                  <div className="space-y-1.5">
-                                    <span className="text-xs font-medium text-red-700">{isAr ? "نقاط الضعف" : "Weaknesses"}</span>
-                                    {ai.weaknesses_ar?.map((w, i) => (
-                                      <div key={i} className="flex items-start gap-1.5 text-xs font-light text-muted-foreground">
-                                        <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-red-500" />
-                                        <span>{w}</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-
-                                {/* Negotiation tips */}
-                                {ai.negotiation_tips_ar && ai.negotiation_tips_ar.length > 0 && (
-                                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-1.5">
-                                    <span className="text-xs font-medium text-primary">{isAr ? "نصائح للتفاوض" : "Negotiation Tips"}</span>
-                                    {ai.negotiation_tips_ar.map((t, i) => (
-                                      <div key={i} className="flex items-start gap-1.5 text-xs font-light text-foreground">
-                                        <span className="shrink-0 text-primary">{i + 1}.</span>
-                                        <span>{t}</span>
-                                      </div>
-                                    ))}
+                                    {/* Website Analysis */}
+                                    <div className="border-t border-border/40 pt-4">
+                                      <h6 className="text-xs font-medium text-foreground mb-2 flex items-center gap-1.5">
+                                        <Globe className="h-3.5 w-3.5 text-primary" />
+                                        {isAr ? "تحليل الموقع والسوشيال ميديا والأخبار" : "Website, Social Media & News Analysis"}
+                                      </h6>
+                                      {a.developer_website ? (
+                                        <div className="space-y-2">
+                                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                            <ExternalLink className="h-3 w-3 text-primary" />
+                                            <a href={a.developer_website.startsWith("http") ? a.developer_website : `https://${a.developer_website}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                                              {a.developer_website}
+                                            </a>
+                                            <Badge variant="secondary" className="text-[10px]">{isAr ? "مُسجل تلقائياً" : "Auto-registered"}</Badge>
+                                          </div>
+                                          <DevWebsiteAnalysis
+                                            developerName={a.developer_name}
+                                            developerId={a.developer_id}
+                                            isAr={isAr}
+                                            autoUrl={a.developer_website}
+                                          />
+                                        </div>
+                                      ) : (
+                                        <div className="space-y-2">
+                                          <p className="text-xs text-muted-foreground font-light">
+                                            {isAr ? "لم يُسجل المطور موقعاً إلكترونياً. يمكنك إدخال رابط يدوياً:" : "Developer didn't register a website. You can enter one manually:"}
+                                          </p>
+                                          <DevWebsiteAnalysis
+                                            developerName={a.developer_name}
+                                            developerId={a.developer_id}
+                                            isAr={isAr}
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                 )}
-
-                                {/* Website Analysis */}
-                                <div className="border-t border-border/40 pt-4">
-                                  <h6 className="text-xs font-medium text-foreground mb-2 flex items-center gap-1.5">
-                                    <Globe className="h-3.5 w-3.5 text-primary" />
-                                    {isAr ? "تحليل الموقع الإلكتروني للمطور" : "Developer Website Analysis"}
-                                  </h6>
-                                  <DevWebsiteAnalysis
-                                    developerName={a.developer_name}
-                                    developerId={a.developer_id}
-                                    isAr={isAr}
-                                  />
-                                </div>
                               </div>
                             );
                           })}

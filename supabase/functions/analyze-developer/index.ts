@@ -23,7 +23,7 @@ serve(async (req) => {
     // Build query based on params
     let requestsQuery = supabase
       .from("deal_requests")
-      .select("*, developers(company_name, cr_number, cr_extracted_name, marketing_brand_name, email, phone, verification_status, created_at)");
+      .select("*, developers(company_name, cr_number, cr_extracted_name, marketing_brand_name, email, phone, verification_status, created_at, website)");
 
     if (request_id) {
       requestsQuery = requestsQuery.eq("id", request_id);
@@ -216,6 +216,7 @@ ${devProfile}
         developer_id: request.developer_id,
         developer_name: dev?.company_name || dev?.marketing_brand_name || "غير معروف",
         developer_brand: dev?.marketing_brand_name,
+        developer_website: dev?.website || null,
         verification_status: dev?.verification_status,
         proposed_project_type: request.proposed_project_type,
         proposal_summary: request.proposal_summary,
