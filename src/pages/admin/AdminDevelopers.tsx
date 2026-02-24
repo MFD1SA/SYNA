@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil, KeyRound, Eye, EyeOff } from "lucide-react";
+import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil, KeyRound, Eye, EyeOff, Download, Globe, FileText } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type Developer = Database["public"]["Tables"]["developers"]["Row"];
@@ -32,6 +32,7 @@ const AdminDevelopers: React.FC = () => {
     cr_number: "",
     email: "",
     phone: "",
+    website: "",
     verification_notes: "",
   });
   const [saving, setSaving] = useState(false);
@@ -67,6 +68,7 @@ const AdminDevelopers: React.FC = () => {
       cr_number: dev.cr_number || "",
       email: dev.email || "",
       phone: dev.phone || "",
+      website: dev.website || "",
       verification_notes: dev.verification_notes || "",
     });
   };
@@ -80,6 +82,7 @@ const AdminDevelopers: React.FC = () => {
       cr_number: editForm.cr_number,
       email: editForm.email || null,
       phone: editForm.phone || null,
+      website: editForm.website || null,
       verification_notes: editForm.verification_notes || null,
     }).eq("id", editDev.id);
     setSaving(false);
@@ -173,14 +176,24 @@ const AdminDevelopers: React.FC = () => {
     rejected: { label: isAr ? "مرفوض" : "Rejected", icon: XCircle, variant: "destructive" as const },
   };
 
-  const fields: { key: keyof typeof editForm; label: string; required?: boolean }[] = [
+  const fields: { key: keyof typeof editForm; label: string; required?: boolean; dir?: string }[] = [
     { key: "company_name", label: isAr ? "اسم الشركة" : "Company Name", required: true },
     { key: "marketing_brand_name", label: isAr ? "الاسم التجاري" : "Brand Name" },
     { key: "cr_number", label: isAr ? "رقم السجل التجاري" : "CR Number", required: true },
-    { key: "email", label: isAr ? "البريد الإلكتروني" : "Email" },
-    { key: "phone", label: isAr ? "الهاتف" : "Phone" },
+    { key: "email", label: isAr ? "البريد الإلكتروني" : "Email", dir: "ltr" },
+    { key: "phone", label: isAr ? "الهاتف" : "Phone", dir: "ltr" },
+    { key: "website", label: isAr ? "الموقع الإلكتروني" : "Website", dir: "ltr" },
     { key: "verification_notes", label: isAr ? "ملاحظات التوثيق" : "Verification Notes" },
   ];
+
+  const getFileUrl = (url: string | null) => {
+    if (!url) return null;
+    if (!url.startsWith("http")) {
+      const { data } = supabase.storage.from("developer-docs").getPublicUrl(url);
+      return data?.publicUrl;
+    }
+    return url;
+  };
 
   return (
     <AdminLayout>
@@ -263,7 +276,7 @@ const AdminDevelopers: React.FC = () => {
 
       {/* Edit Dialog */}
       <Dialog open={!!editDev} onOpenChange={(open) => !open && setEditDev(null)}>
-        <DialogContent className="max-w-md" dir={isAr ? "rtl" : "ltr"}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto" dir={isAr ? "rtl" : "ltr"}>
           <DialogHeader>
             <DialogTitle>{isAr ? "تعديل بيانات المطور" : "Edit Developer"}</DialogTitle>
           </DialogHeader>
@@ -274,9 +287,73 @@ const AdminDevelopers: React.FC = () => {
                 <Input
                   value={editForm[f.key]}
                   onChange={e => setEditForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+                  dir={f.dir}
                 />
               </div>
             ))}
+
+            {/* Attached Documents Section */}
+            <div className="space-y-3 border-t border-border/40 pt-4">
+              <h4 className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <FileText className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                {isAr ? "المستندات المرفقة" : "Attached Documents"}
+              </h4>
+
+              {/* CR File */}
+              <div className="flex items-center justify-between rounded-lg border border-border/40 p-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
+                    <FileText className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-light text-foreground">{isAr ? "السجل التجاري" : "Commercial Registration"}</p>
+                    <p className="text-[11px] text-muted-foreground">PDF</p>
+                  </div>
+                </div>
+                {editDev?.cr_file_url ? (
+                  <a href={getFileUrl(editDev.cr_file_url) || "#"} target="_blank" rel="noopener noreferrer">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </a>
+                ) : (
+                  <span className="text-xs text-muted-foreground">{isAr ? "غير متوفر" : "N/A"}</span>
+                )}
+              </div>
+
+              {/* Website link display */}
+              {editDev?.website && (
+                <div className="flex items-center justify-between rounded-lg border border-border/40 p-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
+                      <Globe className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-light text-foreground">{isAr ? "الموقع الإلكتروني" : "Website"}</p>
+                      <p className="text-[11px] text-muted-foreground truncate max-w-[200px]" dir="ltr">{editDev.website}</p>
+                    </div>
+                  </div>
+                  <a href={editDev.website.startsWith("http") ? editDev.website : `https://${editDev.website}`} target="_blank" rel="noopener noreferrer">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
+                      <Globe className="h-4 w-4" />
+                    </Button>
+                  </a>
+                </div>
+              )}
+
+              {/* AI extracted data */}
+              {(editDev?.cr_extracted_name || editDev?.cr_extracted_number) && (
+                <div className="rounded-lg bg-muted/50 p-3 space-y-1">
+                  <p className="text-xs font-medium text-muted-foreground">{isAr ? "بيانات مستخرجة بالذكاء الاصطناعي" : "AI Extracted Data"}</p>
+                  {editDev?.cr_extracted_name && (
+                    <p className="text-sm text-foreground">{isAr ? "الاسم:" : "Name:"} {editDev.cr_extracted_name}</p>
+                  )}
+                  {editDev?.cr_extracted_number && (
+                    <p className="text-sm text-foreground" dir="ltr">{isAr ? "الرقم:" : "Number:"} {editDev.cr_extracted_number}</p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditDev(null)}>{isAr ? "إلغاء" : "Cancel"}</Button>
