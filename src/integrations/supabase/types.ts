@@ -58,6 +58,39 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          user_email: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          user_email?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          user_email?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string
@@ -774,6 +807,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      platform_content: {
+        Row: {
+          body_ar: string
+          body_en: string
+          content_key: string
+          content_type: string
+          created_at: string
+          id: string
+          is_active: boolean
+          title_ar: string
+          title_en: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          body_ar?: string
+          body_en?: string
+          content_key: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          title_ar?: string
+          title_en?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          body_ar?: string
+          body_en?: string
+          content_key?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          title_ar?: string
+          title_en?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       policy_consents: {
         Row: {

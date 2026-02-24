@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { logAudit } from "@/lib/auditLog";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -15,6 +17,7 @@ import type { Database } from "@/integrations/supabase/types";
 type Developer = Database["public"]["Tables"]["developers"]["Row"];
 
 const AdminDevelopers: React.FC = () => {
+  const { user } = useAuth();
   const { lang } = useLanguage();
   const { toast } = useToast();
   const isAr = lang === "ar";
@@ -83,6 +86,7 @@ const AdminDevelopers: React.FC = () => {
     if (error) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
     } else {
+      if (user) await logAudit(user.id, user.email, "update", "developer", editDev.id, { company_name: editForm.company_name });
       toast({ title: isAr ? "تم تحديث البيانات" : "Updated successfully" });
       setEditDev(null);
       fetchDevs();
@@ -98,6 +102,7 @@ const AdminDevelopers: React.FC = () => {
       if (error) {
         toast({ variant: "destructive", title: "Error", description: error.message });
       } else {
+        if (user) await logAudit(user.id, user.email, status === "verified" ? "approve" : "reject", "developer", id);
         toast({ title: isAr ? (status === "verified" ? "تم التوثيق" : "تم الرفض") : (status === "verified" ? "Verified" : "Rejected") });
       }
     } catch (err) {
@@ -123,6 +128,7 @@ const AdminDevelopers: React.FC = () => {
         console.warn("Auth user delete warning:", res.data?.error || res.error?.message);
       }
 
+      if (user) await logAudit(user.id, user.email, "delete", "developer", deleteDialog.id, { company: deleteDialog.company_name });
       toast({ title: isAr ? "تم حذف المطور" : "Developer deleted" });
       setDeleteDialog(null);
       fetchDevs();

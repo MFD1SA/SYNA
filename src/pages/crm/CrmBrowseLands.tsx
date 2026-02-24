@@ -297,7 +297,7 @@ const CrmBrowseLands: React.FC = () => {
               <Textarea value={requestForm.proposal_summary} onChange={(e) => setRequestForm({ ...requestForm, proposal_summary: e.target.value })} rows={4} placeholder={isAr ? "اكتب وصفاً واضحاً لمقترح التطوير..." : "Write a clear description of the development proposal..."} />
             </div>
             <div className="rounded-lg border border-border/40 bg-muted/30 p-3 text-xs font-light text-muted-foreground">
-              {isAr ? "بتقديم هذا الطلب، أوافق على عمولة دوما بنسبة 2.50% عند إتمام الصفقة" : "By submitting this request, I agree to DOMA's 2.50% commission upon deal closure"}
+              {isAr ? "بتقديم هذا الطلب، أوافق على شروط وأحكام منصة DOMA" : "By submitting this request, I agree to DOMA's terms and conditions"}
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setRequestDialog(null)}>{isAr ? "إلغاء" : "Cancel"}</Button>
