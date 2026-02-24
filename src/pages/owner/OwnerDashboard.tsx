@@ -95,6 +95,7 @@ const OwnerDashboard: React.FC = () => {
 
   const [ownerName, setOwnerName] = useState("");
   const [lands, setLands] = useState<any[]>([]);
+  const [approvedRequests, setApprovedRequests] = useState<any[]>([]);
   const [requests, setRequests] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [pulseSnapshots, setPulseSnapshots] = useState<Record<string, any>>({});
@@ -137,9 +138,10 @@ const OwnerDashboard: React.FC = () => {
 
       if (landsData && landsData.length > 0) {
         const landIds = landsData.map(l => l.id);
-        const [reqRes, pulseRes] = await Promise.all([
+        const [reqRes, pulseRes, approvedRes] = await Promise.all([
           supabase.from("deal_requests").select("land_id").in("land_id", landIds),
           supabase.from("land_pulse_snapshots").select("*").in("land_id", landIds).order("created_at", { ascending: false }),
+          supabase.from("deal_requests").select("*, lands(city, district), developers(company_name, marketing_brand_name, email)").in("land_id", landIds).eq("status", "approved").order("updated_at", { ascending: false }),
         ]);
 
         const counts: Record<string, number> = {};
@@ -149,6 +151,8 @@ const OwnerDashboard: React.FC = () => {
         const snapMap: Record<string, any> = {};
         pulseRes.data?.forEach(s => { if (!snapMap[s.land_id]) snapMap[s.land_id] = s; });
         setPulseSnapshots(snapMap);
+        
+        setApprovedRequests(approvedRes.data || []);
       }
       setLoading(false);
     };
@@ -415,7 +419,56 @@ const OwnerDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* AI Disclaimer */}
+        {/* Approved Requests - Meeting Scheduling Section */}
+        {!loading && approvedRequests.length > 0 && (
+          <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <CalendarClock className="h-5 w-5 text-emerald-600" />
+              <h2 className="text-sm font-medium text-foreground">
+                {isAr ? `طلبات مقبولة تحتاج جدولة اجتماع (${approvedRequests.length})` : `Approved Requests - Schedule Meeting (${approvedRequests.length})`}
+              </h2>
+            </div>
+            <div className="space-y-2">
+              {approvedRequests.map(req => (
+                <div key={req.id} className="flex items-center justify-between rounded-lg border border-border/40 bg-card p-3">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground">
+                      {req.developers?.marketing_brand_name || req.developers?.company_name || "—"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {req.lands?.city}{req.lands?.district ? ` - ${req.lands.district}` : ""} • {req.proposed_project_type}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 border-emerald-500/20">
+                      <CheckCircle2 className="h-2.5 w-2.5 me-1" />{isAr ? "مقبول" : "Approved"}
+                    </Badge>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1.5"
+                      disabled={actionLoading}
+                      onClick={() => {
+                        setMeetingDialog({
+                          requestId: req.id,
+                          devName: req.developers?.marketing_brand_name || req.developers?.company_name || "",
+                          devEmail: req.developers?.email || "",
+                          landCity: req.lands?.city || "",
+                          landDistrict: req.lands?.district,
+                          approvedAt: req.updated_at,
+                        });
+                      }}
+                    >
+                      <CalendarClock className="h-3.5 w-3.5 text-primary" />
+                      {isAr ? "جدولة اجتماع" : "Schedule Meeting"}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {!loading && lands.length > 0 && (
           <div className="mb-4 flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
             <Info className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />

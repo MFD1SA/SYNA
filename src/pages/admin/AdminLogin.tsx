@@ -52,7 +52,8 @@ const AdminLogin: React.FC = () => {
       }
 
       toast({ title: isAr ? "أهلاً مدير النظام 👋" : "Welcome, System Admin 👋" });
-      navigate("/admincp/overview");
+      // Small delay to let auth state propagate before navigating
+      setTimeout(() => navigate("/admincp/overview"), 100);
     }
     setLoading(false);
   };
