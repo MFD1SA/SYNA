@@ -142,11 +142,17 @@ const AdminDevelopers: React.FC = () => {
     if (!passwordDialog || !newPassword) return;
     setUpdatingPassword(true);
     try {
+      const devName = passwordDialog.name;
+      const devUserId = passwordDialog.user_id;
+      console.log(`[Admin] Changing password for developer: ${devName} (user_id: ${devUserId})`);
       const res = await supabase.functions.invoke("create-owner", {
-        body: { action: "update_password", user_id: passwordDialog.user_id, new_password: newPassword },
+        body: { action: "update_password", user_id: devUserId, new_password: newPassword },
       });
       if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
-      toast({ title: isAr ? "تم تحديث كلمة المرور" : "Password updated successfully" });
+      toast({ 
+        title: isAr ? "تم تحديث كلمة المرور بنجاح" : "Password updated successfully",
+        description: isAr ? `تم تغيير كلمة مرور المطور: ${devName}` : `Developer password changed: ${devName}`,
+      });
       setPasswordDialog(null);
       setNewPassword("");
     } catch (err: any) {
@@ -285,11 +291,16 @@ const AdminDevelopers: React.FC = () => {
       <Dialog open={!!passwordDialog} onOpenChange={(open) => { if (!open) { setPasswordDialog(null); setNewPassword(""); } }}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>{isAr ? "تغيير كلمة المرور" : "Change Password"}</DialogTitle>
+            <DialogTitle>{isAr ? "تغيير كلمة مرور المطور" : "Change Developer Password"}</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            {isAr ? `تغيير كلمة مرور: ${passwordDialog?.name || ""}` : `Change password for: ${passwordDialog?.name || ""}`}
-          </p>
+          <div className="rounded-md bg-accent/50 p-3 text-sm">
+            <p className="font-medium text-foreground">
+              {isAr ? "المطور:" : "Developer:"} {passwordDialog?.name || ""}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {isAr ? "⚠️ سيتم تغيير كلمة مرور حساب المطور فقط، وليس حساب مدير النظام" : "⚠️ This will only change the developer's password, not the admin's"}
+            </p>
+          </div>
           <div className="space-y-2">
             <Label className="text-xs">{isAr ? "كلمة المرور الجديدة" : "New Password"}</Label>
             <div className="relative">

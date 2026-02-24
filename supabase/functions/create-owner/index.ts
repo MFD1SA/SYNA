@@ -43,14 +43,19 @@ Deno.serve(async (req) => {
       const { user_id, new_password } = body;
       if (!user_id || !new_password) throw new Error("user_id and new_password required");
       if (new_password.length < 6) throw new Error("Password must be at least 6 characters");
+      if (user_id === caller.id) throw new Error("Cannot change your own password from this endpoint");
+
+      console.log(`[create-owner] Admin ${caller.email} changing password for user_id: ${user_id}`);
 
       const { error } = await adminClient.auth.admin.updateUserById(user_id, {
         password: new_password,
       });
       if (error) throw error;
 
+      console.log(`[create-owner] Password updated successfully for user_id: ${user_id}`);
+
       return new Response(
-        JSON.stringify({ success: true }),
+        JSON.stringify({ success: true, updated_user_id: user_id }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
