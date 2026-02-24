@@ -124,13 +124,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
               <a href="#how-it-works">{t.hero.learnMore}</a>
             </Button>
           </div>
-          <div className="mt-4 flex justify-center">
-            <Button variant="outline" size="lg" asChild className="h-12 gap-2 rounded-xl border-[hsl(187,55%,40%,0.3)] bg-[hsl(210,25%,11%,0.8)] px-8 text-sm text-[hsl(187,55%,60%)] hover:bg-[hsl(210,25%,14%)] hover:text-[hsl(187,55%,80%)]">
-              <Link to="/auth/login">
-                🔍 {isAr ? "اعرف نبض أرضك خلال 900م" : "Discover your land pulse within 900m"}
-              </Link>
-            </Button>
-          </div>
         </div>
 
 
