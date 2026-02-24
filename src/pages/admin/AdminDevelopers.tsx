@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil } from "lucide-react";
+import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil, KeyRound, Eye, EyeOff } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type Developer = Database["public"]["Tables"]["developers"]["Row"];
@@ -32,6 +32,16 @@ const AdminDevelopers: React.FC = () => {
     verification_notes: "",
   });
   const [saving, setSaving] = useState(false);
+
+  // Password reset
+  const [passwordDialog, setPasswordDialog] = useState<{ user_id: string; name: string } | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [updatingPassword, setUpdatingPassword] = useState(false);
+
+  // Delete confirmation
+  const [deleteDialog, setDeleteDialog] = useState<Developer | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchDevs = async () => {
     try {
@@ -92,16 +102,51 @@ const AdminDevelopers: React.FC = () => {
       }
     } catch (err) {
       console.error("updateStatus error:", err);
-      toast({ variant: "destructive", title: "Error", description: String(err) });
     } finally {
       fetchDevs();
     }
   };
 
-  const deleteDev = async (id: string) => {
-    await supabase.from("developers").delete().eq("id", id);
-    fetchDevs();
-    toast({ title: isAr ? "تم الحذف" : "Deleted" });
+  const handleDeleteDev = async () => {
+    if (!deleteDialog) return;
+    setDeleting(true);
+    try {
+      // Delete developer record first
+      const { error: dbError } = await supabase.from("developers").delete().eq("id", deleteDialog.id);
+      if (dbError) throw dbError;
+
+      // Delete the auth user via edge function
+      const res = await supabase.functions.invoke("create-owner", {
+        body: { action: "delete_user", user_id: deleteDialog.user_id },
+      });
+      if (res.error || res.data?.error) {
+        console.warn("Auth user delete warning:", res.data?.error || res.error?.message);
+      }
+
+      toast({ title: isAr ? "تم حذف المطور" : "Developer deleted" });
+      setDeleteDialog(null);
+      fetchDevs();
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    }
+    setDeleting(false);
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!passwordDialog || !newPassword) return;
+    setUpdatingPassword(true);
+    try {
+      const res = await supabase.functions.invoke("create-owner", {
+        body: { action: "update_password", user_id: passwordDialog.user_id, new_password: newPassword },
+      });
+      if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      toast({ title: isAr ? "تم تحديث كلمة المرور" : "Password updated successfully" });
+      setPasswordDialog(null);
+      setNewPassword("");
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    }
+    setUpdatingPassword(false);
   };
 
   const filtered = devs.filter(d =>
@@ -111,9 +156,9 @@ const AdminDevelopers: React.FC = () => {
   );
 
   const statusConfig = {
-    pending_review: { label: isAr ? "قيد المراجعة" : "Pending", icon: Clock, variant: "outline" as const, color: "text-amber-600" },
-    verified: { label: isAr ? "موثق" : "Verified", icon: CheckCircle2, variant: "default" as const, color: "text-green-600" },
-    rejected: { label: isAr ? "مرفوض" : "Rejected", icon: XCircle, variant: "destructive" as const, color: "text-red-600" },
+    pending_review: { label: isAr ? "قيد المراجعة" : "Pending", icon: Clock, variant: "outline" as const },
+    verified: { label: isAr ? "موثق" : "Verified", icon: CheckCircle2, variant: "default" as const },
+    rejected: { label: isAr ? "مرفوض" : "Rejected", icon: XCircle, variant: "destructive" as const },
   };
 
   const fields: { key: keyof typeof editForm; label: string; required?: boolean }[] = [
@@ -137,7 +182,6 @@ const AdminDevelopers: React.FC = () => {
         <Input className="ps-9" placeholder={isAr ? "بحث بالاسم أو السجل..." : "Search by name or CR..."} value={search} onChange={e => setSearch(e.target.value)} />
       </div>
 
-      {/* Stats */}
       <div className="mb-4 grid grid-cols-3 gap-3">
         {[
           { label: isAr ? "إجمالي" : "Total", value: devs.length },
@@ -160,8 +204,8 @@ const AdminDevelopers: React.FC = () => {
             return (
               <div key={dev.id} className="doma-card flex items-center justify-between p-4">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
-                    <HardHat className="h-5 w-5 text-amber-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
+                    <HardHat className="h-5 w-5 text-accent-foreground" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
@@ -180,10 +224,10 @@ const AdminDevelopers: React.FC = () => {
                   </Badge>
                   {dev.verification_status === "pending_review" && (
                     <>
-                      <Button size="sm" variant="outline" className="text-green-600 border-green-200 hover:bg-green-50" onClick={() => updateStatus(dev.id, "verified")}>
+                      <Button size="sm" variant="outline" className="text-primary border-primary/20 hover:bg-primary/5" onClick={() => updateStatus(dev.id, "verified")}>
                         <CheckCircle2 className="h-3.5 w-3.5 me-1" />{isAr ? "توثيق" : "Verify"}
                       </Button>
-                      <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => updateStatus(dev.id, "rejected")}>
+                      <Button size="sm" variant="outline" className="text-destructive border-destructive/20 hover:bg-destructive/5" onClick={() => updateStatus(dev.id, "rejected")}>
                         <XCircle className="h-3.5 w-3.5 me-1" />{isAr ? "رفض" : "Reject"}
                       </Button>
                     </>
@@ -191,7 +235,10 @@ const AdminDevelopers: React.FC = () => {
                   <Button size="sm" variant="outline" onClick={() => openEdit(dev)}>
                     <Pencil className="h-3.5 w-3.5 me-1" />{isAr ? "تعديل" : "Edit"}
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => deleteDev(dev.id)} className="text-destructive hover:bg-destructive/10">
+                  <Button size="sm" variant="ghost" onClick={() => setPasswordDialog({ user_id: dev.user_id, name: dev.company_name })}>
+                    <KeyRound className="h-3.5 w-3.5 me-1" />{isAr ? "كلمة المرور" : "Password"}
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={() => setDeleteDialog(dev)} className="text-destructive hover:bg-destructive/10">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -223,6 +270,59 @@ const AdminDevelopers: React.FC = () => {
             <Button variant="outline" onClick={() => setEditDev(null)}>{isAr ? "إلغاء" : "Cancel"}</Button>
             <Button onClick={saveEdit} disabled={saving || !editForm.company_name || !editForm.cr_number}>
               {saving ? (isAr ? "جارٍ الحفظ..." : "Saving...") : (isAr ? "حفظ" : "Save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Password Reset Dialog */}
+      <Dialog open={!!passwordDialog} onOpenChange={(open) => { if (!open) { setPasswordDialog(null); setNewPassword(""); } }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{isAr ? "تغيير كلمة المرور" : "Change Password"}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {isAr ? `تغيير كلمة مرور: ${passwordDialog?.name || ""}` : `Change password for: ${passwordDialog?.name || ""}`}
+          </p>
+          <div className="space-y-2">
+            <Label className="text-xs">{isAr ? "كلمة المرور الجديدة" : "New Password"}</Label>
+            <div className="relative">
+              <Input
+                type={showNewPassword ? "text" : "password"}
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+                placeholder="••••••••"
+                dir="ltr"
+              />
+              <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPasswordDialog(null)}>{isAr ? "إلغاء" : "Cancel"}</Button>
+            <Button onClick={handleUpdatePassword} disabled={updatingPassword || newPassword.length < 6}>
+              {updatingPassword ? (isAr ? "جارٍ التحديث..." : "Updating...") : (isAr ? "تحديث" : "Update")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteDialog} onOpenChange={(open) => !open && setDeleteDialog(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">{isAr ? "حذف حساب المطور" : "Delete Developer Account"}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {isAr
+              ? `هل أنت متأكد من حذف حساب "${deleteDialog?.company_name || ""}"؟ سيتم حذف جميع البيانات المرتبطة ولا يمكن التراجع.`
+              : `Are you sure you want to delete "${deleteDialog?.company_name || ""}"? All related data will be removed.`}
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialog(null)}>{isAr ? "إلغاء" : "Cancel"}</Button>
+            <Button variant="destructive" onClick={handleDeleteDev} disabled={deleting}>
+              {deleting ? (isAr ? "جارٍ الحذف..." : "Deleting...") : (isAr ? "حذف نهائي" : "Delete")}
             </Button>
           </DialogFooter>
         </DialogContent>
