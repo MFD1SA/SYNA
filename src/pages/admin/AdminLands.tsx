@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, LocateFixed, ImagePlus } from "lucide-react";
+import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, LocateFixed, ImagePlus, Ruler, Building2, Calendar, Image as ImageIcon } from "lucide-react";
 import { saudiCities } from "@/data/saudiCities";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -215,6 +215,13 @@ const AdminLands: React.FC = () => {
     l.district?.toLowerCase().includes(search.toLowerCase()) ||
     l.owner_name?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const getImageUrl = (land: any) => {
+    if (!land.image_url) return null;
+    if (land.image_url.startsWith("http")) return land.image_url;
+    const { data } = supabase.storage.from("land-images").getPublicUrl(land.image_url);
+    return data?.publicUrl;
+  };
 
   const mapPreviewUrl = (lat: number, lng: number) =>
     `https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.005},${lat - 0.005},${lng + 0.005},${lat + 0.005}&layer=mapnik&marker=${lat},${lng}`;
@@ -439,46 +446,78 @@ const AdminLands: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="space-y-3">{[1, 2, 3].map(i => <div key={i} className="h-20 animate-pulse rounded-xl bg-muted" />)}</div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{[1, 2, 3].map(i => <div key={i} className="h-64 animate-pulse rounded-xl bg-muted" />)}</div>
       ) : (
-        <div className="space-y-2">
-          {filtered.map(land => (
-            <div key={land.id} className="doma-card flex items-center justify-between p-4">
-              <div className="flex items-center gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                  <MapPin className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-foreground">
-                      {land.city}{land.district ? ` — ${land.district}` : ""}
-                    </p>
-                    {!land.is_active && <Badge variant="secondary" className="text-[10px]">{isAr ? "مسودة" : "Draft"}</Badge>}
-                    {land.owner_approved && <Badge className="text-[10px] bg-emerald-500/10 text-emerald-700 border-emerald-500/20">{isAr ? "🟢 مالك موافق" : "🟢 Owner Approved"}</Badge>}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map(land => {
+            const imgUrl = getImageUrl(land);
+            return (
+              <div key={land.id} className="doma-card overflow-hidden">
+                {/* Image */}
+                <div className="relative h-40 bg-muted">
+                  {imgUrl ? (
+                    <img src={imgUrl} alt={land.city} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center">
+                      <ImageIcon className="h-8 w-8 text-muted-foreground/30" />
+                    </div>
+                  )}
+                  {/* Badges overlay */}
+                  <div className="absolute top-2 end-2 flex gap-1.5">
+                    {!land.is_active && <Badge variant="secondary" className="text-[10px] bg-background/80 backdrop-blur-sm">{isAr ? "مسودة" : "Draft"}</Badge>}
+                    {land.owner_approved && <Badge className="text-[10px] bg-emerald-500/80 text-white border-0 backdrop-blur-sm">{isAr ? "مالك موافق" : "Approved"}</Badge>}
                   </div>
-                  <p className="text-xs font-light text-muted-foreground">
-                    {land.land_area_sqm?.toLocaleString()} م² • {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
-                    {land.owner_name ? ` • ${land.owner_name}` : ""}
-                  </p>
+                  <div className="absolute bottom-2 start-2">
+                    <Badge variant="secondary" className="text-[10px] bg-background/80 backdrop-blur-sm">
+                      {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
+                    </Badge>
+                  </div>
+                  {land.is_featured && (
+                    <div className="absolute top-2 start-2">
+                      <Star className="h-4 w-4 text-amber-400 fill-amber-400 drop-shadow" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <MapPin className="h-4 w-4 text-primary shrink-0" strokeWidth={1.5} />
+                    <h3 className="font-medium text-foreground truncate">{land.city}</h3>
+                    {land.district && <span className="text-xs font-light text-muted-foreground truncate">- {land.district}</span>}
+                  </div>
+
+                  <div className="mt-2 grid grid-cols-2 gap-1.5 text-xs font-light text-muted-foreground">
+                    <span className="flex items-center gap-1"><Ruler className="h-3 w-3" />{Number(land.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</span>
+                    <span className="flex items-center gap-1"><Building2 className="h-3 w-3" />{isAr ? goalLabels[land.partnership_goal]?.ar : goalLabels[land.partnership_goal]?.en}</span>
+                    {land.street_width_m && <span>{isAr ? "شارع:" : "St:"} {land.street_width_m}{isAr ? "م" : "m"}</span>}
+                    {land.owner_name && <span className="truncate">{land.owner_name}</span>}
+                  </div>
+
+                  {land.vision_summary && (
+                    <p className="mt-2 text-xs font-light text-muted-foreground line-clamp-2">{land.vision_summary}</p>
+                  )}
+
+                  {/* Actions */}
+                  <div className="mt-3 flex items-center gap-1">
+                    <Button variant="outline" size="sm" className="flex-1 text-xs gap-1" onClick={() => openEdit(land)}>
+                      <Pencil className="h-3 w-3" />{isAr ? "تعديل" : "Edit"}
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleActive(land.id, land.is_active)} title={isAr ? "إظهار/إخفاء" : "Show/Hide"}>
+                      {land.is_active ? <Eye className="h-3.5 w-3.5 text-primary" /> : <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />}
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleFeatured(land.id, land.is_featured)} title={isAr ? "تمييز" : "Feature"}>
+                      {land.is_featured ? <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" /> : <StarOff className="h-3.5 w-3.5 text-muted-foreground" />}
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => deleteLand(land.id)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" onClick={() => openEdit(land)} title={isAr ? "تعديل" : "Edit"}>
-                  <Pencil className="h-4 w-4 text-muted-foreground" />
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => toggleActive(land.id, land.is_active)} title={isAr ? "إظهار/إخفاء" : "Show/Hide"}>
-                  {land.is_active ? <Eye className="h-4 w-4 text-primary" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />}
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => toggleFeatured(land.id, land.is_featured)} title={isAr ? "تمييز" : "Feature"}>
-                  {land.is_featured ? <Star className="h-4 w-4 text-amber-500 fill-amber-500" /> : <StarOff className="h-4 w-4 text-muted-foreground" />}
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => deleteLand(land.id)} className="text-destructive hover:bg-destructive/10">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
-          {filtered.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">{isAr ? "لا توجد أراضي" : "No lands found"}</p>}
+            );
+          })}
+          {filtered.length === 0 && <p className="col-span-full py-8 text-center text-sm text-muted-foreground">{isAr ? "لا توجد أراضي" : "No lands found"}</p>}
         </div>
       )}
     </AdminLayout>
