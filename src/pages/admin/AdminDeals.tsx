@@ -11,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, FileText, Handshake, Clock, CheckCircle2, XCircle, AlertCircle, Eye, Ruler, MapPin } from "lucide-react";
+import { Search, FileText, Handshake, Clock, CheckCircle2, XCircle, AlertCircle, Eye, Ruler, MapPin, Globe } from "lucide-react";
+import DevWebsiteAnalysis from "@/components/owner/DevWebsiteAnalysis";
 
 const AdminDeals: React.FC = () => {
   const { lang } = useLanguage();
@@ -275,6 +276,19 @@ const AdminDeals: React.FC = () => {
                   <p className="text-muted-foreground">{isAr ? "التمويل" : "Financing"}</p>
                   <p className="font-medium text-foreground">{viewReq.needs_financing ? (isAr ? "مطلوب" : "Required") : (isAr ? "غير مطلوب" : "Not Required")}</p>
                 </div>
+              </div>
+
+              {/* Developer Website Analysis */}
+              <div className="border-t border-border/40 pt-3">
+                <h6 className="text-xs font-medium text-foreground mb-2 flex items-center gap-1.5">
+                  <Globe className="h-3.5 w-3.5 text-primary" />
+                  {isAr ? "تحليل الموقع الإلكتروني للمطور" : "Developer Website Analysis"}
+                </h6>
+                <DevWebsiteAnalysis
+                  developerName={viewReq.developers?.company_name || ""}
+                  developerId={viewReq.developer_id}
+                  isAr={isAr}
+                />
               </div>
 
               {/* Reject notes */}
