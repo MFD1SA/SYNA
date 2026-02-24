@@ -119,11 +119,31 @@ const AdminDevelopers: React.FC = () => {
     if (!deleteDialog) return;
     setDeleting(true);
     try {
-      // Delete developer record first
+      // 1. Find all deals linked to this developer
+      const { data: deals } = await supabase
+        .from("deals")
+        .select("id")
+        .eq("developer_id", deleteDialog.id);
+
+      if (deals && deals.length > 0) {
+        const dealIds = deals.map((d) => d.id);
+
+        // 2. Delete deal-related records in correct order
+        await supabase.from("deal_tasks").delete().in("deal_id", dealIds);
+        await supabase.from("deal_meetings").delete().in("deal_id", dealIds);
+        await supabase.from("deal_stages_log").delete().in("deal_id", dealIds);
+        await supabase.from("deal_logs").delete().in("deal_id", dealIds);
+        await supabase.from("deals").delete().in("id", dealIds);
+      }
+
+      // 3. Delete deal_requests linked to this developer
+      await supabase.from("deal_requests").delete().eq("developer_id", deleteDialog.id);
+
+      // 4. Delete developer record
       const { error: dbError } = await supabase.from("developers").delete().eq("id", deleteDialog.id);
       if (dbError) throw dbError;
 
-      // Delete the auth user via edge function
+      // 5. Delete the auth user via edge function
       const res = await supabase.functions.invoke("create-owner", {
         body: { action: "delete_user", user_id: deleteDialog.user_id },
       });
