@@ -1104,6 +1104,7 @@ export type Database = {
           created_at: string
           id: string
           is_registered: boolean
+          lead_status: string
           notes: string | null
           project_count: number | null
           registered_developer_id: string | null
@@ -1118,6 +1119,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_registered?: boolean
+          lead_status?: string
           notes?: string | null
           project_count?: number | null
           registered_developer_id?: string | null
@@ -1132,6 +1134,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_registered?: boolean
+          lead_status?: string
           notes?: string | null
           project_count?: number | null
           registered_developer_id?: string | null
