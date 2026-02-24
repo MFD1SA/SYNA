@@ -161,8 +161,12 @@ const AdminDevelopers: React.FC = () => {
     setDeleting(false);
   };
 
-  const handleUpdatePassword = async () => {
+    const handleUpdatePassword = async () => {
     if (!passwordDialog || !newPassword) return;
+    if (newPassword.length < 6) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "كلمة المرور يجب أن تكون 6 أحرف على الأقل" : "Password must be at least 6 characters" });
+      return;
+    }
     setUpdatingPassword(true);
     try {
       const devName = passwordDialog.name;
@@ -171,15 +175,19 @@ const AdminDevelopers: React.FC = () => {
       const res = await supabase.functions.invoke("create-owner", {
         body: { action: "update_password", user_id: devUserId, new_password: newPassword },
       });
-      if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      console.log("[Admin] Password update response:", JSON.stringify(res.data), "error:", res.error?.message);
+      if (res.error) throw new Error(res.error.message || "Function call failed");
+      if (res.data?.error) throw new Error(res.data.error);
+      if (!res.data?.success) throw new Error(isAr ? "لم يتم تحديث كلمة المرور" : "Password was not updated");
       toast({ 
-        title: isAr ? "تم تحديث كلمة المرور بنجاح" : "Password updated successfully",
+        title: isAr ? "تم تحديث كلمة المرور بنجاح ✓" : "Password updated successfully ✓",
         description: isAr ? `تم تغيير كلمة مرور المطور: ${devName}` : `Developer password changed: ${devName}`,
       });
       setPasswordDialog(null);
       setNewPassword("");
     } catch (err: any) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+      console.error("[Admin] Password update failed:", err);
+      toast({ variant: "destructive", title: isAr ? "فشل تحديث كلمة المرور" : "Password update failed", description: err.message });
     }
     setUpdatingPassword(false);
   };

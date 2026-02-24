@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -6,14 +6,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Plus, Globe, Building2, Sparkles, Loader2, Trash2, ExternalLink, Search,
-  UserCheck, Newspaper, RefreshCw,
+  Plus, Globe, Building2, Trash2, Newspaper, RefreshCw, Loader2,
+  UserCheck, Phone, User, ImageIcon,
 } from "lucide-react";
 
 type TargetCompany = {
@@ -26,6 +27,9 @@ type TargetCompany = {
   is_registered: boolean;
   lead_status: string;
   notes: string | null;
+  contact_person_name: string | null;
+  contact_phone: string | null;
+  image_url: string | null;
   created_at: string;
 };
 
@@ -41,20 +45,24 @@ const AdminTargets: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const isAr = lang === "ar";
-  usePageTitle(isAr ? "استهداف الشركات" : "Target Companies");
+  usePageTitle(isAr ? "إدارة الشركات" : "Company Management");
 
   const [companies, setCompanies] = useState<TargetCompany[]>([]);
   const [loading, setLoading] = useState(true);
   const [addOpen, setAddOpen] = useState(false);
-  const [analyzing, setAnalyzing] = useState<string | null>(null);
-  const [autoFetching, setAutoFetching] = useState(false);
 
   // Deal news
   const [dealNews, setDealNews] = useState<DealNews[]>([]);
   const [newsLoading, setNewsLoading] = useState(false);
 
   // Add form
-  const [form, setForm] = useState({ company_name: "", website: "", project_count: 0 });
+  const [form, setForm] = useState({
+    company_name: "",
+    website: "",
+    image_url: "",
+    contact_person_name: "",
+    contact_phone: "",
+  });
 
   const callAI = async (prompt: string): Promise<string> => {
     const resp = await fetch(
@@ -99,48 +107,6 @@ const AdminTargets: React.FC = () => {
     setLoading(false);
   };
 
-  const autoFetchCompanies = useCallback(async () => {
-    if (!user || autoFetching) return;
-    setAutoFetching(true);
-    try {
-      const text = await callAI(
-        `أنت خبير في السوق العقاري السعودي. أريد قائمة بأهم 20 شركة تطوير عقاري في السعودية (شركات لديها مشاريع تطوير فعلية وليس شركات تسويق عقاري). لكل شركة أعطني: اسمها الرسمي، موقعها الإلكتروني، وعدد مشاريعها التقريبي. أجب بصيغة JSON فقط بدون أي نص إضافي: [{"name": "اسم الشركة", "website": "url", "projects": number}]`
-      );
-      const jsonMatch = text.match(/\[[\s\S]*\]/);
-      if (jsonMatch) {
-        const results = JSON.parse(jsonMatch[0]);
-        let added = 0;
-        for (const r of results) {
-          // Check if already exists
-          const { data: existing } = await supabase
-            .from("target_companies")
-            .select("id")
-            .eq("company_name", r.name)
-            .maybeSingle();
-          if (existing) continue;
-          
-          const isReg = await checkRegistered(r.name);
-          await supabase.from("target_companies").insert({
-            company_name: r.name,
-            website: r.website || null,
-            project_count: r.projects || 0,
-            is_registered: isReg || false,
-            lead_status: "new",
-            added_by: user.id,
-          } as any);
-          added++;
-        }
-        if (added > 0) {
-          fetchCompanies();
-          toast({ title: isAr ? `تم جلب ${added} شركة تطوير` : `Fetched ${added} dev companies` });
-        }
-      }
-    } catch {
-      toast({ variant: "destructive", title: isAr ? "فشل الجلب التلقائي" : "Auto-fetch failed" });
-    }
-    setAutoFetching(false);
-  }, [user]);
-
   const fetchDealNews = async () => {
     setNewsLoading(true);
     try {
@@ -159,36 +125,18 @@ const AdminTargets: React.FC = () => {
 
   useEffect(() => {
     fetchCompanies();
-  }, []);
-
-  // Auto-fetch companies if empty
-  useEffect(() => {
-    if (!loading && companies.length === 0 && user) {
-      autoFetchCompanies();
-    }
-  }, [loading, companies.length, user]);
-
-  // Auto-fetch news on load
-  useEffect(() => {
     fetchDealNews();
   }, []);
 
-  const checkRegistered = async (name: string) => {
-    const { data } = await supabase
-      .from("developers")
-      .select("id, company_name")
-      .or(`company_name.ilike.%${name}%,marketing_brand_name.ilike.%${name}%`);
-    return data && data.length > 0;
-  };
-
   const handleAdd = async () => {
     if (!form.company_name.trim() || !user) return;
-    const isReg = await checkRegistered(form.company_name);
     const { error } = await supabase.from("target_companies").insert({
       company_name: form.company_name,
       website: form.website || null,
-      project_count: form.project_count,
-      is_registered: isReg || false,
+      image_url: form.image_url || null,
+      contact_person_name: form.contact_person_name || null,
+      contact_phone: form.contact_phone || null,
+      is_registered: false,
       lead_status: "new",
       added_by: user.id,
     } as any);
@@ -196,7 +144,7 @@ const AdminTargets: React.FC = () => {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
     } else {
       toast({ title: isAr ? "تمت الإضافة" : "Added" });
-      setForm({ company_name: "", website: "", project_count: 0 });
+      setForm({ company_name: "", website: "", image_url: "", contact_person_name: "", contact_phone: "" });
       setAddOpen(false);
       fetchCompanies();
     }
@@ -218,35 +166,6 @@ const AdminTargets: React.FC = () => {
     });
   };
 
-  const handleAnalyze = async (company: TargetCompany) => {
-    setAnalyzing(company.id);
-    try {
-      const fullText = await callAI(
-        `حلل قوة الشركة العقارية "${company.company_name}" ${company.website ? `(الموقع: ${company.website})` : ""} واعطني تقييماً من 0-100 مع تحليل موجز لنقاط القوة والضعف. أجب بصيغة JSON فقط: {"score": number, "analysis": "text"}`
-      );
-      const jsonMatch = fullText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const result = JSON.parse(jsonMatch[0]);
-        await supabase.from("target_companies").update({
-          ai_strength_score: result.score,
-          ai_analysis: result.analysis,
-        } as any).eq("id", company.id);
-        fetchCompanies();
-        toast({ title: isAr ? "تم التحليل" : "Analysis Complete" });
-      }
-    } catch {
-      toast({ variant: "destructive", title: isAr ? "فشل التحليل" : "Analysis Failed" });
-    }
-    setAnalyzing(null);
-  };
-
-  const getScoreColor = (score: number | null) => {
-    if (!score) return "bg-muted text-muted-foreground";
-    if (score >= 80) return "bg-green-500/10 text-green-600 border-green-500/20";
-    if (score >= 50) return "bg-amber-500/10 text-amber-600 border-amber-500/20";
-    return "bg-red-500/10 text-red-600 border-red-500/20";
-  };
-
   const getLeadBadge = (status: string) => {
     if (status === "prospect") return "bg-blue-500/10 text-blue-600 border-blue-500/20";
     if (status === "client") return "bg-green-500/10 text-green-600 border-green-500/20";
@@ -258,53 +177,58 @@ const AdminTargets: React.FC = () => {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-medium text-foreground">
-            {isAr ? "استهداف الشركات العقارية" : "Target Companies"}
+            {isAr ? "إدارة الشركات" : "Company Management"}
           </h1>
           <p className="mt-1 text-sm font-light text-muted-foreground">
-            {isAr ? "تتبع وتحليل شركات التطوير العقاري المستهدفة" : "Track and analyze target real estate companies"}
+            {isAr ? "إضافة وإدارة الشركات المستهدفة يدوياً" : "Add and manage target companies manually"}
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={autoFetchCompanies} disabled={autoFetching} className="gap-2">
-            {autoFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-            {isAr ? "جلب شركات جديدة" : "Fetch Companies"}
-          </Button>
-          <Dialog open={addOpen} onOpenChange={setAddOpen}>
-            <DialogTrigger asChild>
-              <Button className="doma-gradient gap-2"><Plus className="h-4 w-4" />{isAr ? "إضافة يدوية" : "Add Manually"}</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{isAr ? "إضافة شركة مستهدفة" : "Add Target Company"}</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-3">
+        <Dialog open={addOpen} onOpenChange={setAddOpen}>
+          <DialogTrigger asChild>
+            <Button className="doma-gradient gap-2"><Plus className="h-4 w-4" />{isAr ? "إضافة شركة" : "Add Company"}</Button>
+          </DialogTrigger>
+          <DialogContent dir={isAr ? "rtl" : "ltr"}>
+            <DialogHeader>
+              <DialogTitle>{isAr ? "إضافة شركة جديدة" : "Add New Company"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-1.5">
+                <Label className="text-sm">{isAr ? "اسم الشركة" : "Company Name"} <span className="text-destructive">*</span></Label>
                 <Input placeholder={isAr ? "اسم الشركة" : "Company Name"} value={form.company_name} onChange={e => setForm(f => ({ ...f, company_name: e.target.value }))} />
-                <Input placeholder={isAr ? "الموقع الإلكتروني" : "Website"} value={form.website} onChange={e => setForm(f => ({ ...f, website: e.target.value }))} />
-                <Input type="number" placeholder={isAr ? "عدد المشاريع" : "Project Count"} value={form.project_count} onChange={e => setForm(f => ({ ...f, project_count: Number(e.target.value) }))} />
-                <Button onClick={handleAdd} className="w-full doma-gradient">{isAr ? "إضافة" : "Add"}</Button>
               </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">{isAr ? "الموقع الإلكتروني" : "Website"}</Label>
+                <Input dir="ltr" placeholder="https://example.com" value={form.website} onChange={e => setForm(f => ({ ...f, website: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">{isAr ? "صورة / شعار الشركة (رابط)" : "Company Image (URL)"}</Label>
+                <Input dir="ltr" placeholder="https://example.com/logo.png" value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">{isAr ? "اسم المسؤول" : "Contact Person"}</Label>
+                <Input placeholder={isAr ? "اسم المسؤول" : "Contact Person Name"} value={form.contact_person_name} onChange={e => setForm(f => ({ ...f, contact_person_name: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">{isAr ? "رقم الاتصال" : "Phone Number"}</Label>
+                <Input dir="ltr" placeholder="05XXXXXXXX" value={form.contact_phone} onChange={e => setForm(f => ({ ...f, contact_phone: e.target.value }))} />
+              </div>
+              <Button onClick={handleAdd} className="w-full doma-gradient" disabled={!form.company_name.trim()}>
+                {isAr ? "إضافة" : "Add"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Companies Grid */}
-      {loading || autoFetching ? (
-        <div className="mb-8">
-          {autoFetching && (
-            <div className="mb-4 flex items-center gap-2 text-sm text-primary">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              {isAr ? "جاري جلب شركات التطوير العقاري تلقائياً..." : "Auto-fetching development companies..."}
-            </div>
-          )}
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <div key={i} className="h-44 animate-pulse rounded-xl bg-muted" />)}
-          </div>
+      {loading ? (
+        <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {[1, 2, 3, 4].map(i => <div key={i} className="h-44 animate-pulse rounded-xl bg-muted" />)}
         </div>
       ) : companies.length === 0 ? (
         <div className="mb-8 py-20 text-center text-muted-foreground">
           <Building2 className="mx-auto mb-3 h-10 w-10 opacity-30" />
-          <p>{isAr ? "لا توجد شركات مستهدفة بعد" : "No target companies yet"}</p>
+          <p>{isAr ? "لا توجد شركات بعد، أضف أول شركة" : "No companies yet, add the first one"}</p>
         </div>
       ) : (
         <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -329,8 +253,15 @@ const AdminTargets: React.FC = () => {
                 )}
               </div>
 
-              <div className="mb-2 flex items-start gap-2">
-                <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div className="mb-3 flex items-start gap-3">
+                {/* Company image */}
+                {c.image_url ? (
+                  <img src={c.image_url} alt={c.company_name} className="h-10 w-10 rounded-lg object-cover shrink-0 bg-muted" />
+                ) : (
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent">
+                    <Building2 className="h-5 w-5 text-accent-foreground" />
+                  </div>
+                )}
                 <div className="min-w-0">
                   <h3 className="font-medium text-foreground truncate text-sm">{c.company_name}</h3>
                   {c.website && (
@@ -341,17 +272,22 @@ const AdminTargets: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mb-3 flex items-center gap-2 text-xs text-muted-foreground">
-                <span>{isAr ? "المشاريع" : "Projects"}: {c.project_count}</span>
-                {c.ai_strength_score !== null && (
-                  <span className={`rounded-full border px-2 py-0.5 font-medium ${getScoreColor(c.ai_strength_score)}`}>
-                    {c.ai_strength_score}/100
-                  </span>
-                )}
-              </div>
-
-              {c.ai_analysis && (
-                <p className="mb-3 text-[11px] text-muted-foreground line-clamp-2" dir="auto">{c.ai_analysis}</p>
+              {/* Contact info */}
+              {(c.contact_person_name || c.contact_phone) && (
+                <div className="mb-3 space-y-1 text-xs text-muted-foreground">
+                  {c.contact_person_name && (
+                    <div className="flex items-center gap-1.5">
+                      <User className="h-3 w-3 shrink-0" />
+                      <span>{c.contact_person_name}</span>
+                    </div>
+                  )}
+                  {c.contact_phone && (
+                    <div className="flex items-center gap-1.5">
+                      <Phone className="h-3 w-3 shrink-0" />
+                      <span dir="ltr">{c.contact_phone}</span>
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Actions */}
@@ -366,16 +302,6 @@ const AdminTargets: React.FC = () => {
                     {isAr ? "محتمل" : "Prospect"}
                   </span>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-1 text-[11px] h-7 px-2"
-                  disabled={analyzing === c.id}
-                  onClick={() => handleAnalyze(c)}
-                >
-                  {analyzing === c.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
-                  {isAr ? "تحليل" : "Analyze"}
-                </Button>
                 <Button size="sm" variant="ghost" className="text-destructive h-7 w-7 p-0" onClick={() => handleDelete(c.id)}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
@@ -394,8 +320,8 @@ const AdminTargets: React.FC = () => {
           </div>
           <div className="flex items-center gap-2">
             <div className="flex gap-1">
-              <a href="https://x.com/Aqarsas" target="_blank" rel="noopener" className="flex h-7 w-7 items-center justify-center rounded-md bg-black text-white text-[10px] font-bold hover:opacity-80">𝕏</a>
-              <a href="https://x.com/GoSuhail" target="_blank" rel="noopener" className="flex h-7 w-7 items-center justify-center rounded-md bg-black text-white text-[10px] font-bold hover:opacity-80">𝕏</a>
+              <a href="https://x.com/Aqarsas" target="_blank" rel="noopener" className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground text-background text-[10px] font-bold hover:opacity-80">𝕏</a>
+              <a href="https://x.com/GoSuhail" target="_blank" rel="noopener" className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground text-background text-[10px] font-bold hover:opacity-80">𝕏</a>
             </div>
             <Button size="sm" variant="outline" onClick={fetchDealNews} disabled={newsLoading} className="gap-1 h-7">
               {newsLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
@@ -405,21 +331,21 @@ const AdminTargets: React.FC = () => {
         </div>
 
         {newsLoading && dealNews.length === 0 ? (
-          <div className="space-y-3">
-            {[1, 2, 3, 4].map(i => <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />)}
+          <div className="space-y-2">
+            {[1, 2, 3].map(i => <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />)}
           </div>
         ) : dealNews.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted-foreground">{isAr ? "لا توجد أخبار حالياً" : "No news available"}</p>
         ) : (
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="space-y-2">
             {dealNews.map((news, i) => (
-              <div key={i} className="rounded-xl border border-border/60 bg-surface p-3 transition-all hover:border-primary/20">
-                <h4 className="text-sm font-medium text-foreground mb-1" dir="auto">{news.title}</h4>
-                <p className="text-xs text-muted-foreground line-clamp-2 mb-2" dir="auto">{news.details}</p>
-                <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                  <span>{news.source}</span>
-                  <span>{news.date}</span>
+              <div key={i} className="rounded-lg border border-border/40 p-3 hover:bg-muted/30 transition-colors">
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="text-sm font-medium text-foreground">{news.title}</h3>
+                  <span className="shrink-0 text-[10px] text-muted-foreground">{news.date}</span>
                 </div>
+                <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{news.details}</p>
+                <p className="mt-1 text-[10px] text-primary">{news.source}</p>
               </div>
             ))}
           </div>

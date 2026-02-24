@@ -1101,8 +1101,11 @@ export type Database = {
           ai_analysis: string | null
           ai_strength_score: number | null
           company_name: string
+          contact_person_name: string | null
+          contact_phone: string | null
           created_at: string
           id: string
+          image_url: string | null
           is_registered: boolean
           lead_status: string
           notes: string | null
@@ -1116,8 +1119,11 @@ export type Database = {
           ai_analysis?: string | null
           ai_strength_score?: number | null
           company_name: string
+          contact_person_name?: string | null
+          contact_phone?: string | null
           created_at?: string
           id?: string
+          image_url?: string | null
           is_registered?: boolean
           lead_status?: string
           notes?: string | null
@@ -1131,8 +1137,11 @@ export type Database = {
           ai_analysis?: string | null
           ai_strength_score?: number | null
           company_name?: string
+          contact_person_name?: string | null
+          contact_phone?: string | null
           created_at?: string
           id?: string
+          image_url?: string | null
           is_registered?: boolean
           lead_status?: string
           notes?: string | null
