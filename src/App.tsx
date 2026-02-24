@@ -41,6 +41,7 @@ import AdminOwners from "./pages/admin/AdminOwners";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminAuditLog from "./pages/admin/AdminAuditLog";
 import AdminContent from "./pages/admin/AdminContent";
+import AdminTeam from "./pages/admin/AdminTeam";
 import OpportunityDetail from "./pages/OpportunityDetail";
 import Contact from "./pages/Contact";
 import OwnerDashboard from "./pages/owner/OwnerDashboard";
@@ -162,6 +163,7 @@ const App: React.FC = () => (
               <Route path="/admincp/owners" element={<AdminRoute><AdminOwners /></AdminRoute>} />
               <Route path="/admincp/audit" element={<AdminRoute><AdminAuditLog /></AdminRoute>} />
               <Route path="/admincp/content" element={<AdminRoute><AdminContent /></AdminRoute>} />
+              <Route path="/admincp/team" element={<AdminRoute><AdminTeam /></AdminRoute>} />
 
               {/* Owner — Owner Only */}
               <Route path="/owner/dashboard" element={<OwnerRoute><OwnerDashboard /></OwnerRoute>} />

@@ -74,6 +74,44 @@ Deno.serve(async (req) => {
       );
     }
 
+    // CREATE SUPERVISOR
+    if (action === "create_supervisor") {
+      const { email, password, display_name, permissions } = body;
+      if (!email || !password) throw new Error("Email and password required");
+
+      // Create auth user
+      const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: { full_name: display_name || "" },
+      });
+      if (createError) throw createError;
+
+      // Assign admin role
+      await adminClient.from("user_roles").insert({ user_id: newUser.user.id, role: "admin" });
+
+      // Create permissions record
+      await adminClient.from("admin_permissions").insert({
+        user_id: newUser.user.id,
+        user_email: email,
+        display_name: display_name || "",
+        is_super_admin: false,
+        perm_developers: permissions?.perm_developers || false,
+        perm_lands: permissions?.perm_lands || false,
+        perm_owners: permissions?.perm_owners || false,
+        perm_deals: permissions?.perm_deals || false,
+        perm_content: permissions?.perm_content || false,
+        perm_ai: permissions?.perm_ai || false,
+        perm_audit_log: permissions?.perm_audit_log || false,
+      });
+
+      return new Response(
+        JSON.stringify({ success: true, user_id: newUser.user.id }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // CREATE USER (default action)
     const { email, password, full_name } = body;
     if (!email || !password) throw new Error("Email and password required");

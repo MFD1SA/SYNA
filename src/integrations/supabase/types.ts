@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_permissions: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          is_super_admin: boolean
+          perm_ai: boolean
+          perm_audit_log: boolean
+          perm_content: boolean
+          perm_deals: boolean
+          perm_developers: boolean
+          perm_lands: boolean
+          perm_owners: boolean
+          updated_at: string
+          user_email: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_super_admin?: boolean
+          perm_ai?: boolean
+          perm_audit_log?: boolean
+          perm_content?: boolean
+          perm_deals?: boolean
+          perm_developers?: boolean
+          perm_lands?: boolean
+          perm_owners?: boolean
+          updated_at?: string
+          user_email?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_super_admin?: boolean
+          perm_ai?: boolean
+          perm_audit_log?: boolean
+          perm_content?: boolean
+          perm_deals?: boolean
+          perm_developers?: boolean
+          perm_lands?: boolean
+          perm_owners?: boolean
+          updated_at?: string
+          user_email?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       attachments: {
         Row: {
           created_at: string
