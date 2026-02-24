@@ -26,11 +26,12 @@ const AdminDeals: React.FC = () => {
   const [viewReq, setViewReq] = useState<any>(null);
   const [rejectNotes, setRejectNotes] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+  const [devWebsite, setDevWebsite] = useState<string>("");
 
   const fetchAll = async () => {
     try {
       const [reqRes, dealRes] = await Promise.all([
-        supabase.from("deal_requests").select("*, lands(city, district, land_area_sqm, usage_type, partnership_goal, owner_name, owner_id), developers(company_name, marketing_brand_name, cr_number, email, phone)").order("created_at", { ascending: false }),
+        supabase.from("deal_requests").select("*, lands(city, district, land_area_sqm, usage_type, partnership_goal, owner_name, owner_id), developers(company_name, marketing_brand_name, cr_number, email, phone, website)").order("created_at", { ascending: false }),
         supabase.from("deals").select("*, lands(city, district), developers(company_name)").order("created_at", { ascending: false }),
       ]);
       setRequests(reqRes.data || []);
@@ -182,7 +183,7 @@ const AdminDeals: React.FC = () => {
                       {req.status === "rejected" && <XCircle className="h-3 w-3 me-1" />}
                       {isAr ? statusLabels[req.status]?.ar : statusLabels[req.status]?.en}
                     </Badge>
-                    <Button size="sm" variant="outline" onClick={() => { setViewReq(req); setRejectNotes(""); }}>
+                    <Button size="sm" variant="outline" onClick={() => { setViewReq(req); setRejectNotes(""); setDevWebsite(req.developers?.website || ""); }}>
                       <Eye className="h-3.5 w-3.5 me-1" />{isAr ? "عرض" : "View"}
                     </Button>
                   </div>
@@ -223,7 +224,7 @@ const AdminDeals: React.FC = () => {
 
       {/* View Request Dialog */}
       <Dialog open={!!viewReq} onOpenChange={(o) => { if (!o) setViewReq(null); }}>
-        <DialogContent className="max-w-lg" dir={isAr ? "rtl" : "ltr"}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" dir={isAr ? "rtl" : "ltr"}>
           <DialogHeader>
             <DialogTitle>{isAr ? "تفاصيل الطلب" : "Request Details"}</DialogTitle>
           </DialogHeader>
@@ -275,6 +276,7 @@ const AdminDeals: React.FC = () => {
                   developerName={viewReq.developers?.company_name || ""}
                   developerId={viewReq.developer_id}
                   isAr={isAr}
+                  autoUrl={devWebsite || undefined}
                 />
               </div>
 
