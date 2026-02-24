@@ -26,6 +26,8 @@ const CrmSettings: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [websiteInput, setWebsiteInput] = useState("");
+  const [savingWebsite, setSavingWebsite] = useState(false);
   const isAr = lang === "ar";
 
   useEffect(() => {
@@ -37,6 +39,7 @@ const CrmSettings: React.FC = () => {
         .eq("user_id", user.id)
         .maybeSingle();
       setDeveloper(data);
+      setWebsiteInput(data?.website || "");
       setLoading(false);
     };
     fetchDev();
@@ -189,17 +192,43 @@ const CrmSettings: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Website */}
+                {/* Website - Editable */}
                 <div className="space-y-1.5">
                   <Label className="text-xs text-muted-foreground flex items-center gap-1"><Globe className="h-3 w-3" />{isAr ? "الموقع الإلكتروني" : "Website"}</Label>
-                  <div className="rounded-lg border border-border/40 bg-muted/30 px-3 py-2.5 text-sm text-foreground flex items-center justify-between" dir="ltr">
-                    <span className="truncate">{developer?.website || "—"}</span>
-                    {developer?.website && (
-                      <a href={developer.website.startsWith("http") ? developer.website : `https://${developer.website}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 shrink-0 ms-2">
-                        <ExternalLink className="h-3.5 w-3.5" />
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={websiteInput}
+                      onChange={(e) => setWebsiteInput(e.target.value)}
+                      placeholder={isAr ? "https://example.com" : "https://example.com"}
+                      className="flex-1"
+                      dir="ltr"
+                    />
+                    {websiteInput && websiteInput.startsWith("http") && (
+                      <a href={websiteInput} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 shrink-0">
+                        <ExternalLink className="h-4 w-4" />
                       </a>
                     )}
                   </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-xs"
+                    disabled={savingWebsite || websiteInput === (developer?.website || "")}
+                    onClick={async () => {
+                      if (!developer?.id) return;
+                      setSavingWebsite(true);
+                      const { error } = await supabase.from("developers").update({ website: websiteInput || null }).eq("id", developer.id);
+                      setSavingWebsite(false);
+                      if (error) {
+                        toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
+                      } else {
+                        setDeveloper({ ...developer, website: websiteInput || null });
+                        toast({ title: isAr ? "تم الحفظ" : "Saved", description: isAr ? "تم تحديث الموقع الإلكتروني" : "Website updated successfully" });
+                      }
+                    }}
+                  >
+                    {savingWebsite ? (isAr ? "جاري الحفظ..." : "Saving...") : (isAr ? "حفظ الموقع" : "Save Website")}
+                  </Button>
                 </div>
               </div>
             </div>
