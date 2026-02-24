@@ -97,6 +97,9 @@ const CrmBrowseLands: React.FC = () => {
       toast({ variant: "destructive", title: isAr ? "يرجى تعبئة جميع الحقول" : "Please fill all fields" });
       return;
     }
+    // Get the land info for notification
+    const targetLand = lands.find(l => l.id === requestDialog);
+
     const { error } = await supabase.from("deal_requests").insert({
       developer_id: developerId,
       land_id: requestDialog,
@@ -109,6 +112,30 @@ const CrmBrowseLands: React.FC = () => {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
     } else {
       toast({ title: isAr ? "تم إرسال الطلب بنجاح" : "Request submitted successfully" });
+      
+      // Send email notification to land owner
+      try {
+        // Get developer info
+        const { data: devInfo } = await supabase.from("developers").select("company_name, email").eq("id", developerId).maybeSingle();
+        // Get owner email from profiles
+        if (targetLand?.owner_id) {
+          const { data: ownerProfile } = await supabase.from("profiles").select("email, full_name").eq("user_id", targetLand.owner_id).maybeSingle();
+          await supabase.functions.invoke("send-deal-notification", {
+            body: {
+              type: "request_submitted",
+              developer_name: devInfo?.company_name || "",
+              developer_email: devInfo?.email || "",
+              owner_name: ownerProfile?.full_name || targetLand.owner_name || "",
+              owner_email: ownerProfile?.email || "",
+              land_city: targetLand.city,
+              land_district: targetLand.district,
+            },
+          });
+        }
+      } catch (e) {
+        console.error("Notification error:", e);
+      }
+      
       setRequestDialog(null);
       setRequestForm({ proposal_summary: "", proposed_project_type: "" });
       if (developerId) fetchMyRequests(developerId);
