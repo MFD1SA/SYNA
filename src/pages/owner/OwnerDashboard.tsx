@@ -414,7 +414,6 @@ const OwnerDashboard: React.FC = () => {
                                       <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "الموثوقية" : "Reliab."}</th>
                                       <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "التوصية" : "Rec."}</th>
                                       <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "صفقات ناجحة" : "Deals"}</th>
-                                      <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "العمولة" : "Comm."}</th>
                                       <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "التوثيق" : "Verified"}</th>
                                     </tr>
                                   </thead>
@@ -443,7 +442,6 @@ const OwnerDashboard: React.FC = () => {
                                             <Badge variant="outline" className={`text-[10px] ${rec.color}`}>{isAr ? rec.ar : rec.en}</Badge>
                                           </td>
                                           <td className="py-2 px-2 text-center text-foreground">{a.stats.closed_deals}</td>
-                                          <td className="py-2 px-2 text-center text-foreground">{a.commission_rate}%</td>
                                           <td className="py-2 px-2 text-center">
                                             {a.verification_status === "verified"
                                               ? <CheckCircle2 className="mx-auto h-3.5 w-3.5 text-emerald-500" />
@@ -504,7 +502,7 @@ const OwnerDashboard: React.FC = () => {
                                         </Badge>
                                       )}
                                     </div>
-                                    <p className="text-xs font-light text-muted-foreground truncate">{a.proposed_project_type} • {a.commission_rate}% {isAr ? "عمولة" : "comm."} • {a.stats.closed_deals} {isAr ? "صفقات" : "deals"}</p>
+                                    <p className="text-xs font-light text-muted-foreground truncate">{a.proposed_project_type} • {a.stats.closed_deals} {isAr ? "صفقات" : "deals"}</p>
                                     <p className="text-xs font-light text-muted-foreground mt-0.5 line-clamp-1">{ai.summary_ar}</p>
                                   </div>
 
@@ -557,11 +555,9 @@ const OwnerDashboard: React.FC = () => {
                                       </div>
                                       <div className="grid grid-cols-2 gap-2 text-xs font-light text-muted-foreground">
                                         <span>{isAr ? "نوع المشروع:" : "Type:"} {a.proposed_project_type}</span>
-                                        <span>{isAr ? "العمولة:" : "Commission:"} {a.commission_rate}%</span>
                                         {a.estimated_duration_months && (
                                           <span>{isAr ? "المدة:" : "Duration:"} {a.estimated_duration_months} {isAr ? "شهر" : "months"}</span>
                                         )}
-                                        <span>{isAr ? "تمويل:" : "Financing:"} {a.needs_financing ? (isAr ? "مطلوب" : "Needed") : (isAr ? "غير مطلوب" : "Not needed")}</span>
                                       </div>
                                       <p className="text-xs font-light text-muted-foreground">{a.proposal_summary}</p>
                                     </div>
