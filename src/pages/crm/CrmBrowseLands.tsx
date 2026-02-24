@@ -75,7 +75,7 @@ const CrmBrowseLands: React.FC = () => {
         setIsVerified(dev.verification_status === "verified");
         await fetchMyRequests(dev.id);
       }
-      const { data } = await supabase.from("lands").select("*").eq("is_active", true).order("created_at", { ascending: false });
+      const { data } = await supabase.from("lands").select("*").eq("is_active", true).eq("owner_approved", true).order("created_at", { ascending: false });
       setLands(data || []);
       setLoading(false);
     };

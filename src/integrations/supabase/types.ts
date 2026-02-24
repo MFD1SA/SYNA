@@ -448,6 +448,47 @@ export type Database = {
         }
         Relationships: []
       }
+      land_pulse_snapshots: {
+        Row: {
+          ai_report_ar: string | null
+          ai_report_en: string | null
+          created_at: string
+          id: string
+          land_id: string
+          pois_list: Json
+          radius_m: number
+          summary_json: Json
+        }
+        Insert: {
+          ai_report_ar?: string | null
+          ai_report_en?: string | null
+          created_at?: string
+          id?: string
+          land_id: string
+          pois_list?: Json
+          radius_m?: number
+          summary_json?: Json
+        }
+        Update: {
+          ai_report_ar?: string | null
+          ai_report_en?: string | null
+          created_at?: string
+          id?: string
+          land_id?: string
+          pois_list?: Json
+          radius_m?: number
+          summary_json?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "land_pulse_snapshots_land_id_fkey"
+            columns: ["land_id"]
+            isOneToOne: false
+            referencedRelation: "lands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lands: {
         Row: {
           city: string
@@ -465,9 +506,11 @@ export type Database = {
           is_featured: boolean
           land_area_sqm: number
           length_m: number | null
+          owner_approved: boolean
           owner_id: string
           owner_name: string | null
           partnership_goal: Database["public"]["Enums"]["owner_partnership_goal"]
+          partnership_model: string | null
           plan_number: string | null
           plot_number: string | null
           project_type: string | null
@@ -496,9 +539,11 @@ export type Database = {
           is_featured?: boolean
           land_area_sqm: number
           length_m?: number | null
+          owner_approved?: boolean
           owner_id: string
           owner_name?: string | null
           partnership_goal?: Database["public"]["Enums"]["owner_partnership_goal"]
+          partnership_model?: string | null
           plan_number?: string | null
           plot_number?: string | null
           project_type?: string | null
@@ -527,9 +572,11 @@ export type Database = {
           is_featured?: boolean
           land_area_sqm?: number
           length_m?: number | null
+          owner_approved?: boolean
           owner_id?: string
           owner_name?: string | null
           partnership_goal?: Database["public"]["Enums"]["owner_partnership_goal"]
+          partnership_model?: string | null
           plan_number?: string | null
           plot_number?: string | null
           project_type?: string | null

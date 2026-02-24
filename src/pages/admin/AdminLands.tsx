@@ -38,7 +38,7 @@ const defaultForm = {
   exact_location_lat: "", exact_location_lng: "", owner_name: "",
   plot_number: "", plan_number: "", deed_number: "",
   length_m: "", width_m: "", street_width_m: "",
-  image_url: "",
+  image_url: "", owner_approved: false, partnership_model: "",
 };
 
 const AdminLands: React.FC = () => {
@@ -108,6 +108,8 @@ const AdminLands: React.FC = () => {
       image_url: form.image_url || null,
       is_featured: true,
       is_active: true,
+      owner_approved: form.owner_approved,
+      partnership_model: form.partnership_model || null,
     };
 
     let error;
@@ -168,6 +170,8 @@ const AdminLands: React.FC = () => {
       width_m: land.width_m ? String(land.width_m) : "",
       street_width_m: land.street_width_m ? String(land.street_width_m) : "",
       image_url: land.image_url || "",
+      owner_approved: land.owner_approved || false,
+      partnership_model: land.partnership_model || "",
     });
     setShowAdd(true);
   };
@@ -343,6 +347,30 @@ const AdminLands: React.FC = () => {
                 <Textarea value={form.vision_summary} onChange={e => setForm(f => ({ ...f, vision_summary: e.target.value }))} rows={3} />
               </div>
 
+              {/* Owner Approval */}
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                <Label className="text-sm font-medium mb-3 block">{isAr ? "اعتماد المالك" : "Owner Approval"}</Label>
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-xs">{isAr ? "نموذج الشراكة" : "Partnership Model"}</Label>
+                    <Select value={form.partnership_model} onValueChange={v => setForm(f => ({ ...f, partnership_model: v }))}>
+                      <SelectTrigger><SelectValue placeholder={isAr ? "اختر النموذج" : "Select model"} /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="equity_share">{isAr ? "شراكة تطوير مقابل نسبة" : "Equity Share Partnership"}</SelectItem>
+                        <SelectItem value="income_years">{isAr ? "تطوير وتشغيل مقابل دخل لسنوات" : "Develop & Operate for Income"}</SelectItem>
+                        <SelectItem value="full_sale">{isAr ? "بيع كامل" : "Full Sale"}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="owner_approved" checked={form.owner_approved} onChange={e => setForm(f => ({ ...f, owner_approved: e.target.checked }))} className="rounded border-border" />
+                    <label htmlFor="owner_approved" className="text-xs font-light text-foreground">
+                      {isAr ? "✓ المالك موافق مبدئياً على استقبال عروض وفق النموذج المختار" : "✓ Owner approves receiving offers per selected model"}
+                    </label>
+                  </div>
+                </div>
+              </div>
+
               {/* Image Upload */}
               <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
                 <Label className="text-sm font-medium mb-2 block">{isAr ? "صورة الأرض" : "Land Image"}</Label>
@@ -390,6 +418,7 @@ const AdminLands: React.FC = () => {
                       {land.city}{land.district ? ` — ${land.district}` : ""}
                     </p>
                     {!land.is_active && <Badge variant="secondary" className="text-[10px]">{isAr ? "مسودة" : "Draft"}</Badge>}
+                    {land.owner_approved && <Badge className="text-[10px] bg-emerald-500/10 text-emerald-700 border-emerald-500/20">{isAr ? "🟢 مالك موافق" : "🟢 Owner Approved"}</Badge>}
                   </div>
                   <p className="text-xs font-light text-muted-foreground">
                     {land.land_area_sqm?.toLocaleString()} م² • {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
