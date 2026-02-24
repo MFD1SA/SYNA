@@ -34,6 +34,10 @@ export const useUserType = (): UserTypeResult => {
     // Skip re-check if we already verified this user
     if (checkedUserId.current === userId) return;
 
+    // Reset loading when user changes to prevent premature redirect
+    setLoading(true);
+    setUserType("loading");
+
     const checkUserType = async () => {
       try {
         // Check all three in parallel for speed
