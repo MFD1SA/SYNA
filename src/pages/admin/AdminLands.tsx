@@ -39,6 +39,7 @@ const defaultForm = {
   plot_number: "", plan_number: "", deed_number: "",
   length_m: "", width_m: "", street_width_m: "",
   image_url: "", owner_approved: false, partnership_model: "",
+  selected_owner_id: "",
 };
 
 const AdminLands: React.FC = () => {
@@ -55,6 +56,7 @@ const AdminLands: React.FC = () => {
   const [form, setForm] = useState({ ...defaultForm });
   const [locating, setLocating] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [ownerProfiles, setOwnerProfiles] = useState<any[]>([]);
 
   const fetchLands = async () => {
     const { data } = await supabase.from("lands").select("*").order("created_at", { ascending: false });
@@ -63,6 +65,14 @@ const AdminLands: React.FC = () => {
   };
 
   useEffect(() => { fetchLands(); }, []);
+
+  useEffect(() => {
+    const fetchOwnerProfiles = async () => {
+      const { data } = await supabase.from("profiles").select("user_id, full_name, email");
+      setOwnerProfiles(data || []);
+    };
+    fetchOwnerProfiles();
+  }, []);
 
   const selectedCity = saudiCities.find(c => c.name.en === form.city);
 
@@ -87,8 +97,9 @@ const AdminLands: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!user || !form.city || !form.land_area_sqm) return;
+    const ownerId = form.selected_owner_id || user.id;
     const payload = {
-      owner_id: user.id,
+      owner_id: ownerId,
       city: form.city,
       district: form.district || null,
       land_area_sqm: parseFloat(form.land_area_sqm),
@@ -172,6 +183,7 @@ const AdminLands: React.FC = () => {
       image_url: land.image_url || "",
       owner_approved: land.owner_approved || false,
       partnership_model: land.partnership_model || "",
+      selected_owner_id: land.owner_id || "",
     });
     setShowAdd(true);
   };
@@ -321,7 +333,26 @@ const AdminLands: React.FC = () => {
                 </div>
               </div>
 
-              {/* Owner & deed info */}
+              {/* Owner selection & deed info */}
+              <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
+                <Label className="text-sm font-medium mb-3 block">{isAr ? "ربط المالك" : "Link Owner"}</Label>
+                <Select value={form.selected_owner_id} onValueChange={v => {
+                  const p = ownerProfiles.find(o => o.user_id === v);
+                  setForm(f => ({ ...f, selected_owner_id: v, owner_name: p?.full_name || f.owner_name }));
+                }}>
+                  <SelectTrigger><SelectValue placeholder={isAr ? "اختر مالك الأرض" : "Select land owner"} /></SelectTrigger>
+                  <SelectContent>
+                    {ownerProfiles.map(p => (
+                      <SelectItem key={p.user_id} value={p.user_id}>
+                        {p.full_name || p.email} ({p.email})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="mt-1.5 text-[10px] text-muted-foreground">
+                  {isAr ? "اختر المالك لربط الأرض بحسابه — أنشئ حسابه أولاً من صفحة إدارة الملاك" : "Select owner to link — create account first from Manage Owners"}
+                </p>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label className="text-xs">{isAr ? "اسم المالك" : "Owner Name"}</Label>

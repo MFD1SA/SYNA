@@ -36,6 +36,7 @@ const AdminSidebar: React.FC = () => {
   const navItems: NavItem[] = [
     { label: { ar: "نظرة عامة", en: "Overview" }, href: "/admincp/overview", icon: LayoutDashboard },
     { label: { ar: "إدارة الأراضي", en: "Manage Lands" }, href: "/admincp/lands", icon: Landmark },
+    { label: { ar: "إدارة الملاك", en: "Manage Owners" }, href: "/admincp/owners", icon: MapPin },
     { label: { ar: "إدارة المطورين", en: "Manage Developers" }, href: "/admincp/developers", icon: HardHat },
     { label: { ar: "الطلبات والصفقات", en: "Requests & Deals" }, href: "/admincp/deals", icon: Handshake },
     { label: { ar: "المساعد الذكي", en: "AI Assistant" }, href: "/admincp/ai", icon: Bot },
