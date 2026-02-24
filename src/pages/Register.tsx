@@ -32,6 +32,7 @@ const RegisterPage: React.FC = () => {
   const [crNumber, setCrNumber] = useState("");
   const [brandName, setBrandName] = useState("");
 
+  const [website, setWebsite] = useState("");
   const [crFile, setCrFile] = useState<File | null>(null);
   const [identityFile, setIdentityFile] = useState<File | null>(null);
   const crFileRef = useRef<HTMLInputElement>(null);
@@ -137,6 +138,7 @@ const RegisterPage: React.FC = () => {
           marketing_brand_name: brandName || null,
           email,
           phone: `+966${phone}`,
+          website: website.trim() || null,
         });
 
         toast({
@@ -346,6 +348,19 @@ const RegisterPage: React.FC = () => {
                     placeholder={isAr ? "الاسم التجاري" : "Brand name in Arabic"}
                   />
                   {errors.brandName && <p className="text-xs text-destructive">{errors.brandName}</p>}
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="website" className="font-light text-sm">{isAr ? "الموقع الإلكتروني" : "Website"}</Label>
+                  <Input
+                    id="website"
+                    type="url"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    className="h-10 rounded-xl border-border/60"
+                    dir="ltr"
+                    placeholder="https://example.com"
+                  />
                 </div>
               </div>
             </div>
