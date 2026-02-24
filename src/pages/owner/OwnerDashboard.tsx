@@ -15,6 +15,7 @@ import {
   Loader2, BarChart3
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
+import DevWebsiteAnalysis from "@/components/owner/DevWebsiteAnalysis";
 
 const statusLabels: Record<string, { ar: string; en: string; color: string }> = {
   active_approved: { ar: "نشطة - مالك موافق", en: "Active - Owner Approved", color: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" },
@@ -446,6 +447,19 @@ const OwnerDashboard: React.FC = () => {
                                     ))}
                                   </div>
                                 )}
+
+                                {/* Website Analysis */}
+                                <div className="border-t border-border/40 pt-4">
+                                  <h6 className="text-xs font-medium text-foreground mb-2 flex items-center gap-1.5">
+                                    <Globe className="h-3.5 w-3.5 text-primary" />
+                                    {isAr ? "تحليل الموقع الإلكتروني للمطور" : "Developer Website Analysis"}
+                                  </h6>
+                                  <DevWebsiteAnalysis
+                                    developerName={a.developer_name}
+                                    developerId={a.developer_id}
+                                    isAr={isAr}
+                                  />
+                                </div>
                               </div>
                             );
                           })}
