@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { logAudit } from "@/lib/auditLog";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -11,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus, Landmark, Mail, User, Eye, EyeOff, Copy, KeyRound, Pencil, Trash2 } from "lucide-react";
 
 const AdminOwners: React.FC = () => {
+  const { user } = useAuth();
   const { lang } = useLanguage();
   const { toast } = useToast();
   const isAr = lang === "ar";
@@ -77,6 +80,7 @@ const AdminOwners: React.FC = () => {
         body: { email: form.email, password: form.password, full_name: form.full_name },
       });
       if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      if (user) await logAudit(user.id, user.email, "create", "owner", undefined, { email: form.email });
       toast({ title: isAr ? "تم إنشاء حساب المالك" : "Owner account created" });
       setCreatedInfo({ email: form.email, password: form.password });
       setForm({ full_name: "", email: "", password: "" });
@@ -95,6 +99,7 @@ const AdminOwners: React.FC = () => {
         body: { action: "update_password", user_id: passwordDialog.owner_id, new_password: newPassword },
       });
       if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      if (user) await logAudit(user.id, user.email, "reset_password", "owner", passwordDialog.owner_id);
       toast({ title: isAr ? "تم تحديث كلمة المرور" : "Password updated successfully" });
       setPasswordDialog(null);
       setNewPassword("");
@@ -112,6 +117,7 @@ const AdminOwners: React.FC = () => {
         body: { action: "delete_user", user_id: deleteDialog.owner_id },
       });
       if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      if (user) await logAudit(user.id, user.email, "delete", "owner", deleteDialog.owner_id);
       toast({ title: isAr ? "تم حذف الحساب" : "Account deleted" });
       setDeleteDialog(null);
       fetchOwners();

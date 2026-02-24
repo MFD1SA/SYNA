@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { logAudit } from "@/lib/auditLog";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -133,6 +134,7 @@ const AdminLands: React.FC = () => {
     if (error) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
     } else {
+      if (user) await logAudit(user.id, user.email, editingId ? "update" : "create", "land", editingId || undefined, { city: payload.city });
       toast({ title: isAr ? (editingId ? "تم التحديث" : "تمت الإضافة") : (editingId ? "Updated" : "Land Added") });
       closeDialog();
       fetchLands();
@@ -190,17 +192,20 @@ const AdminLands: React.FC = () => {
 
   const toggleFeatured = async (id: string, current: boolean) => {
     await supabase.from("lands").update({ is_featured: !current }).eq("id", id);
+    if (user) await logAudit(user.id, user.email, "update", "land", id, { is_featured: !current });
     fetchLands();
   };
 
   const toggleActive = async (id: string, current: boolean) => {
     await supabase.from("lands").update({ is_active: !current }).eq("id", id);
+    if (user) await logAudit(user.id, user.email, "update", "land", id, { is_active: !current });
     fetchLands();
     toast({ title: isAr ? (!current ? "تم النشر" : "تم الإخفاء") : (!current ? "Published" : "Hidden") });
   };
 
   const deleteLand = async (id: string) => {
     await supabase.from("lands").delete().eq("id", id);
+    if (user) await logAudit(user.id, user.email, "delete", "land", id);
     fetchLands();
     toast({ title: isAr ? "تم الحذف" : "Deleted" });
   };
