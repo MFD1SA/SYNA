@@ -39,6 +39,7 @@ import AdminAI from "./pages/admin/AdminAI";
 import AdminLogin from "./pages/admin/AdminLogin";
 import OpportunityDetail from "./pages/OpportunityDetail";
 import Contact from "./pages/Contact";
+import OwnerDashboard from "./pages/owner/OwnerDashboard";
 
 const queryClient = new QueryClient();
 
@@ -114,6 +115,9 @@ const App: React.FC = () => (
               <Route path="/admincp/developers" element={<AdminRoute><AdminDevelopers /></AdminRoute>} />
               <Route path="/admincp/deals" element={<AdminRoute><AdminDeals /></AdminRoute>} />
               <Route path="/admincp/ai" element={<AdminRoute><AdminAI /></AdminRoute>} />
+
+              {/* Owner */}
+              <Route path="/owner/dashboard" element={<ProtectedRoute><OwnerDashboard /></ProtectedRoute>} />
 
               {/* Redirects */}
               <Route path="/dashboard" element={<Navigate to="/crm/dashboard" replace />} />
