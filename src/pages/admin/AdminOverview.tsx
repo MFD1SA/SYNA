@@ -4,6 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Users, Landmark, Handshake, HardHat, ShieldCheck, TrendingUp, FileText, CheckCircle2 } from "lucide-react";
+import AdminAnalyticsCharts from "@/components/admin/AdminAnalyticsCharts";
 
 const AdminOverview: React.FC = () => {
   const { lang } = useLanguage();
@@ -91,6 +92,14 @@ const AdminOverview: React.FC = () => {
                 </p>
               </div>
             ))}
+          </div>
+
+          {/* Analytics Charts */}
+          <div className="mt-6">
+            <h2 className="mb-4 text-lg font-medium text-foreground">
+              {isAr ? "تحليل الأداء الشهري" : "Monthly Performance"}
+            </h2>
+            <AdminAnalyticsCharts />
           </div>
 
           {/* Recent Users */}

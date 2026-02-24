@@ -1095,6 +1095,59 @@ export type Database = {
           },
         ]
       }
+      target_companies: {
+        Row: {
+          added_by: string
+          ai_analysis: string | null
+          ai_strength_score: number | null
+          company_name: string
+          created_at: string
+          id: string
+          is_registered: boolean
+          notes: string | null
+          project_count: number | null
+          registered_developer_id: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          added_by: string
+          ai_analysis?: string | null
+          ai_strength_score?: number | null
+          company_name: string
+          created_at?: string
+          id?: string
+          is_registered?: boolean
+          notes?: string | null
+          project_count?: number | null
+          registered_developer_id?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          added_by?: string
+          ai_analysis?: string | null
+          ai_strength_score?: number | null
+          company_name?: string
+          created_at?: string
+          id?: string
+          is_registered?: boolean
+          notes?: string | null
+          project_count?: number | null
+          registered_developer_id?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "target_companies_registered_developer_id_fkey"
+            columns: ["registered_developer_id"]
+            isOneToOne: false
+            referencedRelation: "developers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenant_members: {
         Row: {
           created_at: string
