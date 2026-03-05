@@ -105,20 +105,18 @@ const AdminContent: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-medium text-foreground flex items-center gap-2">
-            <FileText className="h-6 w-6 text-primary" />
-            {isAr ? "إدارة المحتوى" : "Content Management"}
-          </h1>
-          <p className="mt-1 text-sm font-light text-muted-foreground">
-            {isAr ? "تعديل نصوص المنصة والإشعارات والرسائل" : "Edit platform texts, notifications, and messages"}
-          </p>
-        </div>
-        <Button size="sm" className="doma-gradient gap-1.5" onClick={() => { setForm({ content_key: "", title_ar: "", title_en: "", body_ar: "", body_en: "", content_type: "text", is_active: true }); setAddDialog(true); }}>
-          <Plus className="h-3.5 w-3.5" />{isAr ? "إضافة محتوى" : "Add Content"}
-        </Button>
-      </div>
+      <AdminPageHeader
+        icon={FileText}
+        titleAr="إدارة المحتوى"
+        titleEn="Content Management"
+        descAr="تعديل نصوص المنصة والإشعارات والرسائل"
+        descEn="Edit platform texts, notifications, and messages"
+        actions={
+          <Button size="sm" className="doma-gradient gap-1.5" onClick={() => { setForm({ content_key: "", title_ar: "", title_en: "", body_ar: "", body_en: "", content_type: "text", is_active: true }); setAddDialog(true); }}>
+            <Plus className="h-3.5 w-3.5" />{isAr ? "إضافة" : "Add"}
+          </Button>
+        }
+      />
 
       {loading ? (
         <div className="space-y-2">{[1, 2, 3].map(i => <div key={i} className="h-20 animate-pulse rounded-xl bg-muted" />)}</div>
