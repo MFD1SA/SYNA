@@ -229,17 +229,17 @@ const AdminLands: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-medium text-foreground">{isAr ? "إدارة الأراضي" : "Manage Lands"}</h1>
-          <p className="mt-1 text-sm font-light text-muted-foreground">
-            {isAr ? "إضافة وتعديل الأراضي — تنعكس تلقائياً في الواجهة الرئيسية" : "Add and manage lands — reflected automatically on homepage"}
-          </p>
-        </div>
-        <Dialog open={showAdd} onOpenChange={(v) => { if (!v) closeDialog(); else setShowAdd(true); }}>
-          <DialogTrigger asChild>
-            <Button className="gap-2 doma-gradient"><Plus className="h-4 w-4" />{isAr ? "إدراج أرض" : "Add Land"}</Button>
-          </DialogTrigger>
+      <AdminPageHeader
+        icon={Landmark}
+        titleAr="إدارة الأراضي"
+        titleEn="Manage Lands"
+        descAr="إضافة وتعديل الأراضي — تنعكس تلقائياً في الواجهة الرئيسية"
+        descEn="Add and manage lands — reflected automatically on homepage"
+        actions={
+          <Dialog open={showAdd} onOpenChange={(v) => { if (!v) closeDialog(); else setShowAdd(true); }}>
+            <DialogTrigger asChild>
+              <Button className="gap-2 doma-gradient"><Plus className="h-4 w-4" />{isAr ? "إدراج أرض" : "Add Land"}</Button>
+            </DialogTrigger>
           <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle>{isAr ? (editingId ? "تعديل الأرض" : "إدراج أرض جديدة") : (editingId ? "Edit Land" : "Add New Land")}</DialogTitle>
