@@ -83,7 +83,7 @@ const OpportunitiesSection: React.FC = () => {
       .eq("is_featured", true)
       .order("created_at", { ascending: false })
       .limit(10)
-      .then(({ data }) => setLands(data || []));
+      .then(({ data }: { data: any }) => setLands((data as FeaturedLand[]) || []));
   }, []);
 
   // Auto-scroll
