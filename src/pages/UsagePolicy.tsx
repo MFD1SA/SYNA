@@ -18,8 +18,8 @@ const UsagePolicyPage: React.FC = () => {
         icon={Scale}
         title={isAr ? "سياسة الاستخدام" : "Usage Policy"}
         description={isAr
-          ? "القواعد والضوابط التي تحكم استخدام منصة دوما لضمان بيئة آمنة واحترافية"
-          : "The rules and guidelines governing the use of the DOMA platform to ensure a safe and professional environment"}
+          ? "القواعد والضوابط التي تحكم استخدام منصة سينا لضمان بيئة آمنة واحترافية"
+          : "The rules and guidelines governing the use of the SYNA platform to ensure a safe and professional environment"}
       />
       <main className="container py-10">
         <div className="max-w-3xl mx-auto space-y-6 font-light leading-relaxed text-muted-foreground">
