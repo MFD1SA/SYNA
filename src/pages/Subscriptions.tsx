@@ -19,8 +19,8 @@ const SubscriptionsPage: React.FC = () => {
         icon={Handshake}
         title={isAr ? "الشراكات" : "Partnerships"}
         description={isAr
-          ? "كيف تعمل شراكات التطوير العقاري عبر منصة دوما"
-          : "How real estate development partnerships work through the DOMA platform"}
+          ? "كيف تعمل شراكات التطوير العقاري عبر منصة سينا"
+          : "How real estate development partnerships work through the SYNA platform"}
       />
       <main>
         <SubscriptionsSection />
