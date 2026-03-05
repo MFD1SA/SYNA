@@ -74,7 +74,7 @@ const OpportunityDetail: React.FC = () => {
   useEffect(() => {
     if (!id) return;
     supabase
-      .from("lands")
+      .from("lands_public" as any)
       .select("*")
       .eq("id", id)
       .eq("is_active", true)
