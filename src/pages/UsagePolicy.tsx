@@ -54,7 +54,7 @@ const UsagePolicyPage: React.FC = () => {
             <>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">1. Acceptable Use</h2>
-                <p>DOMA must only be used for facilitating real estate development partnerships between landowners and developers. Users must not use the platform for any activity violating Saudi Arabian regulations.</p>
+                <p>SYNA must only be used for facilitating real estate development partnerships between landowners and developers. Users must not use the platform for any activity violating Saudi Arabian regulations.</p>
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">2. Prohibited Activities</h2>
