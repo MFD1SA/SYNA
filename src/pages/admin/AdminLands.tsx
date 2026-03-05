@@ -397,7 +397,7 @@ const AdminLands: React.FC = () => {
               </Button>
             </div>
           </DialogContent>
-        </Dialog>
+      </Dialog>
 
       {/* Search */}
       <div className="mb-4 relative max-w-sm">
