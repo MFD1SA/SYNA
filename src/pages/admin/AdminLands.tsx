@@ -390,11 +390,11 @@ const AdminLands: React.FC = () => {
                 </label>
               </div>
 
-              <Button onClick={handleSubmit} className="w-full doma-gradient">
+              <Button onClick={handleSubmit} className="w-full syna-gradient">
                 {isAr ? (editingId ? "تحديث" : "إدراج الأرض") : (editingId ? "Update" : "Add Land")}
               </Button>
             </div>
-          </DialogContent>
+        </DialogContent>
       </Dialog>
 
       {/* Search */}
