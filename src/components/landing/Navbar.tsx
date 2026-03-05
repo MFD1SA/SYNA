@@ -9,11 +9,11 @@ const Navbar: React.FC = () => {
   const { t, lang, toggleLang } = useLanguage();
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/60 doma-glass">
+    <nav className="sticky top-0 z-50 border-b border-border/60 syna-glass">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <img src={logoImg} alt="DOMA" className="h-8 w-8 rounded-lg object-contain" />
-          <span className="text-xl font-medium tracking-tight text-foreground">DOMA</span>
+          <img src={logoImg} alt="SYNA" className="h-8 w-8 object-contain" />
+          <span className="text-xl font-medium tracking-tight text-foreground">SYNA</span>
         </Link>
 
         <div className="flex items-center gap-2 md:gap-3">
@@ -31,7 +31,7 @@ const Navbar: React.FC = () => {
             <span className="text-sm">{t.nav.language}</span>
           </Button>
 
-          <Button size="sm" asChild className="gap-1.5 doma-gradient">
+          <Button size="sm" asChild className="gap-1.5 syna-gradient">
             <Link to="/auth/login">
               <Handshake className="h-4 w-4" />
               {lang === "ar" ? "بوابة الشركاء" : "Partners Portal"}

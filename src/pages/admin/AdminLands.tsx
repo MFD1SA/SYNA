@@ -410,7 +410,7 @@ const AdminLands: React.FC = () => {
           {filtered.map(land => {
             const imgUrl = getImageUrl(land);
             return (
-              <div key={land.id} className="doma-card overflow-hidden">
+              <div key={land.id} className="syna-card overflow-hidden">
                 {/* Image */}
                 <div className="relative h-40 bg-muted">
                   {imgUrl ? (
