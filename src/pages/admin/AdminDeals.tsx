@@ -146,11 +146,13 @@ const AdminDeals: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="mb-6">
-        <h1 className="text-2xl font-medium text-foreground">{isAr ? "الطلبات والصفقات" : "Requests & Deals"}</h1>
-        <p className="mt-1 text-sm font-light text-muted-foreground">{isAr ? "متابعة سير الطلبات والصفقات" : "Track request and deal workflows"}</p>
-      </div>
-
+      <AdminPageHeader
+        icon={Handshake}
+        titleAr="الطلبات والصفقات"
+        titleEn="Requests & Deals"
+        descAr="متابعة سير الطلبات والصفقات"
+        descEn="Track request and deal workflows"
+      />
       <Tabs defaultValue="requests">
         <TabsList className="mb-4">
           <TabsTrigger value="requests" className="gap-2"><FileText className="h-3.5 w-3.5" />{isAr ? "الطلبات" : "Requests"} ({requests.length})</TabsTrigger>
