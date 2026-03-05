@@ -100,17 +100,9 @@ const LoginPage: React.FC = () => {
     setVerificationResult(null);
     if (!file) return;
 
-    // AI verification of CR file
+    // CR file verification - show pending message (actual verification done by admin after registration)
     setVerifying(true);
     try {
-      // We'll use the admin-ai function to verify
-      const { data, error } = await supabase.functions.invoke("admin-ai", {
-        body: {
-          prompt: `أنت مدقق سجلات تجارية. المطلوب: استخرج "رقم السجل التجاري" و"الاسم التجاري" من الوثيقة المرفقة. أجب بصيغة JSON فقط: {"cr_number": "...", "company_name": "..."}. إذا لم تستطع الاستخراج أجب: {"error": "unable"}`,
-          context: `اسم الملف: ${file.name}, حجم الملف: ${(file.size / 1024).toFixed(0)} KB`,
-        },
-      });
-      // For now show verification pending since we can't actually read PDFs client-side
       setVerificationResult({
         success: true,
         message: isAr ? "جاري التحقق من السجل التجاري — سيتم المراجعة خلال 48 ساعة" : "CR verification in progress — will be reviewed within 48 hours",
