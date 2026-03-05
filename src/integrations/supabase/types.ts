@@ -318,6 +318,13 @@ export type Database = {
             referencedRelation: "lands"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "deal_requests_land_id_fkey"
+            columns: ["land_id"]
+            isOneToOne: false
+            referencedRelation: "lands_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       deal_stages_log: {
@@ -467,6 +474,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "deals_land_id_fkey"
+            columns: ["land_id"]
+            isOneToOne: false
+            referencedRelation: "lands_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "deals_request_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
@@ -572,6 +586,13 @@ export type Database = {
             columns: ["land_id"]
             isOneToOne: false
             referencedRelation: "lands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "land_pulse_snapshots_land_id_fkey"
+            columns: ["land_id"]
+            isOneToOne: false
+            referencedRelation: "lands_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1311,7 +1332,87 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      lands_public: {
+        Row: {
+          city: string | null
+          created_at: string | null
+          developer_experience_requirements: string | null
+          district: string | null
+          expected_dev_duration_months: number | null
+          financing_preference: string | null
+          id: string | null
+          image_url: string | null
+          is_active: boolean | null
+          is_featured: boolean | null
+          land_area_sqm: number | null
+          length_m: number | null
+          partnership_goal:
+            | Database["public"]["Enums"]["owner_partnership_goal"]
+            | null
+          partnership_model: string | null
+          project_type: string | null
+          quality_level: string | null
+          revenue_model: string | null
+          street_width_m: number | null
+          updated_at: string | null
+          usage_type: Database["public"]["Enums"]["land_usage_type"] | null
+          vision_summary: string | null
+          width_m: number | null
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string | null
+          developer_experience_requirements?: string | null
+          district?: string | null
+          expected_dev_duration_months?: number | null
+          financing_preference?: string | null
+          id?: string | null
+          image_url?: string | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          land_area_sqm?: number | null
+          length_m?: number | null
+          partnership_goal?:
+            | Database["public"]["Enums"]["owner_partnership_goal"]
+            | null
+          partnership_model?: string | null
+          project_type?: string | null
+          quality_level?: string | null
+          revenue_model?: string | null
+          street_width_m?: number | null
+          updated_at?: string | null
+          usage_type?: Database["public"]["Enums"]["land_usage_type"] | null
+          vision_summary?: string | null
+          width_m?: number | null
+        }
+        Update: {
+          city?: string | null
+          created_at?: string | null
+          developer_experience_requirements?: string | null
+          district?: string | null
+          expected_dev_duration_months?: number | null
+          financing_preference?: string | null
+          id?: string | null
+          image_url?: string | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          land_area_sqm?: number | null
+          length_m?: number | null
+          partnership_goal?:
+            | Database["public"]["Enums"]["owner_partnership_goal"]
+            | null
+          partnership_model?: string | null
+          project_type?: string | null
+          quality_level?: string | null
+          revenue_model?: string | null
+          street_width_m?: number | null
+          updated_at?: string | null
+          usage_type?: Database["public"]["Enums"]["land_usage_type"] | null
+          vision_summary?: string | null
+          width_m?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_tenant_id: { Args: { _user_id: string }; Returns: string }
