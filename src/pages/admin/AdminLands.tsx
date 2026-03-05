@@ -365,13 +365,11 @@ const AdminLands: React.FC = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input type="checkbox" id="owner_approved" checked={form.owner_approved} onChange={e => setForm(f => ({ ...f, owner_approved: e.target.checked }))} className="rounded border-border" />
-                    <label htmlFor="owner_approved" className="text-xs font-light text-foreground">
-                      {isAr ? "✓ المالك موافق مبدئياً على استقبال عروض وفق النموذج المختار" : "✓ Owner approves receiving offers per selected model"}
-                    </label>
-                  </div>
+                <div className="mt-3 flex items-center gap-2">
+                  <input type="checkbox" id="owner_approved" checked={form.owner_approved} onChange={e => setForm(f => ({ ...f, owner_approved: e.target.checked }))} className="rounded border-border" />
+                  <label htmlFor="owner_approved" className="text-xs font-light text-foreground">
+                    {isAr ? "✓ المالك موافق مبدئياً على استقبال عروض وفق النموذج المختار" : "✓ Owner approves receiving offers per selected model"}
+                  </label>
                 </div>
               </div>
 
