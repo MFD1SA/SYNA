@@ -18,8 +18,8 @@ const PrivacyPage: React.FC = () => {
         icon={ShieldCheck}
         title={isAr ? "سياسة الخصوصية" : "Privacy Policy"}
         description={isAr
-          ? "كيف نحمي بياناتك ونحافظ على خصوصيتك أثناء استخدام منصة دوما"
-          : "How we protect your data and maintain your privacy while using the DOMA platform"}
+          ? "كيف نحمي بياناتك ونحافظ على خصوصيتك أثناء استخدام منصة سينا"
+          : "How we protect your data and maintain your privacy while using the SYNA platform"}
       />
       <main className="container py-10">
         <div className="max-w-3xl mx-auto space-y-6 font-light leading-relaxed text-muted-foreground">

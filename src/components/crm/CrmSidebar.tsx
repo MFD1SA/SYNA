@@ -35,7 +35,6 @@ const CrmSidebar: React.FC = () => {
     ? (collapsed ? ChevronLeft : ChevronRight)
     : (collapsed ? ChevronRight : ChevronLeft);
 
-  // Developer-only navigation (no owner view since admin represents owners)
   const navItems: NavItem[] = [
     { label: { ar: "لوحة التحكم", en: "Dashboard" }, href: "/crm/dashboard", icon: LayoutDashboard },
     { label: { ar: "استعراض الفرص", en: "Browse Opportunities" }, href: "/crm/browse", icon: Search },
@@ -55,8 +54,8 @@ const CrmSidebar: React.FC = () => {
         {!collapsed && (
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <img src={logoImg} alt="DOMA" className="h-6 w-6 rounded-lg object-contain" />
-              <span className="text-base font-medium text-foreground">DOMA</span>
+              <img src={logoImg} alt="SYNA" className="h-6 w-6 object-contain" />
+              <span className="text-base font-medium text-foreground">SYNA</span>
             </div>
             {tenantName && (
               <span className="mt-0.5 truncate text-[10px] font-light text-muted-foreground ps-8">
@@ -94,7 +93,7 @@ const CrmSidebar: React.FC = () => {
                 to={item.href}
                 className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all ${
                   isActive
-                    ? "bg-primary/10 text-primary doma-shadow"
+                    ? "bg-primary/10 text-primary syna-shadow"
                     : "text-muted-foreground hover:bg-surface hover:text-foreground"
                 }`}
               >

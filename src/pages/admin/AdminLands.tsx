@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, LocateFixed, ImagePlus, Ruler, Building2, Calendar, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, LocateFixed, ImagePlus, Ruler, Building2, Calendar, Image as ImageIcon, Landmark } from "lucide-react";
 import { saudiCities } from "@/data/saudiCities";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -236,7 +236,7 @@ const AdminLands: React.FC = () => {
         descAr="إضافة وتعديل الأراضي — تنعكس تلقائياً في الواجهة الرئيسية"
         descEn="Add and manage lands — reflected automatically on homepage"
         actions={
-          <Button className="gap-2 doma-gradient" onClick={() => setShowAdd(true)}>
+          <Button className="gap-2 syna-gradient" onClick={() => setShowAdd(true)}>
             <Plus className="h-4 w-4" />{isAr ? "إدراج أرض" : "Add Land"}
           </Button>
         }
@@ -365,13 +365,11 @@ const AdminLands: React.FC = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input type="checkbox" id="owner_approved" checked={form.owner_approved} onChange={e => setForm(f => ({ ...f, owner_approved: e.target.checked }))} className="rounded border-border" />
-                    <label htmlFor="owner_approved" className="text-xs font-light text-foreground">
-                      {isAr ? "✓ المالك موافق مبدئياً على استقبال عروض وفق النموذج المختار" : "✓ Owner approves receiving offers per selected model"}
-                    </label>
-                  </div>
+                <div className="mt-3 flex items-center gap-2">
+                  <input type="checkbox" id="owner_approved" checked={form.owner_approved} onChange={e => setForm(f => ({ ...f, owner_approved: e.target.checked }))} className="rounded border-border" />
+                  <label htmlFor="owner_approved" className="text-xs font-light text-foreground">
+                    {isAr ? "✓ المالك موافق مبدئياً على استقبال عروض وفق النموذج المختار" : "✓ Owner approves receiving offers per selected model"}
+                  </label>
                 </div>
               </div>
 
@@ -392,11 +390,11 @@ const AdminLands: React.FC = () => {
                 </label>
               </div>
 
-              <Button onClick={handleSubmit} className="w-full doma-gradient">
+              <Button onClick={handleSubmit} className="w-full syna-gradient">
                 {isAr ? (editingId ? "تحديث" : "إدراج الأرض") : (editingId ? "Update" : "Add Land")}
               </Button>
             </div>
-          </DialogContent>
+        </DialogContent>
       </Dialog>
 
       {/* Search */}
@@ -412,7 +410,7 @@ const AdminLands: React.FC = () => {
           {filtered.map(land => {
             const imgUrl = getImageUrl(land);
             return (
-              <div key={land.id} className="doma-card overflow-hidden">
+              <div key={land.id} className="syna-card overflow-hidden">
                 {/* Image */}
                 <div className="relative h-40 bg-muted">
                   {imgUrl ? (

@@ -6,26 +6,26 @@
 
 @layer base {
   :root {
-    /* DOMA Brand — Deep Teal + Warm Gold */
+    /* SYNA Brand — Navy Blue + Cyan */
     --background: 210 20% 98%;
-    --foreground: 210 25% 12%;
+    --foreground: 210 30% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 25% 12%;
+    --card-foreground: 210 30% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 25% 12%;
+    --popover-foreground: 210 30% 10%;
 
-    --primary: 187 65% 28%;
+    --primary: 205 85% 35%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 18% 94%;
-    --secondary-foreground: 210 25% 12%;
+    --secondary-foreground: 210 30% 10%;
 
     --muted: 210 18% 94%;
     --muted-foreground: 210 10% 50%;
 
-    --accent: 40 72% 52%;
+    --accent: 195 85% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 55%;
@@ -33,66 +33,66 @@
 
     --border: 210 18% 88%;
     --input: 210 18% 88%;
-    --ring: 187 65% 28%;
+    --ring: 205 85% 35%;
 
     --radius: 0.5rem;
 
-    /* DOMA extended tokens */
-    --primary-glow: 187 55% 38%;
+    /* SYNA extended tokens */
+    --primary-glow: 195 80% 45%;
     --surface: 210 20% 96%;
     --surface-hover: 210 18% 93%;
 
     --sidebar-background: 210 20% 97%;
     --sidebar-foreground: 210 10% 30%;
-    --sidebar-primary: 187 65% 28%;
+    --sidebar-primary: 205 85% 35%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 18% 93%;
-    --sidebar-accent-foreground: 210 25% 12%;
+    --sidebar-accent-foreground: 210 30% 10%;
     --sidebar-border: 210 18% 88%;
-    --sidebar-ring: 187 65% 28%;
+    --sidebar-ring: 205 85% 35%;
   }
 
   .dark {
-    --background: 210 25% 8%;
+    --background: 210 30% 7%;
     --foreground: 210 15% 92%;
 
-    --card: 210 25% 11%;
+    --card: 210 28% 10%;
     --card-foreground: 210 15% 92%;
 
-    --popover: 210 25% 11%;
+    --popover: 210 28% 10%;
     --popover-foreground: 210 15% 92%;
 
-    --primary: 187 55% 42%;
+    --primary: 200 80% 45%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 20% 18%;
+    --secondary: 210 22% 16%;
     --secondary-foreground: 210 15% 92%;
 
-    --muted: 210 20% 18%;
+    --muted: 210 22% 16%;
     --muted-foreground: 210 10% 55%;
 
-    --accent: 40 72% 52%;
+    --accent: 195 85% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 35%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 20% 18%;
-    --input: 210 20% 18%;
-    --ring: 187 55% 42%;
+    --border: 210 22% 16%;
+    --input: 210 22% 16%;
+    --ring: 200 80% 45%;
 
-    --primary-glow: 187 50% 50%;
-    --surface: 210 22% 12%;
-    --surface-hover: 210 20% 16%;
+    --primary-glow: 195 75% 52%;
+    --surface: 210 25% 11%;
+    --surface-hover: 210 22% 15%;
 
-    --sidebar-background: 210 25% 10%;
+    --sidebar-background: 210 28% 9%;
     --sidebar-foreground: 210 15% 85%;
-    --sidebar-primary: 187 55% 42%;
+    --sidebar-primary: 200 80% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 20% 16%;
+    --sidebar-accent: 210 22% 15%;
     --sidebar-accent-foreground: 210 15% 92%;
-    --sidebar-border: 210 20% 18%;
-    --sidebar-ring: 187 55% 42%;
+    --sidebar-border: 210 22% 16%;
+    --sidebar-ring: 200 80% 45%;
   }
 }
 
@@ -107,7 +107,6 @@
     font-weight: 400;
   }
 
-  /* Prevent bold globally per DOMA design spec */
   h1, h2, h3, h4, h5, h6 {
     font-weight: 500;
   }
@@ -122,37 +121,46 @@
 }
 
 @layer utilities {
-  .doma-gradient {
+  .syna-gradient {
     background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
   }
 
-  .doma-gradient-text {
+  .syna-gradient-text {
     background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .doma-shadow {
+  .syna-shadow {
     box-shadow: 0 4px 24px -4px hsl(var(--primary) / 0.12);
   }
 
-  .doma-shadow-lg {
+  .syna-shadow-lg {
     box-shadow: 0 8px 40px -8px hsl(var(--primary) / 0.18);
   }
 
-  .doma-card {
+  .syna-card {
     @apply rounded-xl border border-border bg-card transition-all duration-200;
   }
 
-  .doma-card:hover {
-    @apply doma-shadow;
+  .syna-card:hover {
+    @apply syna-shadow;
     border-color: hsl(var(--primary) / 0.2);
   }
 
-  .doma-glass {
+  .syna-glass {
     background: hsl(var(--background) / 0.7);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
   }
+
+  /* Keep old class names as aliases for backward compat */
+  .doma-gradient { background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow))); }
+  .doma-gradient-text { background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .doma-shadow { box-shadow: 0 4px 24px -4px hsl(var(--primary) / 0.12); }
+  .doma-shadow-lg { box-shadow: 0 8px 40px -8px hsl(var(--primary) / 0.18); }
+  .doma-card { @apply rounded-xl border border-border bg-card transition-all duration-200; }
+  .doma-card:hover { @apply syna-shadow; border-color: hsl(var(--primary) / 0.2); }
+  .doma-glass { background: hsl(var(--background) / 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 }

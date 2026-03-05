@@ -28,10 +28,10 @@ const AboutPage: React.FC = () => {
       <Navbar />
       <PageHeader
         icon={Info}
-        title={isAr ? "عن دوما" : "About DOMA"}
+        title={isAr ? "عن سينا" : "About SYNA"}
         description={isAr
-          ? "تعرّف على رؤية دوما ودورها في تنظيم شراكات التطوير العقاري بين ملاك الأراضي والمطورين"
-          : "Learn about DOMA's vision and its role in organizing real estate development partnerships between landowners and developers"}
+          ? "تعرّف على رؤية سينا ودورها في تنظيم شراكات التطوير العقاري بين ملاك الأراضي والمطورين"
+          : "Learn about SYNA's vision and its role in organizing real estate development partnerships between landowners and developers"}
       />
       <main className="py-12 md:py-16">
         <div className="container">
@@ -43,14 +43,14 @@ const AboutPage: React.FC = () => {
             </p>
             <p className="mt-3 text-base font-light leading-relaxed text-muted-foreground">
               {isAr
-                ? "من هنا جاءت فكرة دوما… لتكون وجهة الشراكات التطويرية التي تجمع بين مالك الأرض والمطور العقاري ضمن بيئة منظمة وواضحة من البداية."
-                : "This is where DOMA comes in — the destination for development partnerships connecting landowners with developers in an organized and clear environment from the start."}
+                ? "من هنا جاءت فكرة سينا… لتكون وجهة الشراكات التطويرية التي تجمع بين مالك الأرض والمطور العقاري ضمن بيئة منظمة وواضحة من البداية."
+                : "This is where SYNA comes in — the destination for development partnerships connecting landowners with developers in an organized and clear environment from the start."}
             </p>
           </div>
 
           <div className="mx-auto mt-10 grid max-w-3xl gap-4 sm:grid-cols-3">
             {values.map(({ icon: Icon, label, desc }) => (
-              <div key={label} className="doma-card p-5 text-center">
+              <div key={label} className="syna-card p-5 text-center">
                 <Icon className="mx-auto mb-3 h-6 w-6 text-primary" strokeWidth={1.5} />
                 <h3 className="mb-1.5 text-base font-medium text-foreground">{label}</h3>
                 <p className="text-sm font-light text-muted-foreground">{desc}</p>
@@ -60,7 +60,7 @@ const AboutPage: React.FC = () => {
 
           <div className="mx-auto mt-10 max-w-2xl">
             <h2 className="mb-4 text-center text-xl font-medium text-foreground">
-              {isAr ? "لماذا دوما؟" : "Why DOMA?"}
+              {isAr ? "لماذا سينا؟" : "Why SYNA?"}
             </h2>
             <div className="space-y-3">
               {whyItems.map(({ icon: Icon, text }) => (
@@ -76,8 +76,8 @@ const AboutPage: React.FC = () => {
             <h2 className="mb-2 text-lg font-medium text-foreground">{isAr ? "رؤيتنا" : "Our Vision"}</h2>
             <p className="text-sm font-light leading-relaxed text-muted-foreground">
               {isAr
-                ? "نؤمن بأن الأرض ليست مجرد مساحة خام، بل فرصة لبناء قيمة مستدامة. من خلال دوما نسعى إلى تحويل الأفكار إلى شراكات حقيقية، وتحويل الأراضي إلى مشاريع منتجة تسهم في نمو المدن وتحفيز الاقتصاد العقاري بطريقة متوازنة واحترافية."
-                : "We believe land is not just raw space — it's an opportunity to build sustainable value. Through DOMA, we aim to transform ideas into real partnerships and lands into productive projects that contribute to urban growth and stimulate the real estate economy in a balanced and professional manner."}
+                ? "نؤمن بأن الأرض ليست مجرد مساحة خام، بل فرصة لبناء قيمة مستدامة. من خلال سينا نسعى إلى تحويل الأفكار إلى شراكات حقيقية، وتحويل الأراضي إلى مشاريع منتجة تسهم في نمو المدن وتحفيز الاقتصاد العقاري بطريقة متوازنة واحترافية."
+                : "We believe land is not just raw space — it's an opportunity to build sustainable value. Through SYNA, we aim to transform ideas into real partnerships and lands into productive projects that contribute to urban growth and stimulate the real estate economy in a balanced and professional manner."}
             </p>
           </div>
         </div>

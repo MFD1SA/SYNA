@@ -44,11 +44,11 @@ serve(async (req) => {
           ["Content-Type", "application/json"],
         ]),
         body: JSON.stringify({
-          from: "DOMA Contact <onboarding@resend.dev>",
+          from: "SYNA Contact <onboarding@resend.dev>",
           to: [ADMIN_EMAIL],
           subject: `New message from ${name}: ${subject || "No subject"}`,
           html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;direction:rtl">
-            <h2 style="color:#1a7a7a">DOMA - New Contact Message</h2>
+            <h2 style="color:#1a6fb5">SYNA - New Contact Message</h2>
             <table style="width:100%;border-collapse:collapse;margin-top:16px">
               <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #eee">Name:</td><td style="padding:8px;border-bottom:1px solid #eee">${name}</td></tr>
               <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #eee">Email:</td><td style="padding:8px;border-bottom:1px solid #eee">${email}</td></tr>

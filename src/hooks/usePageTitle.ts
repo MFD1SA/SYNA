@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const BASE_TITLE = "دوما | DOMA";
+const BASE_TITLE = "سينا | SYNA";
 
 export const usePageTitle = (subtitle?: string) => {
   useEffect(() => {

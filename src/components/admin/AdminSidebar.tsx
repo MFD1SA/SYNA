@@ -76,8 +76,8 @@ const AdminSidebar: React.FC = () => {
       <div className="flex h-14 items-center justify-between border-b border-border/60 px-3">
         {!collapsed && (
           <Link to="/admincp/overview" className="flex items-center gap-2">
-            <img src={logoImg} alt="DOMA" className="h-6 w-6 rounded-lg object-contain" />
-            <span className="text-sm font-medium text-foreground">DOMA</span>
+            <img src={logoImg} alt="SYNA" className="h-6 w-6 object-contain" />
+            <span className="text-sm font-medium text-foreground">SYNA</span>
           </Link>
         )}
         <Button

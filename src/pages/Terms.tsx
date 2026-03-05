@@ -18,8 +18,8 @@ const TermsPage: React.FC = () => {
         icon={FileText}
         title={isAr ? "الشروط والأحكام" : "Terms & Conditions"}
         description={isAr
-          ? "الشروط والأحكام التي تنظّم استخدام منصة دوما والعلاقة بين الأطراف"
-          : "The terms and conditions governing the use of the DOMA platform and the relationship between parties"}
+          ? "الشروط والأحكام التي تنظّم استخدام منصة سينا والعلاقة بين الأطراف"
+          : "The terms and conditions governing the use of the SYNA platform and the relationship between parties"}
       />
       <main className="container py-10">
         <div className="max-w-3xl mx-auto space-y-6 font-light leading-relaxed text-muted-foreground">
@@ -27,11 +27,11 @@ const TermsPage: React.FC = () => {
             <>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">1. مقدمة</h2>
-                <p>مرحباً بك في DOMA، المنصة المتخصصة في تسهيل شراكات التطوير العقاري بين ملاك الأراضي والمطورين في المملكة العربية السعودية، والمملوكة لشركة دوما للتقنية. باستخدامك لهذه المنصة فإنك توافق على الالتزام بهذه الشروط والأحكام.</p>
+                <p>مرحباً بك في SYNA، المنصة المتخصصة في تسهيل شراكات التطوير العقاري بين ملاك الأراضي والمطورين في المملكة العربية السعودية، والمملوكة لشركة سينا للتقنية. باستخدامك لهذه المنصة فإنك توافق على الالتزام بهذه الشروط والأحكام.</p>
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">2. التعريفات</h2>
-                <p>"المنصة" تشير إلى DOMA وجميع الخدمات المرتبطة بها. "مالك الأرض" يشير إلى من يسجل أرضه للبحث عن شريك تطوير. "المطور" يشير إلى الشركة المسجلة تجارياً والتي تبحث عن فرص تطوير. "الصفقة" تشمل دورة الشراكة من الطلب حتى الإغلاق.</p>
+                <p>"المنصة" تشير إلى SYNA وجميع الخدمات المرتبطة بها. "مالك الأرض" يشير إلى من يسجل أرضه للبحث عن شريك تطوير. "المطور" يشير إلى الشركة المسجلة تجارياً والتي تبحث عن فرص تطوير. "الصفقة" تشمل دورة الشراكة من الطلب حتى الإغلاق.</p>
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">3. شروط الاستخدام</h2>
@@ -47,7 +47,7 @@ const TermsPage: React.FC = () => {
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">6. الملكية الفكرية</h2>
-                <p>جميع المحتويات والتصاميم والعلامات التجارية المتعلقة بالمنصة هي ملك لشركة دوما للتقنية. لا يجوز نسخ أو تعديل أو توزيع أي محتوى من المنصة دون إذن كتابي مسبق.</p>
+                <p>جميع المحتويات والتصاميم والعلامات التجارية المتعلقة بالمنصة هي ملك لشركة سينا للتقنية. لا يجوز نسخ أو تعديل أو توزيع أي محتوى من المنصة دون إذن كتابي مسبق.</p>
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">7. حدود المسؤولية</h2>
@@ -66,11 +66,11 @@ const TermsPage: React.FC = () => {
             <>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">1. Introduction</h2>
-                <p>Welcome to DOMA, a platform specializing in facilitating real estate development partnerships between landowners and developers in Saudi Arabia, owned by Doma Technology Company. By using this platform, you agree to comply with these Terms and Conditions.</p>
+                <p>Welcome to SYNA, a platform specializing in facilitating real estate development partnerships between landowners and developers in Saudi Arabia, owned by SYNA Technology. By using this platform, you agree to comply with these Terms and Conditions.</p>
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">2. Definitions</h2>
-                <p>"Platform" refers to DOMA and all associated services. "Landowner" refers to those who list their land seeking a development partner. "Developer" refers to a commercially registered company seeking development opportunities. "Deal" encompasses the partnership cycle from request to closure.</p>
+                <p>"Platform" refers to SYNA and all associated services. "Landowner" refers to those who list their land seeking a development partner. "Developer" refers to a commercially registered company seeking development opportunities. "Deal" encompasses the partnership cycle from request to closure.</p>
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">3. Terms of Use</h2>
@@ -86,7 +86,7 @@ const TermsPage: React.FC = () => {
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">6. Intellectual Property</h2>
-                <p>All content, designs, and trademarks related to the platform are the property of Doma Technology Company.</p>
+                <p>All content, designs, and trademarks related to the platform are the property of SYNA Technology.</p>
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">7. Limitation of Liability</h2>

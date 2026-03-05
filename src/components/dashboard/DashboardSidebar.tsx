@@ -51,10 +51,10 @@ const DashboardSidebar: React.FC = () => {
       <div className="flex h-16 items-center justify-between border-b border-border/60 px-4">
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg doma-gradient">
-              <span className="text-xs font-medium text-primary-foreground">D</span>
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg syna-gradient">
+              <span className="text-xs font-medium text-primary-foreground">S</span>
             </div>
-            <span className="text-lg font-medium text-foreground">DOMA</span>
+            <span className="text-lg font-medium text-foreground">SYNA</span>
           </div>
         )}
         <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} className="h-8 w-8 text-muted-foreground">

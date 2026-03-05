@@ -18,8 +18,8 @@ const UsagePolicyPage: React.FC = () => {
         icon={Scale}
         title={isAr ? "سياسة الاستخدام" : "Usage Policy"}
         description={isAr
-          ? "القواعد والضوابط التي تحكم استخدام منصة دوما لضمان بيئة آمنة واحترافية"
-          : "The rules and guidelines governing the use of the DOMA platform to ensure a safe and professional environment"}
+          ? "القواعد والضوابط التي تحكم استخدام منصة سينا لضمان بيئة آمنة واحترافية"
+          : "The rules and guidelines governing the use of the SYNA platform to ensure a safe and professional environment"}
       />
       <main className="container py-10">
         <div className="max-w-3xl mx-auto space-y-6 font-light leading-relaxed text-muted-foreground">
@@ -27,7 +27,7 @@ const UsagePolicyPage: React.FC = () => {
             <>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">1. الاستخدام المقبول</h2>
-                <p>يجب استخدام DOMA فقط لأغراض تسهيل شراكات التطوير العقاري بين ملاك الأراضي والمطورين. يلتزم المستخدم بعدم استخدام المنصة لأي نشاط مخالف للأنظمة المعمول بها في المملكة العربية السعودية.</p>
+                <p>يجب استخدام SYNA فقط لأغراض تسهيل شراكات التطوير العقاري بين ملاك الأراضي والمطورين. يلتزم المستخدم بعدم استخدام المنصة لأي نشاط مخالف للأنظمة المعمول بها في المملكة العربية السعودية.</p>
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">2. الأنشطة المحظورة</h2>
@@ -54,7 +54,7 @@ const UsagePolicyPage: React.FC = () => {
             <>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">1. Acceptable Use</h2>
-                <p>DOMA must only be used for facilitating real estate development partnerships between landowners and developers. Users must not use the platform for any activity violating Saudi Arabian regulations.</p>
+                <p>SYNA must only be used for facilitating real estate development partnerships between landowners and developers. Users must not use the platform for any activity violating Saudi Arabian regulations.</p>
               </section>
               <section>
                 <h2 className="mb-2 text-lg font-medium text-foreground">2. Prohibited Activities</h2>

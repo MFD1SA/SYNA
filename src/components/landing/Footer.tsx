@@ -7,22 +7,18 @@ const Footer: React.FC = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
 
-
   return (
-    <footer className="border-t border-[hsl(210,20%,16%)] bg-[hsl(210,25%,8%)]">
+    <footer className="border-t border-[hsl(210,22%,14%)] bg-[hsl(210,30%,7%)]">
       <div className="container py-10">
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2.5">
-              <img src={logoImg} alt="DOMA" className="h-8 w-8 rounded-lg object-contain" />
-              <span className="text-lg font-medium text-white">DOMA</span>
+              <img src={logoImg} alt="SYNA" className="h-8 w-8 object-contain" />
+              <span className="text-lg font-medium text-white">SYNA</span>
             </div>
             <p className="max-w-xs text-sm font-light leading-relaxed text-[hsl(210,15%,55%)]">
               {t.footer.desc}
-            </p>
-            <p className="text-sm font-medium text-[hsl(187,55%,50%)]">
-              {isAr ? "دوما معكم دوماً" : "DOMA — Always with you"}
             </p>
           </div>
 
@@ -39,7 +35,7 @@ const Footer: React.FC = () => {
               <Link
                 key={link.to}
                 to={link.to}
-                className="w-fit text-sm font-light text-[hsl(210,15%,55%)] transition-colors hover:text-[hsl(187,55%,50%)]"
+                className="w-fit text-sm font-light text-[hsl(210,15%,55%)] transition-colors hover:text-[hsl(200,80%,50%)]"
               >
                 {link.label}
               </Link>
@@ -59,7 +55,7 @@ const Footer: React.FC = () => {
               <Link
                 key={link.to}
                 to={link.to}
-                className="w-fit text-sm font-light text-[hsl(210,15%,55%)] transition-colors hover:text-[hsl(187,55%,50%)]"
+                className="w-fit text-sm font-light text-[hsl(210,15%,55%)] transition-colors hover:text-[hsl(200,80%,50%)]"
               >
                 {link.label}
               </Link>
@@ -73,18 +69,18 @@ const Footer: React.FC = () => {
             </h4>
             <Link
               to="/contact"
-              className="w-fit text-sm font-light text-[hsl(210,15%,55%)] transition-colors hover:text-[hsl(187,55%,50%)]"
+              className="w-fit text-sm font-light text-[hsl(210,15%,55%)] transition-colors hover:text-[hsl(200,80%,50%)]"
             >
               {isAr ? "نموذج التواصل" : "Contact Form"}
             </Link>
           </div>
         </div>
 
-        <div className="mt-8 border-t border-[hsl(210,20%,16%)] pt-6 text-center">
+        <div className="mt-8 border-t border-[hsl(210,22%,14%)] pt-6 text-center">
           <p className="text-xs font-light text-[hsl(210,15%,45%)]">
             {isAr
-              ? `جميع الحقوق محفوظة لـ شركة دوما © ${new Date().getFullYear()}`
-              : `All rights reserved for DOMA © ${new Date().getFullYear()}`}
+              ? `جميع الحقوق محفوظة لـ شركة سينا © ${new Date().getFullYear()}`
+              : `All rights reserved for SYNA © ${new Date().getFullYear()}`}
           </p>
         </div>
       </div>
