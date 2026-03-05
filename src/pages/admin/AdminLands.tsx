@@ -236,7 +236,7 @@ const AdminLands: React.FC = () => {
         descAr="إضافة وتعديل الأراضي — تنعكس تلقائياً في الواجهة الرئيسية"
         descEn="Add and manage lands — reflected automatically on homepage"
         actions={
-          <Button className="gap-2 doma-gradient" onClick={() => setShowAdd(true)}>
+          <Button className="gap-2 syna-gradient" onClick={() => setShowAdd(true)}>
             <Plus className="h-4 w-4" />{isAr ? "إدراج أرض" : "Add Land"}
           </Button>
         }
