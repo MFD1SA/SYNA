@@ -82,13 +82,17 @@ const AdminTargets: React.FC = () => {
   };
 
   const callAI = async (prompt: string): Promise<string> => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    if (!token) throw new Error("Not authenticated");
+
     const resp = await fetch(
       `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-ai`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }] }),
       }
