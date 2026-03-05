@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -74,15 +75,13 @@ const AdminAuditLog: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="mb-6">
-        <h1 className="text-2xl font-medium text-foreground flex items-center gap-2">
-          <History className="h-6 w-6 text-primary" />
-          {isAr ? "سجل العمليات" : "Audit Log"}
-        </h1>
-        <p className="mt-1 text-sm font-light text-muted-foreground">
-          {isAr ? "تتبع جميع العمليات: من عدّل ماذا ومتى" : "Track all operations: who changed what and when"}
-        </p>
-      </div>
+      <AdminPageHeader
+        icon={History}
+        titleAr="سجل العمليات"
+        titleEn="Audit Log"
+        descAr="تتبع جميع العمليات: من عدّل ماذا ومتى"
+        descEn="Track all operations: who changed what and when"
+      />
 
       {/* Filters */}
       <div className="mb-4 flex flex-wrap items-center gap-3">

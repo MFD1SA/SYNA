@@ -5,6 +5,7 @@ import { logAudit } from "@/lib/auditLog";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -122,15 +123,13 @@ const AdminSettings: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="mb-6">
-        <h1 className="text-2xl font-medium text-foreground flex items-center gap-2">
-          <Settings className="h-6 w-6 text-primary" />
-          {isAr ? "إعدادات الحساب" : "Account Settings"}
-        </h1>
-        <p className="mt-1 text-sm font-light text-muted-foreground">
-          {isAr ? "تعديل بيانات حساب مدير النظام" : "Manage your admin account settings"}
-        </p>
-      </div>
+      <AdminPageHeader
+        icon={Settings}
+        titleAr="إعدادات الحساب"
+        titleEn="Account Settings"
+        descAr="تعديل بيانات حساب مدير النظام"
+        descEn="Manage your admin account settings"
+      />
 
       <div className="max-w-2xl space-y-6">
         {/* Admin Badge */}

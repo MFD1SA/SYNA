@@ -5,6 +5,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminLayout from "@/components/admin/AdminLayout";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -228,18 +229,21 @@ const AdminLands: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-medium text-foreground">{isAr ? "إدارة الأراضي" : "Manage Lands"}</h1>
-          <p className="mt-1 text-sm font-light text-muted-foreground">
-            {isAr ? "إضافة وتعديل الأراضي — تنعكس تلقائياً في الواجهة الرئيسية" : "Add and manage lands — reflected automatically on homepage"}
-          </p>
-        </div>
-        <Dialog open={showAdd} onOpenChange={(v) => { if (!v) closeDialog(); else setShowAdd(true); }}>
-          <DialogTrigger asChild>
-            <Button className="gap-2 doma-gradient"><Plus className="h-4 w-4" />{isAr ? "إدراج أرض" : "Add Land"}</Button>
-          </DialogTrigger>
-          <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+      <AdminPageHeader
+        icon={Landmark}
+        titleAr="إدارة الأراضي"
+        titleEn="Manage Lands"
+        descAr="إضافة وتعديل الأراضي — تنعكس تلقائياً في الواجهة الرئيسية"
+        descEn="Add and manage lands — reflected automatically on homepage"
+        actions={
+          <Button className="gap-2 doma-gradient" onClick={() => setShowAdd(true)}>
+            <Plus className="h-4 w-4" />{isAr ? "إدراج أرض" : "Add Land"}
+          </Button>
+        }
+      />
+
+      <Dialog open={showAdd} onOpenChange={(v) => { if (!v) closeDialog(); else setShowAdd(true); }}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle>{isAr ? (editingId ? "تعديل الأرض" : "إدراج أرض جديدة") : (editingId ? "Edit Land" : "Add New Land")}</DialogTitle>
             </DialogHeader>
@@ -361,49 +365,6 @@ const AdminLands: React.FC = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="mt-1.5 text-[10px] text-muted-foreground">
-                  {isAr ? "اختر المالك لربط الأرض بحسابه — أنشئ حسابه أولاً من صفحة إدارة الملاك" : "Select owner to link — create account first from Manage Owners"}
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-xs">{isAr ? "اسم المالك" : "Owner Name"}</Label>
-                  <Input value={form.owner_name} onChange={e => setForm(f => ({ ...f, owner_name: e.target.value }))} />
-                </div>
-                <div>
-                  <Label className="text-xs">{isAr ? "رقم الصك" : "Deed Number"}</Label>
-                  <Input value={form.deed_number} onChange={e => setForm(f => ({ ...f, deed_number: e.target.value }))} />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-xs">{isAr ? "رقم القطعة" : "Plot Number"}</Label>
-                  <Input value={form.plot_number} onChange={e => setForm(f => ({ ...f, plot_number: e.target.value }))} />
-                </div>
-                <div>
-                  <Label className="text-xs">{isAr ? "رقم المخطط" : "Plan Number"}</Label>
-                  <Input value={form.plan_number} onChange={e => setForm(f => ({ ...f, plan_number: e.target.value }))} />
-                </div>
-              </div>
-              <div>
-                <Label className="text-xs">{isAr ? "ملخص الرؤية" : "Vision Summary"}</Label>
-                <Textarea value={form.vision_summary} onChange={e => setForm(f => ({ ...f, vision_summary: e.target.value }))} rows={3} />
-              </div>
-
-              {/* Owner Approval */}
-              <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-                <Label className="text-sm font-medium mb-3 block">{isAr ? "اعتماد المالك" : "Owner Approval"}</Label>
-                <div className="space-y-3">
-                  <div>
-                    <Label className="text-xs">{isAr ? "نموذج الشراكة" : "Partnership Model"}</Label>
-                    <Select value={form.partnership_model} onValueChange={v => setForm(f => ({ ...f, partnership_model: v }))}>
-                      <SelectTrigger><SelectValue placeholder={isAr ? "اختر النموذج" : "Select model"} /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="equity_share">{isAr ? "شراكة تطوير مقابل نسبة" : "Equity Share Partnership"}</SelectItem>
-                        <SelectItem value="income_years">{isAr ? "تطوير وتشغيل مقابل دخل لسنوات" : "Develop & Operate for Income"}</SelectItem>
-                        <SelectItem value="full_sale">{isAr ? "بيع كامل" : "Full Sale"}</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
                   <div className="flex items-center gap-2">
                     <input type="checkbox" id="owner_approved" checked={form.owner_approved} onChange={e => setForm(f => ({ ...f, owner_approved: e.target.checked }))} className="rounded border-border" />
@@ -436,8 +397,7 @@ const AdminLands: React.FC = () => {
               </Button>
             </div>
           </DialogContent>
-        </Dialog>
-      </div>
+      </Dialog>
 
       {/* Search */}
       <div className="mb-4 relative max-w-sm">

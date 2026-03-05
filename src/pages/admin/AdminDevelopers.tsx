@@ -5,6 +5,7 @@ import { logAudit } from "@/lib/auditLog";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -225,10 +226,13 @@ const AdminDevelopers: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="mb-6">
-        <h1 className="text-2xl font-medium text-foreground">{isAr ? "إدارة المطورين" : "Manage Developers"}</h1>
-        <p className="mt-1 text-sm font-light text-muted-foreground">{isAr ? "تفعيل وإدارة حسابات المطورين" : "Activate and manage developer accounts"}</p>
-      </div>
+      <AdminPageHeader
+        icon={HardHat}
+        titleAr="إدارة المطورين"
+        titleEn="Manage Developers"
+        descAr="تفعيل وإدارة حسابات المطورين"
+        descEn="Activate and manage developer accounts"
+      />
 
       <div className="mb-4 relative max-w-sm">
         <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
