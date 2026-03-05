@@ -77,7 +77,7 @@ const OpportunitiesSection: React.FC = () => {
 
   useEffect(() => {
     supabase
-      .from("lands")
+      .from("lands_public" as any)
       .select("id, city, district, land_area_sqm, usage_type, project_type, partnership_goal, created_at, image_url")
       .eq("is_active", true)
       .eq("is_featured", true)
