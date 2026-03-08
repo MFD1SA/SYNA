@@ -153,11 +153,11 @@ const AdminAuditLog: React.FC = () => {
           {/* Pagination */}
           <div className="flex items-center justify-center gap-2 pt-4">
             <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)}>
-              <ChevronRight className="h-4 w-4" />
+              {isAr ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
             <span className="text-sm font-light text-muted-foreground">{page + 1}</span>
             <Button variant="outline" size="sm" disabled={!hasMore} onClick={() => setPage(p => p + 1)}>
-              <ChevronLeft className="h-4 w-4" />
+              {isAr ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </Button>
           </div>
         </div>
