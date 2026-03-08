@@ -37,6 +37,7 @@ interface NotificationPayload {
   from_stage?: string;
   to_stage?: string;
   stage_notes?: string;
+  owner_user_id?: string;
 }
 
 const ADMIN_EMAIL = "mfdalsulis@gmail.com";
