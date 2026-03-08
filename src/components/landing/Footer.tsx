@@ -117,10 +117,6 @@ const Footer: React.FC = () => {
               ? `جميع الحقوق محفوظة لـ شركة سينا © ${new Date().getFullYear()}`
               : `© ${new Date().getFullYear()} SYNA. All rights reserved.`}
           </p>
-          <div className="flex items-center gap-1.5 text-xs font-light text-[hsl(210,15%,35%)]">
-            <div className="h-1.5 w-1.5 rounded-full bg-[hsl(145,60%,45%)] animate-pulse" />
-            {isAr ? "جميع الأنظمة تعمل بشكل طبيعي" : "All systems operational"}
-          </div>
         </div>
       </div>
     </footer>
