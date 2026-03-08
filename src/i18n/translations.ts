@@ -311,7 +311,7 @@ export const translations = {
       company: "SYNA Technology",
       rights: "All rights reserved",
       support: "Support Center",
-      desc: "SYNA — the destination for development partnerships that redefine land investment and transform it into productive assets",
+      desc: "SYNA — the destination for development partnerships and real estate contributions that redefine land investment and transform it into productive assets",
     },
     terms: { title: "Terms & Conditions" },
     privacy: { title: "Privacy Policy" },
