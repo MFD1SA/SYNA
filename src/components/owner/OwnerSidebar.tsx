@@ -19,6 +19,7 @@ interface NavItem {
 const OwnerSidebar: React.FC = () => {
   const { lang, toggleLang } = useLanguage();
   const { user, signOut } = useAuth();
+  const { isAdmin: isAdminUser } = useAdminRole();
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
