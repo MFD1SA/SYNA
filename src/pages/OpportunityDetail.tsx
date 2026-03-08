@@ -136,7 +136,7 @@ const OpportunityDetail: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[hsl(210,30%,4%)]">
       <Navbar />
       <main className="pt-20">
         {/* Cinematic Hero */}
