@@ -131,7 +131,7 @@ const AdminSettings: React.FC = () => {
         descEn="Manage your admin account settings"
       />
 
-      <div className="max-w-2xl space-y-6">
+      <div className="max-w-2xl space-y-6" dir={isAr ? "rtl" : "ltr"}>
         {/* Admin Badge */}
         <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
           <ShieldCheck className="h-5 w-5 text-primary" />
