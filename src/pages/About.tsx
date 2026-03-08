@@ -41,7 +41,7 @@ const AboutPage: React.FC = () => {
               {isAr ? "في ظل التغيرات التنظيمية ورسوم الأراضي البيضاء، أصبح كثير من ملاك الأراضي يبحثون عن حلول عملية لتحويل أصولهم إلى مشاريع منتجة دون الدخول في تعقيدات البيع أو تحمل تكاليف التطوير بمفردهم." : "With regulatory changes and white land fees, many landowners seek practical solutions to transform their assets into productive projects without the complexities of selling or bearing development costs alone."}
             </p>
             <p className="mt-3 text-base font-light leading-relaxed text-[hsl(210,15%,50%)]">
-              {isAr ? "من هنا جاءت فكرة سينا… لتكون وجهة الشراكات التطويرية التي تجمع بين مالك الأرض والمطور العقاري ضمن بيئة منظمة وواضحة من البداية." : "This is where SYNA comes in — the destination for development partnerships connecting landowners with developers in an organized and clear environment from the start."}
+              {isAr ? "من هنا جاءت فكرة سينا… لتكون وجهة الشراكات التطويرية والمساهمات العقارية المرخصة التي تجمع بين مالك الأرض والمطور العقاري ضمن بيئة منظمة وواضحة من البداية." : "This is where SYNA comes in — the destination for development partnerships and licensed real estate contributions connecting landowners with developers in an organized and clear environment from the start."}
             </p>
           </motion.div>
 
