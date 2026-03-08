@@ -163,7 +163,9 @@ const OpportunityDetail: React.FC = () => {
 
               <div className="flex items-center gap-2.5 mb-4">
                 <span className="rounded-full syna-gradient px-4 py-1.5 text-[11px] font-medium text-white shadow-[0_4px_20px_-4px_hsl(200,80%,50%,0.4)]">
-                  {isAr ? "فرصة تطويرية" : "Development Opportunity"}
+                  {land.partnership_goal === "real_estate_contribution"
+                    ? (isAr ? "مساهمة عقارية" : "Real Estate Contribution")
+                    : (isAr ? "فرصة تطويرية" : "Development Opportunity")}
                 </span>
                 <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-[11px] font-medium text-white/90 backdrop-blur-lg">
                   {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
@@ -229,9 +231,13 @@ const OpportunityDetail: React.FC = () => {
                   </p>
                   {land.vision_summary && <p>{land.vision_summary}</p>}
                   <p>
-                    {isAr
-                      ? "يهدف المالك إلى شراكة تطويرية مع مطور عقاري معتمد لتحقيق أقصى قيمة من الأرض، مع توفير كامل الدعم والمرونة في آلية الشراكة."
-                      : "The owner seeks a development partnership with a certified developer to maximize the land's value, offering full support and flexibility in the partnership structure."
+                    {land.partnership_goal === "real_estate_contribution"
+                      ? (isAr
+                        ? "يهدف المالك إلى المساهمة بأرضه ضمن نموذج مساهمة عقارية مرخصة مع مطور معتمد، حيث يتم التطوير والبيع مع حصول المالك على نسبة تخارج متفق عليها مسبقاً."
+                        : "The owner seeks to contribute their land through a licensed real estate contribution model with a certified developer, where the land is developed and sold with the owner receiving a pre-agreed exit percentage.")
+                      : (isAr
+                        ? "يهدف المالك إلى شراكة تطويرية مع مطور عقاري معتمد لتحقيق أقصى قيمة من الأرض، مع توفير كامل الدعم والمرونة في آلية الشراكة."
+                        : "The owner seeks a development partnership with a certified developer to maximize the land's value, offering full support and flexibility in the partnership structure.")
                     }
                   </p>
                 </div>

@@ -14,7 +14,7 @@ const AboutPage: React.FC = () => {
   usePageTitle(isAr ? "من نحن" : "About Us");
 
   const values = [
-    { icon: Handshake, label: isAr ? "شراكات حقيقية" : "Real Partnerships", desc: isAr ? "تحويل الأراضي البيضاء إلى مشاريع منتجة عبر شراكات تطوير واضحة" : "Transforming white lands into productive projects through clear partnerships" },
+    { icon: Handshake, label: isAr ? "شراكات حقيقية" : "Real Partnerships", desc: isAr ? "تحويل الأراضي البيضاء إلى مشاريع منتجة عبر شراكات تطوير أو مساهمات عقارية مرخصة" : "Transforming white lands into productive projects through development partnerships or licensed real estate contributions" },
     { icon: Target, label: isAr ? "شفافية كاملة" : "Full Transparency", desc: isAr ? "مراحل مُتابعة دقيقة ومنظمة من الطلب حتى الإغلاق" : "Precise and organized tracking stages from request to closure" },
     { icon: Users, label: isAr ? "ربط ذكي" : "Smart Matching", desc: isAr ? "جمع ملاك الأراضي بالمطورين العقاريين المؤهلين والموثقين" : "Connecting landowners with qualified and verified real estate developers" },
   ];
@@ -31,7 +31,7 @@ const AboutPage: React.FC = () => {
       <PageHeader
         icon={Info}
         title={isAr ? "عن سينا" : "About SYNA"}
-        description={isAr ? "تعرّف على رؤية سينا ودورها في تنظيم شراكات التطوير العقاري بين ملاك الأراضي والمطورين" : "Learn about SYNA's vision and its role in organizing real estate development partnerships between landowners and developers"}
+        description={isAr ? "تعرّف على رؤية سينا ودورها في تنظيم شراكات التطوير العقاري والمساهمات العقارية بين ملاك الأراضي والمطورين" : "Learn about SYNA's vision and its role in organizing real estate development partnerships and contributions between landowners and developers"}
         backgroundImage={headerAboutImg}
       />
       <main className="py-12 md:py-16">
@@ -41,7 +41,7 @@ const AboutPage: React.FC = () => {
               {isAr ? "في ظل التغيرات التنظيمية ورسوم الأراضي البيضاء، أصبح كثير من ملاك الأراضي يبحثون عن حلول عملية لتحويل أصولهم إلى مشاريع منتجة دون الدخول في تعقيدات البيع أو تحمل تكاليف التطوير بمفردهم." : "With regulatory changes and white land fees, many landowners seek practical solutions to transform their assets into productive projects without the complexities of selling or bearing development costs alone."}
             </p>
             <p className="mt-3 text-base font-light leading-relaxed text-[hsl(210,15%,50%)]">
-              {isAr ? "من هنا جاءت فكرة سينا… لتكون وجهة الشراكات التطويرية التي تجمع بين مالك الأرض والمطور العقاري ضمن بيئة منظمة وواضحة من البداية." : "This is where SYNA comes in — the destination for development partnerships connecting landowners with developers in an organized and clear environment from the start."}
+              {isAr ? "من هنا جاءت فكرة سينا… لتكون وجهة الشراكات التطويرية والمساهمات العقارية المرخصة التي تجمع بين مالك الأرض والمطور العقاري ضمن بيئة منظمة وواضحة من البداية." : "This is where SYNA comes in — the destination for development partnerships and licensed real estate contributions connecting landowners with developers in an organized and clear environment from the start."}
             </p>
           </motion.div>
 
@@ -77,7 +77,7 @@ const AboutPage: React.FC = () => {
             className="mx-auto mt-10 max-w-2xl rounded-2xl border border-[hsl(200,80%,45%,0.15)] bg-[hsl(200,80%,45%,0.04)] p-6 text-center">
             <h2 className="mb-2 text-lg font-medium text-white">{isAr ? "رؤيتنا" : "Our Vision"}</h2>
             <p className="text-sm font-light leading-relaxed text-[hsl(210,15%,50%)]">
-              {isAr ? "نؤمن بأن الأرض ليست مجرد مساحة خام، بل فرصة لبناء قيمة مستدامة. من خلال سينا نسعى إلى تحويل الأفكار إلى شراكات حقيقية، وتحويل الأراضي إلى مشاريع منتجة تسهم في نمو المدن وتحفيز الاقتصاد العقاري بطريقة متوازنة واحترافية." : "We believe land is not just raw space — it's an opportunity to build sustainable value. Through SYNA, we aim to transform ideas into real partnerships and lands into productive projects that contribute to urban growth and stimulate the real estate economy in a balanced and professional manner."}
+              {isAr ? "نؤمن بأن الأرض ليست مجرد مساحة خام، بل فرصة لبناء قيمة مستدامة. من خلال سينا نسعى إلى تحويل الأفكار إلى شراكات تطويرية ومساهمات عقارية حقيقية، وتحويل الأراضي إلى مشاريع منتجة تسهم في نمو المدن وتحفيز الاقتصاد العقاري بطريقة متوازنة واحترافية." : "We believe land is not just raw space — it's an opportunity to build sustainable value. Through SYNA, we aim to transform ideas into real development partnerships and real estate contributions, and lands into productive projects that contribute to urban growth and stimulate the real estate economy in a balanced and professional manner."}
             </p>
           </motion.div>
         </div>

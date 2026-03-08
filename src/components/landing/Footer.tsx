@@ -97,8 +97,8 @@ const Footer: React.FC = () => {
             </h4>
             <p className="mb-5 text-sm font-light leading-relaxed text-[hsl(210,15%,45%)]">
               {isAr
-                ? "انضم إلى منظومة الشراكات التطويرية وحوّل أرضك إلى مشروع منتج"
-                : "Join the development partnerships ecosystem and turn your land into a productive project"}
+                ? "انضم إلى منظومة الشراكات التطويرية والمساهمات العقارية وحوّل أرضك إلى مشروع منتج"
+                : "Join the development partnerships & contributions ecosystem and turn your land into a productive project"}
             </p>
             <Link
               to="/auth/login"
