@@ -150,7 +150,6 @@ const App: React.FC = () => (
               <Route path="/admincp/audit" element={<AdminRoute><AdminAuditLog /></AdminRoute>} />
               <Route path="/admincp/content" element={<AdminRoute><AdminContent /></AdminRoute>} />
               <Route path="/admincp/team" element={<AdminRoute><AdminTeam /></AdminRoute>} />
-              <Route path="/admincp/team" element={<AdminRoute><AdminTeam /></AdminRoute>} />
               <Route path="/admincp/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
 
               {/* Owner */}
