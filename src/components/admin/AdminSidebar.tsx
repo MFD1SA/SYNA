@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard, Landmark, HardHat, Handshake,
   Bot, Globe, LogOut, ChevronLeft, ChevronRight, ShieldCheck,
-  MapPin, History, Users, Settings, FileText,
+  MapPin, History, Users, Settings, FileText, ExternalLink,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 
