@@ -109,7 +109,8 @@ const CrmBrowseLands: React.FC = () => {
       proposed_project_type: requestForm.proposed_project_type,
       commission_accepted: true,
       commission_rate: 2.5,
-    });
+      proposal_link: requestForm.google_drive_link || null,
+    } as any);
     if (error) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
     } else {
