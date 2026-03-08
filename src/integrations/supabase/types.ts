@@ -266,6 +266,7 @@ export type Database = {
           land_id: string
           needs_financing: boolean | null
           owner_response_notes: string | null
+          proposal_link: string | null
           proposal_summary: string
           proposed_project_type: string
           status: Database["public"]["Enums"]["request_status"]
@@ -282,6 +283,7 @@ export type Database = {
           land_id: string
           needs_financing?: boolean | null
           owner_response_notes?: string | null
+          proposal_link?: string | null
           proposal_summary: string
           proposed_project_type: string
           status?: Database["public"]["Enums"]["request_status"]
@@ -298,6 +300,7 @@ export type Database = {
           land_id?: string
           needs_financing?: boolean | null
           owner_response_notes?: string | null
+          proposal_link?: string | null
           proposal_summary?: string
           proposed_project_type?: string
           status?: Database["public"]["Enums"]["request_status"]
