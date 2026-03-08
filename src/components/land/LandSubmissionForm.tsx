@@ -340,19 +340,17 @@ const LandSubmissionForm: React.FC<Props> = ({ initialData, ownerProfiles, isAdm
             </div>
 
             {/* Partnership Goal */}
+            {form.project_model !== "real_estate_contribution" && (
             <div>
               <Label className="text-xs">{isAr ? "هدف الشراكة" : "Partnership Goal"}</Label>
               <Select value={form.partnership_goal} onValueChange={v => update("partnership_goal", v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>{Object.entries(goalLabels)
-                  .filter(([k]) => {
-                    if (form.project_model === "development_partnership") return k !== "real_estate_contribution";
-                    if (form.project_model === "real_estate_contribution") return k === "real_estate_contribution";
-                    return true;
-                  })
+                  .filter(([k]) => k !== "real_estate_contribution")
                   .map(([k, v]) => <SelectItem key={k} value={k}>{isAr ? v.ar : v.en}</SelectItem>)}</SelectContent>
               </Select>
             </div>
+            )}
 
             {/* Development Subtype */}
             {subtypeOptions.length > 0 && (
