@@ -226,6 +226,7 @@ const AdminDevelopers: React.FC = () => {
 
   return (
     <AdminLayout>
+      <div dir={isAr ? "rtl" : "ltr"}>
       <AdminPageHeader
         icon={HardHat}
         titleAr="إدارة المطورين"
