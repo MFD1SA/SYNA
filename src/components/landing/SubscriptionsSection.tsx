@@ -1,6 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { UserCheck, Search, Send, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
 
 const HowItWorksSection: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -14,36 +15,63 @@ const HowItWorksSection: React.FC = () => {
   ];
 
   return (
-    <section id="how-it-works" className="relative py-4 md:py-6">
+    <section id="how-it-works" className="relative bg-[hsl(210,28%,6%)] py-24 md:py-32">
+      {/* Background */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.1)] to-transparent" />
+        <div className="absolute bottom-1/3 start-[5%] h-[350px] w-[350px] rounded-full bg-[hsl(200,80%,40%,0.03)] blur-[120px]" />
+      </div>
+
       <div className="container relative">
-        <div className="mx-auto mb-8 max-w-xl text-center">
-          <h2 className="mb-1.5 text-3xl font-medium text-foreground md:text-4xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="mx-auto mb-16 max-w-2xl text-center"
+        >
+          <span className="mb-4 inline-block rounded-full border border-[hsl(200,80%,45%,0.2)] bg-[hsl(200,80%,45%,0.06)] px-4 py-1.5 text-xs font-light text-[hsl(200,80%,60%)]">
+            {isAr ? "كيف تعمل المنصة" : "How It Works"}
+          </span>
+          <h2 className="mb-4 text-3xl font-medium text-white md:text-4xl lg:text-5xl">
             {t.howItWorks.title}
           </h2>
-          <p className="text-base font-light text-muted-foreground">
+          <p className="text-base font-light text-[hsl(210,15%,50%)] md:text-lg">
             {t.howItWorks.subtitle}
           </p>
-        </div>
+        </motion.div>
 
         <div className="mx-auto max-w-4xl">
-          <div className="grid gap-4 md:grid-cols-2">
-            {steps.map(({ num, icon: Icon, titleKey, descKey }) => (
-              <div key={num} className="group relative flex gap-4 doma-card p-5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-medium text-primary border border-primary/20 transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+          <div className="grid gap-5 md:grid-cols-2">
+            {steps.map(({ num, icon: Icon, titleKey, descKey }, i) => (
+              <motion.div
+                key={num}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="group relative flex gap-5 overflow-hidden rounded-2xl border border-[hsl(210,22%,12%)] bg-gradient-to-br from-[hsl(210,28%,8%)] to-[hsl(210,28%,6%)] p-6 transition-all duration-500 hover:border-[hsl(200,80%,45%,0.25)] hover:shadow-[0_12px_40px_-10px_hsl(200,80%,50%,0.08)]"
+              >
+                {/* Number watermark */}
+                <div className="pointer-events-none absolute -end-4 -bottom-4 text-7xl font-bold text-[hsl(200,80%,45%,0.03)] transition-all duration-500 group-hover:text-[hsl(200,80%,45%,0.06)]">
                   {num}
                 </div>
-                <div>
-                  <div className="mb-1 flex items-center gap-2">
-                    <Icon className="h-4 w-4 text-primary" strokeWidth={1.5} />
-                    <h3 className="text-base font-medium text-foreground">
+
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[hsl(200,80%,45%,0.15)] bg-[hsl(200,80%,45%,0.06)] text-sm font-medium text-[hsl(200,80%,60%)] transition-all duration-400 group-hover:border-[hsl(200,80%,45%,0.3)] group-hover:bg-[hsl(200,80%,45%,0.1)] group-hover:shadow-[0_0_20px_-5px_hsl(200,80%,50%,0.2)]">
+                  {num}
+                </div>
+                <div className="relative">
+                  <div className="mb-2 flex items-center gap-2">
+                    <Icon className="h-4 w-4 text-[hsl(200,80%,55%)]" strokeWidth={1.5} />
+                    <h3 className="text-base font-medium text-white">
                       {t.howItWorks[titleKey]}
                     </h3>
                   </div>
-                  <p className="text-sm font-light leading-relaxed text-muted-foreground">
+                  <p className="text-sm font-light leading-relaxed text-[hsl(210,15%,50%)]">
                     {t.howItWorks[descKey]}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

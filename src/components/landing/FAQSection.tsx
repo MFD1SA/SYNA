@@ -1,7 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { HelpCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   Accordion,
   AccordionContent,
@@ -11,16 +11,16 @@ import {
 
 const topFaq = [
   {
-    qAr: "ما هي دوما؟",
-    qEn: "What is DOMA?",
-    aAr: "دوما بيئة رقمية تجمع ملاك الأراضي بالمطورين العقاريين بهدف خلق فرص تطوير منظمة تقوم على وضوح البيانات وترتيب مراحل الشراكة.",
-    aEn: "DOMA is a digital environment that connects landowners with real estate developers to create organized development opportunities based on data clarity and structured partnership stages.",
+    qAr: "ما هي سينا؟",
+    qEn: "What is SYNA?",
+    aAr: "سينا بيئة رقمية تجمع ملاك الأراضي بالمطورين العقاريين بهدف خلق فرص تطوير منظمة تقوم على وضوح البيانات وترتيب مراحل الشراكة.",
+    aEn: "SYNA is a digital environment that connects landowners with real estate developers to create organized development opportunities based on data clarity and structured partnership stages.",
   },
   {
-    qAr: "هل تعتبر دوما وسيط بيع تقليدي؟",
-    qEn: "Is DOMA a traditional sales broker?",
-    aAr: "لا، دور دوما يتجاوز الوساطة المعتادة، إذ تركز على بناء نماذج تطوير وشراكات طويلة المدى بدلاً من مجرد عرض عقار للبيع.",
-    aEn: "No, DOMA's role goes beyond traditional brokerage. It focuses on building development models and long-term partnerships rather than simply listing properties for sale.",
+    qAr: "هل تعتبر سينا وسيط بيع تقليدي؟",
+    qEn: "Is SYNA a traditional sales broker?",
+    aAr: "لا، دور سينا يتجاوز الوساطة المعتادة، إذ تركز على بناء نماذج تطوير وشراكات طويلة المدى بدلاً من مجرد عرض عقار للبيع.",
+    aEn: "No, SYNA's role goes beyond traditional brokerage. It focuses on building development models and long-term partnerships rather than simply listing properties for sale.",
   },
   {
     qAr: "ما فائدة الشراكة التطويرية لمالك الأرض؟",
@@ -31,8 +31,8 @@ const topFaq = [
   {
     qAr: "هل توجد عمولة على العمليات؟",
     qEn: "Is there a commission on transactions?",
-    aAr: "تعتمد دوما نموذج عمولة مرتبط بعمليات البيع، ويتم توضيح النسبة داخل النظام عند إتمام الاتفاق.",
-    aEn: "DOMA uses a commission model linked to sales transactions. The rate is clearly displayed within the system upon agreement completion.",
+    aAr: "تعتمد سينا نموذج عمولة مرتبط بعمليات البيع، ويتم توضيح النسبة داخل النظام عند إتمام الاتفاق.",
+    aEn: "SYNA uses a commission model linked to sales transactions. The rate is clearly displayed within the system upon agreement completion.",
   },
 ];
 
@@ -41,33 +41,58 @@ const FAQSection: React.FC = () => {
   const isAr = lang === "ar";
 
   return (
-    <section className="py-4 md:py-6">
+    <section className="relative bg-[hsl(210,28%,6%)] py-24 md:py-28">
+      <div className="pointer-events-none absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.1)] to-transparent" />
+
       <div className="container">
-        <div className="mx-auto mb-6 max-w-xl text-center">
-          <h2 className="mb-1.5 text-3xl font-medium text-foreground md:text-4xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="mx-auto mb-12 max-w-xl text-center"
+        >
+          <span className="mb-4 inline-block rounded-full border border-[hsl(200,80%,45%,0.2)] bg-[hsl(200,80%,45%,0.06)] px-4 py-1.5 text-xs font-light text-[hsl(200,80%,60%)]">
+            {isAr ? "أسئلة شائعة" : "FAQ"}
+          </span>
+          <h2 className="text-3xl font-medium text-white md:text-4xl">
             {isAr ? "الأسئلة الشائعة" : "Frequently Asked Questions"}
           </h2>
-        </div>
+        </motion.div>
 
         <div className="mx-auto max-w-2xl">
-          <Accordion type="single" collapsible className="space-y-2">
+          <Accordion type="single" collapsible className="space-y-3">
             {topFaq.map((item, idx) => (
-              <AccordionItem key={idx} value={`faq-${idx}`} className="rounded-xl border border-border/60 bg-card px-4">
-                <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline">
-                  {isAr ? item.qAr : item.qEn}
-                </AccordionTrigger>
-                <AccordionContent className="text-sm font-light leading-relaxed text-muted-foreground">
-                  {isAr ? item.aAr : item.aEn}
-                </AccordionContent>
-              </AccordionItem>
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.08 }}
+              >
+                <AccordionItem value={`faq-${idx}`} className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] px-5 transition-colors hover:border-[hsl(200,80%,45%,0.15)]">
+                  <AccordionTrigger className="text-sm font-medium text-white hover:no-underline py-5">
+                    {isAr ? item.qAr : item.qEn}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm font-light leading-relaxed text-[hsl(210,15%,50%)] pb-5">
+                    {isAr ? item.aAr : item.aEn}
+                  </AccordionContent>
+                </AccordionItem>
+              </motion.div>
             ))}
           </Accordion>
 
-          <div className="mt-6 text-center">
-            <Link to="/faq" className="text-sm font-light text-primary hover:underline">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="mt-8 text-center"
+          >
+            <Link to="/faq" className="inline-flex items-center gap-1.5 text-sm font-light text-[hsl(200,80%,55%)] transition-colors hover:text-[hsl(200,80%,70%)]">
               {isAr ? "عرض جميع الأسئلة الشائعة ←" : "View all FAQ →"}
             </Link>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

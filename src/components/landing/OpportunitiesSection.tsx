@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { MapPin, Ruler, ArrowLeft, ArrowRight } from "lucide-react";
+import { MapPin, Ruler } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import landPlaceholder1 from "@/assets/land-placeholder-1.jpg";
 import landPlaceholder2 from "@/assets/land-placeholder-2.jpg";
 import landPlaceholder3 from "@/assets/land-placeholder-3.jpg";
@@ -23,30 +24,7 @@ const usageLabels: Record<string, { ar: string; en: string }> = {
   residential: { ar: "سكني", en: "Residential" },
   commercial: { ar: "تجاري", en: "Commercial" },
   residential_commercial: { ar: "سكني تجاري", en: "Mixed Use" },
-  high_density: { ar: "أبراج (سكني / تجاري / مكتبي)", en: "Towers (Residential / Commercial / Office)" },
-};
-
-const districtNameAr: Record<string, string> = {
-  "Al Malqa": "الملقا",
-  "Al Shati": "الشاطئ",
-  "Al Faisaliyah": "الفيصلية",
-  "Al Awali": "العوالي",
-  "Al Uyun": "العيون",
-  "Al Hada": "الهدا",
-  "Al Corniche": "الكورنيش",
-  "Al Muruj": "المروج",
-  "Al Sadd": "السد",
-  "Al Rawdah": "الروضة",
-  "Al Olaya": "العليا",
-  "Al Wurud": "الورود",
-  "Al Nakheel": "النخيل",
-  "Al Hamra": "الحمراء",
-  "Al Sulaimaniyah": "السليمانية",
-  "Al Rabwah": "الربوة",
-  "Al Zahra": "الزهراء",
-  "Al Aziziyah": "العزيزية",
-  "Al Khalidiyah": "الخالدية",
-  "Al Naseem": "النسيم",
+  high_density: { ar: "أبراج", en: "Towers" },
 };
 
 const goalLabels: Record<string, { ar: string; en: string }> = {
@@ -56,14 +34,18 @@ const goalLabels: Record<string, { ar: string; en: string }> = {
   develop_complex: { ar: "مجمع متكامل", en: "Integrated Complex" },
   sell_develop: { ar: "بيع وتطوير", en: "Sell & Develop" },
   partial_exit: { ar: "تخارج جزئي", en: "Partial Exit" },
-  offplan_sell: { ar: "تطوير وبيع على الخارطة", en: "Off-Plan Sell" },
+  offplan_sell: { ar: "بيع على الخارطة", en: "Off-Plan" },
 };
 
 const cityNameAr: Record<string, string> = {
   Riyadh: "الرياض", Jeddah: "جدة", Makkah: "مكة المكرمة", Madinah: "المدينة المنورة",
-  Dammam: "الدمام", Khobar: "الخبر", Dhahran: "الظهران", Taif: "الطائف", Tabuk: "تبوك",
-  Buraidah: "بريدة", "Khamis Mushait": "خميس مشيط", Abha: "أبها", Hail: "حائل",
-  Najran: "نجران", Jazan: "جازان", Yanbu: "ينبع", Jubail: "الجبيل", "Al Ahsa": "الأحساء",
+  Dammam: "الدمام", Khobar: "الخبر", Taif: "الطائف", Tabuk: "تبوك",
+  Buraidah: "بريدة", Abha: "أبها",
+};
+
+const districtNameAr: Record<string, string> = {
+  "Al Malqa": "الملقا", "Al Shati": "الشاطئ", "Al Olaya": "العليا",
+  "Al Wurud": "الورود", "Al Nakheel": "النخيل",
 };
 
 const placeholders = [landPlaceholder1, landPlaceholder2, landPlaceholder3];
@@ -86,116 +68,98 @@ const OpportunitiesSection: React.FC = () => {
       .then(({ data }: { data: any }) => setLands((data as FeaturedLand[]) || []));
   }, []);
 
-  // Auto-scroll
   useEffect(() => {
     if (!scrollRef.current || lands.length === 0) return;
     const el = scrollRef.current;
     let animId: number;
     let pos = 0;
     const speed = 0.4;
-
     const animate = () => {
       pos += speed;
       if (pos >= el.scrollWidth / 2) pos = 0;
       el.scrollLeft = isAr ? -pos : pos;
       animId = requestAnimationFrame(animate);
     };
-
     animId = requestAnimationFrame(animate);
     const pause = () => cancelAnimationFrame(animId);
     const resume = () => { animId = requestAnimationFrame(animate); };
     el.addEventListener("mouseenter", pause);
     el.addEventListener("mouseleave", resume);
-
-    return () => {
-      cancelAnimationFrame(animId);
-      el.removeEventListener("mouseenter", pause);
-      el.removeEventListener("mouseleave", resume);
-    };
+    return () => { cancelAnimationFrame(animId); el.removeEventListener("mouseenter", pause); el.removeEventListener("mouseleave", resume); };
   }, [lands, isAr]);
 
   if (lands.length === 0) return null;
-
   const items = [...lands, ...lands];
 
   return (
-    <section className="py-6 md:py-8 overflow-hidden bg-muted/30">
-      <div className="container mb-10">
-        <h2 className="text-2xl md:text-3xl font-medium text-foreground text-center">
-          {isAr ? "فرص التطوير المتاحة" : "Available Development Opportunities"}
-        </h2>
-        <p className="mt-2 text-sm font-light text-muted-foreground text-center max-w-xl mx-auto">
-          {isAr ? "أراضي مختارة جاهزة للشراكات التطويرية عبر مدن المملكة" : "Selected lands ready for development partnerships across Saudi cities"}
-        </p>
+    <section className="relative bg-[hsl(210,30%,5%)] py-24 md:py-28 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.12)] to-transparent" />
+        <div className="absolute top-1/2 end-[5%] h-[400px] w-[400px] rounded-full bg-[hsl(200,80%,40%,0.03)] blur-[120px]" />
       </div>
 
-      <div ref={scrollRef} className="flex gap-6 overflow-hidden px-4" style={{ scrollBehavior: "auto" }}>
+      <div className="container relative mb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="text-center"
+        >
+          <span className="mb-4 inline-block rounded-full border border-[hsl(200,80%,45%,0.2)] bg-[hsl(200,80%,45%,0.06)] px-4 py-1.5 text-xs font-light text-[hsl(200,80%,60%)]">
+            {isAr ? "فرص حصرية" : "Exclusive Opportunities"}
+          </span>
+          <h2 className="mb-3 text-3xl font-medium text-white md:text-4xl lg:text-5xl">
+            {isAr ? "فرص التطوير المتاحة" : "Available Development Opportunities"}
+          </h2>
+          <p className="mx-auto max-w-xl text-base font-light text-[hsl(210,15%,50%)]">
+            {isAr ? "أراضي مختارة جاهزة للشراكات التطويرية عبر مدن المملكة" : "Selected lands ready for development partnerships across Saudi cities"}
+          </p>
+        </motion.div>
+      </div>
+
+      <div ref={scrollRef} className="flex gap-5 overflow-hidden px-4" style={{ scrollBehavior: "auto" }}>
         {items.map((land, i) => {
           const imgSrc = land.image_url || placeholders[i % placeholders.length];
-
           return (
             <div
               key={`${land.id}-${i}`}
-              className="min-w-[320px] max-w-[320px] shrink-0 rounded-2xl border border-border/60 bg-card overflow-hidden transition-all hover:shadow-xl hover:border-primary/30 group"
+              className="group min-w-[340px] max-w-[340px] shrink-0 overflow-hidden rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] transition-all duration-500 hover:border-[hsl(200,80%,45%,0.25)] hover:shadow-[0_16px_50px_-12px_hsl(200,80%,50%,0.12)]"
             >
-              {/* Image */}
-              <div className="relative h-44 overflow-hidden">
-                <img
-                  src={imgSrc}
-                  alt={`${isAr ? cityNameAr[land.city] || land.city : land.city} land`}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                
-                {/* Badge */}
+              <div className="relative h-48 overflow-hidden">
+                <img src={imgSrc} alt={isAr ? cityNameAr[land.city] || land.city : land.city} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,28%,7%)] via-black/30 to-transparent" />
                 <div className="absolute top-3 start-3">
-                  <span className="rounded-full bg-primary px-3 py-1 text-[11px] font-medium text-primary-foreground">
+                  <span className="rounded-full syna-gradient px-3 py-1 text-[11px] font-medium text-white shadow-lg">
                     {isAr ? (goalLabels[land.partnership_goal]?.ar || "للشراكة") : (goalLabels[land.partnership_goal]?.en || "Partnership")}
                   </span>
                 </div>
-                
-                {/* Usage badge */}
                 <div className="absolute top-3 end-3">
-                  <span className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-medium text-foreground backdrop-blur-sm">
+                  <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-md">
                     {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
                   </span>
                 </div>
-
-                {/* City name overlay */}
-                <div className="absolute bottom-3 start-4">
-                  <h3 className="text-lg font-medium text-white">
-                    {isAr ? (cityNameAr[land.city] || land.city) : land.city}
-                  </h3>
+                <div className="absolute bottom-4 start-4">
+                  <h3 className="text-lg font-medium text-white">{isAr ? (cityNameAr[land.city] || land.city) : land.city}</h3>
                   {land.district && (
-                    <p className="text-xs text-white/80">
-                      {isAr ? `حي ${districtNameAr[land.district] || land.district}` : land.district}
-                    </p>
+                    <p className="text-xs text-white/70">{isAr ? `حي ${districtNameAr[land.district] || land.district}` : land.district}</p>
                   )}
                 </div>
               </div>
-
-              {/* Card body */}
-              <div className="p-4">
-                <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
+              <div className="p-5">
+                <div className="mb-4 flex items-center justify-between text-xs text-[hsl(210,15%,50%)]">
                   <div className="flex items-center gap-1.5">
-                    <MapPin className="h-3.5 w-3.5 text-primary" />
-                    <span>{isAr ? "المدينة:" : "City:"} {isAr ? (cityNameAr[land.city] || land.city) : land.city}</span>
+                    <MapPin className="h-3.5 w-3.5 text-[hsl(200,80%,55%)]" />
+                    <span>{isAr ? (cityNameAr[land.city] || land.city) : land.city}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Ruler className="h-3.5 w-3.5 text-primary" />
+                    <Ruler className="h-3.5 w-3.5 text-[hsl(200,80%,55%)]" />
                     <span>{land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}</span>
                   </div>
                 </div>
-
-                {land.project_type && (
-                  <p className="text-xs text-muted-foreground mb-3 line-clamp-1">
-                    {isAr ? "نوع المشروع:" : "Project:"} {land.project_type}
-                  </p>
-                )}
-
                 <button
                   onClick={() => navigate(`/opportunity/${land.id}`)}
-                  className="w-full rounded-xl bg-primary py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                  className="w-full rounded-xl border border-[hsl(200,80%,45%,0.2)] bg-[hsl(200,80%,45%,0.06)] py-2.5 text-sm font-medium text-[hsl(200,80%,60%)] transition-all duration-300 hover:bg-[hsl(200,80%,45%,0.12)] hover:border-[hsl(200,80%,45%,0.35)] hover:text-white"
                 >
                   {isAr ? "التفاصيل" : "Details"}
                 </button>
