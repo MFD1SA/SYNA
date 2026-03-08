@@ -21,10 +21,10 @@ type Msg = { role: "user" | "assistant"; content: string };
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-ai`;
 
 const AI_MODELS = [
-  { value: "google/gemini-2.5-pro", label: "Gemini Pro", desc: "أقوى وأدق", icon: "🧠" },
-  { value: "google/gemini-2.5-flash", label: "Gemini Flash", desc: "سريع ومتوازن", icon: "⚡" },
-  { value: "openai/gpt-5", label: "GPT-5", desc: "تحليل عميق", icon: "🤖" },
-  { value: "openai/gpt-5-mini", label: "GPT-5 Mini", desc: "سريع وذكي", icon: "💡" },
+  { value: "google/gemini-2.5-pro", label: isAr => isAr ? "النموذج المتقدم" : "Advanced Model", desc: isAr => isAr ? "أقوى وأدق" : "Most powerful", icon: "🧠" },
+  { value: "google/gemini-2.5-flash", label: isAr => isAr ? "النموذج السريع" : "Fast Model", desc: isAr => isAr ? "سريع ومتوازن" : "Fast & balanced", icon: "⚡" },
+  { value: "openai/gpt-5", label: isAr => isAr ? "التحليل العميق" : "Deep Analysis", desc: isAr => isAr ? "تحليل معمق" : "Deep analysis", icon: "🤖" },
+  { value: "openai/gpt-5-mini", label: isAr => isAr ? "النموذج الخفيف" : "Light Model", desc: isAr => isAr ? "سريع وذكي" : "Fast & smart", icon: "💡" },
 ];
 
 const AdminAI: React.FC = () => {
@@ -156,7 +156,7 @@ const AdminAI: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="flex h-[calc(100vh-8rem)] flex-col">
+      <div className="flex h-[calc(100vh-8rem)] flex-col" dir={isAr ? "rtl" : "ltr"}>
         {/* Header */}
         <div className="mb-4 flex items-start justify-between">
           <div>
@@ -166,8 +166,8 @@ const AdminAI: React.FC = () => {
             </h1>
             <p className="mt-1 text-sm font-light text-muted-foreground">
               {isAr
-                ? "مدعوم بـ GPT-5 و Gemini Pro — مستشارك الذكي للتطوير العقاري"
-                : "Powered by GPT-5 & Gemini Pro — Your smart real estate advisor"}
+                ? "مستشارك الذكي للتطوير العقاري — تحليل ومعالجة متقدمة"
+                : "Your smart real estate advisor — advanced analysis & processing"}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -177,7 +177,7 @@ const AdminAI: React.FC = () => {
                 <SelectValue>
                   <span className="flex items-center gap-1.5">
                     <span>{currentModel?.icon}</span>
-                    <span>{currentModel?.label}</span>
+                    <span>{currentModel?.label(isAr)}</span>
                   </span>
                 </SelectValue>
               </SelectTrigger>
@@ -186,8 +186,8 @@ const AdminAI: React.FC = () => {
                   <SelectItem key={m.value} value={m.value}>
                     <span className="flex items-center gap-2">
                       <span>{m.icon}</span>
-                      <span className="font-medium">{m.label}</span>
-                      <span className="text-muted-foreground text-[10px]">— {m.desc}</span>
+                      <span className="font-medium">{m.label(isAr)}</span>
+                      <span className="text-muted-foreground text-[10px]">— {m.desc(isAr)}</span>
                     </span>
                   </SelectItem>
                 ))}

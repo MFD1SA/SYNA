@@ -226,6 +226,7 @@ const AdminDevelopers: React.FC = () => {
 
   return (
     <AdminLayout>
+      <div dir={isAr ? "rtl" : "ltr"}>
       <AdminPageHeader
         icon={HardHat}
         titleAr="إدارة المطورين"
@@ -245,7 +246,7 @@ const AdminDevelopers: React.FC = () => {
           { label: isAr ? "موثق" : "Verified", value: devs.filter(d => d.verification_status === "verified").length },
           { label: isAr ? "قيد المراجعة" : "Pending", value: devs.filter(d => d.verification_status === "pending_review").length },
         ].map(s => (
-          <div key={s.label} className="doma-card p-3 text-center">
+          <div key={s.label} className="rounded-xl border border-border/60 bg-card p-3 text-center">
             <p className="text-2xl font-medium text-foreground">{s.value}</p>
             <p className="text-xs text-muted-foreground">{s.label}</p>
           </div>
@@ -259,7 +260,7 @@ const AdminDevelopers: React.FC = () => {
           {filtered.map(dev => {
             const sc = statusConfig[dev.verification_status];
             return (
-              <div key={dev.id} className="doma-card flex items-center justify-between p-4">
+              <div key={dev.id} className="rounded-xl border border-border/60 bg-card flex items-center justify-between p-4 hover:border-primary/20 transition-all">
                 <div className="flex items-center gap-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
                     <HardHat className="h-5 w-5 text-accent-foreground" />
@@ -453,6 +454,7 @@ const AdminDevelopers: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </AdminLayout>
   );
 };

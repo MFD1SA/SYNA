@@ -75,6 +75,7 @@ const AdminAuditLog: React.FC = () => {
 
   return (
     <AdminLayout>
+      <div dir={isAr ? "rtl" : "ltr"}>
       <AdminPageHeader
         icon={History}
         titleAr="سجل العمليات"
@@ -125,7 +126,7 @@ const AdminAuditLog: React.FC = () => {
       ) : (
         <div className="space-y-2">
           {logs.map(log => (
-            <div key={log.id} className="doma-card flex items-center justify-between p-4">
+            <div key={log.id} className="rounded-xl border border-border/60 bg-card flex items-center justify-between p-4 hover:border-primary/20 transition-all">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <Badge variant="outline" className={`text-[10px] shrink-0 ${actionColors[log.action] || "bg-muted text-muted-foreground"}`}>
                   {actionLabels[log.action]?.[isAr ? "ar" : "en"] || log.action}
@@ -152,15 +153,16 @@ const AdminAuditLog: React.FC = () => {
           {/* Pagination */}
           <div className="flex items-center justify-center gap-2 pt-4">
             <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)}>
-              <ChevronRight className="h-4 w-4" />
+              {isAr ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
             <span className="text-sm font-light text-muted-foreground">{page + 1}</span>
             <Button variant="outline" size="sm" disabled={!hasMore} onClick={() => setPage(p => p + 1)}>
-              <ChevronLeft className="h-4 w-4" />
+              {isAr ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </Button>
           </div>
         </div>
       )}
+      </div>
     </AdminLayout>
   );
 };

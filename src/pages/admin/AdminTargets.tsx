@@ -195,8 +195,8 @@ const AdminTargets: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div>
+      <div dir={isAr ? "rtl" : "ltr"}>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-2xl font-medium text-foreground">
             {isAr ? "إدارة الشركات" : "Company Management"}
           </h1>
@@ -206,7 +206,7 @@ const AdminTargets: React.FC = () => {
         </div>
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
           <DialogTrigger asChild>
-            <Button className="doma-gradient gap-2"><Plus className="h-4 w-4" />{isAr ? "إضافة شركة" : "Add Company"}</Button>
+            <Button className="syna-gradient gap-2"><Plus className="h-4 w-4" />{isAr ? "إضافة شركة" : "Add Company"}</Button>
           </DialogTrigger>
           <DialogContent dir={isAr ? "rtl" : "ltr"}>
             <DialogHeader>
@@ -244,7 +244,7 @@ const AdminTargets: React.FC = () => {
                 <Label className="text-sm">{isAr ? "رقم الاتصال" : "Phone Number"}</Label>
                 <Input dir="ltr" placeholder="05XXXXXXXX" value={form.contact_phone} onChange={e => setForm(f => ({ ...f, contact_phone: e.target.value }))} />
               </div>
-              <Button onClick={handleAdd} className="w-full doma-gradient" disabled={!form.company_name.trim()}>
+              <Button onClick={handleAdd} className="w-full syna-gradient" disabled={!form.company_name.trim()}>
                 {isAr ? "إضافة" : "Add"}
               </Button>
             </div>
@@ -267,7 +267,7 @@ const AdminTargets: React.FC = () => {
           {companies.map(c => (
             <div
               key={c.id}
-              className={`doma-card relative overflow-hidden p-4 transition-all hover:doma-shadow ${
+              className={`rounded-xl border border-border/60 bg-card relative overflow-hidden p-4 transition-all hover:border-primary/20 ${
                 c.is_registered ? "border-l-4 border-l-green-500" : ""
               } ${c.lead_status === "prospect" ? "ring-2 ring-blue-500/30" : ""}`}
             >
@@ -344,7 +344,7 @@ const AdminTargets: React.FC = () => {
       )}
 
       {/* Deal News Section */}
-      <div className="doma-card p-5">
+      <div className="rounded-xl border border-border/60 bg-card p-5">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Newspaper className="h-5 w-5 text-primary" />
@@ -382,6 +382,7 @@ const AdminTargets: React.FC = () => {
             ))}
           </div>
         )}
+      </div>
       </div>
     </AdminLayout>
   );

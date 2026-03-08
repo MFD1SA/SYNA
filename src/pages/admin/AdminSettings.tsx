@@ -142,7 +142,7 @@ const AdminSettings: React.FC = () => {
         </div>
 
         {/* Profile Name */}
-        <div className="doma-card p-5 space-y-4">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
           <div className="flex items-center gap-2 mb-1">
             <User className="h-4 w-4 text-primary" />
             <h3 className="text-sm font-medium text-foreground">{isAr ? "الاسم الشخصي" : "Display Name"}</h3>
@@ -151,14 +151,14 @@ const AdminSettings: React.FC = () => {
             <Label className="text-xs">{isAr ? "الاسم الكامل" : "Full Name"}</Label>
             <Input value={fullName} onChange={e => setFullName(e.target.value)} placeholder={isAr ? "أدخل الاسم" : "Enter name"} />
           </div>
-          <Button onClick={handleSaveProfile} disabled={savingProfile} className="doma-gradient gap-2">
+          <Button onClick={handleSaveProfile} disabled={savingProfile} className="syna-gradient gap-2">
             {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {isAr ? "حفظ الاسم" : "Save Name"}
           </Button>
         </div>
 
         {/* Email */}
-        <div className="doma-card p-5 space-y-4">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
           <div className="flex items-center gap-2 mb-1">
             <Mail className="h-4 w-4 text-primary" />
             <h3 className="text-sm font-medium text-foreground">{isAr ? "البريد الإلكتروني" : "Email Address"}</h3>
@@ -177,7 +177,7 @@ const AdminSettings: React.FC = () => {
         </div>
 
         {/* Password */}
-        <div className="doma-card p-5 space-y-4">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
           <div className="flex items-center gap-2 mb-1">
             <KeyRound className="h-4 w-4 text-primary" />
             <h3 className="text-sm font-medium text-foreground">{isAr ? "كلمة المرور" : "Password"}</h3>
@@ -229,7 +229,7 @@ const AdminSettings: React.FC = () => {
               </div>
             </div>
           </div>
-          <Button onClick={handleChangePassword} disabled={savingPassword || !currentPassword || !newPassword || !confirmPassword} className="doma-gradient gap-2">
+          <Button onClick={handleChangePassword} disabled={savingPassword || !currentPassword || !newPassword || !confirmPassword} className="syna-gradient gap-2">
             {savingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
             {isAr ? "تغيير كلمة المرور" : "Change Password"}
           </Button>
