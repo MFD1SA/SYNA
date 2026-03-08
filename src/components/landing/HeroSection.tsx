@@ -25,80 +25,51 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
 
   return (
     <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden bg-[hsl(210,30%,4%)]">
-      {/* Animated orbital rings */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-          className="absolute h-[700px] w-[700px] rounded-full border border-[hsl(200,80%,40%,0.06)]"
-        />
-        <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 90, repeat: Infinity, ease: "linear" }}
-          className="absolute h-[900px] w-[900px] rounded-full border border-[hsl(195,85%,50%,0.04)]"
-        />
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-          className="absolute h-[1100px] w-[1100px] rounded-full border border-dashed border-[hsl(200,80%,40%,0.03)]"
-        />
-      </div>
-
-      {/* Glow orbs */}
+      {/* Subtle background gradient mesh */}
       <div className="pointer-events-none absolute inset-0">
-        <motion.div
-          animate={{ scale: [1, 1.3, 1], opacity: [0.08, 0.15, 0.08] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 start-1/4 h-[500px] w-[500px] rounded-full bg-[hsl(200,80%,45%)] blur-[160px]"
-        />
-        <motion.div
-          animate={{ scale: [1.2, 1, 1.2], opacity: [0.06, 0.12, 0.06] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-1/4 end-1/4 h-[400px] w-[400px] rounded-full bg-[hsl(195,85%,55%)] blur-[140px]"
-        />
-        <motion.div
-          animate={{ scale: [1, 1.15, 1], opacity: [0.04, 0.08, 0.04] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-          className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[hsl(210,60%,30%)] blur-[180px]"
-        />
+        <div className="absolute top-0 start-0 h-full w-full bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,hsl(200,80%,25%,0.12),transparent_70%)]" />
+        <div className="absolute bottom-0 end-0 h-full w-full bg-[radial-gradient(ellipse_60%_40%_at_80%_100%,hsl(195,85%,30%,0.06),transparent_60%)]" />
       </div>
 
-      {/* Dot grid */}
+      {/* Minimal grid pattern */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.025]"
+        className="pointer-events-none absolute inset-0 opacity-[0.015]"
         style={{
-          backgroundImage: `radial-gradient(circle, hsl(200 80% 60%) 0.5px, transparent 0.5px)`,
-          backgroundSize: "40px 40px",
+          backgroundImage: `linear-gradient(hsl(200 80% 60%) 1px, transparent 1px), linear-gradient(90deg, hsl(200 80% 60%) 1px, transparent 1px)`,
+          backgroundSize: "80px 80px",
         }}
       />
 
+      {/* Top light line */}
+      <div className="pointer-events-none absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.15)] to-transparent" />
+
       {/* Gradient fade bottom */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[hsl(210,30%,4%)] via-[hsl(210,30%,4%,0.8)] to-transparent" />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(210,30%,4%)] to-transparent" />
 
       {/* Content */}
       <div className="container relative z-10 py-16 md:py-20">
         <div className="mx-auto max-w-5xl text-center">
-          {/* Logo — large with glow */}
+          {/* Logo */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.5, y: 30 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="mb-2 flex justify-center"
           >
             <div className="relative">
-              <div className="absolute inset-0 scale-150 rounded-full bg-[hsl(200,80%,45%,0.15)] blur-[60px]" />
-            <img src={logoImg} alt="SYNA" className="relative h-52 w-52 object-contain drop-shadow-[0_0_40px_hsl(200,80%,50%,0.4)] md:h-64 md:w-64" />
+              <div className="absolute inset-0 scale-[2] rounded-full bg-[hsl(200,80%,45%,0.08)] blur-[50px]" />
+              <img src={logoImg} alt="SYNA" className="relative h-44 w-44 object-contain md:h-56 md:w-56" />
             </div>
           </motion.div>
 
           {/* Brand name */}
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="mb-4 -mt-4 text-7xl font-medium tracking-tight md:text-8xl lg:text-9xl"
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="mb-5 -mt-2 text-6xl font-semibold tracking-tight md:text-7xl lg:text-8xl"
             style={{
-              background: "linear-gradient(135deg, hsl(0 0% 100%), hsl(200 80% 70%), hsl(195 85% 55%))",
+              background: "linear-gradient(180deg, hsl(0 0% 95%), hsl(200 60% 75%))",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -109,68 +80,65 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
 
           {/* Tagline */}
           <motion.p
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="mb-4 text-xl font-medium text-[hsl(200,80%,60%)] md:text-2xl lg:text-3xl"
+            transition={{ duration: 0.7, delay: 0.35 }}
+            className="mb-3 text-lg font-normal text-[hsl(200,60%,65%)] md:text-xl lg:text-2xl"
           >
             {isAr ? "نحو شراكات تطوير أكثر وضوحاً" : "Towards Clearer Development Partnerships"}
           </motion.p>
 
           {/* Description */}
           <motion.p
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.65 }}
-            className="mx-auto mb-14 max-w-2xl text-base font-light leading-relaxed text-[hsl(210,15%,55%)] md:text-lg"
+            transition={{ duration: 0.7, delay: 0.5 }}
+            className="mx-auto mb-12 max-w-xl text-sm font-light leading-relaxed text-[hsl(210,15%,50%)] md:text-base"
           >
             {t.hero.description}
           </motion.p>
 
           {/* CTAs */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
+            transition={{ duration: 0.7, delay: 0.65 }}
             className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5"
           >
-            <Button size="lg" asChild className="group h-14 gap-3 rounded-2xl px-14 text-base font-medium syna-gradient syna-shadow-lg transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_12px_50px_-10px_hsl(200,80%,50%,0.4)]">
+            <Button size="lg" asChild className="group h-13 gap-3 rounded-2xl px-12 text-base font-medium syna-gradient syna-shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_10px_40px_-10px_hsl(200,80%,50%,0.35)]">
               <Link to="/auth/login">
                 {t.hero.cta}
                 <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
               </Link>
             </Button>
-            <Button variant="outline" size="lg" asChild className="h-14 rounded-2xl border-[hsl(210,22%,18%)] bg-[hsl(210,28%,8%,0.6)] px-14 text-base text-[hsl(210,15%,75%)] backdrop-blur-sm transition-all duration-300 hover:border-[hsl(200,80%,45%,0.3)] hover:bg-[hsl(210,22%,12%)] hover:text-white hover:scale-[1.02]">
+            <Button variant="outline" size="lg" asChild className="h-13 rounded-2xl border-[hsl(210,22%,16%)] bg-[hsl(210,28%,7%,0.5)] px-12 text-base text-[hsl(210,15%,70%)] backdrop-blur-sm transition-all duration-300 hover:border-[hsl(200,80%,45%,0.25)] hover:bg-[hsl(210,22%,10%)] hover:text-white">
               <a href="#how-it-works">{t.hero.learnMore}</a>
             </Button>
           </motion.div>
         </div>
 
-        {/* Feature cards grid */}
+        {/* Feature cards */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1 }}
+          transition={{ duration: 0.7, delay: 0.85 }}
           className="mx-auto mt-16 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
         >
           {pills.map(({ icon: Icon, label }, i) => (
             <motion.div
               key={label}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 1.1 + i * 0.12 }}
-              className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-2xl border border-[hsl(210,22%,13%)] bg-[hsl(210,28%,7%,0.8)] px-4 py-6 backdrop-blur-md transition-all duration-400 hover:border-[hsl(200,80%,45%,0.3)] hover:bg-[hsl(210,28%,9%)] hover:shadow-[0_8px_30px_-8px_hsl(200,80%,50%,0.15)] hover:-translate-y-1"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.95 + i * 0.08 }}
+              className="group flex flex-col items-center gap-3 rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,6%,0.7)] px-4 py-5 backdrop-blur-sm transition-all duration-300 hover:border-[hsl(200,80%,45%,0.2)] hover:bg-[hsl(210,28%,8%)]"
             >
-              {/* Corner glow */}
-              <div className="pointer-events-none absolute -top-6 -end-6 h-16 w-16 rounded-full bg-[hsl(200,80%,50%,0.06)] transition-all duration-500 group-hover:scale-[3] group-hover:bg-[hsl(200,80%,50%,0.08)]" />
-              <div className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-[hsl(200,80%,45%,0.15)] bg-[hsl(200,80%,45%,0.08)] transition-all duration-300 group-hover:border-[hsl(200,80%,45%,0.3)] group-hover:bg-[hsl(200,80%,45%,0.12)] group-hover:shadow-[0_0_16px_-4px_hsl(200,80%,50%,0.25)]">
-                <Icon className="h-5 w-5 text-[hsl(200,80%,55%)] transition-colors duration-300 group-hover:text-[hsl(195,85%,65%)]" strokeWidth={1.5} />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[hsl(200,80%,45%,0.12)] bg-[hsl(200,80%,45%,0.06)] transition-all duration-300 group-hover:border-[hsl(200,80%,45%,0.25)] group-hover:bg-[hsl(200,80%,45%,0.1)]">
+                <Icon className="h-4.5 w-4.5 text-[hsl(200,80%,55%)]" strokeWidth={1.5} />
               </div>
-              <span className="relative text-center text-sm font-light text-[hsl(210,15%,65%)] transition-colors duration-300 group-hover:text-white">{label}</span>
+              <span className="text-center text-xs font-light text-[hsl(210,15%,55%)] transition-colors duration-300 group-hover:text-[hsl(210,15%,75%)]">{label}</span>
             </motion.div>
           ))}
         </motion.div>
-
       </div>
     </section>
   );
