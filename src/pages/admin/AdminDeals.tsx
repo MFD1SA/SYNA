@@ -633,7 +633,7 @@ const AdminDeals: React.FC = () => {
                     )}
                   </div>
                   {meetings.length > 0 ? meetings.map((m: any) => (
-                    <div key={m.id} className="rounded-lg border border-border/30 bg-card p-3 space-y-1.5">
+                    <div key={m.id} className="rounded-lg border border-border/30 bg-card p-3 space-y-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <CalendarClock className="h-3.5 w-3.5 text-violet-600" />
@@ -648,11 +648,20 @@ const AdminDeals: React.FC = () => {
                       </div>
                       {m.meet_link && (
                         <a href={m.meet_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-primary hover:underline">
-                          <Link2 className="h-3 w-3" />{m.meet_link}
+                          <Link2 className="h-3 w-3" />{isAr ? "رابط الاجتماع" : "Meeting Link"}
                         </a>
                       )}
-                      {m.notes && <p className="text-xs text-muted-foreground">{m.notes}</p>}
                       {m.location && <p className="text-xs text-muted-foreground flex items-center gap-1"><MapPin className="h-3 w-3" />{m.location}</p>}
+                      <div className="rounded-md bg-muted/30 border border-border/20 p-2 space-y-1">
+                        <p className="text-[10px] font-medium text-muted-foreground">{isAr ? "المدة:" : "Duration:"} {m.duration_minutes} {isAr ? "دقيقة" : "min"}</p>
+                        {m.notes && (
+                          <div>
+                            <p className="text-[10px] font-medium text-muted-foreground mb-0.5">{isAr ? "إفادة المشرف:" : "Supervisor Notes:"}</p>
+                            <p className="text-xs text-foreground">{m.notes}</p>
+                          </div>
+                        )}
+                        <p className="text-[10px] text-muted-foreground/70">{isAr ? "أُنشئ بواسطة المشرف بتاريخ:" : "Created by supervisor on:"} {new Date(m.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}</p>
+                      </div>
                     </div>
                   )) : (
                     <p className="text-xs text-muted-foreground text-center py-3">{isAr ? "لا توجد اجتماعات" : "No meetings yet"}</p>
