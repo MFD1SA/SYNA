@@ -101,37 +101,28 @@ const AdminSidebar: React.FC = () => {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-2 py-3">
-        {navGroups.map((group, gi) => (
-          <div key={gi} className={gi > 0 ? "mt-4" : ""}>
-            {!collapsed && (
-              <p className="mb-1.5 px-2.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60">
-                {isAr ? group.label.ar : group.label.en}
-              </p>
-            )}
-            <div className="space-y-0.5">
-              {group.items.map((item) => {
-                const isActive = location.pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    title={collapsed ? (isAr ? item.label.ar : item.label.en) : undefined}
-                    className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] transition-all ${
-                      isActive
-                        ? "bg-primary/10 text-primary font-medium"
-                        : "text-muted-foreground hover:bg-surface hover:text-foreground"
-                    }`}
-                  >
-                    <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
-                    {!collapsed && (
-                      <span className="truncate">{isAr ? item.label.ar : item.label.en}</span>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+        <div className="space-y-0.5">
+          {navGroups.flatMap(g => g.items).map((item) => {
+            const isActive = location.pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                to={item.href}
+                title={collapsed ? (isAr ? item.label.ar : item.label.en) : undefined}
+                className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] transition-all ${
+                  isActive
+                    ? "bg-primary/10 text-primary font-medium"
+                    : "text-muted-foreground hover:bg-surface hover:text-foreground"
+                }`}
+              >
+                <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+                {!collapsed && (
+                  <span className="truncate">{isAr ? item.label.ar : item.label.en}</span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
       </nav>
 
       {/* Footer */}
