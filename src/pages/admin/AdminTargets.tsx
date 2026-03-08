@@ -244,7 +244,7 @@ const AdminTargets: React.FC = () => {
                 <Label className="text-sm">{isAr ? "رقم الاتصال" : "Phone Number"}</Label>
                 <Input dir="ltr" placeholder="05XXXXXXXX" value={form.contact_phone} onChange={e => setForm(f => ({ ...f, contact_phone: e.target.value }))} />
               </div>
-              <Button onClick={handleAdd} className="w-full doma-gradient" disabled={!form.company_name.trim()}>
+              <Button onClick={handleAdd} className="w-full syna-gradient" disabled={!form.company_name.trim()}>
                 {isAr ? "إضافة" : "Add"}
               </Button>
             </div>
