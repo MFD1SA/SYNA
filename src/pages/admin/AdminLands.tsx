@@ -48,7 +48,7 @@ const AdminLands: React.FC = () => {
   const handleSubmit = async (form: LandFormData) => {
     if (!user || !form.city || !form.land_area_sqm) return;
     const ownerId = form.selected_owner_id || user.id;
-    const payload: Record<string, any> = {
+    const payload: any = {
       owner_id: ownerId,
       city: form.city,
       district: form.district || null,
