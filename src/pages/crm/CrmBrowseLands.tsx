@@ -131,6 +131,7 @@ const CrmBrowseLands: React.FC = () => {
               developer_email: devInfo?.email || "",
               owner_name: ownerProfile?.full_name || targetLand.owner_name || "",
               owner_email: ownerProfile?.email || "",
+              owner_user_id: targetLand.owner_id,
               land_city: targetLand.city,
               land_district: targetLand.district,
             },

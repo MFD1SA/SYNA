@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { logAudit } from "@/lib/auditLog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -181,6 +182,16 @@ const OwnerDashboard: React.FC = () => {
     try {
       const { error } = await supabase.from("deal_requests").update({ status: "approved" }).eq("id", a.request_id);
       if (error) throw error;
+      // Audit log for owner approval
+      try {
+        await logAudit(user?.id || "", user?.email, "owner_approve_request", "deal_request", a.request_id, {
+          developer_name: a.developer_name,
+          developer_id: a.developer_id,
+          land_city: landCity,
+          land_district: landDistrict,
+          approved_by: "owner",
+        });
+      } catch {}
       toast({ title: isAr ? "تمت الموافقة على الطلب" : "Request approved" });
 
       // Send single notification (fix: was sending twice)
