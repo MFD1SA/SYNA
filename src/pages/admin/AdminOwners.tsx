@@ -83,6 +83,12 @@ const AdminOwners: React.FC = () => {
       });
       if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
       if (user) await logAudit(user.id, user.email, "create", "owner", undefined, { email: form.email });
+      // Send notification email to admin
+      try {
+        await supabase.functions.invoke("send-deal-notification", {
+          body: { type: "new_owner_registered", registered_name: form.full_name, registered_email: form.email, registered_phone: form.phone },
+        });
+      } catch {}
       toast({ title: isAr ? "تم إنشاء حساب المالك" : "Owner account created" });
       setCreatedInfo({ email: form.email, password: form.password });
       setForm({ full_name: "", email: "", password: "", phone: "" });

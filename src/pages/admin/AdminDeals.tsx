@@ -231,6 +231,21 @@ const AdminDeals: React.FC = () => {
         deal_id: stageDialog.dealId, from_stage: stageDialog.currentStage as any, to_stage: nextStage as any,
         changed_by: user!.id, notes: stageNotes || null,
       });
+      // Send stage change notification
+      try {
+        await supabase.functions.invoke("send-deal-notification", {
+          body: {
+            type: "deal_stage_changed",
+            deal_id: stageDialog.dealId,
+            developer_name: stageDialog.devName,
+            land_city: stageDialog.landCity,
+            land_district: stageDialog.landDistrict,
+            from_stage: stageDialog.currentStage,
+            to_stage: nextStage,
+            stage_notes: stageNotes || null,
+          },
+        });
+      } catch {}
       toast({ title: isAr ? `تم الانتقال إلى: ${stageConfig[nextStage]?.ar}` : `Advanced to: ${stageConfig[nextStage]?.en}` });
       setStageDialog(null); setStageNotes("");
     } catch (err: any) {
@@ -314,9 +329,9 @@ const AdminDeals: React.FC = () => {
       </div>
 
       <Tabs defaultValue="requests">
-        <TabsList className="mb-4">
-          <TabsTrigger value="requests" className="gap-2"><FileText className="h-3.5 w-3.5" />{isAr ? "الطلبات" : "Requests"} ({requests.length})</TabsTrigger>
-          <TabsTrigger value="deals" className="gap-2"><Handshake className="h-3.5 w-3.5" />{isAr ? "الصفقات" : "Deals"} ({deals.length})</TabsTrigger>
+        <TabsList className="mb-4 w-full sm:w-auto">
+          <TabsTrigger value="requests" className="gap-2 flex-1 sm:flex-initial"><FileText className="h-3.5 w-3.5" />{isAr ? "الطلبات" : "Requests"} ({requests.length})</TabsTrigger>
+          <TabsTrigger value="deals" className="gap-2 flex-1 sm:flex-initial"><Handshake className="h-3.5 w-3.5" />{isAr ? "الصفقات" : "Deals"} ({deals.length})</TabsTrigger>
         </TabsList>
 
         <div className="mb-4 relative max-w-sm">
@@ -720,7 +735,7 @@ const AdminDeals: React.FC = () => {
                 {/* Actions */}
                 <div className="flex items-center gap-2 border-t border-border/40 pt-4">
                   {nextStage && (
-                    <Button className="flex-1 gap-1.5 bg-primary hover:bg-primary/90" onClick={() => setStageDialog({ dealId: viewDeal.id, currentStage: viewDeal.current_stage, nextStage })}>
+                    <Button className="flex-1 gap-1.5 bg-primary hover:bg-primary/90" onClick={() => setStageDialog({ dealId: viewDeal.id, currentStage: viewDeal.current_stage, nextStage, devName: viewDeal.developers?.company_name, landCity: viewDeal.lands?.city, landDistrict: viewDeal.lands?.district })}>
                       <ArrowRight className="h-3.5 w-3.5" />
                       {isAr ? `الانتقال إلى: ${stageConfig[nextStage]?.ar}` : `Advance to: ${stageConfig[nextStage]?.en}`}
                     </Button>

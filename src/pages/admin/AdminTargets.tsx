@@ -250,7 +250,6 @@ const AdminTargets: React.FC = () => {
             </div>
           </DialogContent>
         </Dialog>
-      </div>
 
       {/* Companies Grid */}
       {loading ? (

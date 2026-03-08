@@ -141,6 +141,13 @@ const RegisterPage: React.FC = () => {
           website: website.trim() || null,
         });
 
+        // Notify admin about new developer
+        try {
+          await supabase.functions.invoke("send-deal-notification", {
+            body: { type: "new_developer_registered", registered_name: companyName, registered_email: email, registered_phone: `+966${phone}` },
+          });
+        } catch {}
+
         toast({
           title: isAr ? "تم استلام طلب التسجيل" : "Registration request received",
           description: isAr
