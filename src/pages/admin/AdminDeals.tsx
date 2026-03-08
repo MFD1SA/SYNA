@@ -735,7 +735,7 @@ const AdminDeals: React.FC = () => {
                 {/* Actions */}
                 <div className="flex items-center gap-2 border-t border-border/40 pt-4">
                   {nextStage && (
-                    <Button className="flex-1 gap-1.5 bg-primary hover:bg-primary/90" onClick={() => setStageDialog({ dealId: viewDeal.id, currentStage: viewDeal.current_stage, nextStage })}>
+                    <Button className="flex-1 gap-1.5 bg-primary hover:bg-primary/90" onClick={() => setStageDialog({ dealId: viewDeal.id, currentStage: viewDeal.current_stage, nextStage, devName: viewDeal.developers?.company_name, landCity: viewDeal.lands?.city, landDistrict: viewDeal.lands?.district })}>
                       <ArrowRight className="h-3.5 w-3.5" />
                       {isAr ? `الانتقال إلى: ${stageConfig[nextStage]?.ar}` : `Advance to: ${stageConfig[nextStage]?.en}`}
                     </Button>
