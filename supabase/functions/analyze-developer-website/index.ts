@@ -32,13 +32,16 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { website_url, developer_name, developer_id } = await req.json();
+    const { website_url, developer_name, developer_id, model } = await req.json();
     if (!website_url) throw new Error("website_url is required");
 
     const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
     if (!FIRECRAWL_API_KEY) throw new Error("FIRECRAWL_API_KEY not configured");
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+    // Use stronger model for website analysis
+    const aiModel = model || "google/gemini-2.5-pro";
 
     let formattedUrl = website_url.trim();
     if (!formattedUrl.startsWith("http://") && !formattedUrl.startsWith("https://")) {
@@ -47,7 +50,6 @@ serve(async (req) => {
 
     const searchName = developer_name || formattedUrl.replace(/https?:\/\//, "").split("/")[0];
 
-    // Run all 3 in parallel: website scrape + social search + news search
     const [websiteContent, socialResults, newsResults] = await Promise.all([
       firecrawlScrape(FIRECRAWL_API_KEY, formattedUrl).catch(() => ""),
       firecrawlSearch(FIRECRAWL_API_KEY, `"${searchName}" site:linkedin.com OR site:twitter.com OR site:x.com OR site:instagram.com OR site:youtube.com`, 8).catch(() => []),
@@ -60,19 +62,17 @@ serve(async (req) => {
       });
     }
 
-    const truncatedWeb = websiteContent.slice(0, 10000);
+    const truncatedWeb = websiteContent.slice(0, 12000);
 
-    // Format social media findings
     const socialSummary = socialResults.length > 0
-      ? socialResults.map((r: any) => `- ${r.title || ""}: ${r.url || ""}\n${(r.description || r.markdown || "").slice(0, 200)}`).join("\n")
+      ? socialResults.map((r: any) => `- ${r.title || ""}: ${r.url || ""}\n${(r.description || r.markdown || "").slice(0, 250)}`).join("\n")
       : "لم يتم العثور على حسابات سوشيال ميديا";
 
-    // Format news findings
     const newsSummary = newsResults.length > 0
-      ? newsResults.map((r: any) => `- ${r.title || ""}: ${r.url || ""}\n${(r.description || r.markdown || "").slice(0, 300)}`).join("\n")
+      ? newsResults.map((r: any) => `- ${r.title || ""}: ${r.url || ""}\n${(r.description || r.markdown || "").slice(0, 350)}`).join("\n")
       : "لم يتم العثور على أخبار";
 
-    const prompt = `أنت محلل أعمال عقاري خبير في السوق السعودي. حلل جميع البيانات التالية عن شركة التطوير وقدم تقييماً شاملاً.
+    const prompt = `أنت محلل أعمال عقاري خبير في السوق السعودي تعمل في منصة SYNA. حلل جميع البيانات التالية عن شركة التطوير وقدم تقييماً شاملاً ودقيقاً.
 
 ## اسم المطور: ${searchName}
 ## رابط الموقع: ${formattedUrl}
@@ -87,13 +87,13 @@ ${socialSummary}
 ${newsSummary}
 
 ## المطلوب:
-حلل كل ما سبق وقدم تقييماً شاملاً يشمل تحليل الموقع والسوشيال ميديا والأخبار.`;
+حلل كل ما سبق وقدم تقييماً شاملاً يشمل تحليل الموقع والسوشيال ميديا والأخبار بتفصيل كامل ودقيق.`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: aiModel,
         messages: [{ role: "user", content: prompt }],
         tools: [{
           type: "function",
@@ -103,34 +103,32 @@ ${newsSummary}
             parameters: {
               type: "object",
               properties: {
-                company_overview_ar: { type: "string", description: "Company overview in Arabic" },
+                company_overview_ar: { type: "string", description: "Detailed company overview in Arabic" },
                 projects_count: { type: "number", description: "Estimated number of projects" },
-                projects_summary_ar: { type: "string", description: "Summary of projects in Arabic" },
+                projects_summary_ar: { type: "string", description: "Detailed summary of projects in Arabic" },
                 website_quality_score: { type: "number", description: "Website quality score 0-100" },
                 financial_strength_indicators_ar: { type: "string", description: "Financial indicators in Arabic" },
                 overall_score: { type: "number", description: "Overall score 0-100" },
                 strengths_ar: { type: "array", items: { type: "string" }, description: "Strengths in Arabic" },
                 weaknesses_ar: { type: "array", items: { type: "string" }, description: "Weaknesses in Arabic" },
-                recommendation_ar: { type: "string", description: "Recommendation for land owner in Arabic" },
+                recommendation_ar: { type: "string", description: "Detailed recommendation for land owner in Arabic" },
                 recommendation_level: { type: "string", enum: ["strong", "moderate", "weak"] },
                 notable_projects_ar: { type: "array", items: { type: "string" }, description: "Notable projects in Arabic" },
                 social_media_presence: {
                   type: "object",
-                  description: "Social media analysis",
                   properties: {
                     overall_strength: { type: "string", enum: ["strong", "moderate", "weak", "absent"] },
                     platforms_found: { type: "array", items: { type: "object", properties: { platform: { type: "string" }, url: { type: "string" }, summary_ar: { type: "string" } }, required: ["platform", "url", "summary_ar"] } },
-                    analysis_ar: { type: "string", description: "Overall social media analysis in Arabic" },
+                    analysis_ar: { type: "string" },
                   },
                   required: ["overall_strength", "platforms_found", "analysis_ar"],
                 },
                 news_intelligence: {
                   type: "object",
-                  description: "News and media coverage analysis",
                   properties: {
                     coverage_level: { type: "string", enum: ["high", "moderate", "low", "none"] },
                     articles: { type: "array", items: { type: "object", properties: { title_ar: { type: "string" }, url: { type: "string" }, sentiment: { type: "string", enum: ["positive", "neutral", "negative"] }, summary_ar: { type: "string" } }, required: ["title_ar", "sentiment", "summary_ar"] } },
-                    analysis_ar: { type: "string", description: "Overall news analysis in Arabic" },
+                    analysis_ar: { type: "string" },
                   },
                   required: ["coverage_level", "articles", "analysis_ar"],
                 },
