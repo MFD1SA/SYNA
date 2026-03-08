@@ -7,6 +7,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Eye, Layers, Handshake, Video, CheckCircle2, type LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
+import headerFeaturesImg from "@/assets/header-features.jpg";
 
 interface FeatureContent {
   icon: LucideIcon;
