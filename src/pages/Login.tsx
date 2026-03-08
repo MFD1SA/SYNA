@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link, useNavigate } from "react-router-dom";
-import { Globe, LogIn, UserPlus, Eye, EyeOff, Upload, FileText, Image, Home, HardHat, Landmark, Loader2 } from "lucide-react";
+import { Globe, LogIn, UserPlus, Eye, EyeOff, Upload, FileText, Image, Home, HardHat, Landmark, Loader2, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.png";
 import { motion } from "framer-motion";
@@ -178,8 +178,34 @@ const LoginPage: React.FC = () => {
   const labelClasses = "font-light text-sm text-[hsl(210,15%,60%)]";
   const sectionTitleClasses = "mb-3 text-sm font-medium text-white border-b border-[hsl(210,22%,14%)] pb-2";
 
+  const demoCredentials = [
+    { label: isAr ? "مطور تجريبي" : "Demo Developer", icon: <HardHat className="h-3 w-3" />, email: "dev@syna-demo.com", password: "Dev123" },
+    { label: isAr ? "مالك تجريبي" : "Demo Owner", icon: <Landmark className="h-3 w-3" />, email: "owner@syna-demo.com", password: "Owner123" },
+    { label: isAr ? "مدير النظام" : "Admin", icon: <Shield className="h-3 w-3" />, email: "admin@doma.com", password: "Admin1" },
+  ];
+
+  const handleAutoFill = (demoEmail: string, demoPassword: string) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+  };
+
   const LoginForm = (
     <form onSubmit={handleLogin} className="space-y-5">
+      {/* Quick-fill demo credentials */}
+      <div className="flex flex-wrap gap-2">
+        {demoCredentials.map((cred) => (
+          <button
+            key={cred.email}
+            type="button"
+            onClick={() => handleAutoFill(cred.email, cred.password)}
+            className="flex items-center gap-1.5 rounded-lg border border-[hsl(210,22%,16%)] bg-[hsl(210,28%,8%)] px-3 py-1.5 text-[11px] text-[hsl(210,15%,55%)] transition-all hover:border-[hsl(200,80%,45%,0.3)] hover:text-[hsl(200,80%,65%)]"
+          >
+            {cred.icon}
+            {cred.label}
+          </button>
+        ))}
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor={`${portalType}-email`} className={labelClasses}>{t.auth.email}</Label>
         <Input id={`${portalType}-email`} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required dir="ltr" className={inputClasses} />
