@@ -1467,6 +1467,7 @@ export type Database = {
         | "sell_develop"
         | "partial_exit"
         | "offplan_sell"
+        | "real_estate_contribution"
       project_status: "under_construction" | "ready"
       property_type: "residential" | "commercial" | "under_construction"
       receivable_status: "pending" | "paid" | "overdue" | "partial"
@@ -1641,6 +1642,7 @@ export const Constants = {
         "sell_develop",
         "partial_exit",
         "offplan_sell",
+        "real_estate_contribution",
       ],
       project_status: ["under_construction", "ready"],
       property_type: ["residential", "commercial", "under_construction"],
