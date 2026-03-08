@@ -229,6 +229,7 @@ const AdminLands: React.FC = () => {
 
   return (
     <AdminLayout>
+      <div dir={isAr ? "rtl" : "ltr"}>
       <AdminPageHeader
         icon={Landmark}
         titleAr="إدارة الأراضي"
