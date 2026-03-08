@@ -89,14 +89,16 @@ const AdminLogin: React.FC = () => {
 
         <form onSubmit={handleLogin} className="space-y-4 rounded-2xl border border-[hsl(210,20%,18%)] bg-[hsl(210,25%,11%)] p-6">
           {/* Quick-fill admin credentials */}
-          <button
-            type="button"
-            onClick={() => { setEmail("admin@doma.com"); setPassword("Admin1"); }}
-            className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-[hsl(210,20%,18%)] bg-[hsl(210,25%,14%)] px-3 py-2 text-xs text-[hsl(210,15%,55%)] transition-all hover:border-[hsl(200,80%,45%,0.3)] hover:text-[hsl(200,80%,65%)]"
-          >
-            <Shield className="h-3 w-3" />
-            {isAr ? "تعبئة بيانات المدير التجريبية" : "Fill demo admin credentials"}
-          </button>
+          {showDemoCredentials && (
+            <button
+              type="button"
+              onClick={() => { setEmail("admin@doma.com"); setPassword("Admin1"); }}
+              className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-[hsl(210,20%,18%)] bg-[hsl(210,25%,14%)] px-3 py-2 text-xs text-[hsl(210,15%,55%)] transition-all hover:border-[hsl(200,80%,45%,0.3)] hover:text-[hsl(200,80%,65%)]"
+            >
+              <Shield className="h-3 w-3" />
+              {isAr ? "تعبئة بيانات المدير التجريبية" : "Fill demo admin credentials"}
+            </button>
+          )}
           <div className="space-y-2">
             <Label className="text-sm font-light text-[hsl(210,15%,70%)]">{t.auth.email}</Label>
             <Input
