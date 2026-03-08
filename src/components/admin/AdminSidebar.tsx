@@ -52,7 +52,6 @@ const AdminSidebar: React.FC = () => {
       label: { ar: "الأدوات", en: "Tools" },
       items: [
         { label: { ar: "المساعد الذكي", en: "AI Assistant" }, href: "/admincp/ai", icon: Bot },
-        { label: { ar: "الاستهداف", en: "Targets" }, href: "/admincp/targets", icon: Target },
         { label: { ar: "المحتوى", en: "Content" }, href: "/admincp/content", icon: FileText },
       ],
     },
