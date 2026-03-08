@@ -192,7 +192,7 @@ const CrmDashboard: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="mt-5 doma-card p-5">
+      <div className="mt-5 syna-card p-5">
         <h3 className="mb-3 text-sm font-medium text-foreground">
           {isAr ? "إجراءات سريعة" : "Quick Actions"}
         </h3>
