@@ -159,7 +159,7 @@ const CrmDashboard: React.FC = () => {
         {kpiCards.map((card) => (
           <div
             key={card.label}
-            className="doma-card p-4 cursor-pointer"
+            className="syna-card p-4 cursor-pointer"
             onClick={() => navigate(card.href)}
           >
             <div className="mb-2 flex items-center justify-between">
