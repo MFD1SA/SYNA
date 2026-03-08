@@ -105,6 +105,25 @@ const AdminLands: React.FC = () => {
     } else {
       if (user) await logAudit(user.id, user.email, editingId ? "update" : "create", "land", editingId || undefined, { city: payload.city });
       toast({ title: isAr ? (editingId ? "تم التحديث" : "تمت الإضافة") : (editingId ? "Updated" : "Land Added") });
+      
+      // Send notification to owner when admin creates a draft
+      if (!editingId && ownerId !== user?.id) {
+        try {
+          const ownerProfile = ownerProfiles.find(p => p.user_id === ownerId);
+          await supabase.functions.invoke("send-deal-notification", {
+            body: {
+              type: "draft_created_for_owner",
+              owner_name: ownerProfile?.full_name || form.owner_name || "",
+              owner_email: ownerProfile?.email || "",
+              land_city: form.city,
+              land_district: form.district,
+            },
+          });
+        } catch (e) {
+          console.error("Draft notification error:", e);
+        }
+      }
+      
       closeDialog();
       fetchLands();
     }
