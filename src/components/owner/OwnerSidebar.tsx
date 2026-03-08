@@ -93,6 +93,16 @@ const OwnerSidebar: React.FC = () => {
         </div>
       </nav>
 
+      {/* Admin back link */}
+      {isAdminUser && !collapsed && (
+        <div className="border-t border-border/60 px-3 pt-2">
+          <Link to="/admincp/overview" className="flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-[12px] font-medium text-primary transition-colors hover:bg-primary/5">
+            <ShieldCheck className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+            <span>{isAr ? "العودة للإدارة" : "Back to Admin"}</span>
+          </Link>
+        </div>
+      )}
+
       {/* Footer */}
       <div className="space-y-0.5 border-t border-border/60 p-3">
         {!collapsed && (
