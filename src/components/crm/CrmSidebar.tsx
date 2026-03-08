@@ -3,10 +3,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTenant } from "@/hooks/useTenant";
+import { useAdminRole } from "@/hooks/useAdminRole";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard, Search, FileText, Handshake,
-  Settings, Globe, LogOut, ChevronLeft, ChevronRight, HardHat,
+  Settings, Globe, LogOut, ChevronLeft, ChevronRight, HardHat, ShieldCheck,
 } from "lucide-react";
 import NotificationDropdown from "./NotificationDropdown";
 import logoImg from "@/assets/logo.png";

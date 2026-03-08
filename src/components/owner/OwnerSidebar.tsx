@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAdminRole } from "@/hooks/useAdminRole";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard, Landmark, FileText, Handshake, Settings,
-  Globe, LogOut, ChevronLeft, ChevronRight, User,
+  Globe, LogOut, ChevronLeft, ChevronRight, User, ShieldCheck,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 
