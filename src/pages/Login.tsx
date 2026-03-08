@@ -63,12 +63,13 @@ const LoginPage: React.FC = () => {
     }
     if (data.user) {
       // Check if user has a valid role before proceeding
-      const [devRes, landsRes] = await Promise.all([
+      const [devRes, rolesRes] = await Promise.all([
         supabase.from("developers").select("id").eq("user_id", data.user.id).maybeSingle(),
-        supabase.from("lands").select("id").eq("owner_id", data.user.id).limit(1),
+        supabase.from("user_roles").select("role").eq("user_id", data.user.id),
       ]);
       const isDev = !!devRes.data;
-      const isOwner = !!(landsRes.data && landsRes.data.length > 0);
+      const roles = (rolesRes.data || []).map((r: any) => r.role);
+      const isOwner = roles.includes("owner");
       if (!isDev && !isOwner) {
         await supabase.auth.signOut();
         toast({ variant: "destructive", title: isAr ? "غير مصرح" : "Unauthorized", description: isAr ? "حسابك غير مرتبط بأي دور في المنصة. تواصل مع مدير النظام." : "Your account is not linked to any role. Contact the administrator." });
