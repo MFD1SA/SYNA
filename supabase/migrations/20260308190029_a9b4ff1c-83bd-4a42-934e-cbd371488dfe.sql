@@ -1,0 +1,1 @@
+CREATE POLICY "Allow anonymous uploads to developer-docs" ON storage.objects FOR INSERT TO anon WITH CHECK (bucket_id = 'developer-docs');
