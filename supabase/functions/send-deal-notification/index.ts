@@ -230,6 +230,27 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
         </body></html>`,
       };
 
+    case "draft_created_for_owner":
+      return {
+        to: payload.owner_email || "",
+        subject: `SYNA | تمت إضافة أرض جديدة بانتظار مراجعتك - ${location}`,
+        html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
+          <div class="container">
+            <div class="header" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);"><h1>📋 أرض جديدة بانتظار مراجعتك</h1><p>تم إدراج أرض نيابةً عنك</p></div>
+            <div class="body">
+              <p style="color:#475569;font-size:14px;">مرحباً ${payload.owner_name || "مالك الأرض"}،</p>
+              <p style="color:#475569;font-size:14px;">قامت إدارة المنصة بإدراج أرض جديدة نيابةً عنك. يرجى تسجيل الدخول لمراجعة البيانات واعتمادها.</p>
+              <div class="info-box">
+                <div class="info-row"><span class="info-label">الموقع:</span><span class="info-value">${location}</span></div>
+                <div class="info-row"><span class="info-label">الحالة:</span><span class="info-value"><span class="badge badge-warning">مسودة — بانتظار مراجعتك</span></span></div>
+              </div>
+              <p style="color:#64748b;font-size:13px;margin-top:16px;">سجّل دخولك إلى المنصة وانتقل إلى قسم "أراضيي" لمراجعة واعتماد بيانات الأرض.</p>
+            </div>
+            <div class="footer"><p>SYNA Platform — منصة سينا للشراكات العقارية</p></div>
+          </div>
+        </body></html>`,
+      };
+
     default:
       return { to: ADMIN_EMAIL, subject: "SYNA Notification", html: "<p>Notification</p>" };
   }
