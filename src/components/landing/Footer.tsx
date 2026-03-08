@@ -31,10 +31,10 @@ const Footer: React.FC = () => {
         <div className="grid gap-12 md:grid-cols-12">
           {/* Brand column */}
           <div className="md:col-span-4">
-            <div className="flex items-center gap-3 mb-5">
+            <div className="flex items-center gap-2 mb-5">
               <div className="relative">
                 <div className="absolute inset-0 scale-150 rounded-full bg-[hsl(200,80%,45%,0.1)] blur-[20px]" />
-                <img src={logoImg} alt="SYNA" className="relative h-12 w-12 object-contain" />
+                <img src={logoImg} alt="SYNA" className="relative h-14 w-14 object-contain" />
               </div>
               <span className="text-2xl font-medium tracking-tight text-white">SYNA</span>
             </div>
