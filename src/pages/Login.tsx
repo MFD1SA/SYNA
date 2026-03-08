@@ -234,23 +234,7 @@ const LoginPage: React.FC = () => {
 
   const LoginForm = (
     <form onSubmit={handleLogin} className="space-y-5">
-      {/* Quick-fill demo credentials */}
-      {showDemoCredentials && (
-        <div className="flex flex-wrap gap-2">
-          {demoCredentials.map((cred) => (
-            <button
-              key={cred.email}
-              type="button"
-              onClick={() => handleAutoFill(cred.email, cred.password)}
-              disabled={loading}
-              className="flex items-center gap-1.5 rounded-lg border border-[hsl(210,22%,16%)] bg-[hsl(210,28%,8%)] px-3 py-1.5 text-[11px] text-[hsl(210,15%,55%)] transition-all hover:border-[hsl(200,80%,45%,0.3)] hover:text-[hsl(200,80%,65%)] disabled:opacity-50"
-            >
-              {cred.icon}
-              {cred.label}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Demo credentials removed */}
 
       <div className="space-y-2">
         <Label htmlFor={`${portalType}-email`} className={labelClasses}>{t.auth.email}</Label>
