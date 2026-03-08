@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Eye, Layers, Handshake, Video } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import type { BrandVariant } from "./BrandToggle";
 import logoImg from "@/assets/logo.png";
 
@@ -22,63 +23,166 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
     { icon: Video, label: isAr ? "اجتماعات مدمجة" : "Integrated Meetings" },
   ];
 
-  // Dark cinematic hero
   return (
-    <section className="relative flex min-h-[75vh] items-center justify-center overflow-hidden bg-[hsl(210,30%,7%)] transition-colors duration-500">
-      {/* Background effects */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-32 end-[-10%] h-[500px] w-[500px] rounded-full bg-[hsl(200,80%,35%,0.08)] blur-[120px]" />
-        <div className="absolute -bottom-32 start-[-8%] h-[400px] w-[400px] rounded-full bg-[hsl(195,85%,50%,0.06)] blur-[100px]" />
-        <div className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[hsl(200,80%,35%,0.04)] blur-[140px]" />
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `radial-gradient(circle, hsl(200 80% 55%) 0.5px, transparent 0.5px)`,
-            backgroundSize: "48px 48px",
-          }}
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[hsl(210,30%,4%)]">
+      {/* Animated orbital rings */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+          className="absolute h-[700px] w-[700px] rounded-full border border-[hsl(200,80%,40%,0.06)]"
         />
-        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[hsl(210,30%,7%)] to-transparent" />
+        <motion.div
+          animate={{ rotate: -360 }}
+          transition={{ duration: 90, repeat: Infinity, ease: "linear" }}
+          className="absolute h-[900px] w-[900px] rounded-full border border-[hsl(195,85%,50%,0.04)]"
+        />
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+          className="absolute h-[1100px] w-[1100px] rounded-full border border-dashed border-[hsl(200,80%,40%,0.03)]"
+        />
       </div>
 
-      <div className="container relative z-10 py-12 md:py-16">
+      {/* Glow orbs */}
+      <div className="pointer-events-none absolute inset-0">
+        <motion.div
+          animate={{ scale: [1, 1.3, 1], opacity: [0.08, 0.15, 0.08] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/4 start-1/4 h-[500px] w-[500px] rounded-full bg-[hsl(200,80%,45%)] blur-[160px]"
+        />
+        <motion.div
+          animate={{ scale: [1.2, 1, 1.2], opacity: [0.06, 0.12, 0.06] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-1/4 end-1/4 h-[400px] w-[400px] rounded-full bg-[hsl(195,85%,55%)] blur-[140px]"
+        />
+        <motion.div
+          animate={{ scale: [1, 1.15, 1], opacity: [0.04, 0.08, 0.04] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+          className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[hsl(210,60%,30%)] blur-[180px]"
+        />
+      </div>
+
+      {/* Dot grid */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.025]"
+        style={{
+          backgroundImage: `radial-gradient(circle, hsl(200 80% 60%) 0.5px, transparent 0.5px)`,
+          backgroundSize: "40px 40px",
+        }}
+      />
+
+      {/* Gradient fade bottom */}
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[hsl(210,30%,4%)] via-[hsl(210,30%,4%,0.8)] to-transparent" />
+
+      {/* Content */}
+      <div className="container relative z-10 py-16 md:py-20">
         <div className="mx-auto max-w-5xl text-center">
-          <div className="mb-8 flex justify-center">
-            <img src={logoImg} alt="SYNA" className="h-28 w-28 object-contain drop-shadow-2xl" />
-          </div>
+          {/* Logo — large with glow */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-10 flex justify-center"
+          >
+            <div className="relative">
+              <div className="absolute inset-0 scale-150 rounded-full bg-[hsl(200,80%,45%,0.15)] blur-[60px]" />
+              <img src={logoImg} alt="SYNA" className="relative h-40 w-40 object-contain drop-shadow-[0_0_40px_hsl(200,80%,50%,0.4)] md:h-52 md:w-52" />
+            </div>
+          </motion.div>
 
-          <h1 className="mb-5 text-6xl font-medium tracking-tight text-white md:text-7xl lg:text-8xl">
+          {/* Brand name */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="mb-4 text-7xl font-medium tracking-tight md:text-8xl lg:text-9xl"
+            style={{
+              background: "linear-gradient(135deg, hsl(0 0% 100%), hsl(200 80% 70%), hsl(195 85% 55%))",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
             SYNA
-          </h1>
+          </motion.h1>
 
-          <p className="mb-4 text-xl font-medium text-[hsl(200,80%,55%)] md:text-2xl">
+          {/* Tagline */}
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="mb-4 text-xl font-medium text-[hsl(200,80%,60%)] md:text-2xl lg:text-3xl"
+          >
             {isAr ? "نحو شراكات تطوير أكثر وضوحاً" : "Towards Clearer Development Partnerships"}
-          </p>
+          </motion.p>
 
-          <p className="mx-auto mb-12 max-w-2xl text-base font-light leading-relaxed text-[hsl(210,15%,60%)]">
+          {/* Description */}
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.65 }}
+            className="mx-auto mb-14 max-w-2xl text-base font-light leading-relaxed text-[hsl(210,15%,55%)] md:text-lg"
+          >
             {t.hero.description}
-          </p>
+          </motion.p>
 
-          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-            <Button size="lg" asChild className="h-13 gap-2.5 rounded-xl px-12 text-base syna-gradient syna-shadow-lg">
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5"
+          >
+            <Button size="lg" asChild className="group h-14 gap-3 rounded-2xl px-14 text-base font-medium syna-gradient syna-shadow-lg transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_12px_50px_-10px_hsl(200,80%,50%,0.4)]">
               <Link to="/auth/login">
                 {t.hero.cta}
-                <Arrow className="h-4 w-4" />
+                <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
               </Link>
             </Button>
-            <Button variant="outline" size="lg" asChild className="h-13 rounded-xl border-[hsl(210,22%,20%)] bg-transparent px-12 text-base text-[hsl(210,15%,75%)] hover:bg-[hsl(210,22%,12%)] hover:text-white">
+            <Button variant="outline" size="lg" asChild className="h-14 rounded-2xl border-[hsl(210,22%,18%)] bg-[hsl(210,28%,8%,0.6)] px-14 text-base text-[hsl(210,15%,75%)] backdrop-blur-sm transition-all duration-300 hover:border-[hsl(200,80%,45%,0.3)] hover:bg-[hsl(210,22%,12%)] hover:text-white hover:scale-[1.02]">
               <a href="#how-it-works">{t.hero.learnMore}</a>
             </Button>
-          </div>
+          </motion.div>
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          {pills.map(({ icon: Icon, label }) => (
-            <div key={label} className="flex items-center gap-2 rounded-full border border-[hsl(210,22%,16%)] bg-[hsl(210,28%,10%,0.8)] px-4 py-2 backdrop-blur-sm transition-all duration-200 hover:border-[hsl(200,80%,45%,0.3)] hover:bg-[hsl(210,28%,13%)]">
-              <Icon className="h-3.5 w-3.5 text-[hsl(200,80%,50%)]" strokeWidth={1.5} />
-              <span className="text-xs font-light text-[hsl(210,15%,75%)]">{label}</span>
-            </div>
+        {/* Feature pills */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1 }}
+          className="mt-14 flex flex-wrap items-center justify-center gap-3"
+        >
+          {pills.map(({ icon: Icon, label }, i) => (
+            <motion.div
+              key={label}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 1.1 + i * 0.1 }}
+              className="group flex items-center gap-2.5 rounded-full border border-[hsl(210,22%,14%)] bg-[hsl(210,28%,8%,0.7)] px-5 py-2.5 backdrop-blur-sm transition-all duration-300 hover:border-[hsl(200,80%,45%,0.35)] hover:bg-[hsl(210,28%,11%)] hover:shadow-[0_0_20px_-5px_hsl(200,80%,50%,0.15)]"
+            >
+              <Icon className="h-4 w-4 text-[hsl(200,80%,55%)] transition-colors duration-300 group-hover:text-[hsl(195,85%,60%)]" strokeWidth={1.5} />
+              <span className="text-sm font-light text-[hsl(210,15%,70%)] transition-colors duration-300 group-hover:text-[hsl(210,15%,85%)]">{label}</span>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+          className="mt-16 flex justify-center"
+        >
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="flex flex-col items-center gap-2"
+          >
+            <div className="h-8 w-[1px] bg-gradient-to-b from-transparent via-[hsl(200,80%,50%,0.3)] to-transparent" />
+            <div className="h-2 w-2 rounded-full bg-[hsl(200,80%,50%,0.3)]" />
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
