@@ -19,8 +19,8 @@ const topFaq = [
   {
     qAr: "ما الفرق بين شراكة التطوير والمساهمة العقارية؟",
     qEn: "What's the difference between a development partnership and a real estate contribution?",
-    aAr: "في شراكة التطوير يتفق المالك والمطور على تطوير الأرض معاً وفق نموذج ربحي متفق عليه. أما المساهمة العقارية فتتم عبر مطور مرخص من الجهات الرسمية لإدارة مساهمات عقارية، حيث يساهم المالك بالأرض ويتم التخارج بنسبة محددة بعد التطوير والبيع.",
-    aEn: "In a development partnership, the owner and developer agree to develop the land together under an agreed profit model. In a real estate contribution, a licensed developer manages contributions where the owner contributes land and exits at a predetermined percentage after development and sale.",
+    aAr: "شراكة التطوير: يتفق المالك والمطور على تطوير الأرض معاً وفق نموذج ربحي متفق عليه، ويتشاركان في العوائد. أما المساهمة العقارية: فتتم عبر مطور مرخص رسمياً من الجهات المعنية لإدارة المساهمات العقارية، حيث يساهم المالك بأرضه ويختار من عدة خيارات: التخارج بنسبة محددة، أو بيع الأرض ضمن المساهمة، أو الدخول العيني الكامل بالأرض كشريك في المشروع.",
+    aEn: "Development Partnership: The owner and developer agree to develop land together under an agreed profit model, sharing returns. Real Estate Contribution: Managed by a developer officially licensed for real estate contributions, where the owner contributes their land and chooses from several options: exiting at a predetermined percentage, selling the land within the contribution, or full in-kind entry as a project partner.",
   },
   {
     qAr: "هل توجد عمولة على العمليات؟",
