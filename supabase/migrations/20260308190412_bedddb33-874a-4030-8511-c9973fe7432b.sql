@@ -1,0 +1,1 @@
+ALTER TYPE public.owner_partnership_goal ADD VALUE IF NOT EXISTS 'real_estate_contribution';

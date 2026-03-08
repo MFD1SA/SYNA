@@ -35,6 +35,7 @@ const goalLabels: Record<string, { ar: string; en: string }> = {
   sell_develop: { ar: "بيع وتطوير", en: "Sell & Develop" },
   partial_exit: { ar: "تخارج جزئي", en: "Partial Exit" },
   offplan_sell: { ar: "بيع على الخارطة", en: "Off-Plan" },
+  real_estate_contribution: { ar: "مساهمة عقارية", en: "Contribution" },
 };
 
 const cityNameAr: Record<string, string> = {
