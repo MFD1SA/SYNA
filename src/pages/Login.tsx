@@ -140,6 +140,12 @@ const LoginPage: React.FC = () => {
           user_id: data.user.id, company_name: companyName, cr_number: crNumber,
           cr_file_url: crFileUrl, marketing_brand_name: brandName || null, email: regEmail, phone: `+966${phone}`,
         });
+        // Notify admin about new developer
+        try {
+          await supabase.functions.invoke("send-deal-notification", {
+            body: { type: "new_developer_registered", registered_name: companyName, registered_email: regEmail, registered_phone: `+966${phone}` },
+          });
+        } catch {}
         toast({ title: isAr ? "تم استلام طلب التسجيل" : "Registration request received", description: isAr ? "تم إرسال رابط التفعيل إلى بريدك الإلكتروني. سيتم مراجعة البيانات خلال 48 ساعة." : "A verification link has been sent to your email. Your data will be reviewed within 48 hours." });
         setMode("login");
       } catch (uploadError: any) {
