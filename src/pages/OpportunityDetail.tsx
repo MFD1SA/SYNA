@@ -260,19 +260,19 @@ const OpportunityDetail: React.FC = () => {
               </div>
 
               {/* Why This Opportunity */}
-              <div className="rounded-2xl border border-border/60 bg-card p-6">
-                <h2 className="text-lg font-medium text-foreground mb-4">
+              <div className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6">
+                <h2 className="text-lg font-medium text-white mb-4">
                   {isAr ? "لماذا هذه الفرصة؟" : "Why This Opportunity?"}
                 </h2>
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-2 gap-3">
                   {features.map((f, idx) => (
-                    <div key={idx} className="flex gap-3 p-3 rounded-xl bg-muted/30">
-                      <div className="shrink-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                        <f.icon className="h-5 w-5 text-primary" />
+                    <div key={idx} className="flex gap-3 p-3 rounded-xl bg-[hsl(210,25%,11%)] border border-[hsl(210,22%,14%)]">
+                      <div className="shrink-0 flex h-10 w-10 items-center justify-center rounded-lg bg-[hsl(200,80%,45%,0.1)]">
+                        <f.icon className="h-5 w-5 text-[hsl(200,80%,55%)]" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-foreground">{f.title}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{f.desc}</p>
+                        <p className="text-sm font-medium text-white">{f.title}</p>
+                        <p className="text-xs text-[hsl(210,15%,50%)] mt-0.5">{f.desc}</p>
                       </div>
                     </div>
                   ))}
