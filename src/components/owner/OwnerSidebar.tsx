@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAdminRole } from "@/hooks/useAdminRole";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard, Landmark, FileText, Handshake, Settings,
-  Globe, LogOut, ChevronLeft, ChevronRight, User,
+  Globe, LogOut, ChevronLeft, ChevronRight, User, ShieldCheck,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 
@@ -18,6 +19,7 @@ interface NavItem {
 const OwnerSidebar: React.FC = () => {
   const { lang, toggleLang } = useLanguage();
   const { user, signOut } = useAuth();
+  const { isAdmin: isAdminUser } = useAdminRole();
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
@@ -92,6 +94,16 @@ const OwnerSidebar: React.FC = () => {
           })}
         </div>
       </nav>
+
+      {/* Admin back link */}
+      {isAdminUser && !collapsed && (
+        <div className="border-t border-border/60 px-3 pt-2">
+          <Link to="/admincp/overview" className="flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-[12px] font-medium text-primary transition-colors hover:bg-primary/5">
+            <ShieldCheck className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+            <span>{isAr ? "العودة للإدارة" : "Back to Admin"}</span>
+          </Link>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="space-y-0.5 border-t border-border/60 p-3">
