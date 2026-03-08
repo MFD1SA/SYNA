@@ -664,7 +664,36 @@ const AdminDeals: React.FC = () => {
                   <Shield className="h-4 w-4 text-emerald-600 shrink-0" />
                   <div>
                     <p className="text-xs font-medium text-emerald-700">{isAr ? "عمولة المنصة: 2.5%" : "Platform Commission: 2.5%"}</p>
-                    <p className="text-[10px] text-emerald-600">{isAr ? "حالة العمولة:" : "Commission Status:"} {viewDeal.commission_status}</p>
+                    <p className="text-[10px] text-emerald-600">
+                      {isAr ? "حالة العمولة:" : "Commission Status:"}{" "}
+                      {isAr
+                        ? (commissionStatusLabels[viewDeal.commission_status]?.ar || viewDeal.commission_status)
+                        : (commissionStatusLabels[viewDeal.commission_status]?.en || viewDeal.commission_status)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Governance Info */}
+                <div className="rounded-xl border border-border/40 p-4 space-y-2">
+                  <h6 className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                    <Shield className="h-3.5 w-3.5 text-primary" />
+                    {isAr ? "حوكمة الصفقة" : "Deal Governance"}
+                  </h6>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-lg bg-muted/30 border border-border/30 p-2.5">
+                      <p className="text-[10px] text-muted-foreground mb-0.5">{isAr ? "المشرف المسؤول" : "Assigned Supervisor"}</p>
+                      <p className="text-xs font-medium text-foreground">{viewDeal.support_assignee ? (user?.email || "—") : (isAr ? "غير محدد" : "Unassigned")}</p>
+                    </div>
+                    <div className="rounded-lg bg-muted/30 border border-border/30 p-2.5">
+                      <p className="text-[10px] text-muted-foreground mb-0.5">{isAr ? "تاريخ الإنشاء" : "Created"}</p>
+                      <p className="text-xs font-medium text-foreground">{new Date(viewDeal.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { year: "numeric", month: "short", day: "numeric" })}</p>
+                    </div>
+                    {viewDeal.closed_at && (
+                      <div className="rounded-lg bg-muted/30 border border-border/30 p-2.5">
+                        <p className="text-[10px] text-muted-foreground mb-0.5">{isAr ? "تاريخ الإغلاق" : "Closed At"}</p>
+                        <p className="text-xs font-medium text-foreground">{new Date(viewDeal.closed_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { year: "numeric", month: "short", day: "numeric" })}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
