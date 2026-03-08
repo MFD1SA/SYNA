@@ -90,14 +90,16 @@ const OwnerRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 // Public-only route (redirect if already logged in)
 const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const { userType, loading: typeLoading } = useUserType();
   if (authLoading || typeLoading) return <LoadingScreen />;
   if (user) {
     if (userType === "admin") return <Navigate to="/admincp/overview" replace />;
     if (userType === "developer") return <Navigate to="/crm/dashboard" replace />;
     if (userType === "owner") return <Navigate to="/owner/dashboard" replace />;
-    return <Navigate to="/no-access" replace />;
+    // User has no role — sign them out silently and show login page
+    signOut();
+    return <>{children}</>;
   }
   return <>{children}</>;
 };
