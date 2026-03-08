@@ -5,6 +5,7 @@ import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { ShieldCheck } from "lucide-react";
+import headerPrivacyImg from "@/assets/header-privacy.jpg";
 
 const PrivacyPage: React.FC = () => {
   const { t, lang } = useLanguage();
