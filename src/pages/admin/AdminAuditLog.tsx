@@ -126,7 +126,7 @@ const AdminAuditLog: React.FC = () => {
       ) : (
         <div className="space-y-2">
           {logs.map(log => (
-            <div key={log.id} className="doma-card flex items-center justify-between p-4">
+            <div key={log.id} className="rounded-xl border border-border/60 bg-card flex items-center justify-between p-4 hover:border-primary/20 transition-all">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <Badge variant="outline" className={`text-[10px] shrink-0 ${actionColors[log.action] || "bg-muted text-muted-foreground"}`}>
                   {actionLabels[log.action]?.[isAr ? "ar" : "en"] || log.action}
