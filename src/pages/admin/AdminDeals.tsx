@@ -49,6 +49,13 @@ const statusLabels: Record<string, { ar: string; en: string }> = {
   info_requested: { ar: "معلومات مطلوبة", en: "Info Requested" },
 };
 
+const commissionStatusLabels: Record<string, { ar: string; en: string }> = {
+  pending: { ar: "قيد الانتظار", en: "Pending" },
+  paid: { ar: "مدفوعة", en: "Paid" },
+  invoiced: { ar: "تم إصدار فاتورة", en: "Invoiced" },
+  waived: { ar: "معفاة", en: "Waived" },
+};
+
 const AdminDeals: React.FC = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
