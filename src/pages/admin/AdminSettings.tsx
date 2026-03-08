@@ -45,6 +45,23 @@ const AdminSettings: React.FC = () => {
     });
   }, [user]);
 
+  useEffect(() => {
+    supabase.from("platform_content").select("body_en").eq("content_key", "demo_credentials_visible").maybeSingle().then(({ data }) => {
+      setDemoCredentialsVisible(data?.body_en === "true");
+    });
+  }, []);
+
+  const handleToggleDemo = async (checked: boolean) => {
+    setSavingDemo(true);
+    const { error } = await supabase.from("platform_content").update({ body_en: checked ? "true" : "false", body_ar: checked ? "true" : "false" }).eq("content_key", "demo_credentials_visible");
+    if (!error) {
+      setDemoCredentialsVisible(checked);
+      if (user) await logAudit(user.id, user.email, "update", "platform_setting", "demo_credentials_visible", { visible: checked });
+      toast({ title: checked ? (isAr ? "تم تفعيل البيانات التجريبية ✓" : "Demo credentials enabled ✓") : (isAr ? "تم إخفاء البيانات التجريبية ✓" : "Demo credentials hidden ✓") });
+    }
+    setSavingDemo(false);
+  };
+
   const handleSaveProfile = async () => {
     if (!user) return;
     setSavingProfile(true);
