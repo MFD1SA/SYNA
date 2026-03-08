@@ -24,7 +24,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
   ];
 
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[hsl(210,30%,4%)]">
+    <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden bg-[hsl(210,30%,4%)]">
       {/* Animated orbital rings */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
         <motion.div

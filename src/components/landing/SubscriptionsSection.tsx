@@ -15,7 +15,7 @@ const HowItWorksSection: React.FC = () => {
   ];
 
   return (
-    <section id="how-it-works" className="relative bg-[hsl(210,28%,6%)] py-24 md:py-32">
+    <section id="how-it-works" className="relative bg-[hsl(210,28%,6%)] py-14 md:py-18">
       {/* Background */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.1)] to-transparent" />

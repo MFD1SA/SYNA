@@ -92,7 +92,7 @@ const OpportunitiesSection: React.FC = () => {
   const items = [...lands, ...lands];
 
   return (
-    <section className="relative bg-[hsl(210,30%,5%)] py-24 md:py-28 overflow-hidden">
+    <section className="relative bg-[hsl(210,30%,5%)] py-14 md:py-18 overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.12)] to-transparent" />
         <div className="absolute top-1/2 end-[5%] h-[400px] w-[400px] rounded-full bg-[hsl(200,80%,40%,0.03)] blur-[120px]" />
