@@ -41,35 +41,32 @@ export const useUserType = (): UserTypeResult => {
     const checkUserType = async () => {
       try {
         // Check all three in parallel for speed
-        const [adminRes, devRes, landsRes] = await Promise.all([
+        const [rolesRes, devRes] = await Promise.all([
           supabase
             .from("user_roles")
             .select("role")
-            .eq("user_id", userId)
-            .eq("role", "admin")
-            .maybeSingle(),
+            .eq("user_id", userId),
           supabase
             .from("developers")
             .select("id")
             .eq("user_id", userId)
             .maybeSingle(),
-          supabase
-            .from("lands")
-            .select("id")
-            .eq("owner_id", userId)
-            .limit(1),
         ]);
 
         checkedUserId.current = userId;
 
+        const roles = (rolesRes.data || []).map((r: any) => r.role);
+        const isAdmin = roles.includes("admin");
+        const isOwnerRole = roles.includes("owner");
+
         // Priority: admin > developer > owner > none
-        if (adminRes.data) {
+        if (isAdmin) {
           setUserType("admin");
           setDeveloperId(null);
         } else if (devRes.data) {
           setUserType("developer");
           setDeveloperId(devRes.data.id);
-        } else if (landsRes.data && landsRes.data.length > 0) {
+        } else if (isOwnerRole) {
           setUserType("owner");
           setDeveloperId(null);
         } else {
