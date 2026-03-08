@@ -14,7 +14,8 @@ type NotificationType =
   | "meeting_scheduled"
   | "new_owner_registered"
   | "new_developer_registered"
-  | "deal_stage_changed";
+  | "deal_stage_changed"
+  | "draft_created_for_owner";
 
 interface NotificationPayload {
   type: NotificationType;
