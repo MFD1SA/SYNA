@@ -313,6 +313,9 @@ const AdminLands: React.FC = () => {
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleFeatured(land.id, land.is_featured)}>
                         {land.is_featured ? <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" /> : <StarOff className="h-3.5 w-3.5 text-muted-foreground" />}
                       </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setLegalDocLand(land)}>
+                        <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                      </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => deleteLand(land.id)}>
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
