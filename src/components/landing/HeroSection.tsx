@@ -146,23 +146,27 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
           </motion.div>
         </div>
 
-        {/* Feature pills */}
+        {/* Feature cards grid */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1 }}
-          className="mt-14 flex flex-wrap items-center justify-center gap-3"
+          className="mx-auto mt-16 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
         >
           {pills.map(({ icon: Icon, label }, i) => (
             <motion.div
               key={label}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 1.1 + i * 0.1 }}
-              className="group flex items-center gap-2.5 rounded-full border border-[hsl(210,22%,14%)] bg-[hsl(210,28%,8%,0.7)] px-5 py-2.5 backdrop-blur-sm transition-all duration-300 hover:border-[hsl(200,80%,45%,0.35)] hover:bg-[hsl(210,28%,11%)] hover:shadow-[0_0_20px_-5px_hsl(200,80%,50%,0.15)]"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 1.1 + i * 0.12 }}
+              className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-2xl border border-[hsl(210,22%,13%)] bg-[hsl(210,28%,7%,0.8)] px-4 py-6 backdrop-blur-md transition-all duration-400 hover:border-[hsl(200,80%,45%,0.3)] hover:bg-[hsl(210,28%,9%)] hover:shadow-[0_8px_30px_-8px_hsl(200,80%,50%,0.15)] hover:-translate-y-1"
             >
-              <Icon className="h-4 w-4 text-[hsl(200,80%,55%)] transition-colors duration-300 group-hover:text-[hsl(195,85%,60%)]" strokeWidth={1.5} />
-              <span className="text-sm font-light text-[hsl(210,15%,70%)] transition-colors duration-300 group-hover:text-[hsl(210,15%,85%)]">{label}</span>
+              {/* Corner glow */}
+              <div className="pointer-events-none absolute -top-6 -end-6 h-16 w-16 rounded-full bg-[hsl(200,80%,50%,0.06)] transition-all duration-500 group-hover:scale-[3] group-hover:bg-[hsl(200,80%,50%,0.08)]" />
+              <div className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-[hsl(200,80%,45%,0.15)] bg-[hsl(200,80%,45%,0.08)] transition-all duration-300 group-hover:border-[hsl(200,80%,45%,0.3)] group-hover:bg-[hsl(200,80%,45%,0.12)] group-hover:shadow-[0_0_16px_-4px_hsl(200,80%,50%,0.25)]">
+                <Icon className="h-5 w-5 text-[hsl(200,80%,55%)] transition-colors duration-300 group-hover:text-[hsl(195,85%,65%)]" strokeWidth={1.5} />
+              </div>
+              <span className="relative text-center text-sm font-light text-[hsl(210,15%,65%)] transition-colors duration-300 group-hover:text-white">{label}</span>
             </motion.div>
           ))}
         </motion.div>
