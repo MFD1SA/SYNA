@@ -17,8 +17,9 @@ import LocationMap from "@/components/crm/LocationMap";
 import {
   Search, MapPin, Ruler, Send, CheckCircle2, Clock, Filter,
   Calendar, ArrowUpDown, Image as ImageIcon, Eye, ChevronLeft, ChevronRight,
-  FileText, Building2, XCircle,
+  FileText, Building2, XCircle, Link2,
 } from "lucide-react";
+import DeveloperFeeAcknowledgment from "@/components/crm/DeveloperFeeAcknowledgment";
 
 const usageLabels: Record<string, { ar: string; en: string }> = {
   residential: { ar: "سكني", en: "Residential" },
@@ -52,7 +53,7 @@ const CrmBrowseLands: React.FC = () => {
   const [requestDialog, setRequestDialog] = useState<string | null>(null);
   const [detailDialog, setDetailDialog] = useState<any>(null);
   const [mapDialog, setMapDialog] = useState<any>(null);
-  const [requestForm, setRequestForm] = useState({ proposal_summary: "", proposed_project_type: "" });
+  const [requestForm, setRequestForm] = useState({ proposal_summary: "", proposed_project_type: "", google_drive_link: "", fee_acknowledged: false });
   const [submittedLands, setSubmittedLands] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [usageFilter, setUsageFilter] = useState("all");
@@ -94,8 +95,8 @@ const CrmBrowseLands: React.FC = () => {
   }, [user]);
 
   const handleSubmitRequest = async () => {
-    if (!developerId || !requestDialog || !requestForm.proposal_summary || !requestForm.proposed_project_type) {
-      toast({ variant: "destructive", title: isAr ? "يرجى تعبئة جميع الحقول" : "Please fill all fields" });
+    if (!developerId || !requestDialog || !requestForm.proposal_summary || !requestForm.proposed_project_type || !requestForm.fee_acknowledged) {
+      toast({ variant: "destructive", title: isAr ? "يرجى تعبئة جميع الحقول والموافقة على الرسوم" : "Please fill all fields and acknowledge fees" });
       return;
     }
     // Get the land info for notification
@@ -108,7 +109,8 @@ const CrmBrowseLands: React.FC = () => {
       proposed_project_type: requestForm.proposed_project_type,
       commission_accepted: true,
       commission_rate: 2.5,
-    });
+      proposal_link: requestForm.google_drive_link || null,
+    } as any);
     if (error) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
     } else {
@@ -138,7 +140,7 @@ const CrmBrowseLands: React.FC = () => {
       }
       
       setRequestDialog(null);
-      setRequestForm({ proposal_summary: "", proposed_project_type: "" });
+      setRequestForm({ proposal_summary: "", proposed_project_type: "", google_drive_link: "", fee_acknowledged: false });
       if (developerId) fetchMyRequests(developerId);
     }
   };
@@ -419,23 +421,45 @@ const CrmBrowseLands: React.FC = () => {
       </Dialog>
 
       {/* Request Dialog */}
-      <Dialog open={!!requestDialog} onOpenChange={o => { if (!o) { setRequestDialog(null); setRequestForm({ proposal_summary: "", proposed_project_type: "" }); } }}>
-        <DialogContent>
+      <Dialog open={!!requestDialog} onOpenChange={o => { if (!o) { setRequestDialog(null); setRequestForm({ proposal_summary: "", proposed_project_type: "", google_drive_link: "", fee_acknowledged: false }); } }}>
+        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{isAr ? "تقديم طلب شراكة" : "Submit Partnership Request"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <div className="space-y-2">
-              <Label>{isAr ? "نوع المشروع المقترح" : "Proposed Project Type"}</Label>
+              <Label>{isAr ? "نوع المشروع المقترح" : "Proposed Project Type"} <span className="text-destructive">*</span></Label>
               <Input value={requestForm.proposed_project_type} onChange={e => setRequestForm({ ...requestForm, proposed_project_type: e.target.value })} placeholder={isAr ? "مثال: مجمع تجاري" : "e.g., Commercial Complex"} />
             </div>
             <div className="space-y-2">
-              <Label>{isAr ? "ملخص المقترح" : "Proposal Summary"}</Label>
+              <Label>{isAr ? "ملخص المقترح" : "Proposal Summary"} <span className="text-destructive">*</span></Label>
               <Textarea value={requestForm.proposal_summary} onChange={e => setRequestForm({ ...requestForm, proposal_summary: e.target.value })} rows={4} placeholder={isAr ? "اكتب وصفاً واضحاً لمقترح التطوير..." : "Write a clear description..."} />
             </div>
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1.5">
+                <Link2 className="h-3.5 w-3.5 text-primary" />
+                {isAr ? "رابط العرض التفصيلي (Google Drive)" : "Detailed Proposal Link (Google Drive)"}
+              </Label>
+              <Input
+                dir="ltr"
+                value={requestForm.google_drive_link}
+                onChange={e => setRequestForm({ ...requestForm, google_drive_link: e.target.value })}
+                placeholder="https://drive.google.com/..."
+              />
+              <p className="text-[10px] text-muted-foreground">
+                {isAr ? "ارفع مقترحك بصيغة PDF على Google Drive والصق الرابط هنا" : "Upload your proposal as PDF to Google Drive and paste the link here"}
+              </p>
+            </div>
+
+            {/* Fee Acknowledgment */}
+            <DeveloperFeeAcknowledgment
+              accepted={requestForm.fee_acknowledged}
+              onAccept={(v) => setRequestForm({ ...requestForm, fee_acknowledged: v })}
+            />
+
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setRequestDialog(null)}>{isAr ? "إلغاء" : "Cancel"}</Button>
-              <Button onClick={handleSubmitRequest} className="doma-gradient">{isAr ? "إرسال الطلب" : "Submit Request"}</Button>
+              <Button onClick={handleSubmitRequest} disabled={!requestForm.fee_acknowledged} className="syna-gradient">{isAr ? "إرسال الطلب" : "Submit Request"}</Button>
             </div>
           </div>
         </DialogContent>

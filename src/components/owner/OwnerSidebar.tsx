@@ -34,6 +34,7 @@ const OwnerSidebar: React.FC = () => {
 
   const navItems: NavItem[] = [
     { label: { ar: "لوحة التحكم", en: "Dashboard" }, href: "/owner/dashboard", icon: LayoutDashboard },
+    { label: { ar: "أراضيي", en: "My Lands" }, href: "/owner/lands", icon: Landmark },
     { label: { ar: "طلبات الشراكة", en: "Requests" }, href: "/owner/requests", icon: FileText },
     { label: { ar: "صفقاتي", en: "My Deals" }, href: "/owner/deals", icon: Handshake },
     { label: { ar: "الإعدادات", en: "Settings" }, href: "/owner/settings", icon: Settings },

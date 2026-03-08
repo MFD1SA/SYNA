@@ -38,6 +38,7 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import OpportunityDetail from "./pages/OpportunityDetail";
 import Contact from "./pages/Contact";
 import OwnerDashboard from "./pages/owner/OwnerDashboard";
+import OwnerLands from "./pages/owner/OwnerLands";
 import OwnerRequests from "./pages/owner/OwnerRequests";
 import OwnerDeals from "./pages/owner/OwnerDeals";
 import OwnerSettings from "./pages/owner/OwnerSettings";
@@ -154,6 +155,7 @@ const App: React.FC = () => (
 
               {/* Owner */}
               <Route path="/owner/dashboard" element={<OwnerRoute><OwnerDashboard /></OwnerRoute>} />
+              <Route path="/owner/lands" element={<OwnerRoute><OwnerLands /></OwnerRoute>} />
               <Route path="/owner/requests" element={<OwnerRoute><OwnerRequests /></OwnerRoute>} />
               <Route path="/owner/deals" element={<OwnerRoute><OwnerDeals /></OwnerRoute>} />
               <Route path="/owner/settings" element={<OwnerRoute><OwnerSettings /></OwnerRoute>} />
