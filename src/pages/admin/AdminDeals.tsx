@@ -231,6 +231,21 @@ const AdminDeals: React.FC = () => {
         deal_id: stageDialog.dealId, from_stage: stageDialog.currentStage as any, to_stage: nextStage as any,
         changed_by: user!.id, notes: stageNotes || null,
       });
+      // Send stage change notification
+      try {
+        await supabase.functions.invoke("send-deal-notification", {
+          body: {
+            type: "deal_stage_changed",
+            deal_id: stageDialog.dealId,
+            developer_name: stageDialog.devName,
+            land_city: stageDialog.landCity,
+            land_district: stageDialog.landDistrict,
+            from_stage: stageDialog.currentStage,
+            to_stage: nextStage,
+            stage_notes: stageNotes || null,
+          },
+        });
+      } catch {}
       toast({ title: isAr ? `تم الانتقال إلى: ${stageConfig[nextStage]?.ar}` : `Advanced to: ${stageConfig[nextStage]?.en}` });
       setStageDialog(null); setStageNotes("");
     } catch (err: any) {
