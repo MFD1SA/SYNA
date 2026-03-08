@@ -27,7 +27,7 @@ const LogosSection: React.FC = () => {
       ];
 
   return (
-    <section className="relative bg-[hsl(210,30%,4%)] py-24 md:py-28">
+    <section className="relative bg-[hsl(210,30%,4%)] py-14 md:py-18">
       <div className="pointer-events-none absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.1)] to-transparent" />
 
       <div className="container">
