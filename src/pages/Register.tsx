@@ -90,74 +90,45 @@ const RegisterPage: React.FC = () => {
 
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: window.location.origin,
-        data: {
-          company_name: companyName,
-          subscription_type: "individual",
-          account_type: "developer",
-          phone: `+966${phone}`,
-        },
-      },
-    });
+    try {
+      // Upload files first
+      const crFileUrl = await uploadFile(crFile!, `temp_${Date.now()}`, "cr");
+      await uploadFile(identityFile!, `temp_${Date.now()}`, "identity");
 
-    if (error) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
-      setLoading(false);
-      return;
-    }
-
-    if (data.user) {
-      try {
-        // Upload files
-        const crFileUrl = await uploadFile(crFile!, data.user.id, "cr");
-        const identityFileUrl = await uploadFile(identityFile!, data.user.id, "identity");
-
-        // Update profile
-        await supabase.from("profiles").update({
-          subscription_type: "individual" as any,
-          phone: `+966${phone}`,
-        }).eq("user_id", data.user.id);
-
-        // Policy consents
-        await supabase.from("policy_consents").insert([
-          { user_id: data.user.id, policy_type: "terms", policy_version: "1.0.0" },
-          { user_id: data.user.id, policy_type: "privacy", policy_version: "1.0.0" },
-          { user_id: data.user.id, policy_type: "usage", policy_version: "1.0.0" },
-        ]);
-
-        // Create developer profile
-        await supabase.from("developers").insert({
-          user_id: data.user.id,
+      // Use edge function for reliable registration (bypasses RLS issues with unconfirmed email)
+      const res = await supabase.functions.invoke("register-developer", {
+        body: {
+          email,
+          password,
           company_name: companyName,
           cr_number: crNumber,
           cr_file_url: crFileUrl,
           marketing_brand_name: brandName || null,
-          email,
           phone: `+966${phone}`,
           website: website.trim() || null,
-        });
+        },
+      });
 
-        // Notify admin about new developer
-        try {
-          await supabase.functions.invoke("send-deal-notification", {
-            body: { type: "new_developer_registered", registered_name: companyName, registered_email: email, registered_phone: `+966${phone}` },
-          });
-        } catch {}
-
-        toast({
-          title: isAr ? "تم استلام طلب التسجيل" : "Registration request received",
-          description: isAr
-            ? "تم إرسال رابط التفعيل إلى بريدك الإلكتروني. سيتم مراجعة البيانات وإفادتك بنتيجة التحقق خلال 48 ساعة لتفعيل حسابك."
-            : "A verification link has been sent to your email. Your data will be reviewed and you'll be notified of verification results within 48 hours.",
-        });
-      } catch (uploadError: any) {
-        toast({ variant: "destructive", title: isAr ? "خطأ في رفع الملفات" : "File upload error", description: uploadError.message });
+      if (res.error || res.data?.error) {
+        throw new Error(res.data?.error || res.error?.message || "Registration failed");
       }
+
+      // Notify admin about new developer
+      try {
+        await supabase.functions.invoke("send-deal-notification", {
+          body: { type: "new_developer_registered", registered_name: companyName, registered_email: email, registered_phone: `+966${phone}` },
+        });
+      } catch {}
+
+      toast({
+        title: isAr ? "تم استلام طلب التسجيل" : "Registration request received",
+        description: isAr
+          ? "تم إرسال رابط التفعيل إلى بريدك الإلكتروني. سيتم مراجعة البيانات وإفادتك بنتيجة التحقق خلال 48 ساعة لتفعيل حسابك."
+          : "A verification link has been sent to your email. Your data will be reviewed and you'll be notified of verification results within 48 hours.",
+      });
       navigate("/auth/login");
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
     }
     setLoading(false);
   };

@@ -63,12 +63,13 @@ const LoginPage: React.FC = () => {
     }
     if (data.user) {
       // Check if user has a valid role before proceeding
-      const [devRes, landsRes] = await Promise.all([
+      const [devRes, rolesRes] = await Promise.all([
         supabase.from("developers").select("id").eq("user_id", data.user.id).maybeSingle(),
-        supabase.from("lands").select("id").eq("owner_id", data.user.id).limit(1),
+        supabase.from("user_roles").select("role").eq("user_id", data.user.id),
       ]);
       const isDev = !!devRes.data;
-      const isOwner = !!(landsRes.data && landsRes.data.length > 0);
+      const roles = (rolesRes.data || []).map((r: any) => r.role);
+      const isOwner = roles.includes("owner");
       if (!isDev && !isOwner) {
         await supabase.auth.signOut();
         toast({ variant: "destructive", title: isAr ? "غير مصرح" : "Unauthorized", description: isAr ? "حسابك غير مرتبط بأي دور في المنصة. تواصل مع مدير النظام." : "Your account is not linked to any role. Contact the administrator." });
@@ -121,38 +122,56 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
-    const { data, error } = await supabase.auth.signUp({
-      email: regEmail, password: regPassword,
-      options: { emailRedirectTo: window.location.origin, data: { company_name: companyName, subscription_type: "individual", account_type: "developer", phone: `+966${phone}` } },
-    });
-    if (error) { toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message }); setLoading(false); return; }
-    if (data.user) {
-      try {
-        const crFileUrl = await uploadFile(crFile!, data.user.id, "cr");
-        await uploadFile(identityFile!, data.user.id, "identity");
-        await supabase.from("profiles").update({ subscription_type: "individual" as any, phone: `+966${phone}` }).eq("user_id", data.user.id);
-        await supabase.from("policy_consents").insert([
-          { user_id: data.user.id, policy_type: "terms", policy_version: "1.0.0" },
-          { user_id: data.user.id, policy_type: "privacy", policy_version: "1.0.0" },
-          { user_id: data.user.id, policy_type: "usage", policy_version: "1.0.0" },
-        ]);
-        await supabase.from("developers").insert({
-          user_id: data.user.id, company_name: companyName, cr_number: crNumber,
-          cr_file_url: crFileUrl, marketing_brand_name: brandName || null, email: regEmail, phone: `+966${phone}`,
-        });
-        // Notify admin about new developer
-        try {
-          await supabase.functions.invoke("send-deal-notification", {
-            body: { type: "new_developer_registered", registered_name: companyName, registered_email: regEmail, registered_phone: `+966${phone}` },
-          });
-        } catch {}
-        toast({ title: isAr ? "تم استلام طلب التسجيل" : "Registration request received", description: isAr ? "تم إرسال رابط التفعيل إلى بريدك الإلكتروني. سيتم مراجعة البيانات خلال 48 ساعة." : "A verification link has been sent to your email. Your data will be reviewed within 48 hours." });
-        setMode("login");
-      } catch (uploadError: any) {
-        toast({ variant: "destructive", title: isAr ? "خطأ في رفع الملفات" : "File upload error", description: uploadError.message });
+    try {
+      // First upload files to storage (anonymous upload)
+      // We need to use the edge function for registration since signUp without session won't allow RLS-protected inserts
+      const crFileUrl = await uploadFileAnon(crFile!, `temp_${Date.now()}`, "cr");
+      await uploadFileAnon(identityFile!, `temp_${Date.now()}`, "identity");
+
+      // Use edge function to create developer account reliably with service role
+      const res = await supabase.functions.invoke("register-developer", {
+        body: {
+          email: regEmail,
+          password: regPassword,
+          company_name: companyName,
+          cr_number: crNumber,
+          cr_file_url: crFileUrl,
+          marketing_brand_name: brandName || null,
+          phone: `+966${phone}`,
+          website: website.trim() || null,
+        },
+      });
+
+      if (res.error || res.data?.error) {
+        throw new Error(res.data?.error || res.error?.message || "Registration failed");
       }
+
+      // Notify admin about new developer
+      try {
+        await supabase.functions.invoke("send-deal-notification", {
+          body: { type: "new_developer_registered", registered_name: companyName, registered_email: regEmail, registered_phone: `+966${phone}` },
+        });
+      } catch {}
+
+      toast({
+        title: isAr ? "تم استلام طلب التسجيل" : "Registration request received",
+        description: isAr
+          ? "تم إرسال رابط التفعيل إلى بريدك الإلكتروني. سيتم مراجعة البيانات خلال 48 ساعة."
+          : "A verification link has been sent to your email. Your data will be reviewed within 48 hours.",
+      });
+      setMode("login");
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
     }
     setLoading(false);
+  };
+
+  const uploadFileAnon = async (file: File, userId: string, folder: string): Promise<string> => {
+    const ext = file.name.split(".").pop();
+    const path = `${userId}/${folder}_${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("developer-docs").upload(path, file);
+    if (error) throw error;
+    return path;
   };
 
   const inputClasses = "h-11 rounded-xl border-[hsl(210,22%,16%)] bg-[hsl(210,28%,8%)] text-white placeholder:text-[hsl(210,15%,35%)] focus:border-[hsl(200,80%,45%,0.4)] focus:ring-[hsl(200,80%,45%,0.2)]";

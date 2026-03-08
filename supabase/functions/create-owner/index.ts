@@ -125,6 +125,9 @@ Deno.serve(async (req) => {
 
     if (createError) throw createError;
 
+    // Assign 'owner' role so the user can be detected as owner
+    await adminClient.from("user_roles").insert({ user_id: newUser.user.id, role: "owner" });
+
     return new Response(
       JSON.stringify({ user_id: newUser.user.id, email: newUser.user.email }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
