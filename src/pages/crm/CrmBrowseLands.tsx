@@ -139,7 +139,7 @@ const CrmBrowseLands: React.FC = () => {
       }
       
       setRequestDialog(null);
-      setRequestForm({ proposal_summary: "", proposed_project_type: "" });
+      setRequestForm({ proposal_summary: "", proposed_project_type: "", google_drive_link: "", fee_acknowledged: false });
       if (developerId) fetchMyRequests(developerId);
     }
   };
