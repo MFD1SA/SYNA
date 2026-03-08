@@ -339,6 +339,13 @@ serve(async (req) => {
         msgEn: `New request from ${payload.developer_name || ""} for land in ${payload.land_city || ""}`,
         entityType: "deal_request",
       },
+      draft_created_for_owner: {
+        titleAr: "أرض جديدة بانتظار مراجعتك",
+        titleEn: "New Land Awaiting Your Review",
+        msgAr: `تم إدراج أرض في ${payload.land_city || ""} نيابةً عنك. يرجى المراجعة والاعتماد.`,
+        msgEn: `A land in ${payload.land_city || ""} was added on your behalf. Please review and approve.`,
+        entityType: "land",
+      },
     };
 
     const notif = notifMap[payload.type];
