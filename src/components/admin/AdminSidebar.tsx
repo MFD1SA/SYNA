@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard, Landmark, HardHat, Handshake,
   Bot, Globe, LogOut, ChevronLeft, ChevronRight, ShieldCheck,
-  MapPin, History, Users, Target, Settings, FileText,
+  MapPin, History, Users, Settings, FileText,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 
@@ -52,7 +52,6 @@ const AdminSidebar: React.FC = () => {
       label: { ar: "الأدوات", en: "Tools" },
       items: [
         { label: { ar: "المساعد الذكي", en: "AI Assistant" }, href: "/admincp/ai", icon: Bot },
-        { label: { ar: "الاستهداف", en: "Targets" }, href: "/admincp/targets", icon: Target },
         { label: { ar: "المحتوى", en: "Content" }, href: "/admincp/content", icon: FileText },
       ],
     },
