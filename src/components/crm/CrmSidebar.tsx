@@ -51,24 +51,26 @@ const CrmSidebar: React.FC = () => {
     >
       {/* Header */}
       <div className="flex h-14 items-center justify-between border-b border-border/60 px-3">
-        {!collapsed && (
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <img src={logoImg} alt="SYNA" className="h-8 w-8 object-contain" />
+        <Link to="/crm/dashboard" className="flex items-center gap-1.5">
+          <img src={logoImg} alt="SYNA" className="h-11 w-11 object-contain" />
+          {!collapsed && (
+            <div className="flex flex-col">
               <span className="text-base font-medium text-foreground">SYNA</span>
+              {tenantName && (
+                <span className="truncate text-[10px] font-light text-muted-foreground">
+                  {tenantName}
+                </span>
+              )}
             </div>
-            {tenantName && (
-              <span className="mt-0.5 truncate text-[10px] font-light text-muted-foreground ps-8">
-                {tenantName}
-              </span>
-            )}
-          </div>
-        )}
+          )}
+        </Link>
         <div className="flex items-center gap-1">
           <NotificationDropdown />
-          <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} className="h-7 w-7 shrink-0 text-muted-foreground">
-            <CollapseIcon className="h-3.5 w-3.5" />
-          </Button>
+          {!collapsed && (
+            <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} className="h-7 w-7 shrink-0 text-muted-foreground">
+              <CollapseIcon className="h-3.5 w-3.5" />
+            </Button>
+          )}
         </div>
       </div>
 

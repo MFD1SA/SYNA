@@ -47,15 +47,15 @@ const OwnerSidebar: React.FC = () => {
     >
       {/* Header */}
       <div className="flex h-14 items-center justify-between border-b border-border/60 px-3">
+        <Link to="/owner/dashboard" className="flex items-center gap-1.5">
+          <img src={logoImg} alt="SYNA" className="h-11 w-11 object-contain" />
+          {!collapsed && <span className="text-base font-medium text-foreground">SYNA</span>}
+        </Link>
         {!collapsed && (
-          <Link to="/owner/dashboard" className="flex items-center gap-1.5">
-            <img src={logoImg} alt="SYNA" className="h-8 w-8 object-contain" />
-            <span className="text-base font-medium text-foreground">SYNA</span>
-          </Link>
+          <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} className="h-7 w-7 shrink-0 text-muted-foreground">
+            <CollapseIcon className="h-3.5 w-3.5" />
+          </Button>
         )}
-        <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} className="h-7 w-7 shrink-0 text-muted-foreground">
-          <CollapseIcon className="h-3.5 w-3.5" />
-        </Button>
       </div>
 
       {/* Role badge */}
