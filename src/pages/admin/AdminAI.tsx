@@ -156,7 +156,7 @@ const AdminAI: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="flex h-[calc(100vh-8rem)] flex-col">
+      <div className="flex h-[calc(100vh-8rem)] flex-col" dir={isAr ? "rtl" : "ltr"}>
         {/* Header */}
         <div className="mb-4 flex items-start justify-between">
           <div>
@@ -166,8 +166,8 @@ const AdminAI: React.FC = () => {
             </h1>
             <p className="mt-1 text-sm font-light text-muted-foreground">
               {isAr
-                ? "مدعوم بـ GPT-5 و Gemini Pro — مستشارك الذكي للتطوير العقاري"
-                : "Powered by GPT-5 & Gemini Pro — Your smart real estate advisor"}
+                ? "مستشارك الذكي للتطوير العقاري — تحليل ومعالجة متقدمة"
+                : "Your smart real estate advisor — advanced analysis & processing"}
             </p>
           </div>
           <div className="flex items-center gap-2">
