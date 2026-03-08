@@ -5,6 +5,7 @@ import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Scale } from "lucide-react";
+import headerUsagePolicyImg from "@/assets/header-usage-policy.jpg";
 
 const UsagePolicyPage: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -30,7 +31,7 @@ const UsagePolicyPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[hsl(210,30%,4%)]">
       <Navbar />
-      <PageHeader icon={Scale} title={isAr ? "سياسة الاستخدام" : "Usage Policy"} description={isAr ? "القواعد والضوابط التي تحكم استخدام منصة سينا لضمان بيئة آمنة واحترافية" : "The rules and guidelines governing the use of the SYNA platform to ensure a safe and professional environment"} />
+      <PageHeader icon={Scale} title={isAr ? "سياسة الاستخدام" : "Usage Policy"} description={isAr ? "القواعد والضوابط التي تحكم استخدام منصة سينا لضمان بيئة آمنة واحترافية" : "The rules and guidelines governing the use of the SYNA platform to ensure a safe and professional environment"} backgroundImage={headerUsagePolicyImg} />
       <main className="container py-10">
         <div className="max-w-3xl mx-auto space-y-5">
           {sections.map((s, i) => (

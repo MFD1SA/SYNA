@@ -5,6 +5,7 @@ import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { ShieldCheck } from "lucide-react";
+import headerPrivacyImg from "@/assets/header-privacy.jpg";
 
 const PrivacyPage: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -32,7 +33,7 @@ const PrivacyPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[hsl(210,30%,4%)]">
       <Navbar />
-      <PageHeader icon={ShieldCheck} title={isAr ? "سياسة الخصوصية" : "Privacy Policy"} description={isAr ? "كيف نحمي بياناتك ونحافظ على خصوصيتك أثناء استخدام منصة سينا" : "How we protect your data and maintain your privacy while using the SYNA platform"} />
+      <PageHeader icon={ShieldCheck} title={isAr ? "سياسة الخصوصية" : "Privacy Policy"} description={isAr ? "كيف نحمي بياناتك ونحافظ على خصوصيتك أثناء استخدام منصة سينا" : "How we protect your data and maintain your privacy while using the SYNA platform"} backgroundImage={headerPrivacyImg} />
       <main className="container py-10">
         <div className="max-w-3xl mx-auto space-y-5">
           {sections.map((s, i) => (

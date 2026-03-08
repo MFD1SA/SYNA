@@ -6,6 +6,7 @@ import SubscriptionsSection from "@/components/landing/SubscriptionsSection";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Handshake } from "lucide-react";
+import headerPartnershipsImg from "@/assets/header-partnerships.jpg";
 
 const SubscriptionsPage: React.FC = () => {
   const { lang } = useLanguage();
@@ -15,7 +16,7 @@ const SubscriptionsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[hsl(210,30%,4%)]">
       <Navbar />
-      <PageHeader icon={Handshake} title={isAr ? "الشراكات" : "Partnerships"} description={isAr ? "كيف تعمل شراكات التطوير العقاري عبر منصة سينا" : "How real estate development partnerships work through the SYNA platform"} />
+      <PageHeader icon={Handshake} title={isAr ? "الشراكات" : "Partnerships"} description={isAr ? "كيف تعمل شراكات التطوير العقاري عبر منصة سينا" : "How real estate development partnerships work through the SYNA platform"} backgroundImage={headerPartnershipsImg} />
       <main>
         <SubscriptionsSection />
       </main>

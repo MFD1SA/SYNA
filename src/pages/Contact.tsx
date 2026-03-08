@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
+import headerContactImg from "@/assets/header-contact.jpg";
 
 const Contact: React.FC = () => {
   const { lang } = useLanguage();
@@ -57,7 +58,7 @@ const Contact: React.FC = () => {
   return (
     <div className="min-h-screen bg-[hsl(210,30%,4%)]">
       <Navbar />
-      <PageHeader icon={Send} title={isAr ? "تواصل معنا" : "Contact Us"} description={isAr ? "أرسل لنا رسالتك وسنرد عليك في أقرب وقت ممكن" : "Send us your message and we'll get back to you as soon as possible"} />
+      <PageHeader icon={Send} title={isAr ? "تواصل معنا" : "Contact Us"} description={isAr ? "أرسل لنا رسالتك وسنرد عليك في أقرب وقت ممكن" : "Send us your message and we'll get back to you as soon as possible"} backgroundImage={headerContactImg} />
 
       <main className="container py-12 md:py-16">
         <div className="grid gap-6 lg:grid-cols-2">

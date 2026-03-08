@@ -12,6 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
+import headerFaqImg from "@/assets/header-faq.jpg";
 
 const faqData = [
   { qAr: "ما هي سينا؟", qEn: "What is SYNA?", aAr: "سينا بيئة رقمية تجمع ملاك الأراضي بالمطورين العقاريين بهدف خلق فرص تطوير منظمة تقوم على وضوح البيانات وترتيب مراحل الشراكة.", aEn: "SYNA is a digital environment that connects landowners with real estate developers to create organized development opportunities based on data clarity and structured partnership stages." },
@@ -38,7 +39,7 @@ const FAQPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[hsl(210,30%,4%)]">
       <Navbar />
-      <PageHeader icon={HelpCircle} title={isAr ? "الأسئلة الشائعة" : "Frequently Asked Questions"} description={isAr ? "إجابات واضحة على أبرز الاستفسارات حول منصة سينا وآلية عملها" : "Clear answers to the most common questions about the SYNA platform and how it works"} />
+      <PageHeader icon={HelpCircle} title={isAr ? "الأسئلة الشائعة" : "Frequently Asked Questions"} description={isAr ? "إجابات واضحة على أبرز الاستفسارات حول منصة سينا وآلية عملها" : "Clear answers to the most common questions about the SYNA platform and how it works"} backgroundImage={headerFaqImg} />
       <main className="py-12 md:py-16">
         <div className="container">
           <div className="mx-auto max-w-2xl">
