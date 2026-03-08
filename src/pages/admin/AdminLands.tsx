@@ -115,6 +115,7 @@ const AdminLands: React.FC = () => {
               type: "draft_created_for_owner",
               owner_name: ownerProfile?.full_name || form.owner_name || "",
               owner_email: ownerProfile?.email || "",
+              owner_user_id: ownerId,
               land_city: form.city,
               land_district: form.district,
             },
