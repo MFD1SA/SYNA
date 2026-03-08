@@ -29,6 +29,7 @@ const AdminLands: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editInitialData, setEditInitialData] = useState<Partial<LandFormData>>({});
   const [ownerProfiles, setOwnerProfiles] = useState<any[]>([]);
+  const [legalDocLand, setLegalDocLand] = useState<any>(null);
 
   const fetchLands = async () => {
     const { data } = await supabase.from("lands").select("*").order("created_at", { ascending: false });
