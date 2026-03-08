@@ -50,6 +50,7 @@ const goalLabels: Record<string, { ar: string; en: string }> = {
   sell_develop: { ar: "بيع وتطوير", en: "Sell & Develop" },
   partial_exit: { ar: "تخارج جزئي", en: "Partial Exit" },
   offplan_sell: { ar: "تطوير وبيع على الخارطة", en: "Off-Plan Sell" },
+  real_estate_contribution: { ar: "مساهمة عقارية", en: "Real Estate Contribution" },
 };
 
 const cityNameAr: Record<string, string> = {
