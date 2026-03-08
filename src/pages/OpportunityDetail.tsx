@@ -139,30 +139,46 @@ const OpportunityDetail: React.FC = () => {
     <div className="min-h-screen">
       <Navbar />
       <main className="pt-20">
-        {/* Hero Image */}
-        <div className="relative h-[50vh] min-h-[400px] overflow-hidden">
-          <img src={imgSrc} alt={cityAr} className="absolute inset-0 h-full w-full object-cover object-center" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-          <div className="absolute bottom-0 inset-x-0 p-8 container">
+        {/* Cinematic Hero */}
+        <div className="relative h-[60vh] min-h-[480px] overflow-hidden">
+          <img src={imgSrc} alt={cityAr} className="absolute inset-0 h-full w-full object-cover object-center scale-105 transition-transform duration-[3s] hover:scale-100" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,30%,4%)] via-black/40 to-black/10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[hsl(210,30%,4%,0.5)] to-transparent" />
+
+          {/* Decorative overlay line */}
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.3)] to-transparent" />
+
+          <div className="absolute bottom-0 inset-x-0 pb-10 pt-20 container">
             <Button
               variant="ghost"
-              className="text-white/80 hover:text-white mb-4 gap-2 -ms-3"
+              className="text-white/60 hover:text-white hover:bg-white/10 mb-6 gap-2 -ms-3 text-xs"
               onClick={() => navigate("/")}
             >
-              {isAr ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
-              {isAr ? "العودة" : "Back"}
+              {isAr ? <ArrowRight className="h-3.5 w-3.5" /> : <ArrowLeft className="h-3.5 w-3.5" />}
+              {isAr ? "العودة للفرص" : "Back to Opportunities"}
             </Button>
-            <div className="flex items-end justify-between">
-              <div>
-                <span className="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground">
-                  {isAr ? "فرصة تطويرية" : "Development Opportunity"}
-                </span>
-                <h1 className="mt-3 text-3xl md:text-4xl font-medium text-white">
+
+            <div className="flex items-end justify-between gap-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full syna-gradient px-4 py-1.5 text-[11px] font-medium text-white shadow-lg">
+                    {isAr ? "فرصة تطويرية" : "Development Opportunity"}
+                  </span>
+                  <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-md">
+                    {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
+                  </span>
+                </div>
+                <h1 className="text-3xl md:text-5xl font-medium text-white leading-tight">
                   {isAr
                     ? `أرض ${land.district ? `حي ${districtNameAr[land.district] || land.district} — ` : ""}${cityAr}`
                     : `Land${land.district ? ` in ${land.district},` : ""} ${land.city}`
                   }
                 </h1>
+                <div className="flex items-center gap-4 text-sm text-white/60">
+                  <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" />{isAr ? cityAr : land.city}</span>
+                  <span className="h-3 w-px bg-white/20" />
+                  <span className="flex items-center gap-1.5"><Ruler className="h-3.5 w-3.5" />{land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}</span>
+                </div>
               </div>
             </div>
           </div>
