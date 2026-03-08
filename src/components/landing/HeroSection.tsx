@@ -83,7 +83,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
             initial={{ opacity: 0, scale: 0.5, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-10 flex justify-center"
+            className="mb-2 flex justify-center"
           >
             <div className="relative">
               <div className="absolute inset-0 scale-150 rounded-full bg-[hsl(200,80%,45%,0.15)] blur-[60px]" />
