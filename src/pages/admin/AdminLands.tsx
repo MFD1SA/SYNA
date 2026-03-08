@@ -10,9 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, Ruler, Building2, Image as ImageIcon, Landmark } from "lucide-react";
+import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, Ruler, Building2, Image as ImageIcon, Landmark, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import LandSubmissionForm from "@/components/land/LandSubmissionForm";
+import LegalDocPrintView from "@/components/land/LegalDocPrintView";
 import { LandFormData, usageLabels, goalLabels } from "@/components/land/LandFormConstants";
 
 const AdminLands: React.FC = () => {
