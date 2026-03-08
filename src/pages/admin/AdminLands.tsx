@@ -60,6 +60,7 @@ const AdminLands: React.FC = () => {
   const [locating, setLocating] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [ownerProfiles, setOwnerProfiles] = useState<any[]>([]);
+  const [mapsLink, setMapsLink] = useState("");
 
   const fetchLands = async () => {
     const { data } = await supabase.from("lands").select("*").order("created_at", { ascending: false });
