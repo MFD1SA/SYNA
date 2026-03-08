@@ -12,7 +12,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isAr = lang === "ar";
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background" dir={isAr ? "rtl" : "ltr"}>
       <AdminSidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top bar */}
@@ -21,7 +21,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="relative hidden md:block">
               <Search className="absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
-                className="h-8 w-64 rounded-lg bg-surface ps-9 text-xs"
+                className="h-8 w-64 rounded-lg bg-muted/30 ps-9 text-xs"
                 placeholder={isAr ? "بحث سريع..." : "Quick search..."}
               />
             </div>
@@ -30,8 +30,8 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
               <Bell className="h-4 w-4" />
             </Button>
-            <div className="flex h-8 items-center gap-2 rounded-lg bg-surface px-3">
-              <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center">
+            <div className="flex h-8 items-center gap-2 rounded-lg bg-muted/30 px-3">
+              <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
                 <span className="text-[10px] font-medium text-primary">
                   {(user?.email?.[0] || "A").toUpperCase()}
                 </span>

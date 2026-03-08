@@ -277,6 +277,7 @@ const AdminDeals: React.FC = () => {
 
   return (
     <AdminLayout>
+      <div dir={isAr ? "rtl" : "ltr"}>
       <AdminPageHeader
         icon={Handshake}
         titleAr="الطلبات والصفقات"
@@ -781,6 +782,7 @@ const AdminDeals: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
     </AdminLayout>
   );
 };
