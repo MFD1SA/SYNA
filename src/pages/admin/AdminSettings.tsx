@@ -142,7 +142,7 @@ const AdminSettings: React.FC = () => {
         </div>
 
         {/* Profile Name */}
-        <div className="doma-card p-5 space-y-4">
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
           <div className="flex items-center gap-2 mb-1">
             <User className="h-4 w-4 text-primary" />
             <h3 className="text-sm font-medium text-foreground">{isAr ? "الاسم الشخصي" : "Display Name"}</h3>
