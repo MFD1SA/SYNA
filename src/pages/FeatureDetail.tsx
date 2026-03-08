@@ -125,7 +125,7 @@ const FeatureDetailPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[hsl(210,30%,4%)]">
       <Navbar />
-      <PageHeader icon={Icon} title={content.title} description={content.intro} />
+      <PageHeader icon={Icon} title={content.title} description={content.intro} backgroundImage={headerFeaturesImg} />
       <main className="py-12 md:py-16">
         <div className="container">
           <div className="mx-auto max-w-2xl space-y-5">

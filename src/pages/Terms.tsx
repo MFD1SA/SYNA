@@ -37,7 +37,7 @@ const TermsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[hsl(210,30%,4%)]">
       <Navbar />
-      <PageHeader icon={FileText} title={isAr ? "الشروط والأحكام" : "Terms & Conditions"} description={isAr ? "الشروط والأحكام التي تنظّم استخدام منصة سينا والعلاقة بين الأطراف" : "The terms and conditions governing the use of the SYNA platform and the relationship between parties"} />
+      <PageHeader icon={FileText} title={isAr ? "الشروط والأحكام" : "Terms & Conditions"} description={isAr ? "الشروط والأحكام التي تنظّم استخدام منصة سينا والعلاقة بين الأطراف" : "The terms and conditions governing the use of the SYNA platform and the relationship between parties"} backgroundImage={headerTermsImg} />
       <main className="container py-10">
         <div className="max-w-3xl mx-auto space-y-5">
           {sections.map((s, i) => (
