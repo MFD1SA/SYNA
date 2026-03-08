@@ -246,7 +246,7 @@ const AdminDevelopers: React.FC = () => {
           { label: isAr ? "موثق" : "Verified", value: devs.filter(d => d.verification_status === "verified").length },
           { label: isAr ? "قيد المراجعة" : "Pending", value: devs.filter(d => d.verification_status === "pending_review").length },
         ].map(s => (
-          <div key={s.label} className="doma-card p-3 text-center">
+          <div key={s.label} className="rounded-xl border border-border/60 bg-card p-3 text-center">
             <p className="text-2xl font-medium text-foreground">{s.value}</p>
             <p className="text-xs text-muted-foreground">{s.label}</p>
           </div>
