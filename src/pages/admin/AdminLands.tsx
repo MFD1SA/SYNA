@@ -84,7 +84,7 @@ const AdminLands: React.FC = () => {
       estimated_total_value: form.estimated_total_value ? parseFloat(form.estimated_total_value) : null,
       deed_file_url: form.deed_file_url || null,
       kroki_file_url: form.kroki_file_url || null,
-      additional_docs_urls: form.additional_docs_urls?.length ? form.additional_docs_urls : null,
+      additional_docs_urls: form.additional_docs_urls?.length ? form.additional_docs_urls : [],
       submission_status: form.legal_acknowledgment_accepted ? "submitted" : "draft",
       legal_acknowledgment_accepted: form.legal_acknowledgment_accepted,
       legal_acknowledgment_date: form.legal_acknowledgment_accepted ? new Date().toISOString() : null,
