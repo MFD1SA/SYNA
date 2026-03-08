@@ -297,13 +297,34 @@ const AdminLands: React.FC = () => {
             <div className="grid gap-4 py-4">
               {/* Location */}
               <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
-                <div className="mb-3 flex items-center justify-between">
+                <div className="mb-3 flex items-center justify-between flex-wrap gap-2">
                   <Label className="text-sm font-medium">{isAr ? "الموقع الجغرافي" : "Location"}</Label>
                   <Button type="button" variant="outline" size="sm" onClick={handleLocate} disabled={locating} className="gap-1.5">
                     <LocateFixed className="h-3.5 w-3.5" />
                     {locating ? (isAr ? "جاري التحديد..." : "Locating...") : (isAr ? "موقعي الحالي" : "My Location")}
                   </Button>
                 </div>
+
+                {/* Google Maps Link */}
+                <div className="mb-3">
+                  <Label className="text-xs text-muted-foreground mb-1 block">{isAr ? "أو الصق رابط Google Maps" : "Or paste Google Maps link"}</Label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Link2 className="absolute start-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                      <Input
+                        className="ps-9 text-xs"
+                        dir="ltr"
+                        value={mapsLink}
+                        onChange={e => setMapsLink(e.target.value)}
+                        placeholder="https://maps.google.com/..."
+                      />
+                    </div>
+                    <Button type="button" variant="secondary" size="sm" onClick={() => parseGoogleMapsLink(mapsLink)} className="shrink-0">
+                      {isAr ? "استخراج" : "Extract"}
+                    </Button>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs">{isAr ? "المدينة" : "City"}</Label>
@@ -329,11 +350,11 @@ const AdminLands: React.FC = () => {
                 <div className="mt-3 grid grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs">{isAr ? "خط العرض" : "Latitude"}</Label>
-                    <Input type="number" step="any" value={form.exact_location_lat} onChange={e => setForm(f => ({ ...f, exact_location_lat: e.target.value }))} placeholder="24.7136" />
+                    <Input type="number" step="any" value={form.exact_location_lat} onChange={e => setForm(f => ({ ...f, exact_location_lat: e.target.value }))} placeholder="24.7136" dir="ltr" />
                   </div>
                   <div>
                     <Label className="text-xs">{isAr ? "خط الطول" : "Longitude"}</Label>
-                    <Input type="number" step="any" value={form.exact_location_lng} onChange={e => setForm(f => ({ ...f, exact_location_lng: e.target.value }))} placeholder="46.6753" />
+                    <Input type="number" step="any" value={form.exact_location_lng} onChange={e => setForm(f => ({ ...f, exact_location_lng: e.target.value }))} placeholder="46.6753" dir="ltr" />
                   </div>
                 </div>
                 {form.exact_location_lat && form.exact_location_lng && (
