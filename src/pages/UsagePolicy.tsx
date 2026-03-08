@@ -5,6 +5,7 @@ import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Scale } from "lucide-react";
+import headerUsagePolicyImg from "@/assets/header-usage-policy.jpg";
 
 const UsagePolicyPage: React.FC = () => {
   const { t, lang } = useLanguage();
