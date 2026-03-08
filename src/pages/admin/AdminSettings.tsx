@@ -32,6 +32,8 @@ const AdminSettings: React.FC = () => {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [demoCredentialsVisible, setDemoCredentialsVisible] = useState(false);
+  const [savingDemo, setSavingDemo] = useState(false);
 
   useEffect(() => {
     if (!user) return;
