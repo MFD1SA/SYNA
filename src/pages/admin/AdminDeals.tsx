@@ -250,7 +250,7 @@ const AdminDeals: React.FC = () => {
     }
   };
 
-  const handleUpdateHealth = async (dealId: string, health: string) => {
+  const handleUpdateHealth = async (dealId: string, health: "green" | "yellow" | "red") => {
     await supabase.from("deals").update({ health }).eq("id", dealId);
     toast({ title: isAr ? "تم تحديث حالة الصفقة" : "Deal health updated" });
     fetchAll();
