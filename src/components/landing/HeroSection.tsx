@@ -85,7 +85,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
             transition={{ duration: 0.7, delay: 0.35 }}
             className="mb-3 text-lg font-normal text-[hsl(200,60%,65%)] md:text-xl lg:text-2xl"
           >
-            {isAr ? "نحو شراكات تطوير أكثر وضوحاً" : "Towards Clearer Development Partnerships"}
+            {isAr ? "نحو شراكات تطوير ومساهمات عقارية أكثر وضوحاً" : "Towards Clearer Development Partnerships & Contributions"}
           </motion.p>
 
           {/* Description */}

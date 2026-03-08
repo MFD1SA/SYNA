@@ -319,7 +319,7 @@ export const translations = {
     about: {
       title: "About SYNA",
       version: "Version 2.0.0",
-      description: "We believe land is not just raw space — it's an opportunity to build sustainable value. SYNA transforms ideas into real partnerships, and lands into productive projects that drive urban growth and stimulate the real estate economy.",
+      description: "We believe land is not just raw space — it's an opportunity to build sustainable value. SYNA transforms ideas into real development partnerships and real estate contributions, and lands into productive projects that drive urban growth and stimulate the real estate economy.",
     },
     crm: {
       nav: {
