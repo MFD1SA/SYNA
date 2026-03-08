@@ -87,7 +87,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
           >
             <div className="relative">
               <div className="absolute inset-0 scale-150 rounded-full bg-[hsl(200,80%,45%,0.15)] blur-[60px]" />
-              <img src={logoImg} alt="SYNA" className="relative h-40 w-40 object-contain drop-shadow-[0_0_40px_hsl(200,80%,50%,0.4)] md:h-52 md:w-52" />
+            <img src={logoImg} alt="SYNA" className="relative h-52 w-52 object-contain drop-shadow-[0_0_40px_hsl(200,80%,50%,0.4)] md:h-64 md:w-64" />
             </div>
           </motion.div>
 
@@ -96,7 +96,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="mb-4 text-7xl font-medium tracking-tight md:text-8xl lg:text-9xl"
+            className="mb-4 -mt-4 text-7xl font-medium tracking-tight md:text-8xl lg:text-9xl"
             style={{
               background: "linear-gradient(135deg, hsl(0 0% 100%), hsl(200 80% 70%), hsl(195 85% 55%))",
               WebkitBackgroundClip: "text",
