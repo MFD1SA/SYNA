@@ -95,8 +95,8 @@ const CrmBrowseLands: React.FC = () => {
   }, [user]);
 
   const handleSubmitRequest = async () => {
-    if (!developerId || !requestDialog || !requestForm.proposal_summary || !requestForm.proposed_project_type) {
-      toast({ variant: "destructive", title: isAr ? "يرجى تعبئة جميع الحقول" : "Please fill all fields" });
+    if (!developerId || !requestDialog || !requestForm.proposal_summary || !requestForm.proposed_project_type || !requestForm.fee_acknowledged) {
+      toast({ variant: "destructive", title: isAr ? "يرجى تعبئة جميع الحقول والموافقة على الرسوم" : "Please fill all fields and acknowledge fees" });
       return;
     }
     // Get the land info for notification
