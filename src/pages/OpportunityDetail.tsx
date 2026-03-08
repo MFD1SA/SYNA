@@ -229,9 +229,13 @@ const OpportunityDetail: React.FC = () => {
                   </p>
                   {land.vision_summary && <p>{land.vision_summary}</p>}
                   <p>
-                    {isAr
-                      ? "يهدف المالك إلى شراكة تطويرية مع مطور عقاري معتمد لتحقيق أقصى قيمة من الأرض، مع توفير كامل الدعم والمرونة في آلية الشراكة."
-                      : "The owner seeks a development partnership with a certified developer to maximize the land's value, offering full support and flexibility in the partnership structure."
+                    {land.partnership_goal === "real_estate_contribution"
+                      ? (isAr
+                        ? "يهدف المالك إلى المساهمة بأرضه ضمن نموذج مساهمة عقارية مرخصة مع مطور معتمد، حيث يتم التطوير والبيع مع حصول المالك على نسبة تخارج متفق عليها مسبقاً."
+                        : "The owner seeks to contribute their land through a licensed real estate contribution model with a certified developer, where the land is developed and sold with the owner receiving a pre-agreed exit percentage.")
+                      : (isAr
+                        ? "يهدف المالك إلى شراكة تطويرية مع مطور عقاري معتمد لتحقيق أقصى قيمة من الأرض، مع توفير كامل الدعم والمرونة في آلية الشراكة."
+                        : "The owner seeks a development partnership with a certified developer to maximize the land's value, offering full support and flexibility in the partnership structure.")
                     }
                   </p>
                 </div>
