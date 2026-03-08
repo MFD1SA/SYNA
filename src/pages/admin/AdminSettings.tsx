@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, User, Mail, KeyRound, Eye, EyeOff, Save, Loader2, ShieldCheck } from "lucide-react";
+import { Settings, User, Mail, KeyRound, Eye, EyeOff, Save, Loader2, ShieldCheck, FlaskConical } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 const AdminSettings: React.FC = () => {
   const { user } = useAuth();
