@@ -53,7 +53,7 @@ const CrmBrowseLands: React.FC = () => {
   const [requestDialog, setRequestDialog] = useState<string | null>(null);
   const [detailDialog, setDetailDialog] = useState<any>(null);
   const [mapDialog, setMapDialog] = useState<any>(null);
-  const [requestForm, setRequestForm] = useState({ proposal_summary: "", proposed_project_type: "" });
+  const [requestForm, setRequestForm] = useState({ proposal_summary: "", proposed_project_type: "", google_drive_link: "", fee_acknowledged: false });
   const [submittedLands, setSubmittedLands] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [usageFilter, setUsageFilter] = useState("all");
