@@ -34,9 +34,9 @@ const Footer: React.FC = () => {
             <div className="flex items-center gap-2 mb-5">
               <div className="relative">
                 <div className="absolute inset-0 scale-150 rounded-full bg-[hsl(200,80%,45%,0.1)] blur-[20px]" />
-                <img src={logoImg} alt="SYNA" className="relative h-14 w-14 object-contain" />
+                <img src={logoImg} alt="SYNA" className="relative h-20 w-20 object-contain" />
               </div>
-              <span className="text-2xl font-medium tracking-tight text-white">SYNA</span>
+              <span className="text-3xl font-medium tracking-tight text-white">SYNA</span>
             </div>
             <p className="max-w-xs text-sm font-light leading-relaxed text-[hsl(210,15%,45%)] mb-6">
               {t.footer.desc}

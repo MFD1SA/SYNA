@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "border-b border-[hsl(210,22%,14%)] bg-[hsl(210,30%,4%,0.85)] backdrop-blur-xl shadow-[0_4px_30px_-5px_hsl(210,30%,4%,0.5)]" : "bg-transparent"}`}>
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-1.5 group">
-          <img src={logoImg} alt="SYNA" className="h-11 w-11 object-contain transition-transform duration-300 group-hover:scale-110" />
+          <img src={logoImg} alt="SYNA" className="h-14 w-14 object-contain transition-transform duration-300 group-hover:scale-110" />
           <span className="text-xl font-medium tracking-tight text-white/90 transition-colors group-hover:text-white">SYNA</span>
         </Link>
 
