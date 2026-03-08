@@ -20,6 +20,7 @@ import {
   FileText, Building2, XCircle, Link2,
 } from "lucide-react";
 import DeveloperFeeAcknowledgment from "@/components/crm/DeveloperFeeAcknowledgment";
+import LandAIInsights from "@/components/crm/LandAIInsights";
 
 const usageLabels: Record<string, { ar: string; en: string }> = {
   residential: { ar: "سكني", en: "Residential" },
