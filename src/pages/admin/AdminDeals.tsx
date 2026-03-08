@@ -140,6 +140,15 @@ const AdminDeals: React.FC = () => {
           },
         });
       } catch {}
+      // Audit log
+      try {
+        await logAudit(user?.id || "", user?.email, "approve_request", "deal_request", req.id, {
+          developer_name: req.developers?.company_name || "",
+          developer_id: req.developer_id,
+          land_city: req.lands?.city,
+          land_district: req.lands?.district,
+        });
+      } catch {}
       toast({ title: isAr ? "تمت الموافقة وإنشاء الصفقة" : "Approved and deal created" });
     } catch (err: any) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
