@@ -282,60 +282,60 @@ const OpportunityDetail: React.FC = () => {
 
             {/* Sidebar */}
             <div className="space-y-4">
-              <div className="rounded-2xl border border-border/60 bg-card p-6 sticky top-24">
-                <h3 className="text-base font-medium text-foreground mb-4">
+              <div className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6 sticky top-24">
+                <h3 className="text-base font-medium text-white mb-4">
                   {isAr ? "ملخص الفرصة" : "Opportunity Summary"}
                 </h3>
                 <div className="space-y-3 text-sm">
-                  <div className="flex justify-between py-2 border-b border-border/40">
-                    <span className="text-muted-foreground">{isAr ? "نوع الأصل" : "Asset Type"}</span>
-                    <span className="font-medium text-foreground">{isAr ? "أرض" : "Land"}</span>
+                  <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                    <span className="text-[hsl(210,15%,50%)]">{isAr ? "نوع الأصل" : "Asset Type"}</span>
+                    <span className="font-medium text-white">{isAr ? "أرض" : "Land"}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-border/40">
-                    <span className="text-muted-foreground">{isAr ? "المساحة" : "Area"}</span>
-                    <span className="font-medium text-foreground">{land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}</span>
+                  <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                    <span className="text-[hsl(210,15%,50%)]">{isAr ? "المساحة" : "Area"}</span>
+                    <span className="font-medium text-white">{land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-border/40">
-                    <span className="text-muted-foreground">{isAr ? "المدينة" : "City"}</span>
-                    <span className="font-medium text-foreground">{isAr ? cityAr : land.city}</span>
+                  <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                    <span className="text-[hsl(210,15%,50%)]">{isAr ? "المدينة" : "City"}</span>
+                    <span className="font-medium text-white">{isAr ? cityAr : land.city}</span>
                   </div>
                   {land.district && (
-                    <div className="flex justify-between py-2 border-b border-border/40">
-                      <span className="text-muted-foreground">{isAr ? "الحي" : "District"}</span>
-                      <span className="font-medium text-foreground">{isAr ? (districtNameAr[land.district] || land.district) : land.district}</span>
+                    <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                      <span className="text-[hsl(210,15%,50%)]">{isAr ? "الحي" : "District"}</span>
+                      <span className="font-medium text-white">{isAr ? (districtNameAr[land.district] || land.district) : land.district}</span>
                     </div>
                   )}
-                  <div className="flex justify-between py-2 border-b border-border/40">
-                    <span className="text-muted-foreground">{isAr ? "الاستخدام" : "Usage"}</span>
-                    <span className="font-medium text-foreground">{isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}</span>
+                  <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                    <span className="text-[hsl(210,15%,50%)]">{isAr ? "الاستخدام" : "Usage"}</span>
+                    <span className="font-medium text-white">{isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-border/40">
-                    <span className="text-muted-foreground">{isAr ? "هدف الشراكة" : "Goal"}</span>
-                    <span className="font-medium text-foreground">{isAr ? goalLabels[land.partnership_goal]?.ar : goalLabels[land.partnership_goal]?.en}</span>
+                  <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                    <span className="text-[hsl(210,15%,50%)]">{isAr ? "هدف الشراكة" : "Goal"}</span>
+                    <span className="font-medium text-white">{isAr ? goalLabels[land.partnership_goal]?.ar : goalLabels[land.partnership_goal]?.en}</span>
                   </div>
                   {land.project_type && (
-                    <div className="flex justify-between py-2 border-b border-border/40">
-                      <span className="text-muted-foreground">{isAr ? "نوع المشروع" : "Project Type"}</span>
-                      <span className="font-medium text-foreground">{land.project_type}</span>
+                    <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                      <span className="text-[hsl(210,15%,50%)]">{isAr ? "نوع المشروع" : "Project Type"}</span>
+                      <span className="font-medium text-white">{land.project_type}</span>
                     </div>
                   )}
                 </div>
 
                 <div className="mt-6 space-y-3">
                   <Button
-                    className="w-full gap-2"
+                    className="w-full gap-2 syna-gradient border-0 text-white hover:opacity-90"
                     onClick={() => navigate("/auth/register")}
                   >
                     {isAr ? "سجل كمطور للتقديم" : "Register as Developer to Apply"}
                   </Button>
-                  <Button variant="outline" className="w-full" onClick={() => navigate("/auth/login")}>
+                  <Button variant="outline" className="w-full border-[hsl(210,22%,16%)] bg-transparent text-white hover:bg-[hsl(210,22%,14%)]" onClick={() => navigate("/auth/login")}>
                     {isAr ? "تسجيل الدخول" : "Login"}
                   </Button>
                 </div>
 
-                <div className="mt-4 flex items-start gap-2 p-3 rounded-xl bg-primary/5 border border-primary/10">
-                  <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                <div className="mt-4 flex items-start gap-2 p-3 rounded-xl bg-[hsl(200,80%,45%,0.06)] border border-[hsl(200,80%,45%,0.12)]">
+                  <CheckCircle2 className="h-4 w-4 text-[hsl(200,80%,55%)] mt-0.5 shrink-0" />
+                  <p className="text-[11px] text-[hsl(210,15%,50%)] leading-relaxed">
                     {isAr
                       ? "للاطلاع على تفاصيل الموقع الدقيق وبيانات الصك، يرجى التسجيل كمطور معتمد. سيتم مراجعة طلبك خلال 24 ساعة."
                       : "To access exact location details and deed information, please register as a certified developer. Your application will be reviewed within 24 hours."
