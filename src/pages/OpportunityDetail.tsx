@@ -195,24 +195,24 @@ const OpportunityDetail: React.FC = () => {
                   <p className="text-2xl font-medium text-white">{land.land_area_sqm?.toLocaleString()}</p>
                   <p className="text-xs text-[hsl(210,15%,50%)]">{isAr ? "متر مربع" : "Square Meters"}</p>
                 </div>
-                <div className="rounded-2xl border border-border/60 bg-card p-5 text-center">
-                  <Layers className="mx-auto h-6 w-6 text-primary mb-2" />
-                  <p className="text-lg font-medium text-foreground">
+                <div className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-5 text-center">
+                  <Layers className="mx-auto h-5 w-5 text-[hsl(200,80%,55%)] mb-2" />
+                  <p className="text-lg font-medium text-white">
                     {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
                   </p>
-                  <p className="text-xs text-muted-foreground">{isAr ? "نوع الاستخدام" : "Usage Type"}</p>
+                  <p className="text-xs text-[hsl(210,15%,50%)]">{isAr ? "نوع الاستخدام" : "Usage Type"}</p>
                 </div>
-                <div className="rounded-2xl border border-border/60 bg-card p-5 text-center">
-                  <MapPin className="mx-auto h-6 w-6 text-primary mb-2" />
-                  <p className="text-lg font-medium text-foreground">
+                <div className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-5 text-center">
+                  <MapPin className="mx-auto h-5 w-5 text-[hsl(200,80%,55%)] mb-2" />
+                  <p className="text-lg font-medium text-white">
                     {isAr ? cityAr : land.city}
                   </p>
-                  <p className="text-xs text-muted-foreground">{isAr ? "المدينة" : "City"}</p>
+                  <p className="text-xs text-[hsl(210,15%,50%)]">{isAr ? "المدينة" : "City"}</p>
                 </div>
               </div>
 
               {/* Description */}
-              <div className="rounded-2xl border border-border/60 bg-card p-6">
+              <div className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6">
                 <h2 className="text-lg font-medium text-foreground mb-4">
                   {isAr ? "تفاصيل الفرصة" : "Opportunity Details"}
                 </h2>
