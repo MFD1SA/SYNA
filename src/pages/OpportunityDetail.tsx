@@ -131,72 +131,88 @@ const OpportunityDetail: React.FC = () => {
     {
       icon: Building2,
       title: isAr ? "دعم متكامل" : "Full Support",
-      desc: isAr ? "فريق دوما يرافقك في كل مرحلة من التفاوض حتى إتمام الصفقة" : "DOMA team accompanies you from negotiation to deal closure",
+      desc: isAr ? "فريق سينا يرافقك في كل مرحلة من التفاوض حتى إتمام الصفقة" : "SYNA team accompanies you from negotiation to deal closure",
     },
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[hsl(210,30%,4%)]">
       <Navbar />
       <main className="pt-20">
-        {/* Hero Image */}
-        <div className="relative h-[50vh] min-h-[400px] overflow-hidden">
-          <img src={imgSrc} alt={cityAr} className="absolute inset-0 h-full w-full object-cover object-center" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-          <div className="absolute bottom-0 inset-x-0 p-8 container">
+        {/* Cinematic Hero */}
+        <div className="relative h-[60vh] min-h-[480px] overflow-hidden">
+          <img src={imgSrc} alt={cityAr} className="absolute inset-0 h-full w-full object-cover object-center scale-105 transition-transform duration-[3s] hover:scale-100" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,30%,4%)] via-black/40 to-black/10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[hsl(210,30%,4%,0.5)] to-transparent" />
+
+          {/* Decorative overlay line */}
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.3)] to-transparent" />
+
+          <div className="absolute bottom-0 inset-x-0 pb-10 pt-20 container">
             <Button
               variant="ghost"
-              className="text-white/80 hover:text-white mb-4 gap-2 -ms-3"
+              className="text-white/60 hover:text-white hover:bg-white/10 mb-6 gap-2 -ms-3 text-xs"
               onClick={() => navigate("/")}
             >
-              {isAr ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
-              {isAr ? "العودة" : "Back"}
+              {isAr ? <ArrowRight className="h-3.5 w-3.5" /> : <ArrowLeft className="h-3.5 w-3.5" />}
+              {isAr ? "العودة للفرص" : "Back to Opportunities"}
             </Button>
-            <div className="flex items-end justify-between">
-              <div>
-                <span className="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground">
-                  {isAr ? "فرصة تطويرية" : "Development Opportunity"}
-                </span>
-                <h1 className="mt-3 text-3xl md:text-4xl font-medium text-white">
+
+            <div className="flex items-end justify-between gap-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full syna-gradient px-4 py-1.5 text-[11px] font-medium text-white shadow-lg">
+                    {isAr ? "فرصة تطويرية" : "Development Opportunity"}
+                  </span>
+                  <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-md">
+                    {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
+                  </span>
+                </div>
+                <h1 className="text-3xl md:text-5xl font-medium text-white leading-tight">
                   {isAr
                     ? `أرض ${land.district ? `حي ${districtNameAr[land.district] || land.district} — ` : ""}${cityAr}`
                     : `Land${land.district ? ` in ${land.district},` : ""} ${land.city}`
                   }
                 </h1>
+                <div className="flex items-center gap-4 text-sm text-white/60">
+                  <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" />{isAr ? cityAr : land.city}</span>
+                  <span className="h-3 w-px bg-white/20" />
+                  <span className="flex items-center gap-1.5"><Ruler className="h-3.5 w-3.5" />{land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="container py-12">
-          <div className="grid lg:grid-cols-3 gap-8">
+        <div className="container py-10">
+          <div className="grid lg:grid-cols-3 gap-6">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="lg:col-span-2 space-y-6">
               {/* Key Info Cards */}
-              <div className="grid sm:grid-cols-3 gap-4">
-                <div className="rounded-2xl border border-border/60 bg-card p-5 text-center">
-                  <Ruler className="mx-auto h-6 w-6 text-primary mb-2" />
-                  <p className="text-2xl font-medium text-foreground">{land.land_area_sqm?.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">{isAr ? "متر مربع" : "Square Meters"}</p>
+              <div className="grid sm:grid-cols-3 gap-3">
+                <div className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-5 text-center">
+                  <Ruler className="mx-auto h-5 w-5 text-[hsl(200,80%,55%)] mb-2" />
+                  <p className="text-2xl font-medium text-white">{land.land_area_sqm?.toLocaleString()}</p>
+                  <p className="text-xs text-[hsl(210,15%,50%)]">{isAr ? "متر مربع" : "Square Meters"}</p>
                 </div>
-                <div className="rounded-2xl border border-border/60 bg-card p-5 text-center">
-                  <Layers className="mx-auto h-6 w-6 text-primary mb-2" />
-                  <p className="text-lg font-medium text-foreground">
+                <div className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-5 text-center">
+                  <Layers className="mx-auto h-5 w-5 text-[hsl(200,80%,55%)] mb-2" />
+                  <p className="text-lg font-medium text-white">
                     {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
                   </p>
-                  <p className="text-xs text-muted-foreground">{isAr ? "نوع الاستخدام" : "Usage Type"}</p>
+                  <p className="text-xs text-[hsl(210,15%,50%)]">{isAr ? "نوع الاستخدام" : "Usage Type"}</p>
                 </div>
-                <div className="rounded-2xl border border-border/60 bg-card p-5 text-center">
-                  <MapPin className="mx-auto h-6 w-6 text-primary mb-2" />
-                  <p className="text-lg font-medium text-foreground">
+                <div className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-5 text-center">
+                  <MapPin className="mx-auto h-5 w-5 text-[hsl(200,80%,55%)] mb-2" />
+                  <p className="text-lg font-medium text-white">
                     {isAr ? cityAr : land.city}
                   </p>
-                  <p className="text-xs text-muted-foreground">{isAr ? "المدينة" : "City"}</p>
+                  <p className="text-xs text-[hsl(210,15%,50%)]">{isAr ? "المدينة" : "City"}</p>
                 </div>
               </div>
 
               {/* Description */}
-              <div className="rounded-2xl border border-border/60 bg-card p-6">
+              <div className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6">
                 <h2 className="text-lg font-medium text-foreground mb-4">
                   {isAr ? "تفاصيل الفرصة" : "Opportunity Details"}
                 </h2>
@@ -222,21 +238,21 @@ const OpportunityDetail: React.FC = () => {
                 {(land.length_m || land.width_m || land.street_width_m) && (
                   <div className="mt-6 grid grid-cols-3 gap-3">
                     {land.length_m && (
-                      <div className="rounded-xl bg-muted/50 p-3 text-center">
-                        <p className="text-sm font-medium text-foreground">{land.length_m} {isAr ? "م" : "m"}</p>
-                        <p className="text-xs text-muted-foreground">{isAr ? "الطول" : "Length"}</p>
+                      <div className="rounded-xl bg-[hsl(210,25%,11%)] p-3 text-center">
+                        <p className="text-sm font-medium text-white">{land.length_m} {isAr ? "م" : "m"}</p>
+                        <p className="text-xs text-[hsl(210,15%,50%)]">{isAr ? "الطول" : "Length"}</p>
                       </div>
                     )}
                     {land.width_m && (
-                      <div className="rounded-xl bg-muted/50 p-3 text-center">
-                        <p className="text-sm font-medium text-foreground">{land.width_m} {isAr ? "م" : "m"}</p>
-                        <p className="text-xs text-muted-foreground">{isAr ? "العرض" : "Width"}</p>
+                      <div className="rounded-xl bg-[hsl(210,25%,11%)] p-3 text-center">
+                        <p className="text-sm font-medium text-white">{land.width_m} {isAr ? "م" : "m"}</p>
+                        <p className="text-xs text-[hsl(210,15%,50%)]">{isAr ? "العرض" : "Width"}</p>
                       </div>
                     )}
                     {land.street_width_m && (
-                      <div className="rounded-xl bg-muted/50 p-3 text-center">
-                        <p className="text-sm font-medium text-foreground">{land.street_width_m} {isAr ? "م" : "m"}</p>
-                        <p className="text-xs text-muted-foreground">{isAr ? "عرض الشارع" : "Street Width"}</p>
+                      <div className="rounded-xl bg-[hsl(210,25%,11%)] p-3 text-center">
+                        <p className="text-sm font-medium text-white">{land.street_width_m} {isAr ? "م" : "m"}</p>
+                        <p className="text-xs text-[hsl(210,15%,50%)]">{isAr ? "عرض الشارع" : "Street Width"}</p>
                       </div>
                     )}
                   </div>
@@ -244,19 +260,19 @@ const OpportunityDetail: React.FC = () => {
               </div>
 
               {/* Why This Opportunity */}
-              <div className="rounded-2xl border border-border/60 bg-card p-6">
-                <h2 className="text-lg font-medium text-foreground mb-4">
+              <div className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6">
+                <h2 className="text-lg font-medium text-white mb-4">
                   {isAr ? "لماذا هذه الفرصة؟" : "Why This Opportunity?"}
                 </h2>
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-2 gap-3">
                   {features.map((f, idx) => (
-                    <div key={idx} className="flex gap-3 p-3 rounded-xl bg-muted/30">
-                      <div className="shrink-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                        <f.icon className="h-5 w-5 text-primary" />
+                    <div key={idx} className="flex gap-3 p-3 rounded-xl bg-[hsl(210,25%,11%)] border border-[hsl(210,22%,14%)]">
+                      <div className="shrink-0 flex h-10 w-10 items-center justify-center rounded-lg bg-[hsl(200,80%,45%,0.1)]">
+                        <f.icon className="h-5 w-5 text-[hsl(200,80%,55%)]" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-foreground">{f.title}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{f.desc}</p>
+                        <p className="text-sm font-medium text-white">{f.title}</p>
+                        <p className="text-xs text-[hsl(210,15%,50%)] mt-0.5">{f.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -266,60 +282,60 @@ const OpportunityDetail: React.FC = () => {
 
             {/* Sidebar */}
             <div className="space-y-4">
-              <div className="rounded-2xl border border-border/60 bg-card p-6 sticky top-24">
-                <h3 className="text-base font-medium text-foreground mb-4">
+              <div className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6 sticky top-24">
+                <h3 className="text-base font-medium text-white mb-4">
                   {isAr ? "ملخص الفرصة" : "Opportunity Summary"}
                 </h3>
                 <div className="space-y-3 text-sm">
-                  <div className="flex justify-between py-2 border-b border-border/40">
-                    <span className="text-muted-foreground">{isAr ? "نوع الأصل" : "Asset Type"}</span>
-                    <span className="font-medium text-foreground">{isAr ? "أرض" : "Land"}</span>
+                  <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                    <span className="text-[hsl(210,15%,50%)]">{isAr ? "نوع الأصل" : "Asset Type"}</span>
+                    <span className="font-medium text-white">{isAr ? "أرض" : "Land"}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-border/40">
-                    <span className="text-muted-foreground">{isAr ? "المساحة" : "Area"}</span>
-                    <span className="font-medium text-foreground">{land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}</span>
+                  <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                    <span className="text-[hsl(210,15%,50%)]">{isAr ? "المساحة" : "Area"}</span>
+                    <span className="font-medium text-white">{land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-border/40">
-                    <span className="text-muted-foreground">{isAr ? "المدينة" : "City"}</span>
-                    <span className="font-medium text-foreground">{isAr ? cityAr : land.city}</span>
+                  <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                    <span className="text-[hsl(210,15%,50%)]">{isAr ? "المدينة" : "City"}</span>
+                    <span className="font-medium text-white">{isAr ? cityAr : land.city}</span>
                   </div>
                   {land.district && (
-                    <div className="flex justify-between py-2 border-b border-border/40">
-                      <span className="text-muted-foreground">{isAr ? "الحي" : "District"}</span>
-                      <span className="font-medium text-foreground">{isAr ? (districtNameAr[land.district] || land.district) : land.district}</span>
+                    <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                      <span className="text-[hsl(210,15%,50%)]">{isAr ? "الحي" : "District"}</span>
+                      <span className="font-medium text-white">{isAr ? (districtNameAr[land.district] || land.district) : land.district}</span>
                     </div>
                   )}
-                  <div className="flex justify-between py-2 border-b border-border/40">
-                    <span className="text-muted-foreground">{isAr ? "الاستخدام" : "Usage"}</span>
-                    <span className="font-medium text-foreground">{isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}</span>
+                  <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                    <span className="text-[hsl(210,15%,50%)]">{isAr ? "الاستخدام" : "Usage"}</span>
+                    <span className="font-medium text-white">{isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-border/40">
-                    <span className="text-muted-foreground">{isAr ? "هدف الشراكة" : "Goal"}</span>
-                    <span className="font-medium text-foreground">{isAr ? goalLabels[land.partnership_goal]?.ar : goalLabels[land.partnership_goal]?.en}</span>
+                  <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                    <span className="text-[hsl(210,15%,50%)]">{isAr ? "هدف الشراكة" : "Goal"}</span>
+                    <span className="font-medium text-white">{isAr ? goalLabels[land.partnership_goal]?.ar : goalLabels[land.partnership_goal]?.en}</span>
                   </div>
                   {land.project_type && (
-                    <div className="flex justify-between py-2 border-b border-border/40">
-                      <span className="text-muted-foreground">{isAr ? "نوع المشروع" : "Project Type"}</span>
-                      <span className="font-medium text-foreground">{land.project_type}</span>
+                    <div className="flex justify-between py-2 border-b border-[hsl(210,22%,14%)]">
+                      <span className="text-[hsl(210,15%,50%)]">{isAr ? "نوع المشروع" : "Project Type"}</span>
+                      <span className="font-medium text-white">{land.project_type}</span>
                     </div>
                   )}
                 </div>
 
                 <div className="mt-6 space-y-3">
                   <Button
-                    className="w-full gap-2"
+                    className="w-full gap-2 syna-gradient border-0 text-white hover:opacity-90"
                     onClick={() => navigate("/auth/register")}
                   >
                     {isAr ? "سجل كمطور للتقديم" : "Register as Developer to Apply"}
                   </Button>
-                  <Button variant="outline" className="w-full" onClick={() => navigate("/auth/login")}>
+                  <Button variant="outline" className="w-full border-[hsl(210,22%,16%)] bg-transparent text-white hover:bg-[hsl(210,22%,14%)]" onClick={() => navigate("/auth/login")}>
                     {isAr ? "تسجيل الدخول" : "Login"}
                   </Button>
                 </div>
 
-                <div className="mt-4 flex items-start gap-2 p-3 rounded-xl bg-primary/5 border border-primary/10">
-                  <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                <div className="mt-4 flex items-start gap-2 p-3 rounded-xl bg-[hsl(200,80%,45%,0.06)] border border-[hsl(200,80%,45%,0.12)]">
+                  <CheckCircle2 className="h-4 w-4 text-[hsl(200,80%,55%)] mt-0.5 shrink-0" />
+                  <p className="text-[11px] text-[hsl(210,15%,50%)] leading-relaxed">
                     {isAr
                       ? "للاطلاع على تفاصيل الموقع الدقيق وبيانات الصك، يرجى التسجيل كمطور معتمد. سيتم مراجعة طلبك خلال 24 ساعة."
                       : "To access exact location details and deed information, please register as a certified developer. Your application will be reviewed within 24 hours."
