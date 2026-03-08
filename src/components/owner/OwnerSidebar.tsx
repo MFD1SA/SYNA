@@ -38,8 +38,8 @@ const OwnerSidebar: React.FC = () => {
       {/* Header */}
       <div className="flex h-14 items-center justify-between border-b border-border/60 px-3">
         {!collapsed && (
-          <Link to="/owner/dashboard" className="flex items-center gap-2">
-            <img src={logoImg} alt="SYNA" className="h-6 w-6 rounded-lg object-contain" />
+          <Link to="/owner/dashboard" className="flex items-center gap-1.5">
+            <img src={logoImg} alt="SYNA" className="h-8 w-8 object-contain" />
             <span className="text-base font-medium text-foreground">SYNA</span>
           </Link>
         )}
