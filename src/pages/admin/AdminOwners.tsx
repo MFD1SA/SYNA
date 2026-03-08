@@ -234,6 +234,9 @@ const AdminOwners: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-500 hover:bg-blue-500/10" onClick={() => handleImpersonate(owner.owner_id, owner.owner_name)} disabled={impersonating === owner.owner_id} title={isAr ? "دخول كمالك" : "Login as owner"}>
+                      {impersonating === owner.owner_id ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
+                    </Button>
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => setPasswordDialog({ owner_id: owner.owner_id, name: owner.owner_name })}>
                       <KeyRound className="h-4 w-4" />
                     </Button>

@@ -312,6 +312,10 @@ const AdminDevelopers: React.FC = () => {
                   <Button size="sm" variant="outline" onClick={() => openEdit(dev)}>
                     <Pencil className="h-3.5 w-3.5 me-1" />{isAr ? "تعديل" : "Edit"}
                   </Button>
+                  <Button size="sm" variant="outline" className="text-blue-500 border-blue-500/20 hover:bg-blue-500/5" onClick={() => handleImpersonate(dev.user_id, dev.company_name)} disabled={impersonating === dev.user_id}>
+                    {impersonating === dev.user_id ? <Loader2 className="h-3.5 w-3.5 me-1 animate-spin" /> : <LogIn className="h-3.5 w-3.5 me-1" />}
+                    {isAr ? "دخول كمطور" : "Login as"}
+                  </Button>
                   <Button size="sm" variant="ghost" onClick={() => setPasswordDialog({ user_id: dev.user_id, name: dev.company_name })}>
                     <KeyRound className="h-3.5 w-3.5 me-1" />{isAr ? "كلمة المرور" : "Password"}
                   </Button>
