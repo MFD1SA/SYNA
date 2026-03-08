@@ -599,32 +599,50 @@ export type Database = {
       }
       lands: {
         Row: {
+          additional_docs_urls: string[] | null
+          brokerage_license_number: string | null
           city: string
+          contribution_model: string | null
           created_at: string
+          deed_date: string | null
+          deed_file_url: string | null
           deed_number: string | null
           developer_experience_requirements: string | null
+          development_subtype: string | null
           district: string | null
+          estimated_price_per_sqm: number | null
+          estimated_total_value: number | null
           exact_location_lat: number | null
           exact_location_lng: number | null
+          exit_percentage: number | null
           expected_dev_duration_months: number | null
           financing_preference: string | null
           id: string
           image_url: string | null
           is_active: boolean
           is_featured: boolean
+          kroki_file_url: string | null
           land_area_sqm: number
+          land_boundaries: string | null
+          legal_acknowledgment_accepted: boolean | null
+          legal_acknowledgment_date: string | null
           length_m: number | null
           owner_approved: boolean
           owner_id: string
           owner_name: string | null
+          parcel_count: number | null
           partnership_goal: Database["public"]["Enums"]["owner_partnership_goal"]
           partnership_model: string | null
           plan_number: string | null
+          platform_fee_acknowledged: boolean | null
           plot_number: string | null
+          project_model: string | null
           project_type: string | null
           quality_level: string | null
           revenue_model: string | null
+          street_info: string | null
           street_width_m: number | null
+          submission_status: string | null
           tenant_id: string | null
           updated_at: string
           usage_type: Database["public"]["Enums"]["land_usage_type"]
@@ -632,32 +650,50 @@ export type Database = {
           width_m: number | null
         }
         Insert: {
+          additional_docs_urls?: string[] | null
+          brokerage_license_number?: string | null
           city: string
+          contribution_model?: string | null
           created_at?: string
+          deed_date?: string | null
+          deed_file_url?: string | null
           deed_number?: string | null
           developer_experience_requirements?: string | null
+          development_subtype?: string | null
           district?: string | null
+          estimated_price_per_sqm?: number | null
+          estimated_total_value?: number | null
           exact_location_lat?: number | null
           exact_location_lng?: number | null
+          exit_percentage?: number | null
           expected_dev_duration_months?: number | null
           financing_preference?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           is_featured?: boolean
+          kroki_file_url?: string | null
           land_area_sqm: number
+          land_boundaries?: string | null
+          legal_acknowledgment_accepted?: boolean | null
+          legal_acknowledgment_date?: string | null
           length_m?: number | null
           owner_approved?: boolean
           owner_id: string
           owner_name?: string | null
+          parcel_count?: number | null
           partnership_goal?: Database["public"]["Enums"]["owner_partnership_goal"]
           partnership_model?: string | null
           plan_number?: string | null
+          platform_fee_acknowledged?: boolean | null
           plot_number?: string | null
+          project_model?: string | null
           project_type?: string | null
           quality_level?: string | null
           revenue_model?: string | null
+          street_info?: string | null
           street_width_m?: number | null
+          submission_status?: string | null
           tenant_id?: string | null
           updated_at?: string
           usage_type?: Database["public"]["Enums"]["land_usage_type"]
@@ -665,32 +701,50 @@ export type Database = {
           width_m?: number | null
         }
         Update: {
+          additional_docs_urls?: string[] | null
+          brokerage_license_number?: string | null
           city?: string
+          contribution_model?: string | null
           created_at?: string
+          deed_date?: string | null
+          deed_file_url?: string | null
           deed_number?: string | null
           developer_experience_requirements?: string | null
+          development_subtype?: string | null
           district?: string | null
+          estimated_price_per_sqm?: number | null
+          estimated_total_value?: number | null
           exact_location_lat?: number | null
           exact_location_lng?: number | null
+          exit_percentage?: number | null
           expected_dev_duration_months?: number | null
           financing_preference?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           is_featured?: boolean
+          kroki_file_url?: string | null
           land_area_sqm?: number
+          land_boundaries?: string | null
+          legal_acknowledgment_accepted?: boolean | null
+          legal_acknowledgment_date?: string | null
           length_m?: number | null
           owner_approved?: boolean
           owner_id?: string
           owner_name?: string | null
+          parcel_count?: number | null
           partnership_goal?: Database["public"]["Enums"]["owner_partnership_goal"]
           partnership_model?: string | null
           plan_number?: string | null
+          platform_fee_acknowledged?: boolean | null
           plot_number?: string | null
+          project_model?: string | null
           project_type?: string | null
           quality_level?: string | null
           revenue_model?: string | null
+          street_info?: string | null
           street_width_m?: number | null
+          submission_status?: string | null
           tenant_id?: string | null
           updated_at?: string
           usage_type?: Database["public"]["Enums"]["land_usage_type"]

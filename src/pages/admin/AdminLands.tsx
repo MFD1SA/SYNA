@@ -8,42 +8,12 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, LocateFixed, ImagePlus, Ruler, Building2, Calendar, Image as ImageIcon, Landmark, Link2 } from "lucide-react";
-import { saudiCities } from "@/data/saudiCities";
-import { Textarea } from "@/components/ui/textarea";
+import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, Ruler, Building2, Image as ImageIcon, Landmark } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-
-const usageLabels: Record<string, { ar: string; en: string }> = {
-  residential: { ar: "سكني", en: "Residential" },
-  commercial: { ar: "تجاري", en: "Commercial" },
-  residential_commercial: { ar: "سكني تجاري", en: "Mixed" },
-  high_density: { ar: "كثافة عالية", en: "High Density" },
-};
-
-const goalLabels: Record<string, { ar: string; en: string }> = {
-  develop_sell: { ar: "تطوير وبيع", en: "Develop & Sell" },
-  develop_rent: { ar: "تطوير وتأجير", en: "Develop & Rent" },
-  develop_mixed: { ar: "مختلط", en: "Mixed" },
-  develop_complex: { ar: "مجمع متكامل", en: "Integrated Complex" },
-  sell_develop: { ar: "بيع وتطوير", en: "Sell & Develop" },
-  partial_exit: { ar: "تخارج جزئي", en: "Partial Exit" },
-  offplan_sell: { ar: "تطوير وبيع على الخارطة", en: "Off-Plan Sell" },
-  real_estate_contribution: { ar: "مساهمة عقارية", en: "Real Estate Contribution" },
-};
-
-const defaultForm = {
-  city: "", district: "", land_area_sqm: "", usage_type: "residential",
-  partnership_goal: "develop_sell", vision_summary: "", project_type: "",
-  exact_location_lat: "", exact_location_lng: "", owner_name: "",
-  plot_number: "", plan_number: "", deed_number: "",
-  length_m: "", width_m: "", street_width_m: "",
-  image_url: "", owner_approved: false, partnership_model: "",
-  selected_owner_id: "",
-};
+import LandSubmissionForm from "@/components/land/LandSubmissionForm";
+import { LandFormData, usageLabels, goalLabels } from "@/components/land/LandFormConstants";
 
 const AdminLands: React.FC = () => {
   const { lang } = useLanguage();
@@ -56,11 +26,8 @@ const AdminLands: React.FC = () => {
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState({ ...defaultForm });
-  const [locating, setLocating] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [editInitialData, setEditInitialData] = useState<Partial<LandFormData>>({});
   const [ownerProfiles, setOwnerProfiles] = useState<any[]>([]);
-  const [mapsLink, setMapsLink] = useState("");
 
   const fetchLands = async () => {
     const { data } = await supabase.from("lands").select("*").order("created_at", { ascending: false });
@@ -78,75 +45,10 @@ const AdminLands: React.FC = () => {
     fetchOwnerProfiles();
   }, []);
 
-  const selectedCity = saudiCities.find(c => c.name.en === form.city);
-
-  const handleLocate = () => {
-    if (!navigator.geolocation) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "المتصفح لا يدعم تحديد الموقع" : "Browser does not support geolocation" });
-      return;
-    }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setForm(f => ({
-          ...f,
-          exact_location_lat: pos.coords.latitude.toFixed(6),
-          exact_location_lng: pos.coords.longitude.toFixed(6),
-        }));
-        setLocating(false);
-        toast({ title: isAr ? "تم تحديد الموقع ✓" : "Location detected ✓" });
-      },
-      (err) => {
-        toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "تعذر تحديد الموقع — تأكد من صلاحيات الموقع" : "Could not get location — check permissions" });
-        setLocating(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  };
-
-  const parseGoogleMapsLink = (link: string) => {
-    setMapsLink(link);
-    if (!link.trim()) return;
-
-    // Pattern 1: @lat,lng,zoom
-    const atMatch = link.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-    if (atMatch) {
-      setForm(f => ({ ...f, exact_location_lat: atMatch[1], exact_location_lng: atMatch[2] }));
-      toast({ title: isAr ? "تم استخراج الإحداثيات ✓" : "Coordinates extracted ✓" });
-      return;
-    }
-
-    // Pattern 2: ?q=lat,lng or place/lat,lng
-    const qMatch = link.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/) || link.match(/place\/(-?\d+\.\d+),(-?\d+\.\d+)/);
-    if (qMatch) {
-      setForm(f => ({ ...f, exact_location_lat: qMatch[1], exact_location_lng: qMatch[2] }));
-      toast({ title: isAr ? "تم استخراج الإحداثيات ✓" : "Coordinates extracted ✓" });
-      return;
-    }
-
-    // Pattern 3: ll=lat,lng
-    const llMatch = link.match(/ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
-    if (llMatch) {
-      setForm(f => ({ ...f, exact_location_lat: llMatch[1], exact_location_lng: llMatch[2] }));
-      toast({ title: isAr ? "تم استخراج الإحداثيات ✓" : "Coordinates extracted ✓" });
-      return;
-    }
-
-    // Pattern 4: Short links with coordinates like maps.app.goo.gl — try generic number extraction
-    const genericMatch = link.match(/(-?\d{1,3}\.\d{4,})[,\s]+(-?\d{1,3}\.\d{4,})/);
-    if (genericMatch) {
-      setForm(f => ({ ...f, exact_location_lat: genericMatch[1], exact_location_lng: genericMatch[2] }));
-      toast({ title: isAr ? "تم استخراج الإحداثيات ✓" : "Coordinates extracted ✓" });
-      return;
-    }
-
-    toast({ variant: "destructive", title: isAr ? "تعذر الاستخراج" : "Could not extract", description: isAr ? "الصق رابط Google Maps يحتوي على إحداثيات" : "Paste a Google Maps link with coordinates" });
-  };
-
-  const handleSubmit = async () => {
+  const handleSubmit = async (form: LandFormData) => {
     if (!user || !form.city || !form.land_area_sqm) return;
     const ownerId = form.selected_owner_id || user.id;
-    const payload = {
+    const payload: any = {
       owner_id: ownerId,
       city: form.city,
       district: form.district || null,
@@ -161,6 +63,7 @@ const AdminLands: React.FC = () => {
       plot_number: form.plot_number || null,
       plan_number: form.plan_number || null,
       deed_number: form.deed_number || null,
+      deed_date: form.deed_date || null,
       length_m: form.length_m ? parseFloat(form.length_m) : null,
       width_m: form.width_m ? parseFloat(form.width_m) : null,
       street_width_m: form.street_width_m ? parseFloat(form.street_width_m) : null,
@@ -169,6 +72,23 @@ const AdminLands: React.FC = () => {
       is_active: true,
       owner_approved: form.owner_approved,
       partnership_model: form.partnership_model || null,
+      brokerage_license_number: form.brokerage_license_number || null,
+      parcel_count: form.parcel_count ? parseInt(form.parcel_count) : 1,
+      land_boundaries: form.land_boundaries || null,
+      street_info: form.street_info || null,
+      project_model: form.project_model || "development_partnership",
+      development_subtype: form.development_subtype || null,
+      contribution_model: form.contribution_model || null,
+      exit_percentage: form.exit_percentage ? parseFloat(form.exit_percentage) : null,
+      estimated_price_per_sqm: form.estimated_price_per_sqm ? parseFloat(form.estimated_price_per_sqm) : null,
+      estimated_total_value: form.estimated_total_value ? parseFloat(form.estimated_total_value) : null,
+      deed_file_url: form.deed_file_url || null,
+      kroki_file_url: form.kroki_file_url || null,
+      additional_docs_urls: form.additional_docs_urls?.length ? form.additional_docs_urls : [],
+      submission_status: form.legal_acknowledgment_accepted ? "submitted" : "draft",
+      legal_acknowledgment_accepted: form.legal_acknowledgment_accepted,
+      legal_acknowledgment_date: form.legal_acknowledgment_accepted ? new Date().toISOString() : null,
+      platform_fee_acknowledged: form.platform_fee_acknowledged,
     };
 
     let error;
@@ -191,28 +111,12 @@ const AdminLands: React.FC = () => {
   const closeDialog = () => {
     setShowAdd(false);
     setEditingId(null);
-    setForm({ ...defaultForm });
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    const ext = file.name.split('.').pop();
-    const path = `${crypto.randomUUID()}.${ext}`;
-    const { error } = await supabase.storage.from("land-images").upload(path, file);
-    if (error) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
-    } else {
-      const { data: urlData } = supabase.storage.from("land-images").getPublicUrl(path);
-      setForm(f => ({ ...f, image_url: urlData.publicUrl }));
-    }
-    setUploading(false);
+    setEditInitialData({});
   };
 
   const openEdit = (land: any) => {
     setEditingId(land.id);
-    setForm({
+    setEditInitialData({
       city: land.city || "",
       district: land.district || "",
       land_area_sqm: String(land.land_area_sqm || ""),
@@ -226,6 +130,7 @@ const AdminLands: React.FC = () => {
       plot_number: land.plot_number || "",
       plan_number: land.plan_number || "",
       deed_number: land.deed_number || "",
+      deed_date: land.deed_date || "",
       length_m: land.length_m ? String(land.length_m) : "",
       width_m: land.width_m ? String(land.width_m) : "",
       street_width_m: land.street_width_m ? String(land.street_width_m) : "",
@@ -233,6 +138,21 @@ const AdminLands: React.FC = () => {
       owner_approved: land.owner_approved || false,
       partnership_model: land.partnership_model || "",
       selected_owner_id: land.owner_id || "",
+      brokerage_license_number: land.brokerage_license_number || "",
+      parcel_count: land.parcel_count ? String(land.parcel_count) : "1",
+      land_boundaries: land.land_boundaries || "",
+      street_info: land.street_info || "",
+      project_model: land.project_model || "development_partnership",
+      development_subtype: land.development_subtype || "",
+      contribution_model: land.contribution_model || "",
+      exit_percentage: land.exit_percentage ? String(land.exit_percentage) : "",
+      estimated_price_per_sqm: land.estimated_price_per_sqm ? String(land.estimated_price_per_sqm) : "",
+      estimated_total_value: land.estimated_total_value ? String(land.estimated_total_value) : "",
+      deed_file_url: land.deed_file_url || "",
+      kroki_file_url: land.kroki_file_url || "",
+      additional_docs_urls: land.additional_docs_urls || [],
+      legal_acknowledgment_accepted: land.legal_acknowledgment_accepted || false,
+      platform_fee_acknowledged: land.platform_fee_acknowledged || false,
     });
     setShowAdd(true);
   };
@@ -270,282 +190,119 @@ const AdminLands: React.FC = () => {
     return data?.publicUrl;
   };
 
-  const mapPreviewUrl = (lat: number, lng: number) =>
-    `https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.005},${lat - 0.005},${lng + 0.005},${lat + 0.005}&layer=mapnik&marker=${lat},${lng}`;
+  const fmtValue = (v: number) => v >= 1_000_000 ? `${(v / 1_000_000).toFixed(1)}M` : v >= 1_000 ? `${(v / 1_000).toFixed(0)}K` : String(v);
 
   return (
     <AdminLayout>
       <div dir={isAr ? "rtl" : "ltr"}>
-      <AdminPageHeader
-        icon={Landmark}
-        titleAr="إدارة الأراضي"
-        titleEn="Manage Lands"
-        descAr="إضافة وتعديل الأراضي — تنعكس تلقائياً في الواجهة الرئيسية"
-        descEn="Add and manage lands — reflected automatically on homepage"
-        actions={
-          <Button className="gap-2 syna-gradient" onClick={() => setShowAdd(true)}>
-            <Plus className="h-4 w-4" />{isAr ? "إدراج أرض" : "Add Land"}
-          </Button>
-        }
-      />
+        <AdminPageHeader
+          icon={Landmark}
+          titleAr="إدارة الأراضي"
+          titleEn="Manage Lands"
+          descAr="إضافة وتعديل الأراضي — تنعكس تلقائياً في الواجهة الرئيسية"
+          descEn="Add and manage lands — reflected automatically on homepage"
+          actions={
+            <Button className="gap-2 syna-gradient" onClick={() => setShowAdd(true)}>
+              <Plus className="h-4 w-4" />{isAr ? "إدراج أرض" : "Add Land"}
+            </Button>
+          }
+        />
 
-      <Dialog open={showAdd} onOpenChange={(v) => { if (!v) closeDialog(); else setShowAdd(true); }}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+        <Dialog open={showAdd} onOpenChange={(v) => { if (!v) closeDialog(); else setShowAdd(true); }}>
+          <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle>{isAr ? (editingId ? "تعديل الأرض" : "إدراج أرض جديدة") : (editingId ? "Edit Land" : "Add New Land")}</DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              {/* Location */}
-              <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
-                <div className="mb-3 flex items-center justify-between flex-wrap gap-2">
-                  <Label className="text-sm font-medium">{isAr ? "الموقع الجغرافي" : "Location"}</Label>
-                  <Button type="button" variant="outline" size="sm" onClick={handleLocate} disabled={locating} className="gap-1.5">
-                    <LocateFixed className="h-3.5 w-3.5" />
-                    {locating ? (isAr ? "جاري التحديد..." : "Locating...") : (isAr ? "موقعي الحالي" : "My Location")}
-                  </Button>
-                </div>
+            <LandSubmissionForm
+              initialData={editInitialData}
+              ownerProfiles={ownerProfiles}
+              isAdmin={true}
+              editingId={editingId}
+              onSubmit={handleSubmit}
+              onCancel={closeDialog}
+            />
+          </DialogContent>
+        </Dialog>
 
-                {/* Google Maps Link */}
-                <div className="mb-3">
-                  <Label className="text-xs text-muted-foreground mb-1 block">{isAr ? "أو الصق رابط Google Maps" : "Or paste Google Maps link"}</Label>
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <Link2 className="absolute start-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                      <Input
-                        className="ps-9 text-xs"
-                        dir="ltr"
-                        value={mapsLink}
-                        onChange={e => setMapsLink(e.target.value)}
-                        placeholder="https://maps.google.com/..."
-                      />
-                    </div>
-                    <Button type="button" variant="secondary" size="sm" onClick={() => parseGoogleMapsLink(mapsLink)} className="shrink-0">
-                      {isAr ? "استخراج" : "Extract"}
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-xs">{isAr ? "المدينة" : "City"}</Label>
-                    <Select value={form.city} onValueChange={v => setForm(f => ({ ...f, city: v, district: "" }))}>
-                      <SelectTrigger><SelectValue placeholder={isAr ? "اختر المدينة" : "Select city"} /></SelectTrigger>
-                      <SelectContent>
-                        {saudiCities.map(c => <SelectItem key={c.name.en} value={c.name.en}>{isAr ? c.name.ar : c.name.en}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label className="text-xs">{isAr ? "الحي" : "District"}</Label>
-                    <Select value={form.district} onValueChange={v => setForm(f => ({ ...f, district: v }))} disabled={!selectedCity}>
-                      <SelectTrigger><SelectValue placeholder={isAr ? "اختر الحي" : "Select district"} /></SelectTrigger>
-                      <SelectContent>
-                        {selectedCity?.districts.map(d => (
-                          <SelectItem key={d.en} value={d.en}>{isAr ? d.ar : d.en}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-xs">{isAr ? "خط العرض" : "Latitude"}</Label>
-                    <Input type="number" step="any" value={form.exact_location_lat} onChange={e => setForm(f => ({ ...f, exact_location_lat: e.target.value }))} placeholder="24.7136" dir="ltr" />
-                  </div>
-                  <div>
-                    <Label className="text-xs">{isAr ? "خط الطول" : "Longitude"}</Label>
-                    <Input type="number" step="any" value={form.exact_location_lng} onChange={e => setForm(f => ({ ...f, exact_location_lng: e.target.value }))} placeholder="46.6753" dir="ltr" />
-                  </div>
-                </div>
-                {form.exact_location_lat && form.exact_location_lng && (
-                  <div className="mt-3 overflow-hidden rounded-lg border border-border/60">
-                    <iframe
-                      title="map"
-                      src={mapPreviewUrl(parseFloat(form.exact_location_lat), parseFloat(form.exact_location_lng))}
-                      className="h-48 w-full"
-                      style={{ border: 0 }}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Land details */}
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <Label className="text-xs">{isAr ? "المساحة (م²)" : "Area (sqm)"}</Label>
-                  <Input type="number" value={form.land_area_sqm} onChange={e => setForm(f => ({ ...f, land_area_sqm: e.target.value }))} />
-                </div>
-                <div>
-                  <Label className="text-xs">{isAr ? "الطول (م)" : "Length (m)"}</Label>
-                  <Input type="number" value={form.length_m} onChange={e => setForm(f => ({ ...f, length_m: e.target.value }))} />
-                </div>
-                <div>
-                  <Label className="text-xs">{isAr ? "العرض (م)" : "Width (m)"}</Label>
-                  <Input type="number" value={form.width_m} onChange={e => setForm(f => ({ ...f, width_m: e.target.value }))} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-xs">{isAr ? "عرض الشارع (م)" : "Street Width (m)"}</Label>
-                  <Input type="number" value={form.street_width_m} onChange={e => setForm(f => ({ ...f, street_width_m: e.target.value }))} />
-                </div>
-                <div>
-                  <Label className="text-xs">{isAr ? "نوع الاستخدام" : "Usage Type"}</Label>
-                  <Select value={form.usage_type} onValueChange={v => setForm(f => ({ ...f, usage_type: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(usageLabels).map(([k, v]) => <SelectItem key={k} value={k}>{isAr ? v.ar : v.en}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-xs">{isAr ? "هدف الشراكة" : "Partnership Goal"}</Label>
-                  <Select value={form.partnership_goal} onValueChange={v => setForm(f => ({ ...f, partnership_goal: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(goalLabels).map(([k, v]) => <SelectItem key={k} value={k}>{isAr ? v.ar : v.en}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-xs">{isAr ? "نوع المشروع" : "Project Type"}</Label>
-                  <Input value={form.project_type} onChange={e => setForm(f => ({ ...f, project_type: e.target.value }))} placeholder={isAr ? "فلل، أبراج..." : "Villas, Towers..."} />
-                </div>
-              </div>
-
-              {/* Owner selection & deed info */}
-              <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
-                <Label className="text-sm font-medium mb-3 block">{isAr ? "ربط المالك" : "Link Owner"}</Label>
-                <Select value={form.selected_owner_id} onValueChange={v => {
-                  const p = ownerProfiles.find(o => o.user_id === v);
-                  setForm(f => ({ ...f, selected_owner_id: v, owner_name: p?.full_name || f.owner_name }));
-                }}>
-                  <SelectTrigger><SelectValue placeholder={isAr ? "اختر مالك الأرض" : "Select land owner"} /></SelectTrigger>
-                  <SelectContent>
-                    {ownerProfiles.map(p => (
-                      <SelectItem key={p.user_id} value={p.user_id}>
-                        {p.full_name || p.email} ({p.email})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <div className="mt-3 flex items-center gap-2">
-                  <input type="checkbox" id="owner_approved" checked={form.owner_approved} onChange={e => setForm(f => ({ ...f, owner_approved: e.target.checked }))} className="rounded border-border" />
-                  <label htmlFor="owner_approved" className="text-xs font-light text-foreground">
-                    {isAr ? "✓ المالك موافق مبدئياً على استقبال عروض وفق النموذج المختار" : "✓ Owner approves receiving offers per selected model"}
-                  </label>
-                </div>
-              </div>
-
-              {/* Image Upload */}
-              <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
-                <Label className="text-sm font-medium mb-2 block">{isAr ? "صورة الأرض" : "Land Image"}</Label>
-                {form.image_url && (
-                  <div className="mb-3 overflow-hidden rounded-xl">
-                    <img src={form.image_url} alt="Land" className="h-40 w-full object-cover rounded-xl" />
-                  </div>
-                )}
-                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border/60 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
-                  <ImagePlus className="h-5 w-5 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
-                    {uploading ? (isAr ? "جاري الرفع..." : "Uploading...") : (isAr ? "اختر صورة" : "Choose Image")}
-                  </span>
-                  <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
-                </label>
-              </div>
-
-              <Button onClick={handleSubmit} className="w-full syna-gradient">
-                {isAr ? (editingId ? "تحديث" : "إدراج الأرض") : (editingId ? "Update" : "Add Land")}
-              </Button>
-            </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Search */}
-      <div className="mb-4 relative max-w-sm">
-        <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input className="ps-9" placeholder={isAr ? "بحث..." : "Search..."} value={search} onChange={e => setSearch(e.target.value)} />
-      </div>
-
-      {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{[1, 2, 3].map(i => <div key={i} className="h-64 animate-pulse rounded-xl bg-muted" />)}</div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map(land => {
-            const imgUrl = getImageUrl(land);
-            return (
-              <div key={land.id} className="syna-card overflow-hidden">
-                {/* Image */}
-                <div className="relative h-40 bg-muted">
-                  {imgUrl ? (
-                    <img src={imgUrl} alt={land.city} className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full items-center justify-center">
-                      <ImageIcon className="h-8 w-8 text-muted-foreground/30" />
-                    </div>
-                  )}
-                  {/* Badges overlay */}
-                  <div className="absolute top-2 end-2 flex gap-1.5">
-                    {!land.is_active && <Badge variant="secondary" className="text-[10px] bg-background/80 backdrop-blur-sm">{isAr ? "مسودة" : "Draft"}</Badge>}
-                    {land.owner_approved && <Badge className="text-[10px] bg-emerald-500/80 text-white border-0 backdrop-blur-sm">{isAr ? "مالك موافق" : "Approved"}</Badge>}
-                  </div>
-                  <div className="absolute bottom-2 start-2">
-                    <Badge variant="secondary" className="text-[10px] bg-background/80 backdrop-blur-sm">
-                      {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
-                    </Badge>
-                  </div>
-                  {land.is_featured && (
-                    <div className="absolute top-2 start-2">
-                      <Star className="h-4 w-4 text-amber-400 fill-amber-400 drop-shadow" />
-                    </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="p-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <MapPin className="h-4 w-4 text-primary shrink-0" strokeWidth={1.5} />
-                    <h3 className="font-medium text-foreground truncate">{land.city}</h3>
-                    {land.district && <span className="text-xs font-light text-muted-foreground truncate">- {land.district}</span>}
-                  </div>
-
-                  <div className="mt-2 grid grid-cols-2 gap-1.5 text-xs font-light text-muted-foreground">
-                    <span className="flex items-center gap-1"><Ruler className="h-3 w-3" />{Number(land.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</span>
-                    <span className="flex items-center gap-1"><Building2 className="h-3 w-3" />{isAr ? goalLabels[land.partnership_goal]?.ar : goalLabels[land.partnership_goal]?.en}</span>
-                    {land.street_width_m && <span>{isAr ? "شارع:" : "St:"} {land.street_width_m}{isAr ? "م" : "m"}</span>}
-                    {land.owner_name && <span className="truncate">{land.owner_name}</span>}
-                  </div>
-
-                  {land.vision_summary && (
-                    <p className="mt-2 text-xs font-light text-muted-foreground line-clamp-2">{land.vision_summary}</p>
-                  )}
-
-                  {/* Actions */}
-                  <div className="mt-3 flex items-center gap-1">
-                    <Button variant="outline" size="sm" className="flex-1 text-xs gap-1" onClick={() => openEdit(land)}>
-                      <Pencil className="h-3 w-3" />{isAr ? "تعديل" : "Edit"}
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleActive(land.id, land.is_active)} title={isAr ? "إظهار/إخفاء" : "Show/Hide"}>
-                      {land.is_active ? <Eye className="h-3.5 w-3.5 text-primary" /> : <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />}
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleFeatured(land.id, land.is_featured)} title={isAr ? "تمييز" : "Feature"}>
-                      {land.is_featured ? <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" /> : <StarOff className="h-3.5 w-3.5 text-muted-foreground" />}
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => deleteLand(land.id)}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-          {filtered.length === 0 && <p className="col-span-full py-8 text-center text-sm text-muted-foreground">{isAr ? "لا توجد أراضي" : "No lands found"}</p>}
+        {/* Search */}
+        <div className="mb-4 relative max-w-sm">
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input className="ps-9" placeholder={isAr ? "بحث..." : "Search..."} value={search} onChange={e => setSearch(e.target.value)} />
         </div>
-      )}
+
+        {loading ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{[1, 2, 3].map(i => <div key={i} className="h-64 animate-pulse rounded-xl bg-muted" />)}</div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map(land => {
+              const imgUrl = getImageUrl(land);
+              return (
+                <div key={land.id} className="syna-card overflow-hidden">
+                  {/* Image */}
+                  <div className="relative h-40 bg-muted">
+                    {imgUrl ? (
+                      <img src={imgUrl} alt={land.city} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center">
+                        <ImageIcon className="h-8 w-8 text-muted-foreground/30" />
+                      </div>
+                    )}
+                    <div className="absolute top-2 end-2 flex gap-1.5">
+                      {!land.is_active && <Badge variant="secondary" className="text-[10px] bg-background/80 backdrop-blur-sm">{isAr ? "مسودة" : "Draft"}</Badge>}
+                      {land.owner_approved && <Badge className="text-[10px] bg-emerald-500/80 text-white border-0 backdrop-blur-sm">{isAr ? "مالك موافق" : "Approved"}</Badge>}
+                      {land.project_model === "real_estate_contribution" && (
+                        <Badge className="text-[10px] bg-blue-500/80 text-white border-0 backdrop-blur-sm">{isAr ? "مساهمة" : "Contribution"}</Badge>
+                      )}
+                    </div>
+                    <div className="absolute bottom-2 start-2">
+                      <Badge variant="secondary" className="text-[10px] bg-background/80 backdrop-blur-sm">
+                        {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
+                      </Badge>
+                    </div>
+                    {land.is_featured && (
+                      <div className="absolute top-2 start-2">
+                        <Star className="h-4 w-4 text-amber-400 fill-amber-400 drop-shadow" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <MapPin className="h-4 w-4 text-primary shrink-0" strokeWidth={1.5} />
+                      <h3 className="font-medium text-foreground truncate">{land.city}</h3>
+                      {land.district && <span className="text-xs font-light text-muted-foreground truncate">- {land.district}</span>}
+                    </div>
+
+                    <div className="mt-2 grid grid-cols-2 gap-1.5 text-xs font-light text-muted-foreground">
+                      <span className="flex items-center gap-1"><Ruler className="h-3 w-3" />{Number(land.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</span>
+                      <span className="flex items-center gap-1"><Building2 className="h-3 w-3" />{isAr ? goalLabels[land.partnership_goal]?.ar : goalLabels[land.partnership_goal]?.en}</span>
+                      {land.estimated_total_value && <span className="text-primary font-medium">{fmtValue(Number(land.estimated_total_value))} SAR</span>}
+                      {land.owner_name && <span className="truncate">{land.owner_name}</span>}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="mt-3 flex items-center gap-1">
+                      <Button variant="outline" size="sm" className="flex-1 text-xs gap-1" onClick={() => openEdit(land)}>
+                        <Pencil className="h-3 w-3" />{isAr ? "تعديل" : "Edit"}
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleActive(land.id, land.is_active)}>
+                        {land.is_active ? <Eye className="h-3.5 w-3.5 text-primary" /> : <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />}
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleFeatured(land.id, land.is_featured)}>
+                        {land.is_featured ? <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" /> : <StarOff className="h-3.5 w-3.5 text-muted-foreground" />}
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => deleteLand(land.id)}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            {filtered.length === 0 && <p className="col-span-full py-8 text-center text-sm text-muted-foreground">{isAr ? "لا توجد أراضي" : "No lands found"}</p>}
+          </div>
+        )}
       </div>
     </AdminLayout>
   );
