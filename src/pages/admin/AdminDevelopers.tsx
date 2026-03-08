@@ -260,7 +260,7 @@ const AdminDevelopers: React.FC = () => {
           {filtered.map(dev => {
             const sc = statusConfig[dev.verification_status];
             return (
-              <div key={dev.id} className="doma-card flex items-center justify-between p-4">
+              <div key={dev.id} className="rounded-xl border border-border/60 bg-card flex items-center justify-between p-4 hover:border-primary/20 transition-all">
                 <div className="flex items-center gap-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
                     <HardHat className="h-5 w-5 text-accent-foreground" />
