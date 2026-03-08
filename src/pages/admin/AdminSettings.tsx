@@ -236,20 +236,6 @@ const AdminSettings: React.FC = () => {
             {isAr ? "تغيير كلمة المرور" : "Change Password"}
           </Button>
         </div>
-        {/* Demo Credentials Toggle */}
-        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
-          <div className="flex items-center gap-2 mb-1">
-            <FlaskConical className="h-4 w-4 text-primary" />
-            <h3 className="text-sm font-medium text-foreground">{isAr ? "البيانات التجريبية" : "Demo Credentials"}</h3>
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-foreground">{isAr ? "إظهار أزرار الدخول التجريبي" : "Show demo login buttons"}</p>
-              <p className="text-xs text-muted-foreground">{isAr ? "يشمل: مطور تجريبي، مالك تجريبي، ومدير النظام في صفحات الدخول" : "Includes: Demo Developer, Demo Owner, and Admin on login pages"}</p>
-            </div>
-            <Switch checked={demoCredentialsVisible} onCheckedChange={handleToggleDemo} disabled={savingDemo} />
-          </div>
-        </div>
       </div>
     </AdminLayout>
   );

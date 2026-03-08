@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link, useNavigate } from "react-router-dom";
-import { Globe, LogIn, UserPlus, Eye, EyeOff, Upload, FileText, Image, Home, HardHat, Landmark, Loader2, Shield } from "lucide-react";
+import { Globe, LogIn, UserPlus, Eye, EyeOff, Upload, FileText, Image, Home, HardHat, Landmark, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.png";
 import { motion } from "framer-motion";
