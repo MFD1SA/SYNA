@@ -6,6 +6,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Handshake, Target, Users, Landmark, ShieldCheck, TrendingUp, Info } from "lucide-react";
 import { motion } from "framer-motion";
+import headerAboutImg from "@/assets/header-about.jpg";
 
 const AboutPage: React.FC = () => {
   const { t, lang } = useLanguage();
