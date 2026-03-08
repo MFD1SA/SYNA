@@ -39,6 +39,9 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import OpportunityDetail from "./pages/OpportunityDetail";
 import Contact from "./pages/Contact";
 import OwnerDashboard from "./pages/owner/OwnerDashboard";
+import OwnerRequests from "./pages/owner/OwnerRequests";
+import OwnerDeals from "./pages/owner/OwnerDeals";
+import OwnerSettings from "./pages/owner/OwnerSettings";
 
 const queryClient = new QueryClient();
 
