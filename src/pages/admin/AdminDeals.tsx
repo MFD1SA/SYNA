@@ -314,9 +314,9 @@ const AdminDeals: React.FC = () => {
       </div>
 
       <Tabs defaultValue="requests">
-        <TabsList className="mb-4">
-          <TabsTrigger value="requests" className="gap-2"><FileText className="h-3.5 w-3.5" />{isAr ? "الطلبات" : "Requests"} ({requests.length})</TabsTrigger>
-          <TabsTrigger value="deals" className="gap-2"><Handshake className="h-3.5 w-3.5" />{isAr ? "الصفقات" : "Deals"} ({deals.length})</TabsTrigger>
+        <TabsList className="mb-4 w-full sm:w-auto">
+          <TabsTrigger value="requests" className="gap-2 flex-1 sm:flex-initial"><FileText className="h-3.5 w-3.5" />{isAr ? "الطلبات" : "Requests"} ({requests.length})</TabsTrigger>
+          <TabsTrigger value="deals" className="gap-2 flex-1 sm:flex-initial"><Handshake className="h-3.5 w-3.5" />{isAr ? "الصفقات" : "Deals"} ({deals.length})</TabsTrigger>
         </TabsList>
 
         <div className="mb-4 relative max-w-sm">
