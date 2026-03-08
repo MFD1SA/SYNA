@@ -6,6 +6,7 @@ import SubscriptionsSection from "@/components/landing/SubscriptionsSection";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Handshake } from "lucide-react";
+import headerPartnershipsImg from "@/assets/header-partnerships.jpg";
 
 const SubscriptionsPage: React.FC = () => {
   const { lang } = useLanguage();
