@@ -4,7 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import { Users, Landmark, Handshake, HardHat, TrendingUp, FileText, CheckCircle2, ArrowUpRight, Clock, Activity, BarChart3 } from "lucide-react";
+import { Users, Landmark, Handshake, HardHat, TrendingUp, FileText, CheckCircle2, ArrowUpRight, Clock, Activity, BarChart3, BookOpen, ExternalLink } from "lucide-react";
 import AdminAnalyticsCharts from "@/components/admin/AdminAnalyticsCharts";
 import { Link } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
