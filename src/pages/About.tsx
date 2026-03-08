@@ -31,7 +31,7 @@ const AboutPage: React.FC = () => {
       <PageHeader
         icon={Info}
         title={isAr ? "عن سينا" : "About SYNA"}
-        description={isAr ? "تعرّف على رؤية سينا ودورها في تنظيم شراكات التطوير العقاري بين ملاك الأراضي والمطورين" : "Learn about SYNA's vision and its role in organizing real estate development partnerships between landowners and developers"}
+        description={isAr ? "تعرّف على رؤية سينا ودورها في تنظيم شراكات التطوير العقاري والمساهمات العقارية بين ملاك الأراضي والمطورين" : "Learn about SYNA's vision and its role in organizing real estate development partnerships and contributions between landowners and developers"}
         backgroundImage={headerAboutImg}
       />
       <main className="py-12 md:py-16">
