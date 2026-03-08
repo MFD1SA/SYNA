@@ -30,9 +30,6 @@ const HowItWorksSection: React.FC = () => {
           transition={{ duration: 0.7 }}
           className="mx-auto mb-16 max-w-2xl text-center"
         >
-          <span className="mb-4 inline-block rounded-full border border-[hsl(200,80%,45%,0.2)] bg-[hsl(200,80%,45%,0.06)] px-4 py-1.5 text-xs font-light text-[hsl(200,80%,60%)]">
-            {isAr ? "كيف تعمل المنصة" : "How It Works"}
-          </span>
           <h2 className="mb-4 text-3xl font-medium text-white md:text-4xl lg:text-5xl">
             {t.howItWorks.title}
           </h2>

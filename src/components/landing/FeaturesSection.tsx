@@ -32,9 +32,6 @@ const FeaturesSection: React.FC = () => {
           transition={{ duration: 0.7 }}
           className="mx-auto mb-10 max-w-3xl text-center"
         >
-          <span className="mb-3 inline-block rounded-full border border-[hsl(200,80%,45%,0.2)] bg-[hsl(200,80%,45%,0.06)] px-4 py-1.5 text-xs font-light text-[hsl(200,80%,60%)]">
-            {isAr ? "أدوات ذكية" : "Smart Tools"}
-          </span>
           <h2 className="mb-3 text-2xl font-medium text-white md:text-3xl lg:text-4xl">
             {t.features.title}
           </h2>
