@@ -329,7 +329,7 @@ const LandSubmissionForm: React.FC<Props> = ({ initialData, ownerProfiles, isAdm
                   <button
                     key={key}
                     type="button"
-                    onClick={() => setForm(f => ({ ...f, project_model: key, contribution_model: "", exit_percentage: "" }))}
+                    onClick={() => setForm(f => ({ ...f, project_model: key, contribution_model: "", exit_percentage: "", partnership_goal: key === "real_estate_contribution" ? "real_estate_contribution" : (f.partnership_goal === "real_estate_contribution" ? "develop_sell" : f.partnership_goal) }))}
                     className={`rounded-lg border-2 p-4 text-start transition-all ${form.project_model === key ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"}`}
                   >
                     <span className="text-sm font-medium">{isAr ? label.ar : label.en}</span>
