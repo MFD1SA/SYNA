@@ -34,7 +34,7 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import AdminAuditLog from "./pages/admin/AdminAuditLog";
 import AdminContent from "./pages/admin/AdminContent";
 import AdminTeam from "./pages/admin/AdminTeam";
-import AdminTargets from "./pages/admin/AdminTargets";
+import AdminSettings from "./pages/admin/AdminSettings";
 import AdminSettings from "./pages/admin/AdminSettings";
 import OpportunityDetail from "./pages/OpportunityDetail";
 import Contact from "./pages/Contact";
