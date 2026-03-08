@@ -221,7 +221,7 @@ const AdminDeals: React.FC = () => {
       if (nextStage === "deal_closed") updates.closed_at = new Date().toISOString();
       await supabase.from("deals").update(updates).eq("id", stageDialog.dealId);
       await supabase.from("deal_stages_log").insert({
-        deal_id: stageDialog.dealId, from_stage: stageDialog.currentStage, to_stage: nextStage,
+        deal_id: stageDialog.dealId, from_stage: stageDialog.currentStage as any, to_stage: nextStage as any,
         changed_by: user!.id, notes: stageNotes || null,
       });
       toast({ title: isAr ? `تم الانتقال إلى: ${stageConfig[nextStage]?.ar}` : `Advanced to: ${stageConfig[nextStage]?.en}` });
