@@ -37,8 +37,9 @@ const AdminOverview: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [profilesRes, devsRes, pendingDevsRes, landsRes, dealsRes, activeDealsRes, closedDealsRes, pendingReqRes] = await Promise.all([
+      const [profilesRes, profilesCount, devsRes, pendingDevsRes, landsRes, dealsRes, activeDealsRes, closedDealsRes, pendingReqRes] = await Promise.all([
         supabase.from("profiles").select("id, full_name, email, subscription_type, created_at").order("created_at", { ascending: false }).limit(5),
+        supabase.from("profiles").select("id", { count: "exact", head: true }),
         supabase.from("developers").select("id", { count: "exact", head: true }),
         supabase.from("developers").select("id", { count: "exact", head: true }).eq("verification_status", "pending_review"),
         supabase.from("lands").select("id", { count: "exact", head: true }),
@@ -49,7 +50,7 @@ const AdminOverview: React.FC = () => {
       ]);
 
       setData({
-        totalUsers: profilesRes.data?.length ?? 0,
+        totalUsers: profilesCount.count ?? 0,
         totalDevelopers: devsRes.count ?? 0,
         pendingVerification: pendingDevsRes.count ?? 0,
         totalLands: landsRes.count ?? 0,

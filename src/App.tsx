@@ -20,17 +20,9 @@ import FeatureDetailPage from "./pages/FeatureDetail";
 import SubscriptionsPage from "./pages/Subscriptions";
 import LoginPage from "./pages/Login";
 import CrmDashboard from "./pages/crm/CrmDashboard";
-import CrmLands from "./pages/crm/CrmLands";
-import CrmRequests from "./pages/crm/CrmRequests";
 import CrmDeals from "./pages/crm/CrmDeals";
 import CrmBrowseLands from "./pages/crm/CrmBrowseLands";
 import CrmMyRequests from "./pages/crm/CrmMyRequests";
-import CrmProperties from "./pages/crm/CrmProperties";
-import CrmUnits from "./pages/crm/CrmUnits";
-import CrmLeases from "./pages/crm/CrmLeases";
-import CrmReceivables from "./pages/crm/CrmReceivables";
-import CrmMaintenance from "./pages/crm/CrmMaintenance";
-import CrmReports from "./pages/crm/CrmReports";
 import CrmSettings from "./pages/crm/CrmSettings";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AdminLands from "./pages/admin/AdminLands";
@@ -77,19 +69,17 @@ const DeveloperRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const { userType, loading: typeLoading } = useUserType();
   if (authLoading || typeLoading) return <LoadingScreen />;
   if (!user) return <Navigate to="/auth/login" replace />;
-  // Admin can also access developer routes for testing/oversight
   if (userType === "developer" || userType === "admin") return <>{children}</>;
   if (userType === "owner") return <Navigate to="/owner/dashboard" replace />;
   return <Navigate to="/no-access" replace />;
 };
 
-// Owner-only route: must have lands linked to their user_id
+// Owner-only route
 const OwnerRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading: authLoading } = useAuth();
   const { userType, loading: typeLoading } = useUserType();
   if (authLoading || typeLoading) return <LoadingScreen />;
   if (!user) return <Navigate to="/auth/login" replace />;
-  // Admin can also access owner routes for testing/oversight
   if (userType === "owner" || userType === "admin") return <>{children}</>;
   if (userType === "developer") return <Navigate to="/crm/dashboard" replace />;
   return <Navigate to="/no-access" replace />;
@@ -101,7 +91,6 @@ const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const { userType, loading: typeLoading } = useUserType();
   if (authLoading || typeLoading) return <LoadingScreen />;
   if (user) {
-    // Redirect based on user type
     if (userType === "admin") return <Navigate to="/admincp/overview" replace />;
     if (userType === "developer") return <Navigate to="/crm/dashboard" replace />;
     if (userType === "owner") return <Navigate to="/owner/dashboard" replace />;
@@ -145,15 +134,6 @@ const App: React.FC = () => (
               <Route path="/crm/my-requests" element={<DeveloperRoute><CrmMyRequests /></DeveloperRoute>} />
               <Route path="/crm/deals" element={<DeveloperRoute><CrmDeals /></DeveloperRoute>} />
               <Route path="/crm/settings" element={<DeveloperRoute><CrmSettings /></DeveloperRoute>} />
-              {/* Legacy CRM routes — kept for now, developer-protected */}
-              <Route path="/crm/lands" element={<DeveloperRoute><CrmLands /></DeveloperRoute>} />
-              <Route path="/crm/requests" element={<DeveloperRoute><CrmRequests /></DeveloperRoute>} />
-              <Route path="/crm/properties" element={<DeveloperRoute><CrmProperties /></DeveloperRoute>} />
-              <Route path="/crm/units" element={<DeveloperRoute><CrmUnits /></DeveloperRoute>} />
-              <Route path="/crm/leases" element={<DeveloperRoute><CrmLeases /></DeveloperRoute>} />
-              <Route path="/crm/receivables" element={<DeveloperRoute><CrmReceivables /></DeveloperRoute>} />
-              <Route path="/crm/maintenance" element={<DeveloperRoute><CrmMaintenance /></DeveloperRoute>} />
-              <Route path="/crm/reports" element={<DeveloperRoute><CrmReports /></DeveloperRoute>} />
 
               {/* Admin */}
               <Route path="/admincp" element={<AdminLogin />} />
@@ -169,12 +149,21 @@ const App: React.FC = () => (
               <Route path="/admincp/team" element={<AdminRoute><AdminTeam /></AdminRoute>} />
               <Route path="/admincp/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
 
-              {/* Owner — Owner Only */}
+              {/* Owner */}
               <Route path="/owner/dashboard" element={<OwnerRoute><OwnerDashboard /></OwnerRoute>} />
 
               {/* Redirects */}
               <Route path="/dashboard" element={<Navigate to="/crm/dashboard" replace />} />
               <Route path="/dashboard/*" element={<Navigate to="/crm/dashboard" replace />} />
+              {/* Legacy CRM redirects */}
+              <Route path="/crm/lands" element={<Navigate to="/crm/browse" replace />} />
+              <Route path="/crm/requests" element={<Navigate to="/crm/my-requests" replace />} />
+              <Route path="/crm/properties" element={<Navigate to="/crm/dashboard" replace />} />
+              <Route path="/crm/units" element={<Navigate to="/crm/dashboard" replace />} />
+              <Route path="/crm/leases" element={<Navigate to="/crm/dashboard" replace />} />
+              <Route path="/crm/receivables" element={<Navigate to="/crm/dashboard" replace />} />
+              <Route path="/crm/maintenance" element={<Navigate to="/crm/dashboard" replace />} />
+              <Route path="/crm/reports" element={<Navigate to="/crm/dashboard" replace />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
