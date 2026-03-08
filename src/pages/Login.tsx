@@ -55,13 +55,29 @@ const LoginPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
       setLoading(false);
       return;
     }
-    showWelcomeToast();
+    if (data.user) {
+      // Check if user has a valid role before proceeding
+      const [devRes, landsRes] = await Promise.all([
+        supabase.from("developers").select("id").eq("user_id", data.user.id).maybeSingle(),
+        supabase.from("lands").select("id").eq("owner_id", data.user.id).limit(1),
+      ]);
+      const isDev = !!devRes.data;
+      const isOwner = !!(landsRes.data && landsRes.data.length > 0);
+      if (!isDev && !isOwner) {
+        await supabase.auth.signOut();
+        toast({ variant: "destructive", title: isAr ? "غير مصرح" : "Unauthorized", description: isAr ? "حسابك غير مرتبط بأي دور في المنصة. تواصل مع مدير النظام." : "Your account is not linked to any role. Contact the administrator." });
+        setLoading(false);
+        return;
+      }
+      showWelcomeToast();
+    }
+    setLoading(false);
   };
 
   const validate = (): boolean => {
