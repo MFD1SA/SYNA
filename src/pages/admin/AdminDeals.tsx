@@ -49,6 +49,13 @@ const statusLabels: Record<string, { ar: string; en: string }> = {
   info_requested: { ar: "معلومات مطلوبة", en: "Info Requested" },
 };
 
+const commissionStatusLabels: Record<string, { ar: string; en: string }> = {
+  pending: { ar: "قيد الانتظار", en: "Pending" },
+  paid: { ar: "مدفوعة", en: "Paid" },
+  invoiced: { ar: "تم إصدار فاتورة", en: "Invoiced" },
+  waived: { ar: "معفاة", en: "Waived" },
+};
+
 const AdminDeals: React.FC = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
@@ -626,7 +633,7 @@ const AdminDeals: React.FC = () => {
                     )}
                   </div>
                   {meetings.length > 0 ? meetings.map((m: any) => (
-                    <div key={m.id} className="rounded-lg border border-border/30 bg-card p-3 space-y-1.5">
+                    <div key={m.id} className="rounded-lg border border-border/30 bg-card p-3 space-y-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <CalendarClock className="h-3.5 w-3.5 text-violet-600" />
@@ -641,11 +648,20 @@ const AdminDeals: React.FC = () => {
                       </div>
                       {m.meet_link && (
                         <a href={m.meet_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-primary hover:underline">
-                          <Link2 className="h-3 w-3" />{m.meet_link}
+                          <Link2 className="h-3 w-3" />{isAr ? "رابط الاجتماع" : "Meeting Link"}
                         </a>
                       )}
-                      {m.notes && <p className="text-xs text-muted-foreground">{m.notes}</p>}
                       {m.location && <p className="text-xs text-muted-foreground flex items-center gap-1"><MapPin className="h-3 w-3" />{m.location}</p>}
+                      <div className="rounded-md bg-muted/30 border border-border/20 p-2 space-y-1">
+                        <p className="text-[10px] font-medium text-muted-foreground">{isAr ? "المدة:" : "Duration:"} {m.duration_minutes} {isAr ? "دقيقة" : "min"}</p>
+                        {m.notes && (
+                          <div>
+                            <p className="text-[10px] font-medium text-muted-foreground mb-0.5">{isAr ? "إفادة المشرف:" : "Supervisor Notes:"}</p>
+                            <p className="text-xs text-foreground">{m.notes}</p>
+                          </div>
+                        )}
+                        <p className="text-[10px] text-muted-foreground/70">{isAr ? "أُنشئ بواسطة المشرف بتاريخ:" : "Created by supervisor on:"} {new Date(m.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}</p>
+                      </div>
                     </div>
                   )) : (
                     <p className="text-xs text-muted-foreground text-center py-3">{isAr ? "لا توجد اجتماعات" : "No meetings yet"}</p>
@@ -657,7 +673,36 @@ const AdminDeals: React.FC = () => {
                   <Shield className="h-4 w-4 text-emerald-600 shrink-0" />
                   <div>
                     <p className="text-xs font-medium text-emerald-700">{isAr ? "عمولة المنصة: 2.5%" : "Platform Commission: 2.5%"}</p>
-                    <p className="text-[10px] text-emerald-600">{isAr ? "حالة العمولة:" : "Commission Status:"} {viewDeal.commission_status}</p>
+                    <p className="text-[10px] text-emerald-600">
+                      {isAr ? "حالة العمولة:" : "Commission Status:"}{" "}
+                      {isAr
+                        ? (commissionStatusLabels[viewDeal.commission_status]?.ar || viewDeal.commission_status)
+                        : (commissionStatusLabels[viewDeal.commission_status]?.en || viewDeal.commission_status)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Governance Info */}
+                <div className="rounded-xl border border-border/40 p-4 space-y-2">
+                  <h6 className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                    <Shield className="h-3.5 w-3.5 text-primary" />
+                    {isAr ? "حوكمة الصفقة" : "Deal Governance"}
+                  </h6>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-lg bg-muted/30 border border-border/30 p-2.5">
+                      <p className="text-[10px] text-muted-foreground mb-0.5">{isAr ? "المشرف المسؤول" : "Assigned Supervisor"}</p>
+                      <p className="text-xs font-medium text-foreground">{viewDeal.support_assignee ? (user?.email || "—") : (isAr ? "غير محدد" : "Unassigned")}</p>
+                    </div>
+                    <div className="rounded-lg bg-muted/30 border border-border/30 p-2.5">
+                      <p className="text-[10px] text-muted-foreground mb-0.5">{isAr ? "تاريخ الإنشاء" : "Created"}</p>
+                      <p className="text-xs font-medium text-foreground">{new Date(viewDeal.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { year: "numeric", month: "short", day: "numeric" })}</p>
+                    </div>
+                    {viewDeal.closed_at && (
+                      <div className="rounded-lg bg-muted/30 border border-border/30 p-2.5">
+                        <p className="text-[10px] text-muted-foreground mb-0.5">{isAr ? "تاريخ الإغلاق" : "Closed At"}</p>
+                        <p className="text-xs font-medium text-foreground">{new Date(viewDeal.closed_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { year: "numeric", month: "short", day: "numeric" })}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -725,7 +770,7 @@ const AdminDeals: React.FC = () => {
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <select className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm" value={meetingTime} onChange={e => setMeetingTime(e.target.value)}>
                   {["13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00"].map(t => (
-                    <option key={t} value={t}>{t.replace(":", ":")} {parseInt(t) < 12 ? "AM" : "PM"}</option>
+                    <option key={t} value={t}>{t} {parseInt(t) < 12 ? (isAr ? "ص" : "AM") : (isAr ? "م" : "PM")}</option>
                   ))}
                 </select>
               </div>

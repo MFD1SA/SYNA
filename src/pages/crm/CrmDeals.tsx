@@ -33,6 +33,13 @@ const healthLabels: Record<string, { ar: string; en: string }> = {
   red: { ar: "متعثرة", en: "At Risk" },
 };
 
+const commissionStatusLabels: Record<string, { ar: string; en: string }> = {
+  pending: { ar: "قيد الانتظار", en: "Pending" },
+  paid: { ar: "مدفوعة", en: "Paid" },
+  invoiced: { ar: "تم إصدار فاتورة", en: "Invoiced" },
+  waived: { ar: "معفاة", en: "Waived" },
+};
+
 const CrmDeals: React.FC = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
@@ -208,7 +215,15 @@ const CrmDeals: React.FC = () => {
                 {/* Commission */}
                 <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 flex items-center gap-2">
                   <Shield className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <p className="text-xs text-emerald-700">{isAr ? "حقوق المنصة محفوظة — عمولة 2.5%" : "Platform rights protected — 2.5% commission"}</p>
+                  <div>
+                    <p className="text-xs text-emerald-700">{isAr ? "حقوق المنصة محفوظة — عمولة 2.5%" : "Platform rights protected — 2.5% commission"}</p>
+                    <p className="text-[10px] text-emerald-600">
+                      {isAr ? "حالة العمولة:" : "Commission Status:"}{" "}
+                      {isAr
+                        ? (commissionStatusLabels[viewDeal.commission_status]?.ar || viewDeal.commission_status)
+                        : (commissionStatusLabels[viewDeal.commission_status]?.en || viewDeal.commission_status)}
+                    </p>
+                  </div>
                 </div>
 
                 <p className="text-[10px] text-muted-foreground">{isAr ? "تاريخ الإنشاء:" : "Created:"} {new Date(viewDeal.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}</p>

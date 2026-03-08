@@ -201,8 +201,10 @@ const OwnerDeals: React.FC = () => {
 
                 <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 flex items-center gap-2">
                   <Shield className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <p className="text-xs text-emerald-700">{isAr ? "حقوق المنصة محفوظة — عمولة 2.5%" : "Platform rights protected — 2.5% commission"}</p>
+                  <p className="text-xs text-emerald-700">{isAr ? "حقوق المنصة محفوظة" : "Platform rights protected"}</p>
                 </div>
+
+                <p className="text-[10px] text-muted-foreground">{isAr ? "تاريخ الإنشاء:" : "Created:"} {new Date(viewDeal.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}</p>
               </div>
             );
           })()}
