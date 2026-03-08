@@ -390,6 +390,11 @@ const CrmBrowseLands: React.FC = () => {
                 </div>
               )}
 
+              {/* AI Insights */}
+              {detailDialog.id && (
+                <LandAIInsights landId={detailDialog.id} />
+              )}
+
               {/* Apply button */}
               <div className="flex justify-end gap-2 pt-2">
                 <Button variant="outline" onClick={() => setDetailDialog(null)}>{isAr ? "إغلاق" : "Close"}</Button>
