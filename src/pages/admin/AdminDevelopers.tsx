@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil, KeyRound, Eye, EyeOff, Download, Globe, FileText } from "lucide-react";
+import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil, KeyRound, Eye, EyeOff, Download, Globe, FileText, LogIn, Loader2 } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type Developer = Database["public"]["Tables"]["developers"]["Row"];
@@ -47,6 +47,25 @@ const AdminDevelopers: React.FC = () => {
   // Delete confirmation
   const [deleteDialog, setDeleteDialog] = useState<Developer | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [impersonating, setImpersonating] = useState<string | null>(null);
+
+  const handleImpersonate = async (userId: string, name: string) => {
+    setImpersonating(userId);
+    try {
+      const { data, error } = await supabase.functions.invoke("impersonate-user", {
+        body: { target_user_id: userId },
+      });
+      if (error || data?.error) throw new Error(data?.error || error?.message);
+      if (data?.verify_url) {
+        // Open in new tab
+        window.open(data.verify_url, "_blank");
+        toast({ title: isAr ? `تم فتح جلسة ${name} في تبويب جديد` : `Opened ${name}'s session in new tab` });
+      }
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    }
+    setImpersonating(null);
+  };
 
   const fetchDevs = async () => {
     try {
@@ -292,6 +311,10 @@ const AdminDevelopers: React.FC = () => {
                   )}
                   <Button size="sm" variant="outline" onClick={() => openEdit(dev)}>
                     <Pencil className="h-3.5 w-3.5 me-1" />{isAr ? "تعديل" : "Edit"}
+                  </Button>
+                  <Button size="sm" variant="outline" className="text-blue-500 border-blue-500/20 hover:bg-blue-500/5" onClick={() => handleImpersonate(dev.user_id, dev.company_name)} disabled={impersonating === dev.user_id}>
+                    {impersonating === dev.user_id ? <Loader2 className="h-3.5 w-3.5 me-1 animate-spin" /> : <LogIn className="h-3.5 w-3.5 me-1" />}
+                    {isAr ? "دخول كمطور" : "Login as"}
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => setPasswordDialog({ user_id: dev.user_id, name: dev.company_name })}>
                     <KeyRound className="h-3.5 w-3.5 me-1" />{isAr ? "كلمة المرور" : "Password"}

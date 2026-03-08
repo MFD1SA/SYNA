@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, User, Mail, KeyRound, Eye, EyeOff, Save, Loader2, ShieldCheck, FlaskConical } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { Settings, User, Mail, KeyRound, Eye, EyeOff, Save, Loader2, ShieldCheck } from "lucide-react";
+
 
 const AdminSettings: React.FC = () => {
   const { user } = useAuth();
@@ -32,8 +32,6 @@ const AdminSettings: React.FC = () => {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
-  const [demoCredentialsVisible, setDemoCredentialsVisible] = useState(false);
-  const [savingDemo, setSavingDemo] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -45,22 +43,6 @@ const AdminSettings: React.FC = () => {
     });
   }, [user]);
 
-  useEffect(() => {
-    supabase.from("platform_content").select("body_en").eq("content_key", "demo_credentials_visible").maybeSingle().then(({ data }) => {
-      setDemoCredentialsVisible(data?.body_en === "true");
-    });
-  }, []);
-
-  const handleToggleDemo = async (checked: boolean) => {
-    setSavingDemo(true);
-    const { error } = await supabase.from("platform_content").update({ body_en: checked ? "true" : "false", body_ar: checked ? "true" : "false" }).eq("content_key", "demo_credentials_visible");
-    if (!error) {
-      setDemoCredentialsVisible(checked);
-      if (user) await logAudit(user.id, user.email, "update", "platform_setting", "demo_credentials_visible", { visible: checked });
-      toast({ title: checked ? (isAr ? "تم تفعيل البيانات التجريبية ✓" : "Demo credentials enabled ✓") : (isAr ? "تم إخفاء البيانات التجريبية ✓" : "Demo credentials hidden ✓") });
-    }
-    setSavingDemo(false);
-  };
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -253,20 +235,6 @@ const AdminSettings: React.FC = () => {
             {savingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
             {isAr ? "تغيير كلمة المرور" : "Change Password"}
           </Button>
-        </div>
-        {/* Demo Credentials Toggle */}
-        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
-          <div className="flex items-center gap-2 mb-1">
-            <FlaskConical className="h-4 w-4 text-primary" />
-            <h3 className="text-sm font-medium text-foreground">{isAr ? "البيانات التجريبية" : "Demo Credentials"}</h3>
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-foreground">{isAr ? "إظهار أزرار الدخول التجريبي" : "Show demo login buttons"}</p>
-              <p className="text-xs text-muted-foreground">{isAr ? "يشمل: مطور تجريبي، مالك تجريبي، ومدير النظام في صفحات الدخول" : "Includes: Demo Developer, Demo Owner, and Admin on login pages"}</p>
-            </div>
-            <Switch checked={demoCredentialsVisible} onCheckedChange={handleToggleDemo} disabled={savingDemo} />
-          </div>
         </div>
       </div>
     </AdminLayout>

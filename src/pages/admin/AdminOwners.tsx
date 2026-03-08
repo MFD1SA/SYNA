@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useToast } from "@/hooks/use-toast";
 import {
   Plus, Landmark, Mail, User, Eye, EyeOff, Copy, KeyRound, Trash2,
-  Search, MapPin, Ruler, CheckCircle2, Loader2, Shield, Phone
+  Search, MapPin, Ruler, CheckCircle2, Loader2, Shield, Phone, LogIn
 } from "lucide-react";
 
 const AdminOwners: React.FC = () => {
@@ -40,6 +40,24 @@ const AdminOwners: React.FC = () => {
 
   const [deleteDialog, setDeleteDialog] = useState<{ owner_id: string; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [impersonating, setImpersonating] = useState<string | null>(null);
+
+  const handleImpersonate = async (userId: string, name: string) => {
+    setImpersonating(userId);
+    try {
+      const { data, error } = await supabase.functions.invoke("impersonate-user", {
+        body: { target_user_id: userId },
+      });
+      if (error || data?.error) throw new Error(data?.error || error?.message);
+      if (data?.verify_url) {
+        window.open(data.verify_url, "_blank");
+        toast({ title: isAr ? `تم فتح جلسة ${name} في تبويب جديد` : `Opened ${name}'s session in new tab` });
+      }
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    }
+    setImpersonating(null);
+  };
 
   const fetchOwners = async () => {
     const { data: landsData } = await supabase
@@ -216,6 +234,9 @@ const AdminOwners: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-500 hover:bg-blue-500/10" onClick={() => handleImpersonate(owner.owner_id, owner.owner_name)} disabled={impersonating === owner.owner_id} title={isAr ? "دخول كمالك" : "Login as owner"}>
+                      {impersonating === owner.owner_id ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
+                    </Button>
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => setPasswordDialog({ owner_id: owner.owner_id, name: owner.owner_name })}>
                       <KeyRound className="h-4 w-4" />
                     </Button>
