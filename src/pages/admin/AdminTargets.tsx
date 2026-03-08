@@ -206,7 +206,7 @@ const AdminTargets: React.FC = () => {
         </div>
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
           <DialogTrigger asChild>
-            <Button className="doma-gradient gap-2"><Plus className="h-4 w-4" />{isAr ? "إضافة شركة" : "Add Company"}</Button>
+            <Button className="syna-gradient gap-2"><Plus className="h-4 w-4" />{isAr ? "إضافة شركة" : "Add Company"}</Button>
           </DialogTrigger>
           <DialogContent dir={isAr ? "rtl" : "ltr"}>
             <DialogHeader>
