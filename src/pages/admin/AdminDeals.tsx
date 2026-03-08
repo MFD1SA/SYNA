@@ -770,7 +770,7 @@ const AdminDeals: React.FC = () => {
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <select className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm" value={meetingTime} onChange={e => setMeetingTime(e.target.value)}>
                   {["13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00"].map(t => (
-                    <option key={t} value={t}>{t.replace(":", ":")} {parseInt(t) < 12 ? "AM" : "PM"}</option>
+                    <option key={t} value={t}>{t} {parseInt(t) < 12 ? (isAr ? "ص" : "AM") : (isAr ? "م" : "PM")}</option>
                   ))}
                 </select>
               </div>

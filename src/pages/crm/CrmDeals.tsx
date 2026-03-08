@@ -33,6 +33,13 @@ const healthLabels: Record<string, { ar: string; en: string }> = {
   red: { ar: "متعثرة", en: "At Risk" },
 };
 
+const commissionStatusLabels: Record<string, { ar: string; en: string }> = {
+  pending: { ar: "قيد الانتظار", en: "Pending" },
+  paid: { ar: "مدفوعة", en: "Paid" },
+  invoiced: { ar: "تم إصدار فاتورة", en: "Invoiced" },
+  waived: { ar: "معفاة", en: "Waived" },
+};
+
 const CrmDeals: React.FC = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
