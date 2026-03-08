@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil, KeyRound, Eye, EyeOff, Download, Globe, FileText } from "lucide-react";
+import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil, KeyRound, Eye, EyeOff, Download, Globe, FileText, LogIn, Loader2 } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type Developer = Database["public"]["Tables"]["developers"]["Row"];
