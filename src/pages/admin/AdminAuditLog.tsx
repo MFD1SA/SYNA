@@ -75,6 +75,7 @@ const AdminAuditLog: React.FC = () => {
 
   return (
     <AdminLayout>
+      <div dir={isAr ? "rtl" : "ltr"}>
       <AdminPageHeader
         icon={History}
         titleAr="سجل العمليات"
