@@ -11,97 +11,40 @@ const TermsPage: React.FC = () => {
   const isAr = lang === "ar";
   usePageTitle(isAr ? "الشروط والأحكام" : "Terms & Conditions");
 
+  const sections = isAr ? [
+    { title: "1. مقدمة", text: "مرحباً بك في SYNA، المنصة المتخصصة في تسهيل شراكات التطوير العقاري بين ملاك الأراضي والمطورين في المملكة العربية السعودية، والمملوكة لشركة سينا للتقنية. باستخدامك لهذه المنصة فإنك توافق على الالتزام بهذه الشروط والأحكام." },
+    { title: "2. التعريفات", text: '"المنصة" تشير إلى SYNA وجميع الخدمات المرتبطة بها. "مالك الأرض" يشير إلى من يسجل أرضه للبحث عن شريك تطوير. "المطور" يشير إلى الشركة المسجلة تجارياً والتي تبحث عن فرص تطوير. "الصفقة" تشمل دورة الشراكة من الطلب حتى الإغلاق.' },
+    { title: "3. شروط الاستخدام", text: "يجب أن يكون عمر المستخدم 18 عاماً على الأقل. يلتزم المطور بتقديم سجل تجاري ساري المفعول. يلتزم مالك الأرض بتقديم بيانات صحيحة عن أرضه. يتحمل كل طرف مسؤولية الحفاظ على سرية بيانات حسابه." },
+    { title: "4. العمولة والرسوم", text: "تفرض المنصة عمولة بنسبة 2.50% تُدفع من المطور عند إتمام الصفقة بنجاح. لا توجد رسوم تسجيل أو اشتراك شهري. العمولة مستحقة فقط عند إغلاق الاتفاق بين الطرفين." },
+    { title: "5. الخصوصية والسرية", text: "بيانات مالك الأرض الحساسة (رقم الصك، الموقع الدقيق، هوية المالك) لا تُعرض للمطور إلا بعد موافقة المالك صراحةً. أي محاولة للتحايل على نظام الخصوصية تعرض الحساب للإيقاف الفوري." },
+    { title: "6. الملكية الفكرية", text: "جميع المحتويات والتصاميم والعلامات التجارية المتعلقة بالمنصة هي ملك لشركة سينا للتقنية. لا يجوز نسخ أو تعديل أو توزيع أي محتوى من المنصة دون إذن كتابي مسبق." },
+    { title: "7. حدود المسؤولية", text: "المنصة وسيط تقني فقط ولا تتحمل مسؤولية نتائج الشراكات أو الاتفاقات بين الأطراف. لا تضمن الشركة دقة البيانات المقدمة من المستخدمين." },
+    { title: "8. إنهاء الحساب", text: "يحق للشركة تعليق أو إنهاء حساب المستخدم في حالة مخالفة هذه الشروط. يمكن للمستخدم إلغاء حسابه في أي وقت." },
+    { title: "9. القانون الواجب التطبيق", text: "تخضع هذه الشروط لأنظمة المملكة العربية السعودية. للتواصل يرجى استخدام نموذج \"اتصل بنا\"." },
+  ] : [
+    { title: "1. Introduction", text: "Welcome to SYNA, a platform specializing in facilitating real estate development partnerships between landowners and developers in Saudi Arabia, owned by SYNA Technology. By using this platform, you agree to comply with these Terms and Conditions." },
+    { title: "2. Definitions", text: '"Platform" refers to SYNA and all associated services. "Landowner" refers to those who list their land seeking a development partner. "Developer" refers to a commercially registered company seeking development opportunities. "Deal" encompasses the partnership cycle from request to closure.' },
+    { title: "3. Terms of Use", text: "Users must be at least 18 years old. Developers must provide a valid commercial register. Landowners must provide accurate land data. Each party is responsible for maintaining account confidentiality." },
+    { title: "4. Commission & Fees", text: "The platform charges a 2.50% commission paid by the developer upon successful deal closure. There are no registration or monthly subscription fees. Commission is due only upon agreement closure between both parties." },
+    { title: "5. Privacy & Confidentiality", text: "Sensitive landowner data (deed number, exact location, owner identity) is not shown to developers until explicit owner approval. Any attempt to circumvent the privacy system results in immediate account suspension." },
+    { title: "6. Intellectual Property", text: "All content, designs, and trademarks related to the platform are the property of SYNA Technology." },
+    { title: "7. Limitation of Liability", text: "The platform is a technical intermediary only and bears no responsibility for partnership outcomes or agreements between parties." },
+    { title: "8. Account Termination", text: "The company reserves the right to suspend or terminate accounts for violations. Users can cancel their account at any time." },
+    { title: "9. Governing Law", text: 'These terms are governed by the laws of the Kingdom of Saudi Arabia. Please use our "Contact Us" form.' },
+  ];
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[hsl(210,30%,4%)]">
       <Navbar />
-      <PageHeader
-        icon={FileText}
-        title={isAr ? "الشروط والأحكام" : "Terms & Conditions"}
-        description={isAr
-          ? "الشروط والأحكام التي تنظّم استخدام منصة سينا والعلاقة بين الأطراف"
-          : "The terms and conditions governing the use of the SYNA platform and the relationship between parties"}
-      />
+      <PageHeader icon={FileText} title={isAr ? "الشروط والأحكام" : "Terms & Conditions"} description={isAr ? "الشروط والأحكام التي تنظّم استخدام منصة سينا والعلاقة بين الأطراف" : "The terms and conditions governing the use of the SYNA platform and the relationship between parties"} />
       <main className="container py-10">
-        <div className="max-w-3xl mx-auto space-y-6 font-light leading-relaxed text-muted-foreground">
-          {isAr ? (
-            <>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">1. مقدمة</h2>
-                <p>مرحباً بك في SYNA، المنصة المتخصصة في تسهيل شراكات التطوير العقاري بين ملاك الأراضي والمطورين في المملكة العربية السعودية، والمملوكة لشركة سينا للتقنية. باستخدامك لهذه المنصة فإنك توافق على الالتزام بهذه الشروط والأحكام.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">2. التعريفات</h2>
-                <p>"المنصة" تشير إلى SYNA وجميع الخدمات المرتبطة بها. "مالك الأرض" يشير إلى من يسجل أرضه للبحث عن شريك تطوير. "المطور" يشير إلى الشركة المسجلة تجارياً والتي تبحث عن فرص تطوير. "الصفقة" تشمل دورة الشراكة من الطلب حتى الإغلاق.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">3. شروط الاستخدام</h2>
-                <p>يجب أن يكون عمر المستخدم 18 عاماً على الأقل. يلتزم المطور بتقديم سجل تجاري ساري المفعول. يلتزم مالك الأرض بتقديم بيانات صحيحة عن أرضه. يتحمل كل طرف مسؤولية الحفاظ على سرية بيانات حسابه.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">4. العمولة والرسوم</h2>
-                <p>تفرض المنصة عمولة بنسبة 2.50% تُدفع من المطور عند إتمام الصفقة بنجاح. لا توجد رسوم تسجيل أو اشتراك شهري. العمولة مستحقة فقط عند إغلاق الاتفاق بين الطرفين.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">5. الخصوصية والسرية</h2>
-                <p>بيانات مالك الأرض الحساسة (رقم الصك، الموقع الدقيق، هوية المالك) لا تُعرض للمطور إلا بعد موافقة المالك صراحةً. أي محاولة للتحايل على نظام الخصوصية تعرض الحساب للإيقاف الفوري.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">6. الملكية الفكرية</h2>
-                <p>جميع المحتويات والتصاميم والعلامات التجارية المتعلقة بالمنصة هي ملك لشركة سينا للتقنية. لا يجوز نسخ أو تعديل أو توزيع أي محتوى من المنصة دون إذن كتابي مسبق.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">7. حدود المسؤولية</h2>
-                <p>المنصة وسيط تقني فقط ولا تتحمل مسؤولية نتائج الشراكات أو الاتفاقات بين الأطراف. لا تضمن الشركة دقة البيانات المقدمة من المستخدمين.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">8. إنهاء الحساب</h2>
-                <p>يحق للشركة تعليق أو إنهاء حساب المستخدم في حالة مخالفة هذه الشروط. يمكن للمستخدم إلغاء حسابه في أي وقت.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">9. القانون الواجب التطبيق</h2>
-                <p>تخضع هذه الشروط لأنظمة المملكة العربية السعودية. للتواصل يرجى استخدام نموذج "اتصل بنا".</p>
-              </section>
-            </>
-          ) : (
-            <>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">1. Introduction</h2>
-                <p>Welcome to SYNA, a platform specializing in facilitating real estate development partnerships between landowners and developers in Saudi Arabia, owned by SYNA Technology. By using this platform, you agree to comply with these Terms and Conditions.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">2. Definitions</h2>
-                <p>"Platform" refers to SYNA and all associated services. "Landowner" refers to those who list their land seeking a development partner. "Developer" refers to a commercially registered company seeking development opportunities. "Deal" encompasses the partnership cycle from request to closure.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">3. Terms of Use</h2>
-                <p>Users must be at least 18 years old. Developers must provide a valid commercial register. Landowners must provide accurate land data. Each party is responsible for maintaining account confidentiality.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">4. Commission & Fees</h2>
-                <p>The platform charges a 2.50% commission paid by the developer upon successful deal closure. There are no registration or monthly subscription fees. Commission is due only upon agreement closure between both parties.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">5. Privacy & Confidentiality</h2>
-                <p>Sensitive landowner data (deed number, exact location, owner identity) is not shown to developers until explicit owner approval. Any attempt to circumvent the privacy system results in immediate account suspension.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">6. Intellectual Property</h2>
-                <p>All content, designs, and trademarks related to the platform are the property of SYNA Technology.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">7. Limitation of Liability</h2>
-                <p>The platform is a technical intermediary only and bears no responsibility for partnership outcomes or agreements between parties.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">8. Account Termination</h2>
-                <p>The company reserves the right to suspend or terminate accounts for violations. Users can cancel their account at any time.</p>
-              </section>
-              <section>
-                <h2 className="mb-2 text-lg font-medium text-foreground">9. Governing Law</h2>
-                <p>These terms are governed by the laws of the Kingdom of Saudi Arabia. Please use our "Contact Us" form.</p>
-              </section>
-            </>
-          )}
+        <div className="max-w-3xl mx-auto space-y-5">
+          {sections.map((s, i) => (
+            <section key={i} className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6">
+              <h2 className="mb-2 text-lg font-medium text-white">{s.title}</h2>
+              <p className="text-sm font-light leading-relaxed text-[hsl(210,15%,50%)]">{s.text}</p>
+            </section>
+          ))}
         </div>
       </main>
       <Footer />

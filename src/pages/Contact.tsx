@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import PageHeader from "@/components/landing/PageHeader";
 import { Clock, MapPin, Building2, Send, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
 
 const Contact: React.FC = () => {
   const { lang } = useLanguage();
@@ -39,9 +41,7 @@ const Contact: React.FC = () => {
     }
     setLoading(true);
     try {
-      const { error } = await supabase.functions.invoke("send-contact", {
-        body: form,
-      });
+      const { error } = await supabase.functions.invoke("send-contact", { body: form });
       if (error) throw error;
       setSubmitted(true);
       toast({ title: isAr ? "تم إرسال رسالتك بنجاح" : "Your message has been sent successfully" });
@@ -52,71 +52,35 @@ const Contact: React.FC = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+  const inputClasses = "h-11 rounded-xl border-[hsl(210,22%,16%)] bg-[hsl(210,28%,8%)] text-white placeholder:text-[hsl(210,15%,35%)] focus:border-[hsl(200,80%,45%,0.4)] focus:ring-[hsl(200,80%,45%,0.2)]";
 
-      {/* Hero Header */}
-      <div className="relative w-full overflow-hidden bg-[hsl(210,25%,8%)]">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-32 end-[-10%] h-[400px] w-[400px] rounded-full bg-[hsl(187,65%,28%,0.08)] blur-[120px]" />
-          <div className="absolute -bottom-32 start-[-8%] h-[300px] w-[300px] rounded-full bg-[hsl(40,72%,52%,0.06)] blur-[100px]" />
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `radial-gradient(circle, hsl(187 65% 60%) 0.5px, transparent 0.5px)`,
-              backgroundSize: "48px 48px",
-            }}
-          />
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[hsl(210,25%,8%)] to-transparent" />
-        </div>
-        <div className="container relative z-10 py-16 md:py-24">
-          <div className="mx-auto max-w-2xl text-center">
-            <div className="mb-4 inline-flex items-center justify-center rounded-full border border-[hsl(187,55%,40%,0.3)] bg-[hsl(187,55%,40%,0.1)] p-3">
-              <Send className="h-6 w-6 text-[hsl(187,55%,50%)]" strokeWidth={1.5} />
-            </div>
-            <h1 className="mb-3 text-3xl font-medium text-white md:text-4xl">
-              {isAr ? "تواصل معنا" : "Contact Us"}
-            </h1>
-            <p className="text-base font-light leading-relaxed text-[hsl(210,15%,60%)]">
-              {isAr
-                ? "أرسل لنا رسالتك وسنرد عليك في أقرب وقت ممكن"
-                : "Send us your message and we'll get back to you as soon as possible"}
-            </p>
-          </div>
-        </div>
-      </div>
+  return (
+    <div className="min-h-screen bg-[hsl(210,30%,4%)]">
+      <Navbar />
+      <PageHeader icon={Send} title={isAr ? "تواصل معنا" : "Contact Us"} description={isAr ? "أرسل لنا رسالتك وسنرد عليك في أقرب وقت ممكن" : "Send us your message and we'll get back to you as soon as possible"} />
 
       <main className="container py-12 md:py-16">
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-2">
           {/* Contact Form */}
-          <div className="rounded-2xl border border-border/60 bg-card p-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6">
             <div className="flex items-center gap-3 mb-5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                <Send className="h-5 w-5 text-primary" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[hsl(200,80%,45%,0.12)] bg-[hsl(200,80%,45%,0.06)]">
+                <Send className="h-5 w-5 text-[hsl(200,80%,55%)]" />
               </div>
               <div>
-                <h2 className="text-lg font-medium text-foreground">
-                  {isAr ? "أرسل رسالة" : "Send a Message"}
-                </h2>
-                <p className="text-xs text-muted-foreground">
-                  {isAr ? "سنتواصل معك في أقرب وقت" : "We'll get back to you shortly"}
-                </p>
+                <h2 className="text-lg font-medium text-white">{isAr ? "أرسل رسالة" : "Send a Message"}</h2>
+                <p className="text-xs text-[hsl(210,15%,45%)]">{isAr ? "سنتواصل معك في أقرب وقت" : "We'll get back to you shortly"}</p>
               </div>
             </div>
 
             {submitted ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                  <CheckCircle2 className="h-8 w-8 text-primary" />
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[hsl(200,80%,45%,0.2)] bg-[hsl(200,80%,45%,0.06)]">
+                  <CheckCircle2 className="h-8 w-8 text-[hsl(200,80%,55%)]" />
                 </div>
-                <h3 className="mb-2 text-lg font-medium text-foreground">
-                  {isAr ? "تم إرسال رسالتك بنجاح!" : "Message Sent Successfully!"}
-                </h3>
-                <p className="text-sm font-light text-muted-foreground mb-4">
-                  {isAr ? "شكراً لتواصلك معنا، سنرد عليك قريباً" : "Thank you for reaching out, we'll respond soon"}
-                </p>
-                <Button variant="outline" onClick={() => { setSubmitted(false); setForm({ name: "", email: "", subject: "", message: "" }); }}>
+                <h3 className="mb-2 text-lg font-medium text-white">{isAr ? "تم إرسال رسالتك بنجاح!" : "Message Sent Successfully!"}</h3>
+                <p className="text-sm font-light text-[hsl(210,15%,50%)] mb-4">{isAr ? "شكراً لتواصلك معنا، سنرد عليك قريباً" : "Thank you for reaching out, we'll respond soon"}</p>
+                <Button variant="outline" onClick={() => { setSubmitted(false); setForm({ name: "", email: "", subject: "", message: "" }); }} className="border-[hsl(210,22%,16%)] bg-transparent text-[hsl(210,15%,70%)] hover:bg-[hsl(210,22%,12%)] hover:text-white">
                   {isAr ? "إرسال رسالة أخرى" : "Send Another Message"}
                 </Button>
               </div>
@@ -124,127 +88,73 @@ const Contact: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>{isAr ? "الاسم *" : "Name *"}</Label>
-                    <Input
-                      value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      placeholder={isAr ? "اسمك الكامل" : "Your full name"}
-                      required
-                    />
+                    <Label className="text-sm text-[hsl(210,15%,60%)]">{isAr ? "الاسم *" : "Name *"}</Label>
+                    <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={isAr ? "اسمك الكامل" : "Your full name"} required className={inputClasses} />
                   </div>
                   <div className="space-y-2">
-                    <Label>{isAr ? "البريد الإلكتروني *" : "Email *"}</Label>
-                    <Input
-                      type="email"
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      placeholder={isAr ? "example@email.com" : "example@email.com"}
-                      dir="ltr"
-                      required
-                    />
+                    <Label className="text-sm text-[hsl(210,15%,60%)]">{isAr ? "البريد الإلكتروني *" : "Email *"}</Label>
+                    <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="example@email.com" dir="ltr" required className={inputClasses} />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>{isAr ? "الموضوع" : "Subject"}</Label>
-                  <Input
-                    value={form.subject}
-                    onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                    placeholder={isAr ? "موضوع الرسالة" : "Message subject"}
-                  />
+                  <Label className="text-sm text-[hsl(210,15%,60%)]">{isAr ? "الموضوع" : "Subject"}</Label>
+                  <Input value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} placeholder={isAr ? "موضوع الرسالة" : "Message subject"} className={inputClasses} />
                 </div>
                 <div className="space-y-2">
-                  <Label>{isAr ? "الرسالة *" : "Message *"}</Label>
-                  <Textarea
-                    value={form.message}
-                    onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    placeholder={isAr ? "اكتب رسالتك هنا..." : "Write your message here..."}
-                    rows={5}
-                    required
-                  />
+                  <Label className="text-sm text-[hsl(210,15%,60%)]">{isAr ? "الرسالة *" : "Message *"}</Label>
+                  <Textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder={isAr ? "اكتب رسالتك هنا..." : "Write your message here..."} rows={5} required className="rounded-xl border-[hsl(210,22%,16%)] bg-[hsl(210,28%,8%)] text-white placeholder:text-[hsl(210,15%,35%)] focus:border-[hsl(200,80%,45%,0.4)]" />
                 </div>
-                <Button type="submit" className="w-full gap-2 doma-gradient doma-shadow-lg h-11 rounded-xl" disabled={loading}>
+                <Button type="submit" className="w-full gap-2 syna-gradient h-12 rounded-xl text-base transition-all duration-300 hover:shadow-[0_8px_30px_-8px_hsl(200,80%,50%,0.3)]" disabled={loading}>
                   <Send className="h-4 w-4" />
                   {loading ? (isAr ? "جاري الإرسال..." : "Sending...") : (isAr ? "إرسال الرسالة" : "Send Message")}
                 </Button>
               </form>
             )}
-          </div>
+          </motion.div>
 
           {/* Right Column */}
-          <div className="space-y-6">
-            {/* Working Hours */}
-            <div className="rounded-2xl border border-border/60 bg-card p-6">
+          <div className="space-y-5">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6">
               <div className="flex items-center gap-3 mb-5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                  <Clock className="h-5 w-5 text-primary" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[hsl(200,80%,45%,0.12)] bg-[hsl(200,80%,45%,0.06)]">
+                  <Clock className="h-5 w-5 text-[hsl(200,80%,55%)]" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-medium text-foreground">
-                    {isAr ? "ساعات العمل" : "Working Hours"}
-                  </h2>
-                  <p className="text-xs text-muted-foreground">
-                    {isAr ? "أوقات الدوام الرسمية" : "Official business hours"}
-                  </p>
+                  <h2 className="text-lg font-medium text-white">{isAr ? "ساعات العمل" : "Working Hours"}</h2>
+                  <p className="text-xs text-[hsl(210,15%,45%)]">{isAr ? "أوقات الدوام الرسمية" : "Official business hours"}</p>
                 </div>
               </div>
               <div className="space-y-1">
                 {workingHours.map((item) => (
-                  <div
-                    key={item.day}
-                    className={`flex items-center justify-between rounded-xl px-4 py-3 transition-colors ${
-                      item.open ? "bg-muted/30" : "bg-destructive/5"
-                    }`}
-                  >
-                    <span className="text-sm font-medium text-foreground">{item.day}</span>
-                    <span className={`text-sm ${item.open ? "text-primary font-medium" : "text-destructive font-medium"}`}>
-                      {item.hours}
-                    </span>
+                  <div key={item.day} className={`flex items-center justify-between rounded-xl px-4 py-3 ${item.open ? "bg-[hsl(210,22%,10%)]" : "bg-[hsl(0,60%,15%,0.2)]"}`}>
+                    <span className="text-sm font-medium text-white">{item.day}</span>
+                    <span className={`text-sm font-medium ${item.open ? "text-[hsl(200,80%,55%)]" : "text-[hsl(0,60%,55%)]"}`}>{item.hours}</span>
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            {/* Office Info */}
-            <div className="rounded-2xl border border-border/60 bg-card p-6">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6">
               <div className="flex items-center gap-3 mb-5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                  <Building2 className="h-5 w-5 text-primary" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[hsl(200,80%,45%,0.12)] bg-[hsl(200,80%,45%,0.06)]">
+                  <Building2 className="h-5 w-5 text-[hsl(200,80%,55%)]" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-medium text-foreground">
-                    {isAr ? "المقر الرئيسي" : "Head Office"}
-                  </h2>
-                  <p className="text-xs text-muted-foreground">
-                    {isAr ? "موقع مكتبنا" : "Our office location"}
-                  </p>
+                  <h2 className="text-lg font-medium text-white">{isAr ? "المقر الرئيسي" : "Head Office"}</h2>
+                  <p className="text-xs text-[hsl(210,15%,45%)]">{isAr ? "موقع مكتبنا" : "Our office location"}</p>
                 </div>
               </div>
-              <div className="flex items-start gap-2 mb-4 rounded-xl bg-muted/30 p-4">
-                <MapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {isAr
-                    ? "الرياض، المملكة العربية السعودية"
-                    : "Riyadh, Kingdom of Saudi Arabia"}
-                </p>
+              <div className="flex items-start gap-2 mb-4 rounded-xl bg-[hsl(210,22%,10%)] p-4">
+                <MapPin className="h-5 w-5 text-[hsl(200,80%,55%)] mt-0.5 shrink-0" />
+                <p className="text-sm text-[hsl(210,15%,55%)] leading-relaxed">{isAr ? "الرياض، المملكة العربية السعودية" : "Riyadh, Kingdom of Saudi Arabia"}</p>
               </div>
-              <div className="overflow-hidden rounded-xl border border-border/40 h-[220px]">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d432.7034625093088!2d46.63614764513629!3d24.83374433078794!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sar!2ssa!4v1771817187352!5m2!1sar!2ssa"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title={isAr ? "موقع المقر" : "Office Location"}
-                  className="w-full h-full"
-                />
+              <div className="overflow-hidden rounded-xl border border-[hsl(210,22%,12%)] h-[200px]">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d432.7034625093088!2d46.63614764513629!3d24.83374433078794!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sar!2ssa!4v1771817187352!5m2!1sar!2ssa" width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title={isAr ? "موقع المقر" : "Office Location"} className="w-full h-full" />
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </main>
-
       <Footer />
     </div>
   );
