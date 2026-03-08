@@ -81,7 +81,10 @@ const AdminLands: React.FC = () => {
   const selectedCity = saudiCities.find(c => c.name.en === form.city);
 
   const handleLocate = () => {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "المتصفح لا يدعم تحديد الموقع" : "Browser does not support geolocation" });
+      return;
+    }
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -91,12 +94,53 @@ const AdminLands: React.FC = () => {
           exact_location_lng: pos.coords.longitude.toFixed(6),
         }));
         setLocating(false);
+        toast({ title: isAr ? "تم تحديد الموقع ✓" : "Location detected ✓" });
       },
-      () => {
-        toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "تعذر تحديد الموقع" : "Could not get location" });
+      (err) => {
+        toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "تعذر تحديد الموقع — تأكد من صلاحيات الموقع" : "Could not get location — check permissions" });
         setLocating(false);
-      }
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
     );
+  };
+
+  const parseGoogleMapsLink = (link: string) => {
+    setMapsLink(link);
+    if (!link.trim()) return;
+
+    // Pattern 1: @lat,lng,zoom
+    const atMatch = link.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (atMatch) {
+      setForm(f => ({ ...f, exact_location_lat: atMatch[1], exact_location_lng: atMatch[2] }));
+      toast({ title: isAr ? "تم استخراج الإحداثيات ✓" : "Coordinates extracted ✓" });
+      return;
+    }
+
+    // Pattern 2: ?q=lat,lng or place/lat,lng
+    const qMatch = link.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/) || link.match(/place\/(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (qMatch) {
+      setForm(f => ({ ...f, exact_location_lat: qMatch[1], exact_location_lng: qMatch[2] }));
+      toast({ title: isAr ? "تم استخراج الإحداثيات ✓" : "Coordinates extracted ✓" });
+      return;
+    }
+
+    // Pattern 3: ll=lat,lng
+    const llMatch = link.match(/ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (llMatch) {
+      setForm(f => ({ ...f, exact_location_lat: llMatch[1], exact_location_lng: llMatch[2] }));
+      toast({ title: isAr ? "تم استخراج الإحداثيات ✓" : "Coordinates extracted ✓" });
+      return;
+    }
+
+    // Pattern 4: Short links with coordinates like maps.app.goo.gl — try generic number extraction
+    const genericMatch = link.match(/(-?\d{1,3}\.\d{4,})[,\s]+(-?\d{1,3}\.\d{4,})/);
+    if (genericMatch) {
+      setForm(f => ({ ...f, exact_location_lat: genericMatch[1], exact_location_lng: genericMatch[2] }));
+      toast({ title: isAr ? "تم استخراج الإحداثيات ✓" : "Coordinates extracted ✓" });
+      return;
+    }
+
+    toast({ variant: "destructive", title: isAr ? "تعذر الاستخراج" : "Could not extract", description: isAr ? "الصق رابط Google Maps يحتوي على إحداثيات" : "Paste a Google Maps link with coordinates" });
   };
 
   const handleSubmit = async () => {
