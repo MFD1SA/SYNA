@@ -267,7 +267,7 @@ const AdminTargets: React.FC = () => {
           {companies.map(c => (
             <div
               key={c.id}
-              className={`doma-card relative overflow-hidden p-4 transition-all hover:doma-shadow ${
+              className={`rounded-xl border border-border/60 bg-card relative overflow-hidden p-4 transition-all hover:border-primary/20 ${
                 c.is_registered ? "border-l-4 border-l-green-500" : ""
               } ${c.lead_status === "prospect" ? "ring-2 ring-blue-500/30" : ""}`}
             >
