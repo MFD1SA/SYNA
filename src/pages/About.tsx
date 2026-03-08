@@ -77,7 +77,7 @@ const AboutPage: React.FC = () => {
             className="mx-auto mt-10 max-w-2xl rounded-2xl border border-[hsl(200,80%,45%,0.15)] bg-[hsl(200,80%,45%,0.04)] p-6 text-center">
             <h2 className="mb-2 text-lg font-medium text-white">{isAr ? "رؤيتنا" : "Our Vision"}</h2>
             <p className="text-sm font-light leading-relaxed text-[hsl(210,15%,50%)]">
-              {isAr ? "نؤمن بأن الأرض ليست مجرد مساحة خام، بل فرصة لبناء قيمة مستدامة. من خلال سينا نسعى إلى تحويل الأفكار إلى شراكات حقيقية، وتحويل الأراضي إلى مشاريع منتجة تسهم في نمو المدن وتحفيز الاقتصاد العقاري بطريقة متوازنة واحترافية." : "We believe land is not just raw space — it's an opportunity to build sustainable value. Through SYNA, we aim to transform ideas into real partnerships and lands into productive projects that contribute to urban growth and stimulate the real estate economy in a balanced and professional manner."}
+              {isAr ? "نؤمن بأن الأرض ليست مجرد مساحة خام، بل فرصة لبناء قيمة مستدامة. من خلال سينا نسعى إلى تحويل الأفكار إلى شراكات تطويرية ومساهمات عقارية حقيقية، وتحويل الأراضي إلى مشاريع منتجة تسهم في نمو المدن وتحفيز الاقتصاد العقاري بطريقة متوازنة واحترافية." : "We believe land is not just raw space — it's an opportunity to build sustainable value. Through SYNA, we aim to transform ideas into real development partnerships and real estate contributions, and lands into productive projects that contribute to urban growth and stimulate the real estate economy in a balanced and professional manner."}
             </p>
           </motion.div>
         </div>

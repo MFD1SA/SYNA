@@ -163,7 +163,9 @@ const OpportunityDetail: React.FC = () => {
 
               <div className="flex items-center gap-2.5 mb-4">
                 <span className="rounded-full syna-gradient px-4 py-1.5 text-[11px] font-medium text-white shadow-[0_4px_20px_-4px_hsl(200,80%,50%,0.4)]">
-                  {isAr ? "فرصة تطويرية" : "Development Opportunity"}
+                  {land.partnership_goal === "real_estate_contribution"
+                    ? (isAr ? "مساهمة عقارية" : "Real Estate Contribution")
+                    : (isAr ? "فرصة تطويرية" : "Development Opportunity")}
                 </span>
                 <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-[11px] font-medium text-white/90 backdrop-blur-lg">
                   {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
