@@ -351,12 +351,21 @@ serve(async (req) => {
 
     const notif = notifMap[payload.type];
     if (notif) {
-      for (const adminId of adminUserIds) {
+      if (payload.type === "draft_created_for_owner" && payload.owner_user_id) {
+        // Send in-app notification to the owner, not admins
         await createInAppNotification(
-          supabaseAdmin, adminId, payload.type,
+          supabaseAdmin, payload.owner_user_id, payload.type,
           notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn,
-          notif.entityType, payload.deal_id || payload.request_id
+          notif.entityType
         );
+      } else {
+        for (const adminId of adminUserIds) {
+          await createInAppNotification(
+            supabaseAdmin, adminId, payload.type,
+            notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn,
+            notif.entityType, payload.deal_id || payload.request_id
+          );
+        }
       }
     }
 
