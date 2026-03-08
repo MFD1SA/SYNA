@@ -155,6 +155,7 @@ const App: React.FC = () => (
 
               {/* Owner */}
               <Route path="/owner/dashboard" element={<OwnerRoute><OwnerDashboard /></OwnerRoute>} />
+              <Route path="/owner/lands" element={<OwnerRoute><OwnerLands /></OwnerRoute>} />
               <Route path="/owner/requests" element={<OwnerRoute><OwnerRequests /></OwnerRoute>} />
               <Route path="/owner/deals" element={<OwnerRoute><OwnerDeals /></OwnerRoute>} />
               <Route path="/owner/settings" element={<OwnerRoute><OwnerSettings /></OwnerRoute>} />
