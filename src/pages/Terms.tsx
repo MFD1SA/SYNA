@@ -5,6 +5,7 @@ import PageHeader from "@/components/landing/PageHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { FileText } from "lucide-react";
+import headerTermsImg from "@/assets/header-terms.jpg";
 
 const TermsPage: React.FC = () => {
   const { t, lang } = useLanguage();
