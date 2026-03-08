@@ -328,6 +328,31 @@ const AdminLands: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Legal Document Print View */}
+      {legalDocLand && (
+        <LegalDocPrintView
+          open={!!legalDocLand}
+          onClose={() => setLegalDocLand(null)}
+          form={{
+            city: legalDocLand.city || "", district: legalDocLand.district || "",
+            land_area_sqm: String(legalDocLand.land_area_sqm || ""),
+            usage_type: legalDocLand.usage_type || "residential",
+            partnership_goal: legalDocLand.partnership_goal || "develop_sell",
+            plan_number: legalDocLand.plan_number || "", plot_number: legalDocLand.plot_number || "",
+            deed_number: legalDocLand.deed_number || "", deed_date: legalDocLand.deed_date || "",
+            project_model: legalDocLand.project_model || "development_partnership",
+            development_subtype: legalDocLand.development_subtype || "",
+            contribution_model: legalDocLand.contribution_model || "",
+            exit_percentage: legalDocLand.exit_percentage ? String(legalDocLand.exit_percentage) : "",
+            estimated_price_per_sqm: legalDocLand.estimated_price_per_sqm ? String(legalDocLand.estimated_price_per_sqm) : "",
+            estimated_total_value: legalDocLand.estimated_total_value ? String(legalDocLand.estimated_total_value) : "",
+            brokerage_license_number: legalDocLand.brokerage_license_number || "",
+          } as any}
+          referenceNumber={legalDocLand.id?.slice(0, 8).toUpperCase()}
+          ownerName={legalDocLand.owner_name}
+        />
+      )}
     </AdminLayout>
   );
 };
