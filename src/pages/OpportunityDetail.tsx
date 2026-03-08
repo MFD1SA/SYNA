@@ -238,21 +238,21 @@ const OpportunityDetail: React.FC = () => {
                 {(land.length_m || land.width_m || land.street_width_m) && (
                   <div className="mt-6 grid grid-cols-3 gap-3">
                     {land.length_m && (
-                      <div className="rounded-xl bg-muted/50 p-3 text-center">
-                        <p className="text-sm font-medium text-foreground">{land.length_m} {isAr ? "م" : "m"}</p>
-                        <p className="text-xs text-muted-foreground">{isAr ? "الطول" : "Length"}</p>
+                      <div className="rounded-xl bg-[hsl(210,25%,11%)] p-3 text-center">
+                        <p className="text-sm font-medium text-white">{land.length_m} {isAr ? "م" : "m"}</p>
+                        <p className="text-xs text-[hsl(210,15%,50%)]">{isAr ? "الطول" : "Length"}</p>
                       </div>
                     )}
                     {land.width_m && (
-                      <div className="rounded-xl bg-muted/50 p-3 text-center">
-                        <p className="text-sm font-medium text-foreground">{land.width_m} {isAr ? "م" : "m"}</p>
-                        <p className="text-xs text-muted-foreground">{isAr ? "العرض" : "Width"}</p>
+                      <div className="rounded-xl bg-[hsl(210,25%,11%)] p-3 text-center">
+                        <p className="text-sm font-medium text-white">{land.width_m} {isAr ? "م" : "m"}</p>
+                        <p className="text-xs text-[hsl(210,15%,50%)]">{isAr ? "العرض" : "Width"}</p>
                       </div>
                     )}
                     {land.street_width_m && (
-                      <div className="rounded-xl bg-muted/50 p-3 text-center">
-                        <p className="text-sm font-medium text-foreground">{land.street_width_m} {isAr ? "م" : "m"}</p>
-                        <p className="text-xs text-muted-foreground">{isAr ? "عرض الشارع" : "Street Width"}</p>
+                      <div className="rounded-xl bg-[hsl(210,25%,11%)] p-3 text-center">
+                        <p className="text-sm font-medium text-white">{land.street_width_m} {isAr ? "م" : "m"}</p>
+                        <p className="text-xs text-[hsl(210,15%,50%)]">{isAr ? "عرض الشارع" : "Street Width"}</p>
                       </div>
                     )}
                   </div>
