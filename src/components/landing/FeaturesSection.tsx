@@ -2,6 +2,7 @@ import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Eye, Layers, Handshake, Video, ArrowLeft, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 type FeatureKey = "privacy" | "verification" | "dealCrm" | "meetings";
 
@@ -18,39 +19,57 @@ const FeaturesSection: React.FC = () => {
   const Arrow = isAr ? ArrowLeft : ArrowRight;
 
   return (
-    <section id="features" className="relative py-4 md:py-6">
+    <section id="features" className="relative bg-[hsl(210,30%,4%)] py-20 md:py-28">
+      {/* Subtle glow */}
+      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-[300px] w-[600px] rounded-full bg-[hsl(200,80%,40%,0.04)] blur-[120px]" />
+
       <div className="container relative">
-        <div className="mx-auto mb-8 max-w-2xl text-center">
-          <h2 className="mb-2 text-3xl font-medium text-foreground md:text-4xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="mx-auto mb-14 max-w-2xl text-center"
+        >
+          <h2 className="mb-3 text-3xl font-medium text-white md:text-4xl lg:text-5xl">
             {t.features.title}
           </h2>
-          <p className="text-base font-light text-muted-foreground">
+          <p className="text-base font-light text-[hsl(210,15%,55%)] md:text-lg">
             {t.features.subtitle}
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map(({ key, icon: Icon, slug }) => (
-            <Link
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map(({ key, icon: Icon, slug }, i) => (
+            <motion.div
               key={key}
-              to={`/features/${slug}`}
-              className="group relative cursor-pointer overflow-hidden doma-card p-5 no-underline"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
             >
-              <div className="pointer-events-none absolute -end-8 -top-8 h-24 w-24 rounded-full bg-primary/[0.04] transition-all duration-300 group-hover:scale-150 group-hover:bg-primary/[0.06]" />
-              <div className="relative">
-                <Icon className="mb-3 h-6 w-6 text-primary" strokeWidth={1.5} />
-                <h3 className="mb-1.5 text-base font-medium text-foreground">
-                  {t.features[key]}
-                </h3>
-                <p className="mb-2 text-sm font-light leading-relaxed text-muted-foreground">
-                  {t.features[`${key}Desc`]}
-                </p>
-                <div className="flex items-center gap-1 text-xs font-light text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                  <span>{isAr ? "اكتشف المزيد" : "Learn more"}</span>
-                  <Arrow className="h-3 w-3" />
+              <Link
+                to={`/features/${slug}`}
+                className="group relative block cursor-pointer overflow-hidden rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6 no-underline transition-all duration-400 hover:border-[hsl(200,80%,45%,0.25)] hover:bg-[hsl(210,28%,9%)] hover:shadow-[0_8px_40px_-10px_hsl(200,80%,50%,0.12)]"
+              >
+                <div className="pointer-events-none absolute -end-10 -top-10 h-28 w-28 rounded-full bg-[hsl(200,80%,50%,0.04)] transition-all duration-500 group-hover:scale-[2] group-hover:bg-[hsl(200,80%,50%,0.06)]" />
+                <div className="relative">
+                  <div className="mb-4 inline-flex items-center justify-center rounded-xl border border-[hsl(200,80%,45%,0.15)] bg-[hsl(200,80%,45%,0.08)] p-2.5">
+                    <Icon className="h-5 w-5 text-[hsl(200,80%,55%)]" strokeWidth={1.5} />
+                  </div>
+                  <h3 className="mb-2 text-base font-medium text-white">
+                    {t.features[key]}
+                  </h3>
+                  <p className="mb-3 text-sm font-light leading-relaxed text-[hsl(210,15%,55%)]">
+                    {t.features[`${key}Desc`]}
+                  </p>
+                  <div className="flex items-center gap-1.5 text-xs font-light text-[hsl(200,80%,55%)] opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
+                    <span>{isAr ? "اكتشف المزيد" : "Learn more"}</span>
+                    <Arrow className="h-3 w-3" />
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            </motion.div>
           ))}
         </div>
       </div>
