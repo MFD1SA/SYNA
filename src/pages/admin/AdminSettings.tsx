@@ -151,7 +151,7 @@ const AdminSettings: React.FC = () => {
             <Label className="text-xs">{isAr ? "الاسم الكامل" : "Full Name"}</Label>
             <Input value={fullName} onChange={e => setFullName(e.target.value)} placeholder={isAr ? "أدخل الاسم" : "Enter name"} />
           </div>
-          <Button onClick={handleSaveProfile} disabled={savingProfile} className="doma-gradient gap-2">
+          <Button onClick={handleSaveProfile} disabled={savingProfile} className="syna-gradient gap-2">
             {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {isAr ? "حفظ الاسم" : "Save Name"}
           </Button>
