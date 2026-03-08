@@ -169,6 +169,50 @@ export type Database = {
         }
         Relationships: []
       }
+      deal_documents: {
+        Row: {
+          created_at: string
+          created_by: string
+          deal_id: string
+          document_source: string
+          document_url: string
+          id: string
+          updated_at: string
+          verified: boolean
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          deal_id: string
+          document_source?: string
+          document_url: string
+          id?: string
+          updated_at?: string
+          verified?: boolean
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          deal_id?: string
+          document_source?: string
+          document_url?: string
+          id?: string
+          updated_at?: string
+          verified?: boolean
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_documents_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deal_logs: {
         Row: {
           action: string
