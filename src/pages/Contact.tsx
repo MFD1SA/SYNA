@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
+import headerContactImg from "@/assets/header-contact.jpg";
 
 const Contact: React.FC = () => {
   const { lang } = useLanguage();
