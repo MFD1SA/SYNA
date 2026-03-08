@@ -177,7 +177,7 @@ const AdminAI: React.FC = () => {
                 <SelectValue>
                   <span className="flex items-center gap-1.5">
                     <span>{currentModel?.icon}</span>
-                    <span>{currentModel?.label}</span>
+                    <span>{currentModel?.label(isAr)}</span>
                   </span>
                 </SelectValue>
               </SelectTrigger>
@@ -186,8 +186,8 @@ const AdminAI: React.FC = () => {
                   <SelectItem key={m.value} value={m.value}>
                     <span className="flex items-center gap-2">
                       <span>{m.icon}</span>
-                      <span className="font-medium">{m.label}</span>
-                      <span className="text-muted-foreground text-[10px]">— {m.desc}</span>
+                      <span className="font-medium">{m.label(isAr)}</span>
+                      <span className="text-muted-foreground text-[10px]">— {m.desc(isAr)}</span>
                     </span>
                   </SelectItem>
                 ))}

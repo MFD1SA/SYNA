@@ -479,6 +479,7 @@ const AdminLands: React.FC = () => {
           {filtered.length === 0 && <p className="col-span-full py-8 text-center text-sm text-muted-foreground">{isAr ? "لا توجد أراضي" : "No lands found"}</p>}
         </div>
       )}
+      </div>
     </AdminLayout>
   );
 };

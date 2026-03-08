@@ -229,7 +229,7 @@ const AdminSettings: React.FC = () => {
               </div>
             </div>
           </div>
-          <Button onClick={handleChangePassword} disabled={savingPassword || !currentPassword || !newPassword || !confirmPassword} className="doma-gradient gap-2">
+          <Button onClick={handleChangePassword} disabled={savingPassword || !currentPassword || !newPassword || !confirmPassword} className="syna-gradient gap-2">
             {savingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
             {isAr ? "تغيير كلمة المرور" : "Change Password"}
           </Button>

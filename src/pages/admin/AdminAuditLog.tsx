@@ -162,6 +162,7 @@ const AdminAuditLog: React.FC = () => {
           </div>
         </div>
       )}
+      </div>
     </AdminLayout>
   );
 };
