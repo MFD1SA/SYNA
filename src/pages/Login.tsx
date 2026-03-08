@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
@@ -178,33 +178,79 @@ const LoginPage: React.FC = () => {
   const labelClasses = "font-light text-sm text-[hsl(210,15%,60%)]";
   const sectionTitleClasses = "mb-3 text-sm font-medium text-white border-b border-[hsl(210,22%,14%)] pb-2";
 
+  const [showDemoCredentials, setShowDemoCredentials] = useState(false);
+
+  useEffect(() => {
+    supabase.from("platform_content").select("body_en").eq("content_key", "demo_credentials_visible").eq("is_active", true).maybeSingle().then(({ data }) => {
+      setShowDemoCredentials(data?.body_en === "true");
+    });
+  }, []);
+
   const demoCredentials = [
     { label: isAr ? "مطور تجريبي" : "Demo Developer", icon: <HardHat className="h-3 w-3" />, email: "dev@syna-demo.com", password: "Dev123" },
     { label: isAr ? "مالك تجريبي" : "Demo Owner", icon: <Landmark className="h-3 w-3" />, email: "owner@syna-demo.com", password: "Owner123" },
     { label: isAr ? "مدير النظام" : "Admin", icon: <Shield className="h-3 w-3" />, email: "admin@doma.com", password: "Admin1" },
   ];
 
-  const handleAutoFill = (demoEmail: string, demoPassword: string) => {
+  const handleAutoFill = async (demoEmail: string, demoPassword: string) => {
     setEmail(demoEmail);
     setPassword(demoPassword);
+    setLoading(true);
+    const { data, error } = await supabase.auth.signInWithPassword({ email: demoEmail, password: demoPassword });
+    if (error) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
+      setLoading(false);
+      return;
+    }
+    if (data.user) {
+      // Check if admin — redirect to admin panel
+      if (demoEmail === "admin@doma.com") {
+        const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id).eq("role", "admin").maybeSingle();
+        if (roleData) {
+          toast({ title: isAr ? "أهلاً مدير النظام 👋" : "Welcome, Admin 👋" });
+          setTimeout(() => navigate("/admincp/overview"), 100);
+          setLoading(false);
+          return;
+        }
+      }
+      // Normal role check
+      const [devRes, rolesRes] = await Promise.all([
+        supabase.from("developers").select("id").eq("user_id", data.user.id).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", data.user.id),
+      ]);
+      const isDev = !!devRes.data;
+      const roles = (rolesRes.data || []).map((r: any) => r.role);
+      const isOwner = roles.includes("owner");
+      if (!isDev && !isOwner) {
+        await supabase.auth.signOut();
+        toast({ variant: "destructive", title: isAr ? "غير مصرح" : "Unauthorized", description: isAr ? "حسابك غير مرتبط بأي دور" : "No role assigned" });
+        setLoading(false);
+        return;
+      }
+      showWelcomeToast();
+    }
+    setLoading(false);
   };
 
   const LoginForm = (
     <form onSubmit={handleLogin} className="space-y-5">
       {/* Quick-fill demo credentials */}
-      <div className="flex flex-wrap gap-2">
-        {demoCredentials.map((cred) => (
-          <button
-            key={cred.email}
-            type="button"
-            onClick={() => handleAutoFill(cred.email, cred.password)}
-            className="flex items-center gap-1.5 rounded-lg border border-[hsl(210,22%,16%)] bg-[hsl(210,28%,8%)] px-3 py-1.5 text-[11px] text-[hsl(210,15%,55%)] transition-all hover:border-[hsl(200,80%,45%,0.3)] hover:text-[hsl(200,80%,65%)]"
-          >
-            {cred.icon}
-            {cred.label}
-          </button>
-        ))}
-      </div>
+      {showDemoCredentials && (
+        <div className="flex flex-wrap gap-2">
+          {demoCredentials.map((cred) => (
+            <button
+              key={cred.email}
+              type="button"
+              onClick={() => handleAutoFill(cred.email, cred.password)}
+              disabled={loading}
+              className="flex items-center gap-1.5 rounded-lg border border-[hsl(210,22%,16%)] bg-[hsl(210,28%,8%)] px-3 py-1.5 text-[11px] text-[hsl(210,15%,55%)] transition-all hover:border-[hsl(200,80%,45%,0.3)] hover:text-[hsl(200,80%,65%)] disabled:opacity-50"
+            >
+              {cred.icon}
+              {cred.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label htmlFor={`${portalType}-email`} className={labelClasses}>{t.auth.email}</Label>
