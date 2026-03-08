@@ -4,9 +4,16 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
-  Landmark, Globe, LogOut, ChevronLeft, ChevronRight, User,
+  LayoutDashboard, Landmark, FileText, Handshake, Settings,
+  Globe, LogOut, ChevronLeft, ChevronRight, User,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
+
+interface NavItem {
+  label: { ar: string; en: string };
+  href: string;
+  icon: React.ElementType;
+}
 
 const OwnerSidebar: React.FC = () => {
   const { lang, toggleLang } = useLanguage();
@@ -25,8 +32,11 @@ const OwnerSidebar: React.FC = () => {
     ? (collapsed ? ChevronLeft : ChevronRight)
     : (collapsed ? ChevronRight : ChevronLeft);
 
-  const navItems = [
-    { label: { ar: "أراضيي", en: "My Lands" }, href: "/owner/dashboard", icon: Landmark },
+  const navItems: NavItem[] = [
+    { label: { ar: "لوحة التحكم", en: "Dashboard" }, href: "/owner/dashboard", icon: LayoutDashboard },
+    { label: { ar: "طلبات الشراكة", en: "Requests" }, href: "/owner/requests", icon: FileText },
+    { label: { ar: "صفقاتي", en: "My Deals" }, href: "/owner/deals", icon: Handshake },
+    { label: { ar: "الإعدادات", en: "Settings" }, href: "/owner/settings", icon: Settings },
   ];
 
   return (
@@ -38,8 +48,8 @@ const OwnerSidebar: React.FC = () => {
       {/* Header */}
       <div className="flex h-14 items-center justify-between border-b border-border/60 px-3">
         {!collapsed && (
-          <Link to="/owner/dashboard" className="flex items-center gap-2">
-            <img src={logoImg} alt="SYNA" className="h-6 w-6 rounded-lg object-contain" />
+          <Link to="/owner/dashboard" className="flex items-center gap-1.5">
+            <img src={logoImg} alt="SYNA" className="h-8 w-8 object-contain" />
             <span className="text-base font-medium text-foreground">SYNA</span>
           </Link>
         )}
@@ -65,9 +75,10 @@ const OwnerSidebar: React.FC = () => {
               <Link
                 key={item.href}
                 to={item.href}
+                title={collapsed ? (isAr ? item.label.ar : item.label.en) : undefined}
                 className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all ${
                   isActive
-                    ? "bg-primary/10 text-primary syna-shadow"
+                    ? "bg-primary/10 text-primary font-medium"
                     : "text-muted-foreground hover:bg-surface hover:text-foreground"
                 }`}
               >

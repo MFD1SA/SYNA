@@ -159,7 +159,7 @@ const CrmDashboard: React.FC = () => {
         {kpiCards.map((card) => (
           <div
             key={card.label}
-            className="doma-card p-4 cursor-pointer"
+            className="syna-card p-4 cursor-pointer"
             onClick={() => navigate(card.href)}
           >
             <div className="mb-2 flex items-center justify-between">
@@ -174,7 +174,7 @@ const CrmDashboard: React.FC = () => {
       </div>
 
       {/* Request Breakdown */}
-      <div className="mt-5 doma-card p-5">
+      <div className="mt-5 syna-card p-5">
         <h3 className="mb-3 text-sm font-medium text-foreground">
           {isAr ? "تفصيل الطلبات" : "Request Breakdown"}
         </h3>
@@ -192,7 +192,7 @@ const CrmDashboard: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="mt-5 doma-card p-5">
+      <div className="mt-5 syna-card p-5">
         <h3 className="mb-3 text-sm font-medium text-foreground">
           {isAr ? "إجراءات سريعة" : "Quick Actions"}
         </h3>
@@ -215,7 +215,7 @@ const CrmDashboard: React.FC = () => {
       </div>
 
       {/* Deal Flow Visual */}
-      <div className="mt-5 doma-card p-5">
+      <div className="mt-5 syna-card p-5">
         <h3 className="mb-3 text-sm font-medium text-foreground">
           {isAr ? "مسار الصفقة" : "Deal Flow"}
         </h3>

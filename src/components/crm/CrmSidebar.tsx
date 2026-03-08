@@ -53,8 +53,8 @@ const CrmSidebar: React.FC = () => {
       <div className="flex h-14 items-center justify-between border-b border-border/60 px-3">
         {!collapsed && (
           <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <img src={logoImg} alt="SYNA" className="h-6 w-6 object-contain" />
+            <div className="flex items-center gap-1.5">
+              <img src={logoImg} alt="SYNA" className="h-8 w-8 object-contain" />
               <span className="text-base font-medium text-foreground">SYNA</span>
             </div>
             {tenantName && (
