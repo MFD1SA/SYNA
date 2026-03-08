@@ -40,6 +40,24 @@ const AdminOwners: React.FC = () => {
 
   const [deleteDialog, setDeleteDialog] = useState<{ owner_id: string; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [impersonating, setImpersonating] = useState<string | null>(null);
+
+  const handleImpersonate = async (userId: string, name: string) => {
+    setImpersonating(userId);
+    try {
+      const { data, error } = await supabase.functions.invoke("impersonate-user", {
+        body: { target_user_id: userId },
+      });
+      if (error || data?.error) throw new Error(data?.error || error?.message);
+      if (data?.verify_url) {
+        window.open(data.verify_url, "_blank");
+        toast({ title: isAr ? `تم فتح جلسة ${name} في تبويب جديد` : `Opened ${name}'s session in new tab` });
+      }
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    }
+    setImpersonating(null);
+  };
 
   const fetchOwners = async () => {
     const { data: landsData } = await supabase
