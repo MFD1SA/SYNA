@@ -21,6 +21,13 @@ const AdminLogin: React.FC = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showDemoCredentials, setShowDemoCredentials] = useState(false);
+
+  React.useEffect(() => {
+    supabase.from("platform_content").select("body_en").eq("content_key", "demo_credentials_visible").eq("is_active", true).maybeSingle().then(({ data }) => {
+      setShowDemoCredentials(data?.body_en === "true");
+    });
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
