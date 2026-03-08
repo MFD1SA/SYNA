@@ -238,7 +238,7 @@ const AdminDeals: React.FC = () => {
     try {
       await supabase.from("deals").update({ current_stage: "deal_cancelled" }).eq("id", dealId);
       await supabase.from("deal_stages_log").insert({
-        deal_id: dealId, from_stage: currentStage, to_stage: "deal_cancelled",
+        deal_id: dealId, from_stage: currentStage as any, to_stage: "deal_cancelled" as any,
         changed_by: user!.id, notes: "تم إلغاء الصفقة من قبل الإدارة",
       });
       toast({ title: isAr ? "تم إلغاء الصفقة" : "Deal cancelled" });
