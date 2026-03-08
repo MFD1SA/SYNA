@@ -4,7 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import { Users, Landmark, Handshake, HardHat, TrendingUp, FileText, CheckCircle2, ArrowUpRight, Clock, Activity, BarChart3 } from "lucide-react";
+import { Users, Landmark, Handshake, HardHat, TrendingUp, FileText, CheckCircle2, ArrowUpRight, Clock, Activity, BarChart3, BookOpen, ExternalLink } from "lucide-react";
 import AdminAnalyticsCharts from "@/components/admin/AdminAnalyticsCharts";
 import { Link } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
@@ -256,6 +256,53 @@ const AdminOverview: React.FC = () => {
                     {data.recentDeals.length === 0 && (
                       <p className="py-4 text-center text-xs text-muted-foreground">{isAr ? "لا توجد صفقات" : "No deals"}</p>
                     )}
+                  </div>
+                </div>
+
+                {/* Staff Guide */}
+                <div className="rounded-xl border border-border/60 bg-card p-4">
+                  <div className="mb-3 flex items-center gap-1.5">
+                    <BookOpen className="h-3.5 w-3.5 text-primary" />
+                    <h3 className="text-sm font-medium text-foreground">
+                      {isAr ? "دليل الاستخدام" : "Staff Guide"}
+                    </h3>
+                  </div>
+                  <div className="space-y-2">
+                    {[
+                      { icon: HardHat, label: isAr ? "المطورون" : "Developers", desc: isAr ? "توثيق الحسابات، تعديل البيانات، تغيير كلمات المرور" : "Verify accounts, edit data, change passwords", href: "/admincp/developers" },
+                      { icon: Landmark, label: isAr ? "الملاك" : "Owners", desc: isAr ? "إنشاء حسابات الملاك وإدارة أراضيهم" : "Create owner accounts, manage their lands", href: "/admincp/owners" },
+                      { icon: Handshake, label: isAr ? "الصفقات" : "Deals", desc: isAr ? "متابعة مراحل الصفقات وتحديث حالتها" : "Track deal stages and update status", href: "/admincp/deals" },
+                      { icon: FileText, label: isAr ? "المحتوى" : "Content", desc: isAr ? "تعديل نصوص الموقع والسياسات" : "Edit website content and policies", href: "/admincp/content" },
+                    ].map((item) => (
+                      <Link key={item.href} to={item.href} className="flex items-start gap-3 rounded-lg border border-border/40 p-2.5 transition-all hover:border-primary/20 hover:bg-primary/5">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-muted">
+                          <item.icon className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.5} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[12px] font-medium text-foreground">{item.label}</p>
+                          <p className="text-[10px] text-muted-foreground leading-relaxed">{item.desc}</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+
+                  {/* Quick Portal Access */}
+                  <div className="mt-3 border-t border-border/40 pt-3">
+                    <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70">
+                      {isAr ? "الوصول السريع للبوابات" : "Quick Portal Access"}
+                    </p>
+                    <div className="flex gap-2">
+                      <a href="/crm" target="_blank" rel="noopener noreferrer" className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border/40 px-3 py-2 text-[11px] text-muted-foreground transition-all hover:border-primary/20 hover:text-primary">
+                        <HardHat className="h-3 w-3" />
+                        {isAr ? "لوحة المطور" : "Developer Panel"}
+                        <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
+                      <a href="/owner" target="_blank" rel="noopener noreferrer" className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border/40 px-3 py-2 text-[11px] text-muted-foreground transition-all hover:border-primary/20 hover:text-primary">
+                        <Landmark className="h-3 w-3" />
+                        {isAr ? "لوحة المالك" : "Owner Panel"}
+                        <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard, Landmark, HardHat, Handshake,
   Bot, Globe, LogOut, ChevronLeft, ChevronRight, ShieldCheck,
-  MapPin, History, Users, Settings, FileText,
+  MapPin, History, Users, Settings, FileText, ExternalLink,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 
@@ -124,6 +124,25 @@ const AdminSidebar: React.FC = () => {
           })}
         </div>
       </nav>
+
+      {/* Portal shortcuts */}
+      {!collapsed && (
+        <div className="border-t border-border/60 px-2 pt-2 pb-1">
+          <p className="px-2.5 mb-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/50">
+            {isAr ? "البوابات" : "Portals"}
+          </p>
+          <a href="/crm" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[12px] text-muted-foreground transition-colors hover:bg-surface hover:text-foreground">
+            <HardHat className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+            <span className="truncate">{isAr ? "لوحة المطور" : "Developer"}</span>
+            <ExternalLink className="h-3 w-3 ms-auto shrink-0 opacity-40" />
+          </a>
+          <a href="/owner" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[12px] text-muted-foreground transition-colors hover:bg-surface hover:text-foreground">
+            <Landmark className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+            <span className="truncate">{isAr ? "لوحة المالك" : "Owner"}</span>
+            <ExternalLink className="h-3 w-3 ms-auto shrink-0 opacity-40" />
+          </a>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="space-y-0.5 border-t border-border/60 p-2">
