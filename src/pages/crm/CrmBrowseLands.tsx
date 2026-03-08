@@ -17,8 +17,9 @@ import LocationMap from "@/components/crm/LocationMap";
 import {
   Search, MapPin, Ruler, Send, CheckCircle2, Clock, Filter,
   Calendar, ArrowUpDown, Image as ImageIcon, Eye, ChevronLeft, ChevronRight,
-  FileText, Building2, XCircle,
+  FileText, Building2, XCircle, Link2,
 } from "lucide-react";
+import DeveloperFeeAcknowledgment from "@/components/crm/DeveloperFeeAcknowledgment";
 
 const usageLabels: Record<string, { ar: string; en: string }> = {
   residential: { ar: "سكني", en: "Residential" },
