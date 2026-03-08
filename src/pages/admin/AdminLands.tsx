@@ -10,9 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, Ruler, Building2, Image as ImageIcon, Landmark } from "lucide-react";
+import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, Ruler, Building2, Image as ImageIcon, Landmark, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import LandSubmissionForm from "@/components/land/LandSubmissionForm";
+import LegalDocPrintView from "@/components/land/LegalDocPrintView";
 import { LandFormData, usageLabels, goalLabels } from "@/components/land/LandFormConstants";
 
 const AdminLands: React.FC = () => {
@@ -28,6 +29,7 @@ const AdminLands: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editInitialData, setEditInitialData] = useState<Partial<LandFormData>>({});
   const [ownerProfiles, setOwnerProfiles] = useState<any[]>([]);
+  const [legalDocLand, setLegalDocLand] = useState<any>(null);
 
   const fetchLands = async () => {
     const { data } = await supabase.from("lands").select("*").order("created_at", { ascending: false });
@@ -103,6 +105,26 @@ const AdminLands: React.FC = () => {
     } else {
       if (user) await logAudit(user.id, user.email, editingId ? "update" : "create", "land", editingId || undefined, { city: payload.city });
       toast({ title: isAr ? (editingId ? "تم التحديث" : "تمت الإضافة") : (editingId ? "Updated" : "Land Added") });
+      
+      // Send notification to owner when admin creates a draft
+      if (!editingId && ownerId !== user?.id) {
+        try {
+          const ownerProfile = ownerProfiles.find(p => p.user_id === ownerId);
+          await supabase.functions.invoke("send-deal-notification", {
+            body: {
+              type: "draft_created_for_owner",
+              owner_name: ownerProfile?.full_name || form.owner_name || "",
+              owner_email: ownerProfile?.email || "",
+              owner_user_id: ownerId,
+              land_city: form.city,
+              land_district: form.district,
+            },
+          });
+        } catch (e) {
+          console.error("Draft notification error:", e);
+        }
+      }
+      
       closeDialog();
       fetchLands();
     }
@@ -292,6 +314,9 @@ const AdminLands: React.FC = () => {
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleFeatured(land.id, land.is_featured)}>
                         {land.is_featured ? <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" /> : <StarOff className="h-3.5 w-3.5 text-muted-foreground" />}
                       </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setLegalDocLand(land)}>
+                        <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                      </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => deleteLand(land.id)}>
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -304,6 +329,31 @@ const AdminLands: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Legal Document Print View */}
+      {legalDocLand && (
+        <LegalDocPrintView
+          open={!!legalDocLand}
+          onClose={() => setLegalDocLand(null)}
+          form={{
+            city: legalDocLand.city || "", district: legalDocLand.district || "",
+            land_area_sqm: String(legalDocLand.land_area_sqm || ""),
+            usage_type: legalDocLand.usage_type || "residential",
+            partnership_goal: legalDocLand.partnership_goal || "develop_sell",
+            plan_number: legalDocLand.plan_number || "", plot_number: legalDocLand.plot_number || "",
+            deed_number: legalDocLand.deed_number || "", deed_date: legalDocLand.deed_date || "",
+            project_model: legalDocLand.project_model || "development_partnership",
+            development_subtype: legalDocLand.development_subtype || "",
+            contribution_model: legalDocLand.contribution_model || "",
+            exit_percentage: legalDocLand.exit_percentage ? String(legalDocLand.exit_percentage) : "",
+            estimated_price_per_sqm: legalDocLand.estimated_price_per_sqm ? String(legalDocLand.estimated_price_per_sqm) : "",
+            estimated_total_value: legalDocLand.estimated_total_value ? String(legalDocLand.estimated_total_value) : "",
+            brokerage_license_number: legalDocLand.brokerage_license_number || "",
+          } as any}
+          referenceNumber={legalDocLand.id?.slice(0, 8).toUpperCase()}
+          ownerName={legalDocLand.owner_name}
+        />
+      )}
     </AdminLayout>
   );
 };

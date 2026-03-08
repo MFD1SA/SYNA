@@ -14,7 +14,8 @@ type NotificationType =
   | "meeting_scheduled"
   | "new_owner_registered"
   | "new_developer_registered"
-  | "deal_stage_changed";
+  | "deal_stage_changed"
+  | "draft_created_for_owner";
 
 interface NotificationPayload {
   type: NotificationType;
@@ -36,6 +37,7 @@ interface NotificationPayload {
   from_stage?: string;
   to_stage?: string;
   stage_notes?: string;
+  owner_user_id?: string;
 }
 
 const ADMIN_EMAIL = "mfdalsulis@gmail.com";
@@ -229,6 +231,27 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
         </body></html>`,
       };
 
+    case "draft_created_for_owner":
+      return {
+        to: payload.owner_email || "",
+        subject: `SYNA | تمت إضافة أرض جديدة بانتظار مراجعتك - ${location}`,
+        html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
+          <div class="container">
+            <div class="header" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);"><h1>📋 أرض جديدة بانتظار مراجعتك</h1><p>تم إدراج أرض نيابةً عنك</p></div>
+            <div class="body">
+              <p style="color:#475569;font-size:14px;">مرحباً ${payload.owner_name || "مالك الأرض"}،</p>
+              <p style="color:#475569;font-size:14px;">قامت إدارة المنصة بإدراج أرض جديدة نيابةً عنك. يرجى تسجيل الدخول لمراجعة البيانات واعتمادها.</p>
+              <div class="info-box">
+                <div class="info-row"><span class="info-label">الموقع:</span><span class="info-value">${location}</span></div>
+                <div class="info-row"><span class="info-label">الحالة:</span><span class="info-value"><span class="badge badge-warning">مسودة — بانتظار مراجعتك</span></span></div>
+              </div>
+              <p style="color:#64748b;font-size:13px;margin-top:16px;">سجّل دخولك إلى المنصة وانتقل إلى قسم "أراضيي" لمراجعة واعتماد بيانات الأرض.</p>
+            </div>
+            <div class="footer"><p>SYNA Platform — منصة سينا للشراكات العقارية</p></div>
+          </div>
+        </body></html>`,
+      };
+
     default:
       return { to: ADMIN_EMAIL, subject: "SYNA Notification", html: "<p>Notification</p>" };
   }
@@ -317,16 +340,32 @@ serve(async (req) => {
         msgEn: `New request from ${payload.developer_name || ""} for land in ${payload.land_city || ""}`,
         entityType: "deal_request",
       },
+      draft_created_for_owner: {
+        titleAr: "أرض جديدة بانتظار مراجعتك",
+        titleEn: "New Land Awaiting Your Review",
+        msgAr: `تم إدراج أرض في ${payload.land_city || ""} نيابةً عنك. يرجى المراجعة والاعتماد.`,
+        msgEn: `A land in ${payload.land_city || ""} was added on your behalf. Please review and approve.`,
+        entityType: "land",
+      },
     };
 
     const notif = notifMap[payload.type];
     if (notif) {
-      for (const adminId of adminUserIds) {
+      if (payload.type === "draft_created_for_owner" && payload.owner_user_id) {
+        // Send in-app notification to the owner, not admins
         await createInAppNotification(
-          supabaseAdmin, adminId, payload.type,
+          supabaseAdmin, payload.owner_user_id, payload.type,
           notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn,
-          notif.entityType, payload.deal_id || payload.request_id
+          notif.entityType
         );
+      } else {
+        for (const adminId of adminUserIds) {
+          await createInAppNotification(
+            supabaseAdmin, adminId, payload.type,
+            notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn,
+            notif.entityType, payload.deal_id || payload.request_id
+          );
+        }
       }
     }
 
