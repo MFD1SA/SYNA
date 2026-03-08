@@ -358,6 +358,26 @@ serve(async (req) => {
           notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn,
           notif.entityType
         );
+      } else if (payload.type === "request_submitted" && payload.owner_user_id) {
+        // Send in-app notification to BOTH admins AND the land owner
+        for (const adminId of adminUserIds) {
+          await createInAppNotification(
+            supabaseAdmin, adminId, payload.type,
+            notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn,
+            notif.entityType, payload.request_id
+          );
+        }
+        // Also notify the owner
+        if (!adminUserIds.includes(payload.owner_user_id)) {
+          await createInAppNotification(
+            supabaseAdmin, payload.owner_user_id, payload.type,
+            "طلب شراكة جديد على أرضك",
+            "New Partnership Request on Your Land",
+            `تقدم مطور ${payload.developer_name || ""} بطلب شراكة على أرضك في ${payload.land_city || ""}`,
+            `Developer ${payload.developer_name || ""} submitted a partnership request for your land in ${payload.land_city || ""}`,
+            notif.entityType, payload.request_id
+          );
+        }
       } else {
         for (const adminId of adminUserIds) {
           await createInAppNotification(
