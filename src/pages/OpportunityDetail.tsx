@@ -131,7 +131,7 @@ const OpportunityDetail: React.FC = () => {
     {
       icon: Building2,
       title: isAr ? "دعم متكامل" : "Full Support",
-      desc: isAr ? "فريق دوما يرافقك في كل مرحلة من التفاوض حتى إتمام الصفقة" : "DOMA team accompanies you from negotiation to deal closure",
+      desc: isAr ? "فريق سينا يرافقك في كل مرحلة من التفاوض حتى إتمام الصفقة" : "SYNA team accompanies you from negotiation to deal closure",
     },
   ];
 
