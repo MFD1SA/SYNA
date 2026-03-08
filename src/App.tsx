@@ -36,7 +36,6 @@ import AdminContent from "./pages/admin/AdminContent";
 import AdminTeam from "./pages/admin/AdminTeam";
 import AdminSettings from "./pages/admin/AdminSettings";
 import OpportunityDetail from "./pages/OpportunityDetail";
-import OpportunityDetail from "./pages/OpportunityDetail";
 import Contact from "./pages/Contact";
 import OwnerDashboard from "./pages/owner/OwnerDashboard";
 import OwnerRequests from "./pages/owner/OwnerRequests";
