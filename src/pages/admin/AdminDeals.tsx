@@ -602,7 +602,12 @@ const AdminDeals: React.FC = () => {
                 </div>
 
                 {/* Commission Breakdown */}
-                <CommissionBreakdown isAr={isAr} />
+                <CommissionBreakdown
+                  isAr={isAr}
+                  estimatedPricePerSqm={viewDeal.lands?.estimated_price_per_sqm || 0}
+                  estimatedTotalValue={viewDeal.lands?.estimated_total_value || 0}
+                  landAreaSqm={viewDeal.lands?.land_area_sqm || 0}
+                />
 
                 {/* Governance Info */}
                 <div className="rounded-xl border border-border/40 p-4 space-y-2">
