@@ -21,40 +21,16 @@ import {
   TrendingUp, Video, CalendarClock, Loader2, ArrowRight, Shield, MessageSquare, Link2, ClipboardList,
   ChevronDown, ChevronUp, BarChart3, Building2,
 } from "lucide-react";
-
-const stageOrder = ["listed", "request_submitted", "owner_review", "owner_approved", "meeting_scheduled", "strategy_defined", "documents_exchanged", "agreements_prepared", "deal_closed"];
-
-const stageConfig: Record<string, { ar: string; en: string; icon: React.ElementType; color: string }> = {
-  listed: { ar: "مُدرجة", en: "Listed", icon: FileText, color: "text-muted-foreground" },
-  request_submitted: { ar: "طلب مقدم", en: "Submitted", icon: ClipboardList, color: "text-blue-600" },
-  owner_review: { ar: "مراجعة الإدارة", en: "Admin Review", icon: Eye, color: "text-amber-600" },
-  owner_approved: { ar: "موافقة مبدئية", en: "Approved", icon: CheckCircle2, color: "text-emerald-600" },
-  meeting_scheduled: { ar: "اجتماع مجدول", en: "Meeting Set", icon: Video, color: "text-violet-600" },
-  strategy_defined: { ar: "استراتيجية", en: "Strategy", icon: TrendingUp, color: "text-cyan-600" },
-  documents_exchanged: { ar: "مستندات", en: "Documents", icon: FileText, color: "text-orange-600" },
-  agreements_prepared: { ar: "اتفاقيات", en: "Agreements", icon: Shield, color: "text-indigo-600" },
-  deal_closed: { ar: "مُغلقة", en: "Closed", icon: Handshake, color: "text-emerald-700" },
-  deal_cancelled: { ar: "ملغاة", en: "Cancelled", icon: XCircle, color: "text-destructive" },
-};
-
-const healthColors: Record<string, { bg: string; text: string; ar: string; en: string }> = {
-  green: { bg: "bg-emerald-500/10", text: "text-emerald-700", ar: "سليمة", en: "Healthy" },
-  yellow: { bg: "bg-amber-500/10", text: "text-amber-700", ar: "تحتاج متابعة", en: "Needs Attention" },
-  red: { bg: "bg-red-500/10", text: "text-red-700", ar: "متعثرة", en: "At Risk" },
-};
+import DealStagePipeline from "@/components/deal/DealStagePipeline";
+import MeetingsList from "@/components/deal/MeetingsList";
+import CommissionBreakdown from "@/components/deal/CommissionBreakdown";
+import { stageConfig, stageOrder, healthLabels as healthColors, commissionStatusLabels, getStageProgress } from "@/components/deal/dealStageConfig";
 
 const statusLabels: Record<string, { ar: string; en: string }> = {
   pending: { ar: "معلق", en: "Pending" },
   approved: { ar: "مقبول", en: "Approved" },
   rejected: { ar: "مرفوض", en: "Rejected" },
   info_requested: { ar: "معلومات مطلوبة", en: "Info Requested" },
-};
-
-const commissionStatusLabels: Record<string, { ar: string; en: string }> = {
-  pending: { ar: "قيد الانتظار", en: "Pending" },
-  paid: { ar: "مدفوعة", en: "Paid" },
-  invoiced: { ar: "تم إصدار فاتورة", en: "Invoiced" },
-  waived: { ar: "معفاة", en: "Waived" },
 };
 
 const AdminDeals: React.FC = () => {
