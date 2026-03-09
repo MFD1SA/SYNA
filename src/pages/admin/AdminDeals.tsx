@@ -792,6 +792,24 @@ const AdminDeals: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Legal Doc Print View */}
+      {viewDeal && (
+        <LegalDocPrintView
+          open={showLegalDoc}
+          onClose={() => setShowLegalDoc(false)}
+          form={buildLandForm(viewDeal.lands)}
+          referenceNumber={viewDeal.id?.substring(0, 8).toUpperCase()}
+          ownerName={viewDeal.lands?.owner_name}
+          companyName={viewDeal.developers?.company_name}
+          dealId={viewDeal.id}
+          viewerRole="admin"
+          ownerAcknowledged={viewDeal.owner_acknowledgment_accepted}
+          ownerAcknowledgedDate={viewDeal.owner_acknowledgment_date}
+          developerAcknowledged={viewDeal.developer_acknowledgment_accepted}
+          developerAcknowledgedDate={viewDeal.developer_acknowledgment_date}
+        />
+      )}
     </div>
     </AdminLayout>
   );
