@@ -305,8 +305,8 @@ const CrmDeals: React.FC = () => {
           </DialogHeader>
 
           {viewDeal && (() => {
-            const stageIdx = stageOrder.indexOf(viewDeal.current_stage);
             const isCancelled = viewDeal.current_stage === "deal_cancelled";
+            const hc = healthLabels[viewDeal.health] || healthLabels.green;
 
             return (
               <div className="space-y-4">
@@ -322,20 +322,10 @@ const CrmDeals: React.FC = () => {
                   </div>
                   <Badge
                     variant="outline"
-                    className={`gap-1 ${
-                      viewDeal.health === "green"
-                        ? "bg-emerald-500/10 text-emerald-600"
-                        : viewDeal.health === "yellow"
-                          ? "bg-amber-500/10 text-amber-600"
-                          : "bg-red-500/10 text-red-600"
-                    } border-transparent`}
+                    className={`gap-1 ${hc.bg} ${hc.text} border-transparent`}
                   >
-                    <div
-                      className={`h-2 w-2 rounded-full ${
-                        viewDeal.health === "green" ? "bg-emerald-500" : viewDeal.health === "yellow" ? "bg-amber-500" : "bg-red-500"
-                      }`}
-                    />
-                    {isAr ? healthLabels[viewDeal.health]?.ar : healthLabels[viewDeal.health]?.en}
+                    <div className={`h-2 w-2 rounded-full ${hc.dot}`} />
+                    {isAr ? hc.ar : hc.en}
                   </Badge>
                 </div>
 
