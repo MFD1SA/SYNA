@@ -538,7 +538,10 @@ export type Database = {
       }
       developers: {
         Row: {
+          city: string | null
           company_name: string
+          company_profile_url: string | null
+          contact_person_name: string | null
           cr_extracted_name: string | null
           cr_extracted_number: string | null
           cr_file_url: string
@@ -548,6 +551,8 @@ export type Database = {
           id: string
           marketing_brand_name: string | null
           phone: string | null
+          project_types: string[]
+          target_cities: string[]
           updated_at: string
           user_id: string
           verification_notes: string | null
@@ -557,7 +562,10 @@ export type Database = {
           website: string | null
         }
         Insert: {
+          city?: string | null
           company_name: string
+          company_profile_url?: string | null
+          contact_person_name?: string | null
           cr_extracted_name?: string | null
           cr_extracted_number?: string | null
           cr_file_url: string
@@ -567,6 +575,8 @@ export type Database = {
           id?: string
           marketing_brand_name?: string | null
           phone?: string | null
+          project_types?: string[]
+          target_cities?: string[]
           updated_at?: string
           user_id: string
           verification_notes?: string | null
@@ -576,7 +586,10 @@ export type Database = {
           website?: string | null
         }
         Update: {
+          city?: string | null
           company_name?: string
+          company_profile_url?: string | null
+          contact_person_name?: string | null
           cr_extracted_name?: string | null
           cr_extracted_number?: string | null
           cr_file_url?: string
@@ -586,6 +599,8 @@ export type Database = {
           id?: string
           marketing_brand_name?: string | null
           phone?: string | null
+          project_types?: string[]
+          target_cities?: string[]
           updated_at?: string
           user_id?: string
           verification_notes?: string | null
