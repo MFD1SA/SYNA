@@ -275,7 +275,7 @@ const CrmBrowseLands: React.FC = () => {
           {filtered.map(l => {
             const imgUrl = getImageUrl(l);
             return (
-              <div key={l.id} className="doma-card overflow-hidden">
+              <div key={l.id} className="syna-card overflow-hidden">
                 {/* Image */}
                 <div className="relative h-40 bg-muted">
                   {imgUrl ? (
