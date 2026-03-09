@@ -243,9 +243,9 @@ const CrmDeals: React.FC = () => {
         <div className="space-y-3">
           {deals.map((d) => {
             const stage = stageConfig[d.current_stage] || { ar: d.current_stage, en: d.current_stage, color: "" };
-            const stageIdx = stageOrder.indexOf(d.current_stage);
             const isCancelled = d.current_stage === "deal_cancelled";
             const isClosed = d.current_stage === "deal_closed";
+            const hc = healthLabels[d.health] || healthLabels.green;
 
             return (
               <div
@@ -256,7 +256,7 @@ const CrmDeals: React.FC = () => {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <div className={`h-2.5 w-2.5 rounded-full ${d.health === "green" ? "bg-emerald-500" : d.health === "yellow" ? "bg-amber-500" : "bg-red-500"}`} />
+                      <div className={`h-2.5 w-2.5 rounded-full ${hc.dot}`} />
                       <Building2 className="h-3.5 w-3.5 text-primary" strokeWidth={1.5} />
                       <h3 className="text-sm font-medium text-foreground">
                         {d.lands?.city}
@@ -283,13 +283,7 @@ const CrmDeals: React.FC = () => {
                     <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                   </div>
                 </div>
-                {!isCancelled && (
-                  <div className="flex items-center gap-0.5">
-                    {stageOrder.map((s, idx) => (
-                      <div key={s} className={`h-1.5 flex-1 rounded-full transition-colors ${idx <= stageIdx ? "bg-primary" : "bg-border"}`} />
-                    ))}
-                  </div>
-                )}
+                {!isCancelled && <DealStagePipeline currentStage={d.current_stage} isAr={isAr} compact />}
               </div>
             );
           })}
