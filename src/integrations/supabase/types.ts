@@ -466,10 +466,14 @@ export type Database = {
           commission_status: string
           created_at: string
           current_stage: Database["public"]["Enums"]["deal_stage"]
+          developer_acknowledgment_accepted: boolean | null
+          developer_acknowledgment_date: string | null
           developer_id: string
           health: Database["public"]["Enums"]["deal_health"]
           id: string
           land_id: string
+          owner_acknowledgment_accepted: boolean | null
+          owner_acknowledgment_date: string | null
           owner_id: string
           request_id: string
           support_assignee: string | null
@@ -481,10 +485,14 @@ export type Database = {
           commission_status?: string
           created_at?: string
           current_stage?: Database["public"]["Enums"]["deal_stage"]
+          developer_acknowledgment_accepted?: boolean | null
+          developer_acknowledgment_date?: string | null
           developer_id: string
           health?: Database["public"]["Enums"]["deal_health"]
           id?: string
           land_id: string
+          owner_acknowledgment_accepted?: boolean | null
+          owner_acknowledgment_date?: string | null
           owner_id: string
           request_id: string
           support_assignee?: string | null
@@ -496,10 +504,14 @@ export type Database = {
           commission_status?: string
           created_at?: string
           current_stage?: Database["public"]["Enums"]["deal_stage"]
+          developer_acknowledgment_accepted?: boolean | null
+          developer_acknowledgment_date?: string | null
           developer_id?: string
           health?: Database["public"]["Enums"]["deal_health"]
           id?: string
           land_id?: string
+          owner_acknowledgment_accepted?: boolean | null
+          owner_acknowledgment_date?: string | null
           owner_id?: string
           request_id?: string
           support_assignee?: string | null
