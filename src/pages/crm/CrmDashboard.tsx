@@ -73,7 +73,7 @@ const CrmDashboard: React.FC = () => {
       if (devProfile) {
         setDeveloper(devProfile as DevProfile);
         const [landsRes, reqRes, dealsActive, dealsClosed, reqPending, reqApproved, reqRejected] = await Promise.all([
-          supabase.from("lands").select("id", { count: "exact", head: true }).eq("is_active", true),
+          supabase.from("lands").select("id", { count: "exact", head: true }).eq("is_active", true).eq("owner_approved", true),
           supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id),
           supabase.from("deals").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).neq("current_stage", "deal_closed").neq("current_stage", "deal_cancelled"),
           supabase.from("deals").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).eq("current_stage", "deal_closed"),
@@ -221,14 +221,19 @@ const CrmDashboard: React.FC = () => {
         </h3>
         <div className="flex items-center gap-1 overflow-x-auto pb-2">
           {[
-            { ar: "مدرجة", en: "Listed" },
-            { ar: "طلب مقدم", en: "Request" },
-            { ar: "مراجعة الإدارة", en: "Admin Review" },
-            { ar: "تمت الموافقة", en: "Approved" },
-            { ar: "اجتماع", en: "Meeting" },
-            { ar: "استراتيجية", en: "Strategy" },
-            { ar: "مستندات", en: "Documents" },
-            { ar: "إغلاق", en: "Closed" },
+            { ar: "مسودة", en: "Draft" },
+            { ar: "أرض معتمدة", en: "Approved" },
+            { ar: "فرصة منشورة", en: "Published" },
+            { ar: "استقبال عروض", en: "Receiving" },
+            { ar: "تم التقديم", en: "Applied" },
+            { ar: "تم الاستلام", en: "Received" },
+            { ar: "معاينة", en: "Preview" },
+            { ar: "مراجعة", en: "Review" },
+            { ar: "مطور مختار", en: "Selected" },
+            { ar: "تفاوض", en: "Negotiation" },
+            { ar: "اتفاق", en: "Agreed" },
+            { ar: "مشروع نشط", en: "Active" },
+            { ar: "مغلقة", en: "Closed" },
           ].map((stage, idx, arr) => (
             <React.Fragment key={stage.en}>
               <div className="flex shrink-0 items-center justify-center rounded-lg border border-border/40 bg-card px-3 py-1.5">

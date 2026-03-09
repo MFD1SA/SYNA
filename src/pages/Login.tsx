@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,14 +7,34 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link, useNavigate } from "react-router-dom";
-import { Globe, LogIn, UserPlus, Eye, EyeOff, Upload, FileText, Image, Home, HardHat, Landmark, Loader2 } from "lucide-react";
+import { Globe, LogIn, UserPlus, Eye, EyeOff, Home, HardHat, Landmark, Loader2, Link2, CheckCircle2, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.png";
 import { motion } from "framer-motion";
+import { saudiCities } from "@/data/saudiCities";
+import { Badge } from "@/components/ui/badge";
 
-const ARABIC_ONLY_REGEX = /^[\u0600-\u06FF\s]*$/;
 const DIGITS_ONLY_REGEX = /^[0-9]*$/;
+
+const PROJECT_TYPES = [
+  { value: "residential", ar: "سكني", en: "Residential" },
+  { value: "commercial", ar: "تجاري", en: "Commercial" },
+  { value: "mixed", ar: "سكني تجاري", en: "Mixed Use" },
+  { value: "hospitality", ar: "ضيافة وفندقة", en: "Hospitality" },
+  { value: "industrial", ar: "صناعي", en: "Industrial" },
+  { value: "retail", ar: "تجزئة", en: "Retail" },
+];
+
+const isValidGoogleDriveLink = (url: string): boolean => {
+  if (!url) return false;
+  const patterns = [
+    /^https:\/\/drive\.google\.com\//,
+    /^https:\/\/docs\.google\.com\//,
+  ];
+  return patterns.some(p => p.test(url));
+};
 
 const LoginPage: React.FC = () => {
   const { t, lang, toggleLang } = useLanguage();
@@ -31,26 +51,37 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Registration fields
   const [regEmail, setRegEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [regPassword, setRegPassword] = useState("");
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [companyName, setCompanyName] = useState("");
+  const [contactPerson, setContactPerson] = useState("");
   const [crNumber, setCrNumber] = useState("");
-  const [brandName, setBrandName] = useState("");
+  const [city, setCity] = useState("");
   const [website, setWebsite] = useState("");
-  const [crFile, setCrFile] = useState<File | null>(null);
-  const [identityFile, setIdentityFile] = useState<File | null>(null);
-  const crFileRef = useRef<HTMLInputElement>(null);
-  const identityFileRef = useRef<HTMLInputElement>(null);
+  const [crDriveLink, setCrDriveLink] = useState("");
+  const [profileDriveLink, setProfileDriveLink] = useState("");
+  const [selectedProjectTypes, setSelectedProjectTypes] = useState<string[]>([]);
+  const [selectedTargetCities, setSelectedTargetCities] = useState<string[]>([]);
+  const [crLinkValid, setCrLinkValid] = useState<boolean | null>(null);
+  const [profileLinkValid, setProfileLinkValid] = useState<boolean | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [verifying, setVerifying] = useState(false);
-  const [verificationResult, setVerificationResult] = useState<{ success: boolean; message: string } | null>(null);
 
   const showWelcomeToast = () => {
     toast({ title: portalType === "owner" ? (isAr ? "أهلاً بك 👋" : "Welcome 👋") : (isAr ? "أهلاً عزيزي المطور 👋" : "Welcome, Dear Developer 👋") });
   };
+
+  // Validate Google Drive link
+  const validateDriveLink = (url: string, setter: (v: boolean | null) => void) => {
+    if (!url) { setter(null); return; }
+    setter(isValidGoogleDriveLink(url));
+  };
+
+  useEffect(() => { validateDriveLink(crDriveLink, setCrLinkValid); }, [crDriveLink]);
+  useEffect(() => { validateDriveLink(profileDriveLink, setProfileLinkValid); }, [profileDriveLink]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +93,6 @@ const LoginPage: React.FC = () => {
       return;
     }
     if (data.user) {
-      // Check if user has a valid role before proceeding
       const [devRes, rolesRes] = await Promise.all([
         supabase.from("developers").select("id").eq("user_id", data.user.id).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", data.user.id),
@@ -83,39 +113,20 @@ const LoginPage: React.FC = () => {
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
-    if (!brandName) errs.brandName = isAr ? "يرجى إدخال الاسم التجاري" : "Please enter brand name";
-    else if (!ARABIC_ONLY_REGEX.test(brandName)) errs.brandName = isAr ? "يرجى إدخال الاسم التجاري باللغة العربية فقط" : "Brand name must be in Arabic only";
-    if (!companyName) errs.companyName = isAr ? "يرجى إدخال اسم السجل التجاري" : "Please enter CR name";
+    if (!companyName.trim()) errs.companyName = isAr ? "يرجى إدخال اسم الشركة" : "Please enter company name";
+    if (!contactPerson.trim()) errs.contactPerson = isAr ? "يرجى إدخال اسم المسؤول" : "Please enter contact person name";
     if (!crNumber || !DIGITS_ONLY_REGEX.test(crNumber)) errs.crNumber = isAr ? "يرجى إدخال رقم السجل التجاري" : "Please enter CR number";
     if (!regEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regEmail)) errs.email = isAr ? "يرجى إدخال بريد إلكتروني صحيح" : "Please enter a valid email";
     if (!phone || !DIGITS_ONLY_REGEX.test(phone) || phone.length < 9) errs.phone = isAr ? "يرجى إدخال رقم جوال صحيح" : "Please enter a valid phone number";
-    if (!crFile) errs.crFile = isAr ? "يرجى رفع ملف السجل التجاري" : "Please upload the commercial register file";
-    if (!identityFile) errs.identityFile = isAr ? "يرجى رفع صورة هوية الشركة" : "Please upload company identity document";
+    if (!city) errs.city = isAr ? "يرجى اختيار المدينة" : "Please select a city";
+    if (!crDriveLink || !isValidGoogleDriveLink(crDriveLink)) errs.crDriveLink = isAr ? "يرجى إدخال رابط Google Drive صحيح للسجل التجاري" : "Please enter a valid Google Drive link for CR";
+    if (!profileDriveLink || !isValidGoogleDriveLink(profileDriveLink)) errs.profileDriveLink = isAr ? "يرجى إدخال رابط Google Drive صحيح للبروفايل" : "Please enter a valid Google Drive link for profile";
+    if (selectedProjectTypes.length === 0) errs.projectTypes = isAr ? "يرجى اختيار نوع المشاريع" : "Please select project types";
+    if (selectedTargetCities.length === 0) errs.targetCities = isAr ? "يرجى اختيار المدن المستهدفة" : "Please select target cities";
     if (!regPassword || regPassword.length < 8 || !/[a-zA-Z]/.test(regPassword) || !/[0-9]/.test(regPassword)) errs.password = isAr ? "كلمة المرور يجب أن تحتوي على حروف وأرقام (8 خانات)" : "Password must contain letters and numbers (min 8 chars)";
     if (!acceptTerms) errs.terms = isAr ? "يجب الموافقة على الشروط والأحكام" : "You must accept the terms";
     setErrors(errs);
     return Object.keys(errs).length === 0;
-  };
-
-  const uploadFile = async (file: File, userId: string, folder: string): Promise<string> => {
-    const ext = file.name.split(".").pop();
-    const path = `${userId}/${folder}_${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from("developer-docs").upload(path, file);
-    if (error) throw error;
-    return path;
-  };
-
-  const handleCrFileChange = async (file: File | null) => {
-    setCrFile(file);
-    setVerificationResult(null);
-    if (!file) return;
-    setVerifying(true);
-    try {
-      setVerificationResult({ success: true, message: isAr ? "جاري التحقق من السجل التجاري — سيتم المراجعة خلال 48 ساعة" : "CR verification in progress — will be reviewed within 48 hours" });
-    } catch {
-      setVerificationResult({ success: true, message: isAr ? "تم رفع الملف — سيتم التحقق يدوياً" : "File uploaded — manual verification pending" });
-    }
-    setVerifying(false);
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -123,22 +134,20 @@ const LoginPage: React.FC = () => {
     if (!validate()) return;
     setLoading(true);
     try {
-      // First upload files to storage (anonymous upload)
-      // We need to use the edge function for registration since signUp without session won't allow RLS-protected inserts
-      const crFileUrl = await uploadFileAnon(crFile!, `temp_${Date.now()}`, "cr");
-      await uploadFileAnon(identityFile!, `temp_${Date.now()}`, "identity");
-
-      // Use edge function to create developer account reliably with service role
       const res = await supabase.functions.invoke("register-developer", {
         body: {
           email: regEmail,
           password: regPassword,
           company_name: companyName,
+          contact_person_name: contactPerson,
           cr_number: crNumber,
-          cr_file_url: crFileUrl,
-          marketing_brand_name: brandName || null,
+          cr_file_url: crDriveLink,
+          company_profile_url: profileDriveLink,
           phone: `+966${phone}`,
+          city,
           website: website.trim() || null,
+          project_types: selectedProjectTypes,
+          target_cities: selectedTargetCities,
         },
       });
 
@@ -146,7 +155,6 @@ const LoginPage: React.FC = () => {
         throw new Error(res.data?.error || res.error?.message || "Registration failed");
       }
 
-      // Notify admin about new developer
       try {
         await supabase.functions.invoke("send-deal-notification", {
           body: { type: "new_developer_registered", registered_name: companyName, registered_email: regEmail, registered_phone: `+966${phone}` },
@@ -166,22 +174,40 @@ const LoginPage: React.FC = () => {
     setLoading(false);
   };
 
-  const uploadFileAnon = async (file: File, userId: string, folder: string): Promise<string> => {
-    const ext = file.name.split(".").pop();
-    const path = `${userId}/${folder}_${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from("developer-docs").upload(path, file);
-    if (error) throw error;
-    return path;
+  const toggleProjectType = (value: string) => {
+    setSelectedProjectTypes(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
+  };
+
+  const toggleTargetCity = (value: string) => {
+    setSelectedTargetCities(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
   };
 
   const inputClasses = "h-11 rounded-xl border-[hsl(210,22%,16%)] bg-[hsl(210,28%,8%)] text-white placeholder:text-[hsl(210,15%,35%)] focus:border-[hsl(200,80%,45%,0.4)] focus:ring-[hsl(200,80%,45%,0.2)]";
   const labelClasses = "font-light text-sm text-[hsl(210,15%,60%)]";
   const sectionTitleClasses = "mb-3 text-sm font-medium text-white border-b border-[hsl(210,22%,14%)] pb-2";
 
+  const DriveLinkInput = ({ value, onChange, valid, placeholder, error }: { value: string; onChange: (v: string) => void; valid: boolean | null; placeholder: string; error?: string }) => (
+    <div className="space-y-1.5">
+      <div className="relative">
+        <Input value={value} onChange={e => onChange(e.target.value)} dir="ltr" className={`${inputClasses} pe-10`} placeholder={placeholder} />
+        <div className="absolute end-3 top-1/2 -translate-y-1/2">
+          {valid === true && <CheckCircle2 className="h-4 w-4 text-emerald-500" />}
+          {valid === false && <XCircle className="h-4 w-4 text-red-400" />}
+          {valid === null && value && <Link2 className="h-4 w-4 text-[hsl(210,15%,40%)]" />}
+        </div>
+      </div>
+      {valid === false && value && (
+        <p className="text-[10px] text-red-400">{isAr ? "الرابط غير صالح — يجب أن يبدأ بـ https://drive.google.com/" : "Invalid link — must start with https://drive.google.com/"}</p>
+      )}
+      {valid === true && (
+        <p className="text-[10px] text-emerald-400">{isAr ? "✓ رابط Google Drive صالح" : "✓ Valid Google Drive link"}</p>
+      )}
+      {error && <p className="text-xs text-red-400">{error}</p>}
+    </div>
+  );
+
   const LoginForm = (
     <form onSubmit={handleLogin} className="space-y-5">
-      {/* Demo credentials removed */}
-
       <div className="space-y-2">
         <Label htmlFor={`${portalType}-email`} className={labelClasses}>{t.auth.email}</Label>
         <Input id={`${portalType}-email`} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required dir="ltr" className={inputClasses} />
@@ -206,20 +232,13 @@ const LoginPage: React.FC = () => {
     <div className="flex min-h-screen bg-[hsl(210,30%,4%)]">
       {/* Left decorative panel */}
       <div className="relative hidden w-[45%] overflow-hidden lg:flex lg:flex-col lg:items-center lg:justify-center">
-        {/* Background effects */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute top-1/3 start-1/3 h-[500px] w-[500px] rounded-full bg-[hsl(200,80%,45%,0.08)] blur-[160px]" />
           <div className="absolute bottom-1/4 end-1/4 h-[300px] w-[300px] rounded-full bg-[hsl(195,85%,50%,0.05)] blur-[120px]" />
-          <div
-            className="absolute inset-0 opacity-[0.02]"
-            style={{ backgroundImage: `radial-gradient(circle, hsl(200 80% 60%) 0.5px, transparent 0.5px)`, backgroundSize: "40px 40px" }}
-          />
+          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: `radial-gradient(circle, hsl(200 80% 60%) 0.5px, transparent 0.5px)`, backgroundSize: "40px 40px" }} />
         </div>
-
-        {/* Orbital rings */}
         <motion.div animate={{ rotate: 360 }} transition={{ duration: 80, repeat: Infinity, ease: "linear" }} className="absolute h-[500px] w-[500px] rounded-full border border-[hsl(200,80%,40%,0.06)]" />
         <motion.div animate={{ rotate: -360 }} transition={{ duration: 100, repeat: Infinity, ease: "linear" }} className="absolute h-[650px] w-[650px] rounded-full border border-[hsl(195,85%,50%,0.04)]" />
-
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1 }} className="relative text-center">
           <div className="relative mb-8">
             <div className="absolute inset-0 scale-150 rounded-full bg-[hsl(200,80%,45%,0.12)] blur-[50px]" />
@@ -232,7 +251,6 @@ const LoginPage: React.FC = () => {
 
       {/* Right form panel */}
       <div className="flex flex-1 items-center justify-center overflow-y-auto p-6 md:p-10">
-        {/* Top bar */}
         <div className="fixed top-4 inset-x-6 z-10 flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-1.5 text-[hsl(210,15%,50%)] hover:bg-[hsl(210,22%,12%)] hover:text-white">
             <Globe className="h-4 w-4" />{t.nav.language}
@@ -243,7 +261,6 @@ const LoginPage: React.FC = () => {
         </div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="w-full max-w-md">
-          {/* Mobile logo */}
           <div className="mb-8 flex flex-col items-center lg:hidden">
             <div className="relative">
               <div className="absolute inset-0 scale-150 rounded-full bg-[hsl(200,80%,45%,0.1)] blur-[30px]" />
@@ -252,7 +269,6 @@ const LoginPage: React.FC = () => {
             <span className="mt-3 text-2xl font-medium text-white tracking-tight">SYNA</span>
           </div>
 
-          {/* Portal Type Tabs */}
           <Tabs value={portalType} onValueChange={(v) => { setPortalType(v as any); setMode("login"); }} className="mb-6">
             <TabsList className="w-full rounded-xl border border-[hsl(210,22%,14%)] bg-[hsl(210,28%,7%)] p-1">
               <TabsTrigger value="developer" className="flex-1 gap-1.5 rounded-lg text-[hsl(210,15%,55%)] data-[state=active]:bg-[hsl(210,22%,14%)] data-[state=active]:text-white data-[state=active]:shadow-none">
@@ -266,7 +282,6 @@ const LoginPage: React.FC = () => {
             </TabsList>
           </Tabs>
 
-          {/* Welcome banner */}
           <div className="mb-6 rounded-2xl border border-[hsl(200,80%,45%,0.12)] bg-[hsl(200,80%,45%,0.04)] p-5 text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               {portalType === "developer" ? <HardHat className="h-5 w-5 text-[hsl(200,80%,55%)]" /> : <Landmark className="h-5 w-5 text-[hsl(200,80%,55%)]" />}
@@ -317,21 +332,63 @@ const LoginPage: React.FC = () => {
                   <h3 className={sectionTitleClasses}>{isAr ? "بيانات الشركة" : "Company Information"}</h3>
                   <div className="space-y-3">
                     <div className="space-y-1.5">
-                      <Label className={labelClasses}>{isAr ? "الاسم التجاري (عربي فقط) *" : "Brand Name (Arabic only) *"}</Label>
-                      <Input value={brandName} onChange={(e) => { if (ARABIC_ONLY_REGEX.test(e.target.value)) setBrandName(e.target.value); }} required className={inputClasses} dir="rtl" placeholder={isAr ? "الاسم التجاري" : "Brand name in Arabic"} />
-                      {errors.brandName && <p className="text-xs text-red-400">{errors.brandName}</p>}
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className={labelClasses}>{isAr ? "اسم السجل التجاري *" : "Commercial Register Name *"}</Label>
+                      <Label className={labelClasses}>{isAr ? "اسم الشركة *" : "Company Name *"}</Label>
                       <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} required className={inputClasses} />
                       {errors.companyName && <p className="text-xs text-red-400">{errors.companyName}</p>}
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className={labelClasses}>{isAr ? "اسم المسؤول *" : "Contact Person *"}</Label>
+                      <Input value={contactPerson} onChange={(e) => setContactPerson(e.target.value)} required className={inputClasses} />
+                      {errors.contactPerson && <p className="text-xs text-red-400">{errors.contactPerson}</p>}
                     </div>
                     <div className="space-y-1.5">
                       <Label className={labelClasses}>{isAr ? "رقم السجل التجاري *" : "Commercial Register Number *"}</Label>
                       <Input value={crNumber} onChange={(e) => setCrNumber(e.target.value.replace(/\D/g, ""))} required dir="ltr" className={inputClasses} placeholder="1010XXXXXX" />
                       {errors.crNumber && <p className="text-xs text-red-400">{errors.crNumber}</p>}
                     </div>
+                    <div className="space-y-1.5">
+                      <Label className={labelClasses}>{isAr ? "المدينة *" : "City *"}</Label>
+                      <Select value={city} onValueChange={setCity}>
+                        <SelectTrigger className={inputClasses}>
+                          <SelectValue placeholder={isAr ? "اختر المدينة" : "Select city"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {saudiCities.map(c => (
+                            <SelectItem key={c.name.en} value={c.name.en}>{isAr ? c.name.ar : c.name.en}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {errors.city && <p className="text-xs text-red-400">{errors.city}</p>}
+                    </div>
                   </div>
+                </div>
+
+                {/* Project Types */}
+                <div>
+                  <h3 className={sectionTitleClasses}>{isAr ? "نوع المشاريع *" : "Project Types *"}</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {PROJECT_TYPES.map(pt => (
+                      <button key={pt.value} type="button" onClick={() => toggleProjectType(pt.value)}
+                        className={`rounded-lg border px-3 py-1.5 text-xs transition-all ${selectedProjectTypes.includes(pt.value) ? "border-[hsl(200,80%,45%,0.5)] bg-[hsl(200,80%,45%,0.1)] text-[hsl(200,80%,55%)]" : "border-[hsl(210,22%,16%)] text-[hsl(210,15%,50%)] hover:border-[hsl(210,22%,25%)]"}`}>
+                        {isAr ? pt.ar : pt.en}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.projectTypes && <p className="text-xs text-red-400 mt-1">{errors.projectTypes}</p>}
+                </div>
+
+                {/* Target Cities */}
+                <div>
+                  <h3 className={sectionTitleClasses}>{isAr ? "المدن المستهدفة *" : "Target Cities *"}</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {saudiCities.slice(0, 10).map(c => (
+                      <button key={c.name.en} type="button" onClick={() => toggleTargetCity(c.name.en)}
+                        className={`rounded-lg border px-3 py-1.5 text-xs transition-all ${selectedTargetCities.includes(c.name.en) ? "border-[hsl(200,80%,45%,0.5)] bg-[hsl(200,80%,45%,0.1)] text-[hsl(200,80%,55%)]" : "border-[hsl(210,22%,16%)] text-[hsl(210,15%,50%)] hover:border-[hsl(210,22%,25%)]"}`}>
+                        {isAr ? c.name.ar : c.name.en}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.targetCities && <p className="text-xs text-red-400 mt-1">{errors.targetCities}</p>}
                 </div>
 
                 {/* Contact Info */}
@@ -359,51 +416,21 @@ const LoginPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Documents */}
+                {/* Documents - Google Drive Links */}
                 <div>
-                  <h3 className={sectionTitleClasses}>{isAr ? "بروفايل الشركة والوثائق" : "Company Profile & Documents"}</h3>
-                  <div className="space-y-3">
+                  <h3 className={sectionTitleClasses}>{isAr ? "الوثائق (روابط Google Drive)" : "Documents (Google Drive Links)"}</h3>
+                  <div className="space-y-4">
                     <div className="space-y-1.5">
-                      <Label className={labelClasses}>{isAr ? "إرفاق السجل التجاري (PDF) *" : "Attach Commercial Register (PDF) *"}</Label>
-                      <input ref={crFileRef} type="file" accept=".pdf" className="hidden" onChange={(e) => handleCrFileChange(e.target.files?.[0] || null)} />
-                      <button type="button" onClick={() => crFileRef.current?.click()} className={`flex w-full items-center gap-3 rounded-xl border border-dashed p-3.5 text-sm transition-all duration-300 ${crFile ? "border-[hsl(200,80%,45%,0.4)] bg-[hsl(200,80%,45%,0.06)]" : "border-[hsl(210,22%,16%)] hover:border-[hsl(200,80%,45%,0.2)] hover:bg-[hsl(210,28%,8%)]"}`}>
-                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${crFile ? "bg-[hsl(200,80%,45%,0.1)]" : "bg-[hsl(210,22%,14%)]"}`}>
-                          <FileText className={`h-4 w-4 ${crFile ? "text-[hsl(200,80%,55%)]" : "text-[hsl(210,15%,45%)]"}`} />
-                        </div>
-                        <div className="text-start">
-                          <p className={`font-light ${crFile ? "text-white" : "text-[hsl(210,15%,45%)]"}`}>{crFile ? crFile.name : (isAr ? "اضغط لرفع ملف PDF" : "Click to upload PDF")}</p>
-                          {crFile && <p className="text-xs text-[hsl(210,15%,40%)]">{(crFile.size / 1024).toFixed(0)} KB</p>}
-                        </div>
-                        <Upload className="ms-auto h-4 w-4 text-[hsl(210,15%,45%)]" />
-                      </button>
-                      {errors.crFile && <p className="text-xs text-red-400">{errors.crFile}</p>}
-                      {verifying && (
-                        <div className="flex items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
-                          <Loader2 className="h-4 w-4 animate-spin text-amber-500" />
-                          <span className="text-xs font-light text-amber-400">{isAr ? "جاري التحقق من السجل التجاري..." : "Verifying commercial register..."}</span>
-                        </div>
-                      )}
-                      {verificationResult && !verifying && (
-                        <div className={`flex items-center gap-2 rounded-xl border p-3 ${verificationResult.success ? "border-[hsl(200,80%,45%,0.2)] bg-[hsl(200,80%,45%,0.05)]" : "border-red-500/20 bg-red-500/5"}`}>
-                          <span className={`text-xs font-light ${verificationResult.success ? "text-[hsl(200,80%,55%)]" : "text-red-400"}`}>{verificationResult.message}</span>
-                        </div>
-                      )}
+                      <Label className={labelClasses}>{isAr ? "رابط السجل التجاري *" : "Commercial Register Link *"}</Label>
+                      <DriveLinkInput value={crDriveLink} onChange={setCrDriveLink} valid={crLinkValid} placeholder="https://drive.google.com/file/d/..." error={errors.crDriveLink} />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className={labelClasses}>{isAr ? "إضافة صورة هوية الشركة *" : "Upload Company Identity *"}</Label>
-                      <input ref={identityFileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => setIdentityFile(e.target.files?.[0] || null)} />
-                      <button type="button" onClick={() => identityFileRef.current?.click()} className={`flex w-full items-center gap-3 rounded-xl border border-dashed p-3.5 text-sm transition-all duration-300 ${identityFile ? "border-[hsl(200,80%,45%,0.4)] bg-[hsl(200,80%,45%,0.06)]" : "border-[hsl(210,22%,16%)] hover:border-[hsl(200,80%,45%,0.2)] hover:bg-[hsl(210,28%,8%)]"}`}>
-                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${identityFile ? "bg-[hsl(200,80%,45%,0.1)]" : "bg-[hsl(210,22%,14%)]"}`}>
-                          <Image className={`h-4 w-4 ${identityFile ? "text-[hsl(200,80%,55%)]" : "text-[hsl(210,15%,45%)]"}`} />
-                        </div>
-                        <div className="text-start">
-                          <p className={`font-light ${identityFile ? "text-white" : "text-[hsl(210,15%,45%)]"}`}>{identityFile ? identityFile.name : (isAr ? "اضغط لرفع ملف" : "Click to upload file")}</p>
-                          {identityFile && <p className="text-xs text-[hsl(210,15%,40%)]">{(identityFile.size / 1024).toFixed(0)} KB</p>}
-                        </div>
-                        <Upload className="ms-auto h-4 w-4 text-[hsl(210,15%,45%)]" />
-                      </button>
-                      {errors.identityFile && <p className="text-xs text-red-400">{errors.identityFile}</p>}
+                      <Label className={labelClasses}>{isAr ? "رابط البروفايل التعريفي للشركة *" : "Company Profile Link *"}</Label>
+                      <DriveLinkInput value={profileDriveLink} onChange={setProfileDriveLink} valid={profileLinkValid} placeholder="https://drive.google.com/file/d/..." error={errors.profileDriveLink} />
                     </div>
+                    <p className="text-[10px] text-[hsl(210,15%,40%)]">
+                      {isAr ? "تأكد من أن الروابط قابلة للوصول (Anyone with the link)" : "Ensure links are accessible (Anyone with the link)"}
+                    </p>
                   </div>
                 </div>
 
