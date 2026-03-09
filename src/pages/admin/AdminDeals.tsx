@@ -589,12 +589,11 @@ const AdminDeals: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <h6 className="text-xs font-medium text-foreground flex items-center gap-1.5">
                       <Video className="h-3.5 w-3.5 text-violet-600" />
-                      {isAr ? "الاجتماعات" : "Meetings"} ({meetings.length})
+                      {isAr ? "الاجتماعات" : "Meetings"}
                     </h6>
                     {canAdvance && (
                       <Button size="sm" variant="outline" className="gap-1 text-xs"
                         onClick={() => {
-                          const ownerEmail = ""; // Will be fetched
                           setMeetingDialog({
                             dealId: viewDeal.id,
                             devName: viewDeal.developers?.marketing_brand_name || viewDeal.developers?.company_name,
@@ -607,55 +606,11 @@ const AdminDeals: React.FC = () => {
                       </Button>
                     )}
                   </div>
-                  {meetings.length > 0 ? meetings.map((m: any) => (
-                    <div key={m.id} className="rounded-lg border border-border/30 bg-card p-3 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <CalendarClock className="h-3.5 w-3.5 text-violet-600" />
-                          <span className="text-xs font-medium text-foreground">
-                            {new Date(m.scheduled_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { weekday: "long", year: "numeric", month: "short", day: "numeric" })}
-                          </span>
-                          <span className="text-xs text-muted-foreground">{new Date(m.scheduled_at).toLocaleTimeString(isAr ? "ar-SA" : "en-US", { hour: "2-digit", minute: "2-digit" })}</span>
-                        </div>
-                        <Badge variant="outline" className="text-[10px]">
-                          {m.meeting_type === "google_meet" ? "Google Meet" : (isAr ? "حضوري" : "In Person")}
-                        </Badge>
-                      </div>
-                      {m.meet_link && (
-                        <a href={m.meet_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-primary hover:underline">
-                          <Link2 className="h-3 w-3" />{isAr ? "رابط الاجتماع" : "Meeting Link"}
-                        </a>
-                      )}
-                      {m.location && <p className="text-xs text-muted-foreground flex items-center gap-1"><MapPin className="h-3 w-3" />{m.location}</p>}
-                      <div className="rounded-md bg-muted/30 border border-border/20 p-2 space-y-1">
-                        <p className="text-[10px] font-medium text-muted-foreground">{isAr ? "المدة:" : "Duration:"} {m.duration_minutes} {isAr ? "دقيقة" : "min"}</p>
-                        {m.notes && (
-                          <div>
-                            <p className="text-[10px] font-medium text-muted-foreground mb-0.5">{isAr ? "إفادة المشرف:" : "Supervisor Notes:"}</p>
-                            <p className="text-xs text-foreground">{m.notes}</p>
-                          </div>
-                        )}
-                        <p className="text-[10px] text-muted-foreground/70">{isAr ? "أُنشئ بواسطة المشرف بتاريخ:" : "Created by supervisor on:"} {new Date(m.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}</p>
-                      </div>
-                    </div>
-                  )) : (
-                    <p className="text-xs text-muted-foreground text-center py-3">{isAr ? "لا توجد اجتماعات" : "No meetings yet"}</p>
-                  )}
+                  <MeetingsList meetings={meetings} isAr={isAr} showSupervisorInfo />
                 </div>
 
-                {/* Commission */}
-                <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <div>
-                    <p className="text-xs font-medium text-emerald-700">{isAr ? "عمولة المنصة: 2.5%" : "Platform Commission: 2.5%"}</p>
-                    <p className="text-[10px] text-emerald-600">
-                      {isAr ? "حالة العمولة:" : "Commission Status:"}{" "}
-                      {isAr
-                        ? (commissionStatusLabels[viewDeal.commission_status]?.ar || viewDeal.commission_status)
-                        : (commissionStatusLabels[viewDeal.commission_status]?.en || viewDeal.commission_status)}
-                    </p>
-                  </div>
-                </div>
+                {/* Commission Breakdown */}
+                <CommissionBreakdown isAr={isAr} />
 
                 {/* Governance Info */}
                 <div className="rounded-xl border border-border/40 p-4 space-y-2">
