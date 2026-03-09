@@ -300,6 +300,32 @@ serve(async (req) => {
   }
 
   try {
+    // --- Authentication: require a valid JWT ---
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
     const payload: NotificationPayload = await req.json();
 
     if (!payload.type) {
@@ -309,8 +335,24 @@ serve(async (req) => {
       });
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    // Sanitize all string fields to prevent HTML injection in emails
+    const sanitizedPayload: NotificationPayload = {
+      ...payload,
+      developer_name: escapeHtml(payload.developer_name),
+      developer_email: payload.developer_email, // email not rendered as HTML
+      owner_name: escapeHtml(payload.owner_name),
+      owner_email: payload.owner_email,
+      land_city: escapeHtml(payload.land_city),
+      land_district: escapeHtml(payload.land_district),
+      reject_reason: escapeHtml(payload.reject_reason),
+      registered_name: escapeHtml(payload.registered_name),
+      registered_email: payload.registered_email,
+      registered_phone: escapeHtml(payload.registered_phone),
+      stage_notes: escapeHtml(payload.stage_notes),
+      from_stage: payload.from_stage,
+      to_stage: payload.to_stage,
+    };
+
     const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
     // Get admin user IDs for in-app notifications
