@@ -189,6 +189,16 @@ const OwnerDeals: React.FC = () => {
           referenceNumber={viewDeal.id?.substring(0, 8).toUpperCase()}
           ownerName={viewDeal.lands?.owner_name}
           companyName={viewDeal.developers?.company_name}
+          dealId={viewDeal.id}
+          viewerRole="owner"
+          ownerAcknowledged={viewDeal.owner_acknowledgment_accepted}
+          ownerAcknowledgedDate={viewDeal.owner_acknowledgment_date}
+          developerAcknowledged={viewDeal.developer_acknowledgment_accepted}
+          developerAcknowledgedDate={viewDeal.developer_acknowledgment_date}
+          onAcknowledged={() => {
+            setViewDeal((prev: any) => prev ? { ...prev, owner_acknowledgment_accepted: true, owner_acknowledgment_date: new Date().toISOString() } : prev);
+            setDeals(prev => prev.map(d => d.id === viewDeal.id ? { ...d, owner_acknowledgment_accepted: true, owner_acknowledgment_date: new Date().toISOString() } : d));
+          }}
         />
       )}
     </OwnerLayout>
