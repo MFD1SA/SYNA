@@ -397,17 +397,9 @@ const AdminDeals: React.FC = () => {
                             </span>
                           </div>
 
-                          {/* Progress bar */}
                           {!isCancelled && (
-                            <div className="flex items-center gap-1 mt-2">
-                              {stageOrder.map((s, idx) => {
-                                const stageIdx = stageOrder.indexOf(deal.current_stage);
-                                return (
-                                  <div key={s} className={`h-1.5 flex-1 rounded-full transition-colors ${
-                                    idx <= stageIdx ? "bg-primary" : "bg-border"
-                                  }`} title={stageConfig[s]?.[isAr ? "ar" : "en"]} />
-                                );
-                              })}
+                            <div className="mt-2">
+                              <DealStagePipeline currentStage={deal.current_stage} isAr={isAr} compact />
                             </div>
                           )}
                         </div>
