@@ -625,6 +625,28 @@ const AdminDeals: React.FC = () => {
                   landAreaSqm={viewDeal.lands?.land_area_sqm || 0}
                 />
 
+                {/* Legal Acknowledgment */}
+                <div className="rounded-xl border border-border/40 p-4 space-y-2">
+                  <h6 className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                    <FileText className="h-3.5 w-3.5 text-primary" />
+                    {isAr ? "الإقرار القانوني" : "Legal Acknowledgment"}
+                  </h6>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg ${viewDeal.owner_acknowledgment_accepted ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"}`}>
+                      <CheckCircle2 className="h-3 w-3" />
+                      {isAr ? "إقرار المالك:" : "Owner:"} {viewDeal.owner_acknowledgment_accepted ? (isAr ? "تم" : "Accepted") : (isAr ? "لم يتم" : "Pending")}
+                    </div>
+                    <div className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg ${viewDeal.developer_acknowledgment_accepted ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"}`}>
+                      <CheckCircle2 className="h-3 w-3" />
+                      {isAr ? "إقرار المطور:" : "Developer:"} {viewDeal.developer_acknowledgment_accepted ? (isAr ? "تم" : "Accepted") : (isAr ? "لم يتم" : "Pending")}
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" className="gap-1.5 w-full" onClick={() => setShowLegalDoc(true)}>
+                    <FileText className="h-3.5 w-3.5" />
+                    {isAr ? "عرض وثيقة الإقرار" : "View Acknowledgment Document"}
+                  </Button>
+                </div>
+
                 {/* Governance Info */}
                 <div className="rounded-xl border border-border/40 p-4 space-y-2">
                   <h6 className="text-xs font-medium text-foreground flex items-center gap-1.5">
