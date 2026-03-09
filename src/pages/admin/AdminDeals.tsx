@@ -64,8 +64,8 @@ const AdminDeals: React.FC = () => {
   const fetchAll = async () => {
     try {
       const [reqRes, dealRes] = await Promise.all([
-        supabase.from("deal_requests").select("*, lands(city, district, land_area_sqm, usage_type, partnership_goal, owner_name, owner_id), developers(company_name, marketing_brand_name, cr_number, email, phone, website)").order("created_at", { ascending: false }),
-        supabase.from("deals").select("*, lands(city, district, land_area_sqm), developers(company_name, marketing_brand_name, email, phone, website)").order("created_at", { ascending: false }),
+        supabase.from("deal_requests").select("*, lands(city, district, land_area_sqm, usage_type, partnership_goal, owner_name, owner_id, estimated_price_per_sqm, estimated_total_value, project_model, deed_number, plan_number), developers(company_name, marketing_brand_name, cr_number, email, phone, website)").order("created_at", { ascending: false }),
+        supabase.from("deals").select("*, lands(city, district, land_area_sqm, estimated_price_per_sqm, estimated_total_value, owner_name, usage_type, partnership_goal, project_model, deed_number, plan_number), developers(company_name, marketing_brand_name, email, phone, website)").order("created_at", { ascending: false }),
       ]);
       setRequests(reqRes.data || []);
       const dealsData = dealRes.data || [];
