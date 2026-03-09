@@ -16,6 +16,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import DevWebsiteAnalysis from "@/components/owner/DevWebsiteAnalysis";
+import LegalDocPrintView from "@/components/land/LegalDocPrintView";
+import { defaultLandForm, LandFormData } from "@/components/land/LandFormConstants";
 import {
   Search, FileText, Handshake, Clock, CheckCircle2, XCircle, AlertCircle, Eye, Ruler, MapPin, Globe,
   TrendingUp, Video, CalendarClock, Loader2, ArrowRight, Shield, MessageSquare, Link2, ClipboardList,
@@ -60,6 +62,20 @@ const AdminDeals: React.FC = () => {
   const [stageNotes, setStageNotes] = useState("");
   // Deal meetings data
   const [dealMeetings, setDealMeetings] = useState<Record<string, any[]>>({});
+  const [showLegalDoc, setShowLegalDoc] = useState(false);
+
+  const buildLandForm = (land: any): LandFormData => ({
+    ...defaultLandForm,
+    city: land?.city || "", district: land?.district || "",
+    land_area_sqm: String(land?.land_area_sqm || ""),
+    estimated_price_per_sqm: String(land?.estimated_price_per_sqm || ""),
+    estimated_total_value: String(land?.estimated_total_value || ""),
+    usage_type: land?.usage_type || "residential",
+    partnership_goal: land?.partnership_goal || "develop_sell",
+    project_model: land?.project_model || "development_partnership",
+    deed_number: land?.deed_number || "", plan_number: land?.plan_number || "",
+    owner_name: land?.owner_name || "",
+  });
 
   const fetchAll = async () => {
     try {
@@ -609,6 +625,28 @@ const AdminDeals: React.FC = () => {
                   landAreaSqm={viewDeal.lands?.land_area_sqm || 0}
                 />
 
+                {/* Legal Acknowledgment */}
+                <div className="rounded-xl border border-border/40 p-4 space-y-2">
+                  <h6 className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                    <FileText className="h-3.5 w-3.5 text-primary" />
+                    {isAr ? "الإقرار القانوني" : "Legal Acknowledgment"}
+                  </h6>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg ${viewDeal.owner_acknowledgment_accepted ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"}`}>
+                      <CheckCircle2 className="h-3 w-3" />
+                      {isAr ? "إقرار المالك:" : "Owner:"} {viewDeal.owner_acknowledgment_accepted ? (isAr ? "تم" : "Accepted") : (isAr ? "لم يتم" : "Pending")}
+                    </div>
+                    <div className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg ${viewDeal.developer_acknowledgment_accepted ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"}`}>
+                      <CheckCircle2 className="h-3 w-3" />
+                      {isAr ? "إقرار المطور:" : "Developer:"} {viewDeal.developer_acknowledgment_accepted ? (isAr ? "تم" : "Accepted") : (isAr ? "لم يتم" : "Pending")}
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" className="gap-1.5 w-full" onClick={() => setShowLegalDoc(true)}>
+                    <FileText className="h-3.5 w-3.5" />
+                    {isAr ? "عرض وثيقة الإقرار" : "View Acknowledgment Document"}
+                  </Button>
+                </div>
+
                 {/* Governance Info */}
                 <div className="rounded-xl border border-border/40 p-4 space-y-2">
                   <h6 className="text-xs font-medium text-foreground flex items-center gap-1.5">
@@ -754,6 +792,24 @@ const AdminDeals: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Legal Doc Print View */}
+      {viewDeal && (
+        <LegalDocPrintView
+          open={showLegalDoc}
+          onClose={() => setShowLegalDoc(false)}
+          form={buildLandForm(viewDeal.lands)}
+          referenceNumber={viewDeal.id?.substring(0, 8).toUpperCase()}
+          ownerName={viewDeal.lands?.owner_name}
+          companyName={viewDeal.developers?.company_name}
+          dealId={viewDeal.id}
+          viewerRole="admin"
+          ownerAcknowledged={viewDeal.owner_acknowledgment_accepted}
+          ownerAcknowledgedDate={viewDeal.owner_acknowledgment_date}
+          developerAcknowledged={viewDeal.developer_acknowledgment_accepted}
+          developerAcknowledgedDate={viewDeal.developer_acknowledgment_date}
+        />
+      )}
     </div>
     </AdminLayout>
   );
