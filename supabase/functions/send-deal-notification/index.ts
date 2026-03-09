@@ -367,85 +367,82 @@ serve(async (req) => {
       new_owner_registered: {
         titleAr: "مالك أرض جديد",
         titleEn: "New Land Owner",
-        msgAr: `تم تسجيل مالك أرض جديد: ${payload.registered_name || payload.registered_email || ""}`,
-        msgEn: `New land owner registered: ${payload.registered_name || payload.registered_email || ""}`,
+        msgAr: `تم تسجيل مالك أرض جديد: ${sanitizedPayload.registered_name || sanitizedPayload.registered_email || ""}`,
+        msgEn: `New land owner registered: ${sanitizedPayload.registered_name || sanitizedPayload.registered_email || ""}`,
         entityType: "owner",
       },
       new_developer_registered: {
         titleAr: "مطور عقاري جديد",
         titleEn: "New Developer",
-        msgAr: `تم تسجيل مطور جديد: ${payload.registered_name || ""} — بانتظار التوثيق`,
-        msgEn: `New developer registered: ${payload.registered_name || ""} — awaiting verification`,
+        msgAr: `تم تسجيل مطور جديد: ${sanitizedPayload.registered_name || ""} — بانتظار التوثيق`,
+        msgEn: `New developer registered: ${sanitizedPayload.registered_name || ""} — awaiting verification`,
         entityType: "developer",
       },
       deal_stage_changed: {
         titleAr: "تحديث مرحلة صفقة",
         titleEn: "Deal Stage Updated",
-        msgAr: `صفقة ${payload.developer_name || ""} / ${payload.land_city || ""}: ${stageLabelsAr[payload.from_stage || ""] || ""} → ${stageLabelsAr[payload.to_stage || ""] || ""}`,
-        msgEn: `Deal ${payload.developer_name || ""} / ${payload.land_city || ""}: ${payload.from_stage || ""} → ${payload.to_stage || ""}`,
+        msgAr: `صفقة ${sanitizedPayload.developer_name || ""} / ${sanitizedPayload.land_city || ""}: ${stageLabelsAr[sanitizedPayload.from_stage || ""] || ""} → ${stageLabelsAr[sanitizedPayload.to_stage || ""] || ""}`,
+        msgEn: `Deal ${sanitizedPayload.developer_name || ""} / ${sanitizedPayload.land_city || ""}: ${sanitizedPayload.from_stage || ""} → ${sanitizedPayload.to_stage || ""}`,
         entityType: "deal",
       },
       request_submitted: {
         titleAr: "طلب شراكة جديد",
         titleEn: "New Partnership Request",
-        msgAr: `طلب شراكة جديد من ${payload.developer_name || ""} على أرض في ${payload.land_city || ""}`,
-        msgEn: `New request from ${payload.developer_name || ""} for land in ${payload.land_city || ""}`,
+        msgAr: `طلب شراكة جديد من ${sanitizedPayload.developer_name || ""} على أرض في ${sanitizedPayload.land_city || ""}`,
+        msgEn: `New request from ${sanitizedPayload.developer_name || ""} for land in ${sanitizedPayload.land_city || ""}`,
         entityType: "deal_request",
       },
       draft_created_for_owner: {
         titleAr: "أرض جديدة بانتظار مراجعتك",
         titleEn: "New Land Awaiting Your Review",
-        msgAr: `تم إدراج أرض في ${payload.land_city || ""} نيابةً عنك. يرجى المراجعة والاعتماد.`,
-        msgEn: `A land in ${payload.land_city || ""} was added on your behalf. Please review and approve.`,
+        msgAr: `تم إدراج أرض في ${sanitizedPayload.land_city || ""} نيابةً عنك. يرجى المراجعة والاعتماد.`,
+        msgEn: `A land in ${sanitizedPayload.land_city || ""} was added on your behalf. Please review and approve.`,
         entityType: "land",
       },
     };
 
-    const notif = notifMap[payload.type];
+    const notif = notifMap[sanitizedPayload.type];
     if (notif) {
-      if (payload.type === "draft_created_for_owner" && payload.owner_user_id) {
-        // Send in-app notification to the owner, not admins
+      if (sanitizedPayload.type === "draft_created_for_owner" && sanitizedPayload.owner_user_id) {
         await createInAppNotification(
-          supabaseAdmin, payload.owner_user_id, payload.type,
+          supabaseAdmin, sanitizedPayload.owner_user_id, sanitizedPayload.type,
           notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn,
           notif.entityType
         );
-      } else if (payload.type === "request_submitted" && payload.owner_user_id) {
-        // Send in-app notification to BOTH admins AND the land owner
+      } else if (sanitizedPayload.type === "request_submitted" && sanitizedPayload.owner_user_id) {
         for (const adminId of adminUserIds) {
           await createInAppNotification(
-            supabaseAdmin, adminId, payload.type,
+            supabaseAdmin, adminId, sanitizedPayload.type,
             notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn,
-            notif.entityType, payload.request_id
+            notif.entityType, sanitizedPayload.request_id
           );
         }
-        // Also notify the owner
-        if (!adminUserIds.includes(payload.owner_user_id)) {
+        if (!adminUserIds.includes(sanitizedPayload.owner_user_id)) {
           await createInAppNotification(
-            supabaseAdmin, payload.owner_user_id, payload.type,
+            supabaseAdmin, sanitizedPayload.owner_user_id, sanitizedPayload.type,
             "طلب شراكة جديد على أرضك",
             "New Partnership Request on Your Land",
-            `تقدم مطور ${payload.developer_name || ""} بطلب شراكة على أرضك في ${payload.land_city || ""}`,
-            `Developer ${payload.developer_name || ""} submitted a partnership request for your land in ${payload.land_city || ""}`,
-            notif.entityType, payload.request_id
+            `تقدم مطور ${sanitizedPayload.developer_name || ""} بطلب شراكة على أرضك في ${sanitizedPayload.land_city || ""}`,
+            `Developer ${sanitizedPayload.developer_name || ""} submitted a partnership request for your land in ${sanitizedPayload.land_city || ""}`,
+            notif.entityType, sanitizedPayload.request_id
           );
         }
       } else {
         for (const adminId of adminUserIds) {
           await createInAppNotification(
-            supabaseAdmin, adminId, payload.type,
+            supabaseAdmin, adminId, sanitizedPayload.type,
             notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn,
-            notif.entityType, payload.deal_id || payload.request_id
+            notif.entityType, sanitizedPayload.deal_id || sanitizedPayload.request_id
           );
         }
       }
     }
 
-    // Send email
-    const { subject, html, to } = buildEmailHtml(payload);
+    // Send email using sanitized payload
+    const { subject, html, to } = buildEmailHtml(sanitizedPayload);
 
     if (!to) {
-      console.warn("No recipient email for notification type:", payload.type);
+      console.warn("No recipient email for notification type:", sanitizedPayload.type);
       return new Response(JSON.stringify({ success: true, warning: "No recipient email" }), {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -473,7 +470,7 @@ serve(async (req) => {
       if (!emailRes.ok) {
         console.error("Email error:", emailData);
       } else {
-        console.log("Notification email sent:", payload.type, "to:", to);
+        console.log("Notification email sent:", sanitizedPayload.type, "to:", to);
       }
     } else {
       console.warn("No RESEND_API_KEY configured");
@@ -485,7 +482,7 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error("Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
