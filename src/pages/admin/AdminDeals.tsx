@@ -16,6 +16,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import DevWebsiteAnalysis from "@/components/owner/DevWebsiteAnalysis";
+import LegalDocPrintView from "@/components/land/LegalDocPrintView";
+import { defaultLandForm, LandFormData } from "@/components/land/LandFormConstants";
 import {
   Search, FileText, Handshake, Clock, CheckCircle2, XCircle, AlertCircle, Eye, Ruler, MapPin, Globe,
   TrendingUp, Video, CalendarClock, Loader2, ArrowRight, Shield, MessageSquare, Link2, ClipboardList,
