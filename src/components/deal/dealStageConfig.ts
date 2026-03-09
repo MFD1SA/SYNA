@@ -1,25 +1,34 @@
 import {
   FileText, ClipboardList, Eye, CheckCircle2, Video, TrendingUp,
   Shield, Handshake, XCircle, Search, UserCheck, MessageSquare,
-  Building2, Lock,
+  Building2, Lock, Inbox, FileSearch, Award, Rocket, FolderCheck,
 } from "lucide-react";
 
 /**
  * Unified 13-stage deal lifecycle used across Owner, Developer, and Admin dashboards.
- * Maps to the `deal_stage` enum in the database.
+ * Maps to the `deal_stage` enum in the database (14 values incl. cancelled).
  *
- * DB enum values (10):
- *   listed, request_submitted, owner_review, owner_approved,
- *   meeting_scheduled, strategy_defined, documents_exchanged,
- *   agreements_prepared, deal_closed, deal_cancelled
+ * DB enum values (14):
+ *   listed, request_submitted, owner_review, accepting_proposals,
+ *   owner_approved, meeting_scheduled, strategy_defined, under_review,
+ *   documents_exchanged, agreements_prepared, agreed, active_project,
+ *   deal_closed, deal_cancelled
  *
- * UI display labels follow the 13-stage naming requested by the business:
- *   مسودة, أرض معتمدة, فرصة منشورة, استقبال عروض, تم التقديم,
- *   تم استلام العرض, تمت المعاينة, قيد المراجعة, مطور مختار,
- *   قيد التفاوض, تم الاتفاق, مشروع نشط, مغلقة
- *
- * We map the 10 DB stages to 13 display stages by splitting some stages
- * into sub-states displayed on the UI while keeping DB compatibility.
+ * UI display labels (13 pipeline + cancelled):
+ *   1.  مسودة            Draft
+ *   2.  أرض معتمدة        Land Approved
+ *   3.  فرصة منشورة       Published
+ *   4.  استقبال عروض       Accepting Proposals
+ *   5.  تم التقديم         Submitted
+ *   6.  تم استلام العرض    Proposal Received
+ *   7.  تمت المعاينة       Reviewed
+ *   8.  قيد المراجعة       Under Review
+ *   9.  مطور مختار         Developer Selected
+ *   10. قيد التفاوض        Negotiating
+ *   11. تم الاتفاق         Agreed
+ *   12. مشروع نشط         Active Project
+ *   13. مغلقة              Closed
+ *   +   ملغاة              Cancelled
  */
 
 export interface StageInfo {
@@ -30,28 +39,36 @@ export interface StageInfo {
 }
 
 export const stageConfig: Record<string, StageInfo> = {
-  listed:               { ar: "مسودة",           en: "Draft",              color: "text-muted-foreground", icon: FileText },
-  request_submitted:    { ar: "أرض معتمدة",      en: "Land Approved",      color: "text-emerald-600",      icon: CheckCircle2 },
-  owner_review:         { ar: "فرصة منشورة",     en: "Published",          color: "text-blue-600",         icon: Search },
-  owner_approved:       { ar: "تم التقديم",       en: "Submitted",          color: "text-indigo-600",       icon: ClipboardList },
-  meeting_scheduled:    { ar: "تم استلام العرض",   en: "Proposal Received",  color: "text-violet-600",       icon: Eye },
-  strategy_defined:     { ar: "تمت المعاينة",     en: "Reviewed",           color: "text-cyan-600",         icon: TrendingUp },
-  documents_exchanged:  { ar: "مطور مختار",       en: "Developer Selected", color: "text-orange-600",       icon: UserCheck },
-  agreements_prepared:  { ar: "قيد التفاوض",      en: "Negotiating",        color: "text-amber-600",        icon: MessageSquare },
-  deal_closed:          { ar: "مغلقة",            en: "Closed",             color: "text-emerald-700",      icon: Handshake },
-  deal_cancelled:       { ar: "ملغاة",            en: "Cancelled",          color: "text-destructive",      icon: XCircle },
+  listed:                { ar: "مسودة",            en: "Draft",                color: "text-muted-foreground", icon: FileText },
+  request_submitted:     { ar: "أرض معتمدة",       en: "Land Approved",        color: "text-emerald-600",      icon: CheckCircle2 },
+  owner_review:          { ar: "فرصة منشورة",      en: "Published",            color: "text-blue-600",         icon: Search },
+  accepting_proposals:   { ar: "استقبال عروض",      en: "Accepting Proposals",  color: "text-sky-600",          icon: Inbox },
+  owner_approved:        { ar: "تم التقديم",        en: "Submitted",            color: "text-indigo-600",       icon: ClipboardList },
+  meeting_scheduled:     { ar: "تم استلام العرض",   en: "Proposal Received",    color: "text-violet-600",       icon: Eye },
+  strategy_defined:      { ar: "تمت المعاينة",      en: "Reviewed",             color: "text-cyan-600",         icon: TrendingUp },
+  under_review:          { ar: "قيد المراجعة",      en: "Under Review",         color: "text-purple-600",       icon: FileSearch },
+  documents_exchanged:   { ar: "مطور مختار",        en: "Developer Selected",   color: "text-orange-600",       icon: UserCheck },
+  agreements_prepared:   { ar: "قيد التفاوض",       en: "Negotiating",          color: "text-amber-600",        icon: MessageSquare },
+  agreed:                { ar: "تم الاتفاق",        en: "Agreed",               color: "text-teal-600",         icon: FolderCheck },
+  active_project:        { ar: "مشروع نشط",        en: "Active Project",       color: "text-green-600",        icon: Rocket },
+  deal_closed:           { ar: "مغلقة",             en: "Closed",               color: "text-emerald-700",      icon: Handshake },
+  deal_cancelled:        { ar: "ملغاة",             en: "Cancelled",            color: "text-destructive",      icon: XCircle },
 };
 
-/** Ordered pipeline stages (excluding cancelled) */
+/** Ordered pipeline stages (excluding cancelled) — 13 stages */
 export const stageOrder = [
   "listed",
   "request_submitted",
   "owner_review",
+  "accepting_proposals",
   "owner_approved",
   "meeting_scheduled",
   "strategy_defined",
+  "under_review",
   "documents_exchanged",
   "agreements_prepared",
+  "agreed",
+  "active_project",
   "deal_closed",
 ];
 

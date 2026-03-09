@@ -64,8 +64,8 @@ const AdminDeals: React.FC = () => {
   const fetchAll = async () => {
     try {
       const [reqRes, dealRes] = await Promise.all([
-        supabase.from("deal_requests").select("*, lands(city, district, land_area_sqm, usage_type, partnership_goal, owner_name, owner_id), developers(company_name, marketing_brand_name, cr_number, email, phone, website)").order("created_at", { ascending: false }),
-        supabase.from("deals").select("*, lands(city, district, land_area_sqm), developers(company_name, marketing_brand_name, email, phone, website)").order("created_at", { ascending: false }),
+        supabase.from("deal_requests").select("*, lands(city, district, land_area_sqm, usage_type, partnership_goal, owner_name, owner_id, estimated_price_per_sqm, estimated_total_value, project_model, deed_number, plan_number), developers(company_name, marketing_brand_name, cr_number, email, phone, website)").order("created_at", { ascending: false }),
+        supabase.from("deals").select("*, lands(city, district, land_area_sqm, estimated_price_per_sqm, estimated_total_value, owner_name, usage_type, partnership_goal, project_model, deed_number, plan_number), developers(company_name, marketing_brand_name, email, phone, website)").order("created_at", { ascending: false }),
       ]);
       setRequests(reqRes.data || []);
       const dealsData = dealRes.data || [];
@@ -602,7 +602,12 @@ const AdminDeals: React.FC = () => {
                 </div>
 
                 {/* Commission Breakdown */}
-                <CommissionBreakdown isAr={isAr} />
+                <CommissionBreakdown
+                  isAr={isAr}
+                  estimatedPricePerSqm={viewDeal.lands?.estimated_price_per_sqm || 0}
+                  estimatedTotalValue={viewDeal.lands?.estimated_total_value || 0}
+                  landAreaSqm={viewDeal.lands?.land_area_sqm || 0}
+                />
 
                 {/* Governance Info */}
                 <div className="rounded-xl border border-border/40 p-4 space-y-2">

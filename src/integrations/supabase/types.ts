@@ -1566,6 +1566,10 @@ export type Database = {
         | "agreements_prepared"
         | "deal_closed"
         | "deal_cancelled"
+        | "accepting_proposals"
+        | "under_review"
+        | "agreed"
+        | "active_project"
       deal_task_status: "pending" | "in_progress" | "done"
       developer_verification_status: "pending_review" | "verified" | "rejected"
       land_usage_type:
@@ -1739,6 +1743,10 @@ export const Constants = {
         "agreements_prepared",
         "deal_closed",
         "deal_cancelled",
+        "accepting_proposals",
+        "under_review",
+        "agreed",
+        "active_project",
       ],
       deal_task_status: ["pending", "in_progress", "done"],
       developer_verification_status: ["pending_review", "verified", "rejected"],

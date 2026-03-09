@@ -6,31 +6,24 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import CrmLayout from "@/components/crm/CrmLayout";
 import DealAutomationPanel, { DealDocumentItem } from "@/components/crm/DealAutomationPanel";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import {
-  Handshake,
-  Building2,
-  Eye,
-  Shield,
+  Handshake, Building2, Eye, FileText,
 } from "lucide-react";
 import DealStagePipeline from "@/components/deal/DealStagePipeline";
 import MeetingsList from "@/components/deal/MeetingsList";
 import CommissionBreakdown from "@/components/deal/CommissionBreakdown";
-import { stageConfig, stageOrder, healthLabels, commissionStatusLabels } from "@/components/deal/dealStageConfig";
+import LegalDocPrintView from "@/components/land/LegalDocPrintView";
+import { stageConfig, healthLabels, commissionStatusLabels } from "@/components/deal/dealStageConfig";
+import { defaultLandForm, LandFormData } from "@/components/land/LandFormConstants";
 
 const driveUrlSchema = z
-  .string()
-  .trim()
-  .url("invalid")
+  .string().trim().url("invalid")
   .refine((value) => {
-    try {
-      const u = new URL(value);
-      return ["drive.google.com", "docs.google.com"].includes(u.hostname);
-    } catch {
-      return false;
-    }
+    try { const u = new URL(value); return ["drive.google.com", "docs.google.com"].includes(u.hostname); } catch { return false; }
   }, "invalid_drive");
 
 const CrmDeals: React.FC = () => {
@@ -50,51 +43,39 @@ const CrmDeals: React.FC = () => {
   const [linkValidated, setLinkValidated] = useState(false);
   const [validationNote, setValidationNote] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+  const [showLegalDoc, setShowLegalDoc] = useState(false);
 
   const fetchDeals = useCallback(async () => {
     if (!user) return;
-
     const { data: devProfile } = await supabase.from("developers").select("id").eq("user_id", user.id).maybeSingle();
-
     let query = supabase
       .from("deals")
-      .select("*, lands(city, district, land_area_sqm), developers(company_name, marketing_brand_name)")
+      .select("*, lands(city, district, land_area_sqm, estimated_price_per_sqm, estimated_total_value, owner_name, usage_type, partnership_goal, project_model, deed_number, plan_number), developers(company_name, marketing_brand_name)")
       .order("created_at", { ascending: false });
-
     if (devProfile) query = query.eq("developer_id", devProfile.id);
-
     const { data } = await query;
     setDeals(data || []);
     setLoading(false);
   }, [user]);
 
-  useEffect(() => {
-    fetchDeals();
-  }, [fetchDeals]);
+  useEffect(() => { fetchDeals(); }, [fetchDeals]);
 
-  const fetchDealExtras = useCallback(
-    async (dealId: string) => {
-      const [meetingsRes, docsRes] = await Promise.all([
-        supabase.from("deal_meetings").select("*").eq("deal_id", dealId).order("scheduled_at", { ascending: false }),
-        (supabase as any).from("deal_documents").select("id, document_url, verified, created_at").eq("deal_id", dealId).order("created_at", { ascending: false }),
-      ]);
-
-      const docs: DealDocumentItem[] = docsRes?.data || [];
-      setMeetings(meetingsRes.data || []);
-      setDealDocuments(docs);
-
-      if (docs.length > 0) {
-        setDriveUrl(docs[0].document_url || "");
-        setLinkValidated(Boolean(docs[0].verified));
-        setValidationNote(docs[0].verified ? (isAr ? "تم حفظ الرابط والتحقق منه." : "Saved and verified.") : "");
-      } else {
-        setDriveUrl("");
-        setLinkValidated(false);
-        setValidationNote("");
-      }
-    },
-    [isAr],
-  );
+  const fetchDealExtras = useCallback(async (dealId: string) => {
+    const [meetingsRes, docsRes] = await Promise.all([
+      supabase.from("deal_meetings").select("*").eq("deal_id", dealId).order("scheduled_at", { ascending: false }),
+      (supabase as any).from("deal_documents").select("id, document_url, verified, created_at").eq("deal_id", dealId).order("created_at", { ascending: false }),
+    ]);
+    const docs: DealDocumentItem[] = docsRes?.data || [];
+    setMeetings(meetingsRes.data || []);
+    setDealDocuments(docs);
+    if (docs.length > 0) {
+      setDriveUrl(docs[0].document_url || "");
+      setLinkValidated(Boolean(docs[0].verified));
+      setValidationNote(docs[0].verified ? (isAr ? "تم حفظ الرابط والتحقق منه." : "Saved and verified.") : "");
+    } else {
+      setDriveUrl(""); setLinkValidated(false); setValidationNote("");
+    }
+  }, [isAr]);
 
   const openDealDetail = async (deal: any) => {
     setViewDeal(deal);
@@ -103,122 +84,69 @@ const CrmDeals: React.FC = () => {
 
   const handleValidateDriveLink = async () => {
     const parsed = driveUrlSchema.safeParse(driveUrl);
-
     if (!parsed.success) {
-      toast({
-        variant: "destructive",
-        title: isAr ? "رابط غير صالح" : "Invalid link",
-        description: isAr ? "يرجى إدخال رابط Google Drive صحيح." : "Please enter a valid Google Drive URL.",
-      });
-      setLinkValidated(false);
-      return;
+      toast({ variant: "destructive", title: isAr ? "رابط غير صالح" : "Invalid link" });
+      setLinkValidated(false); return;
     }
-
     setValidatingLink(true);
     try {
-      const { data, error } = await supabase.functions.invoke("deal-drive-automation", {
-        body: { action: "validate_link", documentUrl: parsed.data },
-      });
-
-      if (error) throw new Error(error.message || "Validation failed");
+      const { data, error } = await supabase.functions.invoke("deal-drive-automation", { body: { action: "validate_link", documentUrl: parsed.data } });
+      if (error) throw new Error(error.message);
       if (!data?.valid) throw new Error(data?.error || "Validation failed");
-
       setLinkValidated(true);
-      setValidationNote(isAr ? "تم جلب الرابط بنجاح. يمكنك الآن الضغط على الموافقة." : "Link fetched successfully. You can now approve.");
+      setValidationNote(isAr ? "تم التحقق من الرابط بنجاح." : "Link validated successfully.");
       toast({ title: isAr ? "تم التحقق من الرابط" : "Link validated" });
     } catch (err: any) {
       setLinkValidated(false);
-      setValidationNote(isAr ? "تعذر جلب الرابط. تأكد من صلاحية الرابط وإتاحته." : "Unable to fetch the link. Ensure it is valid and accessible.");
-      toast({
-        variant: "destructive",
-        title: isAr ? "فشل التحقق" : "Validation failed",
-        description: err.message,
-      });
-    } finally {
-      setValidatingLink(false);
-    }
+      setValidationNote(isAr ? "تعذر التحقق من الرابط." : "Unable to validate link.");
+      toast({ variant: "destructive", title: isAr ? "فشل التحقق" : "Validation failed", description: err.message });
+    } finally { setValidatingLink(false); }
   };
 
   const handleSubmitDriveAndAdvance = async () => {
-    if (!viewDeal) return;
-
-    if (!linkValidated) {
-      toast({
-        variant: "destructive",
-        title: isAr ? "يلزم التحقق أولاً" : "Validation required",
-        description: isAr ? "تحقق من الرابط قبل الضغط على الموافقة." : "Validate the link before approving.",
-      });
-      return;
-    }
-
+    if (!viewDeal || !linkValidated) return;
     setActionLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("deal-drive-automation", {
-        body: {
-          action: "submit_drive_link",
-          dealId: viewDeal.id,
-          documentUrl: driveUrl.trim(),
-        },
-      });
-
-      if (error) throw new Error(error.message || "Automation failed");
-      if (!data?.success) throw new Error(data?.error || "Automation failed");
-
+      const { data, error } = await supabase.functions.invoke("deal-drive-automation", { body: { action: "submit_drive_link", dealId: viewDeal.id, documentUrl: driveUrl.trim() } });
+      if (error) throw new Error(error.message);
+      if (!data?.success) throw new Error(data?.error);
       const nextStage = data?.deal?.current_stage || "agreements_prepared";
-      setViewDeal((prev: any) => (prev ? { ...prev, current_stage: nextStage } : prev));
+      setViewDeal((prev: any) => prev ? { ...prev, current_stage: nextStage } : prev);
       setDeals((prev) => prev.map((d) => (d.id === viewDeal.id ? { ...d, current_stage: nextStage } : d)));
       await fetchDealExtras(viewDeal.id);
-
-      toast({ title: isAr ? "تم اعتماد الرابط وبدء مرحلة الاتفاقيات" : "Link approved and agreements stage started" });
+      toast({ title: isAr ? "تم اعتماد الرابط" : "Link approved" });
     } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: isAr ? "تعذر المتابعة" : "Could not continue",
-        description: err.message,
-      });
-    } finally {
-      setActionLoading(false);
-    }
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    } finally { setActionLoading(false); }
   };
 
   const handleCloseDeal = async () => {
     if (!viewDeal) return;
-
     setActionLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("deal-drive-automation", {
-        body: {
-          action: "close_deal",
-          dealId: viewDeal.id,
-        },
-      });
-
-      if (error) throw new Error(error.message || "Close failed");
-      if (!data?.success) throw new Error(data?.error || "Close failed");
-
-      setViewDeal((prev: any) =>
-        prev
-          ? {
-              ...prev,
-              current_stage: "deal_closed",
-              closed_at: data?.deal?.closed_at || new Date().toISOString(),
-            }
-          : prev,
-      );
-
-      setDeals((prev) => prev.map((d) => (d.id === viewDeal.id ? { ...d, current_stage: "deal_closed", closed_at: data?.deal?.closed_at } : d)));
-
-      toast({ title: isAr ? "مبروك! تم إغلاق الصفقة" : "Congratulations! Deal closed" });
+      const { data, error } = await supabase.functions.invoke("deal-drive-automation", { body: { action: "close_deal", dealId: viewDeal.id } });
+      if (error) throw new Error(error.message);
+      if (!data?.success) throw new Error(data?.error);
+      setViewDeal((prev: any) => prev ? { ...prev, current_stage: "deal_closed", closed_at: data?.deal?.closed_at } : prev);
+      setDeals((prev) => prev.map((d) => (d.id === viewDeal.id ? { ...d, current_stage: "deal_closed" } : d)));
+      toast({ title: isAr ? "تم إغلاق الصفقة" : "Deal closed" });
     } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: isAr ? "تعذر إغلاق الصفقة" : "Failed to close deal",
-        description: err.message,
-      });
-    } finally {
-      setActionLoading(false);
-    }
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    } finally { setActionLoading(false); }
   };
+
+  const buildLandForm = (land: any): LandFormData => ({
+    ...defaultLandForm,
+    city: land?.city || "", district: land?.district || "",
+    land_area_sqm: String(land?.land_area_sqm || ""),
+    estimated_price_per_sqm: String(land?.estimated_price_per_sqm || ""),
+    estimated_total_value: String(land?.estimated_total_value || ""),
+    usage_type: land?.usage_type || "residential",
+    partnership_goal: land?.partnership_goal || "develop_sell",
+    project_model: land?.project_model || "development_partnership",
+    deed_number: land?.deed_number || "", plan_number: land?.plan_number || "",
+    owner_name: land?.owner_name || "",
+  });
 
   return (
     <CrmLayout>
@@ -246,38 +174,19 @@ const CrmDeals: React.FC = () => {
             const isCancelled = d.current_stage === "deal_cancelled";
             const isClosed = d.current_stage === "deal_closed";
             const hc = healthLabels[d.health] || healthLabels.green;
-
             return (
-              <div
-                key={d.id}
-                className="rounded-xl border border-border/60 bg-card p-4 transition-all hover:border-primary/20 cursor-pointer"
-                onClick={() => openDealDetail(d)}
-              >
+              <div key={d.id} className="rounded-xl border border-border/60 bg-card p-4 transition-all hover:border-primary/20 cursor-pointer" onClick={() => openDealDetail(d)}>
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <div className={`h-2.5 w-2.5 rounded-full ${hc.dot}`} />
                       <Building2 className="h-3.5 w-3.5 text-primary" strokeWidth={1.5} />
-                      <h3 className="text-sm font-medium text-foreground">
-                        {d.lands?.city}
-                        {d.lands?.district ? ` - ${d.lands.district}` : ""}
-                      </h3>
+                      <h3 className="text-sm font-medium text-foreground">{d.lands?.city}{d.lands?.district ? ` - ${d.lands.district}` : ""}</h3>
                     </div>
-                    <p className="text-xs font-light text-muted-foreground ps-5">
-                      {Number(d.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}
-                    </p>
+                    <p className="text-xs font-light text-muted-foreground ps-5">{Number(d.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</p>
                   </div>
                   <div className="text-end flex items-center gap-2">
-                    <Badge
-                      variant="outline"
-                      className={`text-[10px] ${
-                        isClosed
-                          ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                          : isCancelled
-                            ? "bg-destructive/10 text-destructive border-destructive/20"
-                            : "bg-primary/10 text-primary border-primary/20"
-                      }`}
-                    >
+                    <Badge variant="outline" className={`text-[10px] ${isClosed ? "bg-emerald-500/10 text-emerald-600" : isCancelled ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"}`}>
                       {isAr ? stage.ar : stage.en}
                     </Badge>
                     <Eye className="h-3.5 w-3.5 text-muted-foreground" />
@@ -290,12 +199,7 @@ const CrmDeals: React.FC = () => {
         </div>
       )}
 
-      <Dialog
-        open={!!viewDeal}
-        onOpenChange={(o) => {
-          if (!o) setViewDeal(null);
-        }}
-      >
+      <Dialog open={!!viewDeal} onOpenChange={(o) => { if (!o) setViewDeal(null); }}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" dir={isAr ? "rtl" : "ltr"}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -303,48 +207,29 @@ const CrmDeals: React.FC = () => {
               {isAr ? "تفاصيل الصفقة" : "Deal Details"}
             </DialogTitle>
           </DialogHeader>
-
           {viewDeal && (() => {
             const isCancelled = viewDeal.current_stage === "deal_cancelled";
             const hc = healthLabels[viewDeal.health] || healthLabels.green;
-
             return (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-foreground">
-                      {viewDeal.lands?.city}
-                      {viewDeal.lands?.district ? ` - ${viewDeal.lands.district}` : ""}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {Number(viewDeal.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}
-                    </p>
+                    <p className="text-sm font-medium text-foreground">{viewDeal.lands?.city}{viewDeal.lands?.district ? ` - ${viewDeal.lands.district}` : ""}</p>
+                    <p className="text-xs text-muted-foreground">{Number(viewDeal.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</p>
                   </div>
-                  <Badge
-                    variant="outline"
-                    className={`gap-1 ${hc.bg} ${hc.text} border-transparent`}
-                  >
+                  <Badge variant="outline" className={`gap-1 ${hc.bg} ${hc.text} border-transparent`}>
                     <div className={`h-2 w-2 rounded-full ${hc.dot}`} />
                     {isAr ? hc.ar : hc.en}
                   </Badge>
                 </div>
-
                 {!isCancelled && <DealStagePipeline currentStage={viewDeal.current_stage} isAr={isAr} />}
 
                 <DealAutomationPanel
-                  isAr={isAr}
-                  currentStage={viewDeal.current_stage}
-                  driveUrl={driveUrl}
-                  validationNote={validationNote}
-                  validatingLink={validatingLink}
-                  linkValidated={linkValidated}
-                  actionLoading={actionLoading}
-                  documents={dealDocuments}
-                  onDriveUrlChange={(value) => {
-                    setDriveUrl(value);
-                    setLinkValidated(false);
-                    if (validationNote) setValidationNote("");
-                  }}
+                  isAr={isAr} currentStage={viewDeal.current_stage}
+                  driveUrl={driveUrl} validationNote={validationNote}
+                  validatingLink={validatingLink} linkValidated={linkValidated}
+                  actionLoading={actionLoading} documents={dealDocuments}
+                  onDriveUrlChange={(v) => { setDriveUrl(v); setLinkValidated(false); if (validationNote) setValidationNote(""); }}
                   onValidateLink={handleValidateDriveLink}
                   onSubmitLinkAndApprove={handleSubmitDriveAndAdvance}
                   onCloseDeal={handleCloseDeal}
@@ -352,19 +237,39 @@ const CrmDeals: React.FC = () => {
 
                 <MeetingsList meetings={meetings} isAr={isAr} />
 
-                <CommissionBreakdown isAr={isAr} showDisclaimer={false} />
+                <CommissionBreakdown
+                  isAr={isAr}
+                  estimatedPricePerSqm={viewDeal.lands?.estimated_price_per_sqm || 0}
+                  estimatedTotalValue={viewDeal.lands?.estimated_total_value || 0}
+                  landAreaSqm={viewDeal.lands?.land_area_sqm || 0}
+                />
+
+                <Button variant="outline" size="sm" className="gap-1.5 w-full" onClick={() => setShowLegalDoc(true)}>
+                  <FileText className="h-3.5 w-3.5" />
+                  {isAr ? "عرض وثيقة الإقرار القانوني" : "View Legal Acknowledgment"}
+                </Button>
 
                 <p className="text-[10px] text-muted-foreground">
                   {isAr ? "حالة العمولة:" : "Commission:"}{" "}
                   {isAr ? commissionStatusLabels[viewDeal.commission_status]?.ar : commissionStatusLabels[viewDeal.commission_status]?.en}
-                  {" • "}
-                  {isAr ? "تاريخ الإنشاء:" : "Created:"} {new Date(viewDeal.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}
+                  {" • "}{isAr ? "تاريخ الإنشاء:" : "Created:"} {new Date(viewDeal.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}
                 </p>
               </div>
             );
           })()}
         </DialogContent>
       </Dialog>
+
+      {viewDeal && (
+        <LegalDocPrintView
+          open={showLegalDoc}
+          onClose={() => setShowLegalDoc(false)}
+          form={buildLandForm(viewDeal.lands)}
+          referenceNumber={viewDeal.id?.substring(0, 8).toUpperCase()}
+          ownerName={viewDeal.lands?.owner_name}
+          companyName={viewDeal.developers?.company_name}
+        />
+      )}
     </CrmLayout>
   );
 };
