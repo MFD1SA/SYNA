@@ -12,51 +12,13 @@ import { z } from "zod";
 import {
   Handshake,
   Building2,
-  CheckCircle2,
   Eye,
-  Link2,
-  CalendarClock,
-  Video,
   Shield,
 } from "lucide-react";
-
-const stageConfig: Record<string, { ar: string; en: string; color: string }> = {
-  listed: { ar: "مدرجة", en: "Listed", color: "text-muted-foreground" },
-  request_submitted: { ar: "طلب مقدم", en: "Submitted", color: "text-blue-600" },
-  owner_review: { ar: "مراجعة الإدارة", en: "Review", color: "text-amber-600" },
-  owner_approved: { ar: "موافقة", en: "Approved", color: "text-emerald-600" },
-  meeting_scheduled: { ar: "اجتماع", en: "Meeting", color: "text-violet-600" },
-  strategy_defined: { ar: "استراتيجية", en: "Strategy", color: "text-cyan-600" },
-  documents_exchanged: { ar: "مستندات", en: "Documents", color: "text-orange-600" },
-  agreements_prepared: { ar: "اتفاقيات", en: "Agreements", color: "text-indigo-600" },
-  deal_closed: { ar: "مغلقة", en: "Closed", color: "text-emerald-700" },
-  deal_cancelled: { ar: "ملغاة", en: "Cancelled", color: "text-destructive" },
-};
-
-const stageOrder = [
-  "listed",
-  "request_submitted",
-  "owner_review",
-  "owner_approved",
-  "meeting_scheduled",
-  "strategy_defined",
-  "documents_exchanged",
-  "agreements_prepared",
-  "deal_closed",
-];
-
-const healthLabels: Record<string, { ar: string; en: string }> = {
-  green: { ar: "سليمة", en: "Healthy" },
-  yellow: { ar: "تحتاج متابعة", en: "Needs Attention" },
-  red: { ar: "متعثرة", en: "At Risk" },
-};
-
-const commissionStatusLabels: Record<string, { ar: string; en: string }> = {
-  pending: { ar: "قيد الانتظار", en: "Pending" },
-  paid: { ar: "مدفوعة", en: "Paid" },
-  invoiced: { ar: "تم إصدار فاتورة", en: "Invoiced" },
-  waived: { ar: "معفاة", en: "Waived" },
-};
+import DealStagePipeline from "@/components/deal/DealStagePipeline";
+import MeetingsList from "@/components/deal/MeetingsList";
+import CommissionBreakdown from "@/components/deal/CommissionBreakdown";
+import { stageConfig, stageOrder, healthLabels, commissionStatusLabels } from "@/components/deal/dealStageConfig";
 
 const driveUrlSchema = z
   .string()
