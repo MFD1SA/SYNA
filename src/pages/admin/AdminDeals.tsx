@@ -62,6 +62,20 @@ const AdminDeals: React.FC = () => {
   const [stageNotes, setStageNotes] = useState("");
   // Deal meetings data
   const [dealMeetings, setDealMeetings] = useState<Record<string, any[]>>({});
+  const [showLegalDoc, setShowLegalDoc] = useState(false);
+
+  const buildLandForm = (land: any): LandFormData => ({
+    ...defaultLandForm,
+    city: land?.city || "", district: land?.district || "",
+    land_area_sqm: String(land?.land_area_sqm || ""),
+    estimated_price_per_sqm: String(land?.estimated_price_per_sqm || ""),
+    estimated_total_value: String(land?.estimated_total_value || ""),
+    usage_type: land?.usage_type || "residential",
+    partnership_goal: land?.partnership_goal || "develop_sell",
+    project_model: land?.project_model || "development_partnership",
+    deed_number: land?.deed_number || "", plan_number: land?.plan_number || "",
+    owner_name: land?.owner_name || "",
+  });
 
   const fetchAll = async () => {
     try {
