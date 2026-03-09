@@ -6,25 +6,13 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import OwnerLayout from "@/components/owner/OwnerLayout";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import DealStagePipeline from "@/components/deal/DealStagePipeline";
+import MeetingsList from "@/components/deal/MeetingsList";
+import CommissionBreakdown from "@/components/deal/CommissionBreakdown";
+import { stageConfig, healthLabels, commissionStatusLabels } from "@/components/deal/dealStageConfig";
 import {
-  Handshake, TrendingUp, Building2, MapPin, CheckCircle2, XCircle,
-  Video, CalendarClock, Eye, Link2, Shield,
+  Handshake, Building2, MapPin, Eye, Shield,
 } from "lucide-react";
-
-const stageConfig: Record<string, { ar: string; en: string }> = {
-  listed: { ar: "مدرجة", en: "Listed" },
-  request_submitted: { ar: "طلب مقدم", en: "Submitted" },
-  owner_review: { ar: "مراجعة", en: "Review" },
-  owner_approved: { ar: "موافقة", en: "Approved" },
-  meeting_scheduled: { ar: "اجتماع", en: "Meeting" },
-  strategy_defined: { ar: "استراتيجية", en: "Strategy" },
-  documents_exchanged: { ar: "مستندات", en: "Documents" },
-  agreements_prepared: { ar: "اتفاقيات", en: "Agreements" },
-  deal_closed: { ar: "مغلقة", en: "Closed" },
-  deal_cancelled: { ar: "ملغاة", en: "Cancelled" },
-};
-
-const stageOrder = ["listed", "request_submitted", "owner_review", "owner_approved", "meeting_scheduled", "strategy_defined", "documents_exchanged", "agreements_prepared", "deal_closed"];
 
 const OwnerDeals: React.FC = () => {
   const { user } = useAuth();
@@ -39,7 +27,11 @@ const OwnerDeals: React.FC = () => {
   useEffect(() => {
     if (!user) return;
     const fetch = async () => {
-      const { data } = await supabase.from("deals").select("*, developers(company_name, marketing_brand_name), lands(city, district, land_area_sqm)").eq("owner_id", user.id).order("created_at", { ascending: false });
+      const { data } = await supabase
+        .from("deals")
+        .select("*, developers(company_name, marketing_brand_name), lands(city, district, land_area_sqm, estimated_price_per_sqm, estimated_total_value)")
+        .eq("owner_id", user.id)
+        .order("created_at", { ascending: false });
       setDeals(data || []);
       setLoading(false);
     };
@@ -73,16 +65,16 @@ const OwnerDeals: React.FC = () => {
         <div className="space-y-3">
           {deals.map(deal => {
             const stage = stageConfig[deal.current_stage] || { ar: deal.current_stage, en: deal.current_stage };
-            const stageIdx = stageOrder.indexOf(deal.current_stage);
             const isCancelled = deal.current_stage === "deal_cancelled";
             const isClosed = deal.current_stage === "deal_closed";
+            const hc = healthLabels[deal.health] || healthLabels.green;
 
             return (
               <div key={deal.id} className="rounded-xl border border-border/60 bg-card p-4 transition-all hover:border-primary/20 cursor-pointer" onClick={() => openDealDetail(deal)}>
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <div className={`h-2.5 w-2.5 rounded-full ${deal.health === "green" ? "bg-emerald-500" : deal.health === "yellow" ? "bg-amber-500" : "bg-red-500"}`} />
+                      <div className={`h-2.5 w-2.5 rounded-full ${hc.dot}`} />
                       <Building2 className="h-4 w-4 text-primary shrink-0" strokeWidth={1.5} />
                       <span className="text-sm font-medium text-foreground truncate">
                         {deal.developers?.marketing_brand_name || deal.developers?.company_name || (isAr ? "مطور" : "Developer")}
@@ -103,13 +95,7 @@ const OwnerDeals: React.FC = () => {
                     <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                   </div>
                 </div>
-                {!isCancelled && (
-                  <div className="flex items-center gap-0.5">
-                    {stageOrder.map((s, idx) => (
-                      <div key={s} className={`h-1.5 flex-1 rounded-full transition-colors ${idx <= stageIdx ? "bg-primary" : "bg-border"}`} />
-                    ))}
-                  </div>
-                )}
+                {!isCancelled && <DealStagePipeline currentStage={deal.current_stage} isAr={isAr} compact />}
               </div>
             );
           })}
@@ -126,8 +112,8 @@ const OwnerDeals: React.FC = () => {
             </DialogTitle>
           </DialogHeader>
           {viewDeal && (() => {
-            const stageIdx = stageOrder.indexOf(viewDeal.current_stage);
             const isCancelled = viewDeal.current_stage === "deal_cancelled";
+            const hc = healthLabels[viewDeal.health] || healthLabels.green;
             return (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -140,71 +126,29 @@ const OwnerDeals: React.FC = () => {
                       {viewDeal.lands?.city}{viewDeal.lands?.district ? ` - ${viewDeal.lands.district}` : ""} • {Number(viewDeal.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}
                     </p>
                   </div>
-                  <Badge variant="outline" className={`gap-1 ${viewDeal.health === "green" ? "bg-emerald-500/10 text-emerald-600" : viewDeal.health === "yellow" ? "bg-amber-500/10 text-amber-600" : "bg-red-500/10 text-red-600"} border-transparent`}>
-                    <div className={`h-2 w-2 rounded-full ${viewDeal.health === "green" ? "bg-emerald-500" : viewDeal.health === "yellow" ? "bg-amber-500" : "bg-red-500"}`} />
-                    {viewDeal.health === "green" ? (isAr ? "سليمة" : "Healthy") : viewDeal.health === "yellow" ? (isAr ? "تحتاج متابعة" : "Needs Attention") : (isAr ? "متعثرة" : "At Risk")}
+                  <Badge variant="outline" className={`gap-1 ${hc.bg} ${hc.text} border-transparent`}>
+                    <div className={`h-2 w-2 rounded-full ${hc.dot}`} />
+                    {isAr ? hc.ar : hc.en}
                   </Badge>
                 </div>
 
-                {!isCancelled && (
-                  <div className="rounded-xl border border-border/40 bg-muted/10 p-4">
-                    <div className="flex items-center gap-1">
-                      {stageOrder.map((s, idx) => {
-                        const isActive = s === viewDeal.current_stage;
-                        const isPast = idx < stageIdx;
-                        return (
-                          <div key={s} className="flex-1 flex flex-col items-center gap-1">
-                            <div className={`flex h-7 w-7 items-center justify-center rounded-full border-2 ${
-                              isActive ? "border-primary bg-primary/10" : isPast ? "border-emerald-500 bg-emerald-500/10" : "border-border"
-                            }`}>
-                              {isPast ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> : <span className={`text-[9px] font-bold ${isActive ? "text-primary" : "text-muted-foreground/30"}`}>{idx + 1}</span>}
-                            </div>
-                            <span className={`text-[8px] text-center ${isActive ? "font-medium text-primary" : isPast ? "text-emerald-600" : "text-muted-foreground/40"}`}>
-                              {isAr ? stageConfig[s]?.ar : stageConfig[s]?.en}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                {!isCancelled && <DealStagePipeline currentStage={viewDeal.current_stage} isAr={isAr} />}
 
-                {meetings.length > 0 && (
-                  <div className="space-y-2">
-                    <h6 className="text-xs font-medium text-foreground flex items-center gap-1.5">
-                      <Video className="h-3.5 w-3.5 text-violet-600" />
-                      {isAr ? "الاجتماعات" : "Meetings"}
-                    </h6>
-                    {meetings.map(m => (
-                      <div key={m.id} className="rounded-lg border border-border/30 p-3 space-y-1">
-                        <div className="flex items-center gap-2">
-                          <CalendarClock className="h-3 w-3 text-violet-600" />
-                          <span className="text-xs font-medium">{new Date(m.scheduled_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { weekday: "short", month: "short", day: "numeric" })}</span>
-                          <span className="text-xs text-muted-foreground">{new Date(m.scheduled_at).toLocaleTimeString(isAr ? "ar-SA" : "en-US", { hour: "2-digit", minute: "2-digit" })}</span>
-                          <Badge variant="outline" className="text-[9px]">{m.meeting_type === "google_meet" ? "Google Meet" : (isAr ? "حضوري" : "In Person")}</Badge>
-                        </div>
-                        {m.meet_link && (
-                          <a href={m.meet_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-primary hover:underline">
-                            <Link2 className="h-3 w-3" />{isAr ? "انضم للاجتماع" : "Join Meeting"}
-                          </a>
-                        )}
-                        {m.notes && (
-                          <div className="rounded-md bg-muted/30 p-2 mt-1">
-                            <p className="text-[10px] font-medium text-muted-foreground mb-0.5">{isAr ? "تفاصيل الاجتماع (من المشرف):" : "Meeting Details (from supervisor):"}</p>
-                            <p className="text-xs text-foreground">{m.notes}</p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <MeetingsList meetings={meetings} isAr={isAr} showSupervisorInfo />
 
-                <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <p className="text-xs text-emerald-700">{isAr ? "حقوق المنصة محفوظة" : "Platform rights protected"}</p>
-                </div>
+                <CommissionBreakdown
+                  isAr={isAr}
+                  estimatedPricePerSqm={viewDeal.lands?.estimated_price_per_sqm || 0}
+                  estimatedTotalValue={viewDeal.lands?.estimated_total_value || 0}
+                  landAreaSqm={viewDeal.lands?.land_area_sqm || 0}
+                />
 
-                <p className="text-[10px] text-muted-foreground">{isAr ? "تاريخ الإنشاء:" : "Created:"} {new Date(viewDeal.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {isAr ? "حالة العمولة:" : "Commission:"}{" "}
+                  {isAr ? commissionStatusLabels[viewDeal.commission_status]?.ar : commissionStatusLabels[viewDeal.commission_status]?.en}
+                  {" • "}
+                  {isAr ? "تاريخ الإنشاء:" : "Created:"} {new Date(viewDeal.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}
+                </p>
               </div>
             );
           })()}
