@@ -73,7 +73,7 @@ const CrmDashboard: React.FC = () => {
       if (devProfile) {
         setDeveloper(devProfile as DevProfile);
         const [landsRes, reqRes, dealsActive, dealsClosed, reqPending, reqApproved, reqRejected] = await Promise.all([
-          supabase.from("lands").select("id", { count: "exact", head: true }).eq("is_active", true),
+          supabase.from("lands").select("id", { count: "exact", head: true }).eq("is_active", true).eq("owner_approved", true),
           supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id),
           supabase.from("deals").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).neq("current_stage", "deal_closed").neq("current_stage", "deal_cancelled"),
           supabase.from("deals").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).eq("current_stage", "deal_closed"),

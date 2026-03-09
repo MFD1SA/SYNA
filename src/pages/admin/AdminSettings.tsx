@@ -10,8 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, User, Mail, KeyRound, Eye, EyeOff, Save, Loader2, ShieldCheck } from "lucide-react";
+import { Settings, User, Mail, KeyRound, Eye, EyeOff, Save, Loader2, ShieldCheck, Clock, Timer } from "lucide-react";
 
+const DEFAULT_DEADLINES = {
+  request_acceptance_days: 14,
+  owner_response_days: 5,
+  negotiation_days: 10,
+  opportunity_validity_days: 30,
+};
 
 const AdminSettings: React.FC = () => {
   const { user } = useAuth();
@@ -33,30 +39,35 @@ const AdminSettings: React.FC = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
 
+  // Deadline settings
+  const [deadlines, setDeadlines] = useState(DEFAULT_DEADLINES);
+  const [savingDeadlines, setSavingDeadlines] = useState(false);
+
   useEffect(() => {
     if (!user) return;
     setEmail(user.email || "");
     setFullName(user.user_metadata?.full_name || "");
-    // Also fetch from profiles
     supabase.from("profiles").select("full_name").eq("user_id", user.id).maybeSingle().then(({ data }) => {
       if (data?.full_name) setFullName(data.full_name);
     });
+    // Load deadline settings from platform_content
+    supabase.from("platform_content").select("*").eq("content_key", "opportunity_deadlines").maybeSingle().then(({ data }) => {
+      if (data?.body_en) {
+        try {
+          const parsed = JSON.parse(data.body_en);
+          setDeadlines({ ...DEFAULT_DEADLINES, ...parsed });
+        } catch {}
+      }
+    });
   }, [user]);
-
 
   const handleSaveProfile = async () => {
     if (!user) return;
     setSavingProfile(true);
     try {
-      // Update auth metadata
-      const { error: authErr } = await supabase.auth.updateUser({
-        data: { full_name: fullName },
-      });
+      const { error: authErr } = await supabase.auth.updateUser({ data: { full_name: fullName } });
       if (authErr) throw authErr;
-
-      // Update profiles table
       await supabase.from("profiles").update({ full_name: fullName }).eq("user_id", user.id);
-
       await logAudit(user.id, user.email, "update", "admin_profile", user.id, { full_name: fullName });
       toast({ title: isAr ? "تم تحديث الاسم بنجاح ✓" : "Name updated successfully ✓" });
     } catch (err: any) {
@@ -76,7 +87,7 @@ const AdminSettings: React.FC = () => {
       const { error } = await supabase.auth.updateUser({ email });
       if (error) throw error;
       await logAudit(user.id, user.email, "update", "admin_email", user.id, { new_email: email });
-      toast({ 
+      toast({
         title: isAr ? "تم إرسال رابط التأكيد ✓" : "Confirmation link sent ✓",
         description: isAr ? "تحقق من بريدك الإلكتروني الجديد لتأكيد التغيير" : "Check your new email to confirm the change",
       });
@@ -98,20 +109,14 @@ const AdminSettings: React.FC = () => {
     }
     setSavingPassword(true);
     try {
-      // Verify current password by signing in
-      const { error: signInErr } = await supabase.auth.signInWithPassword({
-        email: user.email!,
-        password: currentPassword,
-      });
+      const { error: signInErr } = await supabase.auth.signInWithPassword({ email: user.email!, password: currentPassword });
       if (signInErr) {
         toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "كلمة المرور الحالية غير صحيحة" : "Current password is incorrect" });
         setSavingPassword(false);
         return;
       }
-
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
-
       await logAudit(user.id, user.email, "update", "admin_password", user.id);
       toast({ title: isAr ? "تم تغيير كلمة المرور بنجاح ✓" : "Password changed successfully ✓" });
       setCurrentPassword("");
@@ -123,14 +128,42 @@ const AdminSettings: React.FC = () => {
     setSavingPassword(false);
   };
 
+  const handleSaveDeadlines = async () => {
+    if (!user) return;
+    setSavingDeadlines(true);
+    try {
+      // Upsert into platform_content
+      const { data: existing } = await supabase.from("platform_content").select("id").eq("content_key", "opportunity_deadlines").maybeSingle();
+      const payload = {
+        content_key: "opportunity_deadlines",
+        content_type: "config",
+        title_en: "Opportunity Deadlines",
+        title_ar: "المدد الزمنية للفرص",
+        body_en: JSON.stringify(deadlines),
+        body_ar: JSON.stringify(deadlines),
+        updated_by: user.id,
+      };
+      if (existing) {
+        await supabase.from("platform_content").update(payload).eq("id", existing.id);
+      } else {
+        await supabase.from("platform_content").insert(payload);
+      }
+      await logAudit(user.id, user.email, "update", "opportunity_deadlines", "system", deadlines);
+      toast({ title: isAr ? "تم حفظ المدد الزمنية ✓" : "Deadlines saved ✓" });
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    }
+    setSavingDeadlines(false);
+  };
+
   return (
     <AdminLayout>
       <AdminPageHeader
         icon={Settings}
         titleAr="إعدادات الحساب"
         titleEn="Account Settings"
-        descAr="تعديل بيانات حساب مدير النظام"
-        descEn="Manage your admin account settings"
+        descAr="تعديل بيانات حساب مدير النظام وإعدادات المنصة"
+        descEn="Manage your admin account and platform settings"
       />
 
       <div className="max-w-2xl space-y-6" dir={isAr ? "rtl" : "ltr"}>
@@ -188,13 +221,7 @@ const AdminSettings: React.FC = () => {
             <div className="space-y-2">
               <Label className="text-xs">{isAr ? "كلمة المرور الحالية" : "Current Password"}</Label>
               <div className="relative">
-                <Input
-                  type={showCurrent ? "text" : "password"}
-                  value={currentPassword}
-                  onChange={e => setCurrentPassword(e.target.value)}
-                  dir="ltr"
-                  className="pe-10"
-                />
+                <Input type={showCurrent ? "text" : "password"} value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} dir="ltr" className="pe-10" />
                 <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                   {showCurrent ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -203,13 +230,7 @@ const AdminSettings: React.FC = () => {
             <div className="space-y-2">
               <Label className="text-xs">{isAr ? "كلمة المرور الجديدة" : "New Password"}</Label>
               <div className="relative">
-                <Input
-                  type={showNew ? "text" : "password"}
-                  value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
-                  dir="ltr"
-                  className="pe-10"
-                />
+                <Input type={showNew ? "text" : "password"} value={newPassword} onChange={e => setNewPassword(e.target.value)} dir="ltr" className="pe-10" />
                 <button type="button" onClick={() => setShowNew(!showNew)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                   {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -218,13 +239,7 @@ const AdminSettings: React.FC = () => {
             <div className="space-y-2">
               <Label className="text-xs">{isAr ? "تأكيد كلمة المرور" : "Confirm Password"}</Label>
               <div className="relative">
-                <Input
-                  type={showConfirm ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                  dir="ltr"
-                  className="pe-10"
-                />
+                <Input type={showConfirm ? "text" : "password"} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} dir="ltr" className="pe-10" />
                 <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                   {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -234,6 +249,51 @@ const AdminSettings: React.FC = () => {
           <Button onClick={handleChangePassword} disabled={savingPassword || !currentPassword || !newPassword || !confirmPassword} className="syna-gradient gap-2">
             {savingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
             {isAr ? "تغيير كلمة المرور" : "Change Password"}
+          </Button>
+        </div>
+
+        {/* Opportunity Deadlines */}
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
+          <div className="flex items-center gap-2 mb-1">
+            <Timer className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-medium text-foreground">{isAr ? "المدد الزمنية للفرص" : "Opportunity Deadlines"}</h3>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {isAr ? "تحكم في المدد الزمنية الافتراضية لإدارة الفرص" : "Control default deadlines for opportunity management"}
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label className="text-xs flex items-center gap-1.5">
+                <Clock className="h-3 w-3 text-muted-foreground" />
+                {isAr ? "مدة استقبال الطلبات (يوم)" : "Request acceptance (days)"}
+              </Label>
+              <Input type="number" min={1} max={90} value={deadlines.request_acceptance_days} onChange={e => setDeadlines(d => ({ ...d, request_acceptance_days: parseInt(e.target.value) || 14 }))} dir="ltr" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs flex items-center gap-1.5">
+                <Clock className="h-3 w-3 text-muted-foreground" />
+                {isAr ? "مدة رد المالك (يوم)" : "Owner response (days)"}
+              </Label>
+              <Input type="number" min={1} max={30} value={deadlines.owner_response_days} onChange={e => setDeadlines(d => ({ ...d, owner_response_days: parseInt(e.target.value) || 5 }))} dir="ltr" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs flex items-center gap-1.5">
+                <Clock className="h-3 w-3 text-muted-foreground" />
+                {isAr ? "مدة التفاوض (يوم)" : "Negotiation period (days)"}
+              </Label>
+              <Input type="number" min={1} max={60} value={deadlines.negotiation_days} onChange={e => setDeadlines(d => ({ ...d, negotiation_days: parseInt(e.target.value) || 10 }))} dir="ltr" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs flex items-center gap-1.5">
+                <Clock className="h-3 w-3 text-muted-foreground" />
+                {isAr ? "صلاحية الفرصة (يوم)" : "Opportunity validity (days)"}
+              </Label>
+              <Input type="number" min={7} max={180} value={deadlines.opportunity_validity_days} onChange={e => setDeadlines(d => ({ ...d, opportunity_validity_days: parseInt(e.target.value) || 30 }))} dir="ltr" />
+            </div>
+          </div>
+          <Button onClick={handleSaveDeadlines} disabled={savingDeadlines} className="syna-gradient gap-2">
+            {savingDeadlines ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {isAr ? "حفظ المدد الزمنية" : "Save Deadlines"}
           </Button>
         </div>
       </div>
