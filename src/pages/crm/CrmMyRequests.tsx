@@ -62,7 +62,7 @@ const CrmMyRequests: React.FC = () => {
             const st = statusConfig[r.status] || statusConfig.pending;
             const StatusIcon = st.icon;
             return (
-              <div key={r.id} className="doma-card p-5">
+              <div key={r.id} className="syna-card p-5">
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-sm font-medium text-foreground mb-1">

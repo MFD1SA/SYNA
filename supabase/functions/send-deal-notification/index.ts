@@ -9,12 +9,7 @@ const corsHeaders = {
 
 function escapeHtml(str: string | undefined | null): string {
   if (!str) return "";
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
 type NotificationType =
@@ -25,7 +20,11 @@ type NotificationType =
   | "new_owner_registered"
   | "new_developer_registered"
   | "deal_stage_changed"
-  | "draft_created_for_owner";
+  | "draft_created_for_owner"
+  | "proposal_received"
+  | "proposal_viewed"
+  | "developer_selected"
+  | "developer_not_selected";
 
 interface NotificationPayload {
   type: NotificationType;
@@ -33,21 +32,22 @@ interface NotificationPayload {
   deal_id?: string;
   meeting_date?: string;
   meeting_time?: string;
+  meeting_link?: string;
   reject_reason?: string;
   developer_name?: string;
   developer_email?: string;
+  developer_user_id?: string;
   owner_name?: string;
   owner_email?: string;
+  owner_user_id?: string;
   land_city?: string;
   land_district?: string;
-  // New fields
   registered_name?: string;
   registered_email?: string;
   registered_phone?: string;
   from_stage?: string;
   to_stage?: string;
   stage_notes?: string;
-  owner_user_id?: string;
 }
 
 const ADMIN_EMAIL = "mfdalsulis@gmail.com";
@@ -89,8 +89,12 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
       .badge-warning { background: #fef3c7; color: #92400e; }
       .footer { background: #f8fafc; padding: 16px 30px; text-align: center; border-top: 1px solid #e2e8f0; }
       .footer p { color: #94a3b8; font-size: 11px; margin: 0; }
+      .logo { text-align: center; padding: 16px 0 8px; }
+      .logo img { height: 40px; }
     </style>
   `;
+
+  const logoHtml = `<div class="logo"><strong style="font-size:22px;color:#0d9488;">SYNA</strong></div>`;
 
   switch (type) {
     case "request_submitted":
@@ -98,7 +102,7 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
         to: payload.owner_email || ADMIN_EMAIL,
         subject: `SYNA | طلب شراكة جديد - ${location}`,
         html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
-          <div class="container">
+          <div class="container">${logoHtml}
             <div class="header"><h1>🔔 طلب شراكة جديد</h1><p>تم تقديم طلب شراكة على أرضك</p></div>
             <div class="body">
               <p style="color:#475569;font-size:14px;">مرحباً ${payload.owner_name || "مالك الأرض"}،</p>
@@ -107,6 +111,7 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
                 <div class="info-row"><span class="info-label">المطور:</span><span class="info-value">${payload.developer_name || "—"}</span></div>
                 <div class="info-row"><span class="info-label">الموقع:</span><span class="info-value">${location}</span></div>
               </div>
+              <p style="color:#64748b;font-size:13px;">سجّل دخولك إلى المنصة لمراجعة الطلب واتخاذ القرار.</p>
             </div>
             <div class="footer"><p>SYNA Platform — منصة سينا للشراكات العقارية</p></div>
           </div>
@@ -118,7 +123,7 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
         to: payload.developer_email || "",
         subject: `SYNA | تمت الموافقة على طلبك - ${location}`,
         html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
-          <div class="container">
+          <div class="container">${logoHtml}
             <div class="header"><h1>✅ تمت الموافقة على طلبك</h1><p>أخبار رائعة!</p></div>
             <div class="body">
               <p style="color:#475569;font-size:14px;">مرحباً ${payload.developer_name || "المطور"}،</p>
@@ -138,7 +143,7 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
         to: payload.developer_email || "",
         subject: `SYNA | تم رفض طلبك - ${location}`,
         html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
-          <div class="container">
+          <div class="container">${logoHtml}
             <div class="header" style="background:linear-gradient(135deg,#dc2626,#991b1b);"><h1>❌ تم رفض الطلب</h1><p>نأسف</p></div>
             <div class="body">
               <p style="color:#475569;font-size:14px;">مرحباً ${payload.developer_name || "المطور"}،</p>
@@ -158,7 +163,7 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
         to: ADMIN_EMAIL,
         subject: `SYNA | اجتماع جديد - ${location}`,
         html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
-          <div class="container">
+          <div class="container">${logoHtml}
             <div class="header" style="background:linear-gradient(135deg,#2563eb,#1e40af);"><h1>📅 اجتماع جديد</h1><p>تم جدولة اجتماع</p></div>
             <div class="body">
               <p style="color:#475569;font-size:14px;">مرحباً مدير النظام،</p>
@@ -168,6 +173,88 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
                 <div class="info-row"><span class="info-label">المطور:</span><span class="info-value">${payload.developer_name || "—"}</span></div>
                 <div class="info-row"><span class="info-label">التاريخ:</span><span class="info-value">${payload.meeting_date || "—"}</span></div>
                 <div class="info-row"><span class="info-label">الوقت:</span><span class="info-value">${payload.meeting_time || "—"}</span></div>
+                ${payload.meeting_link ? `<div class="info-row"><span class="info-label">الرابط:</span><span class="info-value"><a href="${payload.meeting_link}" style="color:#0d9488;">${payload.meeting_link}</a></span></div>` : ""}
+              </div>
+            </div>
+            <div class="footer"><p>SYNA Platform — منصة سينا للشراكات العقارية</p></div>
+          </div>
+        </body></html>`,
+      };
+
+    case "proposal_received":
+      return {
+        to: payload.owner_email || ADMIN_EMAIL,
+        subject: `SYNA | تم استلام عرض جديد - ${location}`,
+        html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
+          <div class="container">${logoHtml}
+            <div class="header"><h1>📄 تم استلام عرض جديد</h1><p>مطور قدّم دراسته على أرضك</p></div>
+            <div class="body">
+              <p style="color:#475569;font-size:14px;">مرحباً ${payload.owner_name || "مالك الأرض"}،</p>
+              <p style="color:#475569;font-size:14px;">قام المطور <strong>${payload.developer_name || "—"}</strong> بتقديم دراسته على أرضك في ${location}.</p>
+              <div class="info-box">
+                <div class="info-row"><span class="info-label">المطور:</span><span class="info-value">${payload.developer_name || "—"}</span></div>
+                <div class="info-row"><span class="info-label">الموقع:</span><span class="info-value">${location}</span></div>
+                <div class="info-row"><span class="info-label">الحالة:</span><span class="info-value"><span class="badge badge-info">تم استلام العرض</span></span></div>
+              </div>
+              <p style="color:#64748b;font-size:13px;">سجّل دخولك إلى المنصة لمراجعة العرض.</p>
+            </div>
+            <div class="footer"><p>SYNA Platform — منصة سينا للشراكات العقارية</p></div>
+          </div>
+        </body></html>`,
+      };
+
+    case "proposal_viewed":
+      return {
+        to: payload.developer_email || "",
+        subject: `SYNA | المالك اطّلع على عرضك - ${location}`,
+        html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
+          <div class="container">${logoHtml}
+            <div class="header" style="background:linear-gradient(135deg,#d97706,#92400e);"><h1>👁️ تمت المعاينة</h1><p>المالك اطّلع على عرضك</p></div>
+            <div class="body">
+              <p style="color:#475569;font-size:14px;">مرحباً ${payload.developer_name || "المطور"}،</p>
+              <p style="color:#475569;font-size:14px;">قام مالك الأرض في ${location} بمراجعة عرضك. سيتم إعلامك بالقرار قريباً.</p>
+              <div class="info-box">
+                <div class="info-row"><span class="info-label">الموقع:</span><span class="info-value">${location}</span></div>
+                <div class="info-row"><span class="info-label">الحالة:</span><span class="info-value"><span class="badge badge-warning">جاري المراجعة والرد</span></span></div>
+              </div>
+            </div>
+            <div class="footer"><p>SYNA Platform — منصة سينا للشراكات العقارية</p></div>
+          </div>
+        </body></html>`,
+      };
+
+    case "developer_selected":
+      return {
+        to: payload.developer_email || "",
+        subject: `SYNA | 🎉 تم اختياركم - ${location}`,
+        html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
+          <div class="container">${logoHtml}
+            <div class="header" style="background:linear-gradient(135deg,#059669,#047857);"><h1>🎉 تم اختياركم!</h1><p>مبروك — تم اختياركم كمطور لهذه الفرصة</p></div>
+            <div class="body">
+              <p style="color:#475569;font-size:14px;">مرحباً ${payload.developer_name || "المطور"}،</p>
+              <p style="color:#475569;font-size:14px;">يسعدنا إبلاغكم بأنه تم اختياركم كمطور للفرصة في ${location}. المرحلة التالية هي التفاوض على تفاصيل الشراكة.</p>
+              <div class="info-box">
+                <div class="info-row"><span class="info-label">الموقع:</span><span class="info-value">${location}</span></div>
+                <div class="info-row"><span class="info-label">الحالة:</span><span class="info-value"><span class="badge badge-success">مطور مختار ✓</span></span></div>
+              </div>
+            </div>
+            <div class="footer"><p>SYNA Platform — منصة سينا للشراكات العقارية</p></div>
+          </div>
+        </body></html>`,
+      };
+
+    case "developer_not_selected":
+      return {
+        to: payload.developer_email || "",
+        subject: `SYNA | لم يتم اختياركم - ${location}`,
+        html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
+          <div class="container">${logoHtml}
+            <div class="header" style="background:linear-gradient(135deg,#6b7280,#4b5563);"><h1>إشعار</h1><p>نتيجة تقييم طلبكم</p></div>
+            <div class="body">
+              <p style="color:#475569;font-size:14px;">مرحباً ${payload.developer_name || "المطور"}،</p>
+              <p style="color:#475569;font-size:14px;">نشكركم على تقديمكم على الفرصة في ${location}. للأسف لم يتم اختياركم هذه المرة. نتطلع للتعاون معكم في فرص أخرى.</p>
+              <div class="info-box">
+                <div class="info-row"><span class="info-label">الموقع:</span><span class="info-value">${location}</span></div>
               </div>
             </div>
             <div class="footer"><p>SYNA Platform — منصة سينا للشراكات العقارية</p></div>
@@ -180,11 +267,10 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
         to: ADMIN_EMAIL,
         subject: `SYNA | مالك أرض جديد - ${payload.registered_name || payload.registered_email || ""}`,
         html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
-          <div class="container">
-            <div class="header" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);"><h1>👤 تسجيل مالك أرض جديد</h1><p>تم إنشاء حساب مالك أرض جديد في المنصة</p></div>
+          <div class="container">${logoHtml}
+            <div class="header" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);"><h1>👤 تسجيل مالك أرض جديد</h1><p>تم إنشاء حساب مالك أرض جديد</p></div>
             <div class="body">
               <p style="color:#475569;font-size:14px;">مرحباً مدير النظام،</p>
-              <p style="color:#475569;font-size:14px;">تم تسجيل مالك أرض جديد في المنصة. يرجى مراجعة البيانات.</p>
               <div class="info-box">
                 <div class="info-row"><span class="info-label">الاسم:</span><span class="info-value">${payload.registered_name || "—"}</span></div>
                 <div class="info-row"><span class="info-label">البريد:</span><span class="info-value">${payload.registered_email || "—"}</span></div>
@@ -201,17 +287,15 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
         to: ADMIN_EMAIL,
         subject: `SYNA | مطور عقاري جديد - ${payload.registered_name || ""}`,
         html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
-          <div class="container">
+          <div class="container">${logoHtml}
             <div class="header" style="background:linear-gradient(135deg,#ea580c,#c2410c);"><h1>🏗️ تسجيل مطور عقاري جديد</h1><p>مطور جديد بانتظار التوثيق</p></div>
             <div class="body">
               <p style="color:#475569;font-size:14px;">مرحباً مدير النظام،</p>
-              <p style="color:#475569;font-size:14px;">تم تسجيل مطور عقاري جديد في المنصة وبانتظار مراجعتك وتوثيقه.</p>
               <div class="info-box">
                 <div class="info-row"><span class="info-label">اسم الشركة:</span><span class="info-value">${payload.registered_name || "—"}</span></div>
                 <div class="info-row"><span class="info-label">البريد:</span><span class="info-value">${payload.registered_email || "—"}</span></div>
                 ${payload.registered_phone ? `<div class="info-row"><span class="info-label">الجوال:</span><span class="info-value">${payload.registered_phone}</span></div>` : ""}
               </div>
-              <p style="color:#64748b;font-size:13px;">يرجى الدخول إلى لوحة التحكم لمراجعة بيانات المطور والسجل التجاري.</p>
             </div>
             <div class="footer"><p>SYNA Platform — منصة سينا للشراكات العقارية</p></div>
           </div>
@@ -223,11 +307,10 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
         to: ADMIN_EMAIL,
         subject: `SYNA | تحديث مرحلة صفقة - ${payload.developer_name || ""} / ${location}`,
         html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
-          <div class="container">
+          <div class="container">${logoHtml}
             <div class="header" style="background:linear-gradient(135deg,#0891b2,#155e75);"><h1>📋 تحديث مرحلة صفقة</h1><p>تم تغيير مرحلة الصفقة</p></div>
             <div class="body">
               <p style="color:#475569;font-size:14px;">مرحباً مدير النظام،</p>
-              <p style="color:#475569;font-size:14px;">تم تحديث مرحلة صفقة في المنصة.</p>
               <div class="info-box">
                 <div class="info-row"><span class="info-label">المطور:</span><span class="info-value">${payload.developer_name || "—"}</span></div>
                 <div class="info-row"><span class="info-label">الموقع:</span><span class="info-value">${location}</span></div>
@@ -246,7 +329,7 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
         to: payload.owner_email || "",
         subject: `SYNA | تمت إضافة أرض جديدة بانتظار مراجعتك - ${location}`,
         html: `<!DOCTYPE html><html><head>${baseStyle}</head><body>
-          <div class="container">
+          <div class="container">${logoHtml}
             <div class="header" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);"><h1>📋 أرض جديدة بانتظار مراجعتك</h1><p>تم إدراج أرض نيابةً عنك</p></div>
             <div class="body">
               <p style="color:#475569;font-size:14px;">مرحباً ${payload.owner_name || "مالك الأرض"}،</p>
@@ -255,7 +338,6 @@ function buildEmailHtml(payload: NotificationPayload): { subject: string; html: 
                 <div class="info-row"><span class="info-label">الموقع:</span><span class="info-value">${location}</span></div>
                 <div class="info-row"><span class="info-label">الحالة:</span><span class="info-value"><span class="badge badge-warning">مسودة — بانتظار مراجعتك</span></span></div>
               </div>
-              <p style="color:#64748b;font-size:13px;margin-top:16px;">سجّل دخولك إلى المنصة وانتقل إلى قسم "أراضيي" لمراجعة واعتماد بيانات الأرض.</p>
             </div>
             <div class="footer"><p>SYNA Platform — منصة سينا للشراكات العقارية</p></div>
           </div>
@@ -300,7 +382,6 @@ serve(async (req) => {
   }
 
   try {
-    // --- Authentication: require a valid JWT ---
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -335,11 +416,11 @@ serve(async (req) => {
       });
     }
 
-    // Sanitize all string fields to prevent HTML injection in emails
+    // Sanitize all string fields
     const sanitizedPayload: NotificationPayload = {
       ...payload,
       developer_name: escapeHtml(payload.developer_name),
-      developer_email: payload.developer_email, // email not rendered as HTML
+      developer_email: payload.developer_email,
       owner_name: escapeHtml(payload.owner_name),
       owner_email: payload.owner_email,
       land_city: escapeHtml(payload.land_city),
@@ -351,6 +432,7 @@ serve(async (req) => {
       stage_notes: escapeHtml(payload.stage_notes),
       from_stage: payload.from_stage,
       to_stage: payload.to_stage,
+      meeting_link: payload.meeting_link,
     };
 
     const supabaseAdmin = createClient(supabaseUrl, serviceKey);
@@ -362,8 +444,8 @@ serve(async (req) => {
       .eq("role", "admin");
     const adminUserIds = (adminRoles || []).map((r: any) => r.user_id);
 
-    // Create in-app notifications for admins
-    const notifMap: Record<string, { titleAr: string; titleEn: string; msgAr: string; msgEn: string; entityType?: string }> = {
+    // In-app notification mapping
+    const notifMap: Record<string, { titleAr: string; titleEn: string; msgAr: string; msgEn: string; entityType?: string; targetUserIds?: string[] }> = {
       new_owner_registered: {
         titleAr: "مالك أرض جديد",
         titleEn: "New Land Owner",
@@ -399,46 +481,112 @@ serve(async (req) => {
         msgEn: `A land in ${sanitizedPayload.land_city || ""} was added on your behalf. Please review and approve.`,
         entityType: "land",
       },
+      proposal_received: {
+        titleAr: "تم استلام عرض جديد",
+        titleEn: "New Proposal Received",
+        msgAr: `قام المطور ${sanitizedPayload.developer_name || ""} بتقديم دراسته على أرضك في ${sanitizedPayload.land_city || ""}`,
+        msgEn: `Developer ${sanitizedPayload.developer_name || ""} submitted a proposal for your land in ${sanitizedPayload.land_city || ""}`,
+        entityType: "deal_request",
+      },
+      proposal_viewed: {
+        titleAr: "تمت المعاينة — جاري الرد من المالك",
+        titleEn: "Proposal Viewed — Owner Reviewing",
+        msgAr: `اطّلع مالك الأرض في ${sanitizedPayload.land_city || ""} على عرضك. سيتم إعلامك بالقرار قريباً.`,
+        msgEn: `The landowner in ${sanitizedPayload.land_city || ""} reviewed your proposal. You'll be notified of the decision soon.`,
+        entityType: "deal_request",
+      },
+      developer_selected: {
+        titleAr: "🎉 تم اختياركم!",
+        titleEn: "🎉 You've Been Selected!",
+        msgAr: `تم اختياركم كمطور للفرصة في ${sanitizedPayload.land_city || ""}. المرحلة التالية: التفاوض.`,
+        msgEn: `You've been selected as the developer for the opportunity in ${sanitizedPayload.land_city || ""}. Next: Negotiation.`,
+        entityType: "deal",
+      },
+      developer_not_selected: {
+        titleAr: "لم يتم اختياركم",
+        titleEn: "Not Selected",
+        msgAr: `لم يتم اختياركم للفرصة في ${sanitizedPayload.land_city || ""}. نتطلع للتعاون في فرص أخرى.`,
+        msgEn: `You were not selected for the opportunity in ${sanitizedPayload.land_city || ""}. We look forward to future opportunities.`,
+        entityType: "deal_request",
+      },
+      request_approved: {
+        titleAr: "تمت الموافقة على طلبك",
+        titleEn: "Request Approved",
+        msgAr: `تمت الموافقة على طلب الشراكة الخاص بك للأرض في ${sanitizedPayload.land_city || ""}`,
+        msgEn: `Your partnership request for land in ${sanitizedPayload.land_city || ""} has been approved`,
+        entityType: "deal_request",
+      },
+      request_rejected: {
+        titleAr: "تم رفض طلبك",
+        titleEn: "Request Rejected",
+        msgAr: `تم رفض طلب الشراكة الخاص بك للأرض في ${sanitizedPayload.land_city || ""}${sanitizedPayload.reject_reason ? `. السبب: ${sanitizedPayload.reject_reason}` : ""}`,
+        msgEn: `Your partnership request for land in ${sanitizedPayload.land_city || ""} was rejected${sanitizedPayload.reject_reason ? `. Reason: ${sanitizedPayload.reject_reason}` : ""}`,
+        entityType: "deal_request",
+      },
+      meeting_scheduled: {
+        titleAr: "اجتماع مجدول",
+        titleEn: "Meeting Scheduled",
+        msgAr: `تم جدولة اجتماع بخصوص الفرصة في ${sanitizedPayload.land_city || ""} - ${sanitizedPayload.meeting_date || ""} ${sanitizedPayload.meeting_time || ""}`,
+        msgEn: `Meeting scheduled for opportunity in ${sanitizedPayload.land_city || ""} - ${sanitizedPayload.meeting_date || ""} ${sanitizedPayload.meeting_time || ""}`,
+        entityType: "deal",
+      },
     };
 
     const notif = notifMap[sanitizedPayload.type];
     if (notif) {
+      // Determine who gets in-app notifications
       if (sanitizedPayload.type === "draft_created_for_owner" && sanitizedPayload.owner_user_id) {
-        await createInAppNotification(
-          supabaseAdmin, sanitizedPayload.owner_user_id, sanitizedPayload.type,
-          notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn,
-          notif.entityType
-        );
+        await createInAppNotification(supabaseAdmin, sanitizedPayload.owner_user_id, sanitizedPayload.type, notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn, notif.entityType);
       } else if (sanitizedPayload.type === "request_submitted" && sanitizedPayload.owner_user_id) {
         for (const adminId of adminUserIds) {
-          await createInAppNotification(
-            supabaseAdmin, adminId, sanitizedPayload.type,
-            notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn,
-            notif.entityType, sanitizedPayload.request_id
-          );
+          await createInAppNotification(supabaseAdmin, adminId, sanitizedPayload.type, notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn, notif.entityType, sanitizedPayload.request_id);
         }
         if (!adminUserIds.includes(sanitizedPayload.owner_user_id)) {
-          await createInAppNotification(
-            supabaseAdmin, sanitizedPayload.owner_user_id, sanitizedPayload.type,
-            "طلب شراكة جديد على أرضك",
-            "New Partnership Request on Your Land",
+          await createInAppNotification(supabaseAdmin, sanitizedPayload.owner_user_id, sanitizedPayload.type,
+            "طلب شراكة جديد على أرضك", "New Partnership Request on Your Land",
             `تقدم مطور ${sanitizedPayload.developer_name || ""} بطلب شراكة على أرضك في ${sanitizedPayload.land_city || ""}`,
             `Developer ${sanitizedPayload.developer_name || ""} submitted a partnership request for your land in ${sanitizedPayload.land_city || ""}`,
             notif.entityType, sanitizedPayload.request_id
           );
         }
-      } else {
+      } else if (["proposal_received"].includes(sanitizedPayload.type) && sanitizedPayload.owner_user_id) {
+        // Notify owner
+        await createInAppNotification(supabaseAdmin, sanitizedPayload.owner_user_id, sanitizedPayload.type, notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn, notif.entityType, sanitizedPayload.request_id);
+        // Also notify admins
         for (const adminId of adminUserIds) {
-          await createInAppNotification(
-            supabaseAdmin, adminId, sanitizedPayload.type,
-            notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn,
-            notif.entityType, sanitizedPayload.deal_id || sanitizedPayload.request_id
-          );
+          if (adminId !== sanitizedPayload.owner_user_id) {
+            await createInAppNotification(supabaseAdmin, adminId, sanitizedPayload.type, notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn, notif.entityType, sanitizedPayload.request_id);
+          }
+        }
+      } else if (["proposal_viewed", "developer_selected", "developer_not_selected", "request_approved", "request_rejected"].includes(sanitizedPayload.type) && sanitizedPayload.developer_user_id) {
+        // Notify developer
+        await createInAppNotification(supabaseAdmin, sanitizedPayload.developer_user_id, sanitizedPayload.type, notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn, notif.entityType, sanitizedPayload.request_id || sanitizedPayload.deal_id);
+        // Also notify admins
+        for (const adminId of adminUserIds) {
+          if (adminId !== sanitizedPayload.developer_user_id) {
+            await createInAppNotification(supabaseAdmin, adminId, sanitizedPayload.type, notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn, notif.entityType, sanitizedPayload.request_id || sanitizedPayload.deal_id);
+          }
+        }
+      } else if (sanitizedPayload.type === "meeting_scheduled") {
+        // Notify all: admin, owner, developer
+        for (const adminId of adminUserIds) {
+          await createInAppNotification(supabaseAdmin, adminId, sanitizedPayload.type, notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn, notif.entityType, sanitizedPayload.deal_id);
+        }
+        if (sanitizedPayload.owner_user_id && !adminUserIds.includes(sanitizedPayload.owner_user_id)) {
+          await createInAppNotification(supabaseAdmin, sanitizedPayload.owner_user_id, sanitizedPayload.type, notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn, notif.entityType, sanitizedPayload.deal_id);
+        }
+        if (sanitizedPayload.developer_user_id && !adminUserIds.includes(sanitizedPayload.developer_user_id)) {
+          await createInAppNotification(supabaseAdmin, sanitizedPayload.developer_user_id, sanitizedPayload.type, notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn, notif.entityType, sanitizedPayload.deal_id);
+        }
+      } else {
+        // Default: notify admins
+        for (const adminId of adminUserIds) {
+          await createInAppNotification(supabaseAdmin, adminId, sanitizedPayload.type, notif.titleAr, notif.titleEn, notif.msgAr, notif.msgEn, notif.entityType, sanitizedPayload.deal_id || sanitizedPayload.request_id);
         }
       }
     }
 
-    // Send email using sanitized payload
+    // Send email
     const { subject, html, to } = buildEmailHtml(sanitizedPayload);
 
     if (!to) {
@@ -453,6 +601,7 @@ serve(async (req) => {
     const resendApiKey = rawKey.replace(/[^\x20-\x7E]/g, "").trim();
 
     if (resendApiKey) {
+      // Send to primary recipient
       const emailRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: new Headers([
@@ -471,6 +620,30 @@ serve(async (req) => {
         console.error("Email error:", emailData);
       } else {
         console.log("Notification email sent:", sanitizedPayload.type, "to:", to);
+      }
+
+      // For meeting_scheduled, also email the developer and owner
+      if (sanitizedPayload.type === "meeting_scheduled") {
+        const additionalRecipients = [sanitizedPayload.developer_email, sanitizedPayload.owner_email].filter(e => e && e !== to);
+        for (const recipient of additionalRecipients) {
+          try {
+            await fetch("https://api.resend.com/emails", {
+              method: "POST",
+              headers: new Headers([
+                ["Authorization", "Bearer " + resendApiKey],
+                ["Content-Type", "application/json"],
+              ]),
+              body: JSON.stringify({
+                from: "SYNA Platform <onboarding@resend.dev>",
+                to: [recipient],
+                subject,
+                html,
+              }),
+            });
+          } catch (e) {
+            console.error("Additional email error:", e);
+          }
+        }
       }
     } else {
       console.warn("No RESEND_API_KEY configured");

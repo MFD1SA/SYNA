@@ -4,7 +4,7 @@ import { useNotifications, type Notification } from "@/hooks/useNotifications";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bell, FileText, Receipt, Check, CheckCheck } from "lucide-react";
+import { Bell, FileText, Receipt, Check, CheckCheck, Handshake, Send, CalendarClock, UserCheck, XCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ar, enUS } from "date-fns/locale";
 
@@ -13,29 +13,27 @@ const NotificationDropdown: React.FC = () => {
   const { notifications, unreadCount, markAsRead, markAllAsRead, loading } = useNotifications();
   const [open, setOpen] = useState(false);
 
-  const t = {
-    ar: {
-      title: "الإشعارات",
-      markAllRead: "تحديد الكل كمقروء",
-      noNotifications: "لا توجد إشعارات",
-      leaseExpiring: "عقد ينتهي قريباً",
-      overdueReceivable: "مستحق متأخر",
-    },
-    en: {
-      title: "Notifications",
-      markAllRead: "Mark all as read",
-      noNotifications: "No notifications",
-      leaseExpiring: "Lease Expiring Soon",
-      overdueReceivable: "Overdue Receivable",
-    },
-  };
-
-  const labels = t[lang];
+  const labels = {
+    ar: { title: "الإشعارات", markAllRead: "تحديد الكل كمقروء", noNotifications: "لا توجد إشعارات" },
+    en: { title: "Notifications", markAllRead: "Mark all as read", noNotifications: "No notifications" },
+  }[lang];
 
   const getIcon = (type: string) => {
     switch (type) {
       case "lease_expiring": return <FileText className="h-4 w-4 text-amber-500" />;
       case "receivable_overdue": return <Receipt className="h-4 w-4 text-destructive" />;
+      case "request_submitted": return <Send className="h-4 w-4 text-blue-500" />;
+      case "request_approved": return <UserCheck className="h-4 w-4 text-emerald-500" />;
+      case "request_rejected": return <XCircle className="h-4 w-4 text-destructive" />;
+      case "meeting_scheduled": return <CalendarClock className="h-4 w-4 text-violet-500" />;
+      case "deal_stage_changed": return <Handshake className="h-4 w-4 text-primary" />;
+      case "draft_created_for_owner": return <FileText className="h-4 w-4 text-violet-500" />;
+      case "new_developer_registered": return <UserCheck className="h-4 w-4 text-orange-500" />;
+      case "new_owner_registered": return <UserCheck className="h-4 w-4 text-violet-500" />;
+      case "proposal_received": return <FileText className="h-4 w-4 text-blue-500" />;
+      case "proposal_viewed": return <Check className="h-4 w-4 text-amber-500" />;
+      case "developer_selected": return <UserCheck className="h-4 w-4 text-emerald-600" />;
+      case "developer_not_selected": return <XCircle className="h-4 w-4 text-muted-foreground" />;
       default: return <Bell className="h-4 w-4" />;
     }
   };
@@ -74,14 +72,7 @@ const NotificationDropdown: React.FC = () => {
           ) : (
             <div className="divide-y divide-border/40">
               {notifications.map((notif) => (
-                <NotificationItem
-                  key={notif.id}
-                  notification={notif}
-                  lang={lang}
-                  onRead={markAsRead}
-                  getIcon={getIcon}
-                  timeAgo={timeAgo}
-                />
+                <NotificationItem key={notif.id} notification={notif} lang={lang} onRead={markAsRead} getIcon={getIcon} timeAgo={timeAgo} />
               ))}
             </div>
           )}

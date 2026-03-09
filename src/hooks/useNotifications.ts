@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTenant } from "@/hooks/useTenant";
 
 export interface Notification {
   id: string;
@@ -20,7 +19,6 @@ export interface Notification {
 
 export const useNotifications = () => {
   const { user } = useAuth();
-  const { tenantId } = useTenant();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -40,83 +38,6 @@ export const useNotifications = () => {
     }
     setLoading(false);
   }, [user]);
-
-  const generateNotifications = useCallback(async () => {
-    if (!user || !tenantId) return;
-
-    // Check expiring leases (within 30 days)
-    const thirtyDaysFromNow = new Date();
-    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
-
-    const { data: expiringLeases } = await supabase
-      .from("leases")
-      .select("id, end_date, unit_id, monthly_rent")
-      .eq("tenant_id", tenantId)
-      .eq("status", "active")
-      .lte("end_date", thirtyDaysFromNow.toISOString().split("T")[0])
-      .gte("end_date", new Date().toISOString().split("T")[0]);
-
-    // Check overdue receivables
-    const { data: overdueReceivables } = await supabase
-      .from("receivables")
-      .select("id, amount, due_date, paid_amount")
-      .eq("tenant_id", tenantId)
-      .eq("status", "overdue");
-
-    // Get existing notification entity_ids to avoid duplicates
-    const { data: existingNotifs } = await supabase
-      .from("notifications")
-      .select("entity_id, type")
-      .eq("user_id", user.id)
-      .in("type", ["lease_expiring", "receivable_overdue"]);
-
-    const existingSet = new Set(
-      (existingNotifs || []).map((n: any) => `${n.type}:${n.entity_id}`)
-    );
-
-    const newNotifications: any[] = [];
-
-    // Generate lease expiring notifications
-    (expiringLeases || []).forEach((lease) => {
-      if (existingSet.has(`lease_expiring:${lease.id}`)) return;
-      const daysLeft = Math.ceil(
-        (new Date(lease.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-      );
-      newNotifications.push({
-        tenant_id: tenantId,
-        user_id: user.id,
-        type: "lease_expiring",
-        title_ar: "عقد ينتهي قريباً",
-        title_en: "Lease Expiring Soon",
-        message_ar: `عقد ينتهي خلال ${daysLeft} يوم - إيجار شهري ${lease.monthly_rent || 0} ر.س`,
-        message_en: `Lease expiring in ${daysLeft} days - Monthly rent ${lease.monthly_rent || 0} SAR`,
-        entity_id: lease.id,
-        entity_type: "lease",
-      });
-    });
-
-    // Generate overdue receivable notifications
-    (overdueReceivables || []).forEach((rec) => {
-      if (existingSet.has(`receivable_overdue:${rec.id}`)) return;
-      const remaining = (rec.amount || 0) - (rec.paid_amount || 0);
-      newNotifications.push({
-        tenant_id: tenantId,
-        user_id: user.id,
-        type: "receivable_overdue",
-        title_ar: "مستحق متأخر",
-        title_en: "Overdue Receivable",
-        message_ar: `مبلغ متأخر ${remaining.toLocaleString()} ر.س - تاريخ الاستحقاق ${rec.due_date}`,
-        message_en: `Overdue amount ${remaining.toLocaleString()} SAR - Due date ${rec.due_date}`,
-        entity_id: rec.id,
-        entity_type: "receivable",
-      });
-    });
-
-    if (newNotifications.length > 0) {
-      await supabase.from("notifications").insert(newNotifications);
-      await fetchNotifications();
-    }
-  }, [user, tenantId, fetchNotifications]);
 
   const markAsRead = async (id: string) => {
     await supabase.from("notifications").update({ is_read: true }).eq("id", id);
@@ -140,11 +61,6 @@ export const useNotifications = () => {
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
-
-  // Generate on mount
-  useEffect(() => {
-    if (tenantId) generateNotifications();
-  }, [tenantId, generateNotifications]);
 
   // Realtime subscription
   useEffect(() => {
