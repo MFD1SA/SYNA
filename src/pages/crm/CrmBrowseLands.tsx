@@ -322,7 +322,7 @@ const CrmBrowseLands: React.FC = () => {
                       <Eye className="h-3 w-3" />{isAr ? "التفاصيل" : "Details"}
                     </Button>
                     {!submittedLands[l.id] ? (
-                      <Button size="sm" className="flex-1 text-xs gap-1 doma-gradient" disabled={!isVerified} onClick={() => setRequestDialog(l.id)}>
+                      <Button size="sm" className="flex-1 text-xs gap-1 syna-gradient" disabled={!isVerified} onClick={() => setRequestDialog(l.id)}>
                         <Send className="h-3 w-3" />{isAr ? "تقديم طلب" : "Apply"}
                       </Button>
                     ) : (

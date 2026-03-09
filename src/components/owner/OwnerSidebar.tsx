@@ -8,6 +8,7 @@ import {
   LayoutDashboard, Landmark, FileText, Handshake, Settings,
   Globe, LogOut, ChevronLeft, ChevronRight, User, ShieldCheck,
 } from "lucide-react";
+import NotificationDropdown from "@/components/crm/NotificationDropdown";
 import logoImg from "@/assets/logo.png";
 
 interface NavItem {
@@ -54,11 +55,14 @@ const OwnerSidebar: React.FC = () => {
           <img src={logoImg} alt="SYNA" className="h-11 w-11 object-contain" />
           {!collapsed && <span className="text-base font-medium text-foreground">SYNA</span>}
         </Link>
-        {!collapsed && (
-          <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} className="h-7 w-7 shrink-0 text-muted-foreground">
-            <CollapseIcon className="h-3.5 w-3.5" />
-          </Button>
-        )}
+        <div className="flex items-center gap-1">
+          <NotificationDropdown />
+          {!collapsed && (
+            <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} className="h-7 w-7 shrink-0 text-muted-foreground">
+              <CollapseIcon className="h-3.5 w-3.5" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Role badge */}
