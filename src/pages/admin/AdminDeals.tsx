@@ -566,33 +566,7 @@ const AdminDeals: React.FC = () => {
                 </div>
 
                 {/* Stage Pipeline */}
-                <div className="rounded-xl border border-border/40 bg-muted/10 p-4">
-                  <h6 className="text-xs font-medium text-foreground mb-3">{isAr ? "مراحل الصفقة" : "Deal Pipeline"}</h6>
-                  <div className="flex items-center gap-1">
-                    {stageOrder.map((s, idx) => {
-                      const sConf = stageConfig[s];
-                      const SIcon = sConf?.icon || FileText;
-                      const isActive = s === viewDeal.current_stage;
-                      const isPast = idx < currentIdx;
-                      return (
-                        <div key={s} className="flex-1 flex flex-col items-center gap-1">
-                          <div className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all ${
-                            isActive ? "border-primary bg-primary/10" : isPast ? "border-emerald-500 bg-emerald-500/10" : "border-border bg-muted/30"
-                          }`}>
-                            {isPast ? (
-                              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                            ) : (
-                              <SIcon className={`h-3.5 w-3.5 ${isActive ? sConf?.color : "text-muted-foreground/40"}`} />
-                            )}
-                          </div>
-                          <span className={`text-[9px] text-center leading-tight ${isActive ? "font-medium text-primary" : isPast ? "text-emerald-600" : "text-muted-foreground/50"}`}>
-                            {isAr ? sConf?.ar : sConf?.en}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                {!isCancelled && <DealStagePipeline currentStage={viewDeal.current_stage} isAr={isAr} />}
 
                 {/* Health Control */}
                 <div className="rounded-xl border border-border/40 p-3">
