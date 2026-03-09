@@ -12,51 +12,13 @@ import { z } from "zod";
 import {
   Handshake,
   Building2,
-  CheckCircle2,
   Eye,
-  Link2,
-  CalendarClock,
-  Video,
   Shield,
 } from "lucide-react";
-
-const stageConfig: Record<string, { ar: string; en: string; color: string }> = {
-  listed: { ar: "مدرجة", en: "Listed", color: "text-muted-foreground" },
-  request_submitted: { ar: "طلب مقدم", en: "Submitted", color: "text-blue-600" },
-  owner_review: { ar: "مراجعة الإدارة", en: "Review", color: "text-amber-600" },
-  owner_approved: { ar: "موافقة", en: "Approved", color: "text-emerald-600" },
-  meeting_scheduled: { ar: "اجتماع", en: "Meeting", color: "text-violet-600" },
-  strategy_defined: { ar: "استراتيجية", en: "Strategy", color: "text-cyan-600" },
-  documents_exchanged: { ar: "مستندات", en: "Documents", color: "text-orange-600" },
-  agreements_prepared: { ar: "اتفاقيات", en: "Agreements", color: "text-indigo-600" },
-  deal_closed: { ar: "مغلقة", en: "Closed", color: "text-emerald-700" },
-  deal_cancelled: { ar: "ملغاة", en: "Cancelled", color: "text-destructive" },
-};
-
-const stageOrder = [
-  "listed",
-  "request_submitted",
-  "owner_review",
-  "owner_approved",
-  "meeting_scheduled",
-  "strategy_defined",
-  "documents_exchanged",
-  "agreements_prepared",
-  "deal_closed",
-];
-
-const healthLabels: Record<string, { ar: string; en: string }> = {
-  green: { ar: "سليمة", en: "Healthy" },
-  yellow: { ar: "تحتاج متابعة", en: "Needs Attention" },
-  red: { ar: "متعثرة", en: "At Risk" },
-};
-
-const commissionStatusLabels: Record<string, { ar: string; en: string }> = {
-  pending: { ar: "قيد الانتظار", en: "Pending" },
-  paid: { ar: "مدفوعة", en: "Paid" },
-  invoiced: { ar: "تم إصدار فاتورة", en: "Invoiced" },
-  waived: { ar: "معفاة", en: "Waived" },
-};
+import DealStagePipeline from "@/components/deal/DealStagePipeline";
+import MeetingsList from "@/components/deal/MeetingsList";
+import CommissionBreakdown from "@/components/deal/CommissionBreakdown";
+import { stageConfig, stageOrder, healthLabels, commissionStatusLabels } from "@/components/deal/dealStageConfig";
 
 const driveUrlSchema = z
   .string()
@@ -281,9 +243,9 @@ const CrmDeals: React.FC = () => {
         <div className="space-y-3">
           {deals.map((d) => {
             const stage = stageConfig[d.current_stage] || { ar: d.current_stage, en: d.current_stage, color: "" };
-            const stageIdx = stageOrder.indexOf(d.current_stage);
             const isCancelled = d.current_stage === "deal_cancelled";
             const isClosed = d.current_stage === "deal_closed";
+            const hc = healthLabels[d.health] || healthLabels.green;
 
             return (
               <div
@@ -294,7 +256,7 @@ const CrmDeals: React.FC = () => {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <div className={`h-2.5 w-2.5 rounded-full ${d.health === "green" ? "bg-emerald-500" : d.health === "yellow" ? "bg-amber-500" : "bg-red-500"}`} />
+                      <div className={`h-2.5 w-2.5 rounded-full ${hc.dot}`} />
                       <Building2 className="h-3.5 w-3.5 text-primary" strokeWidth={1.5} />
                       <h3 className="text-sm font-medium text-foreground">
                         {d.lands?.city}
@@ -321,13 +283,7 @@ const CrmDeals: React.FC = () => {
                     <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                   </div>
                 </div>
-                {!isCancelled && (
-                  <div className="flex items-center gap-0.5">
-                    {stageOrder.map((s, idx) => (
-                      <div key={s} className={`h-1.5 flex-1 rounded-full transition-colors ${idx <= stageIdx ? "bg-primary" : "bg-border"}`} />
-                    ))}
-                  </div>
-                )}
+                {!isCancelled && <DealStagePipeline currentStage={d.current_stage} isAr={isAr} compact />}
               </div>
             );
           })}
@@ -349,8 +305,8 @@ const CrmDeals: React.FC = () => {
           </DialogHeader>
 
           {viewDeal && (() => {
-            const stageIdx = stageOrder.indexOf(viewDeal.current_stage);
             const isCancelled = viewDeal.current_stage === "deal_cancelled";
+            const hc = healthLabels[viewDeal.health] || healthLabels.green;
 
             return (
               <div className="space-y-4">
@@ -366,51 +322,14 @@ const CrmDeals: React.FC = () => {
                   </div>
                   <Badge
                     variant="outline"
-                    className={`gap-1 ${
-                      viewDeal.health === "green"
-                        ? "bg-emerald-500/10 text-emerald-600"
-                        : viewDeal.health === "yellow"
-                          ? "bg-amber-500/10 text-amber-600"
-                          : "bg-red-500/10 text-red-600"
-                    } border-transparent`}
+                    className={`gap-1 ${hc.bg} ${hc.text} border-transparent`}
                   >
-                    <div
-                      className={`h-2 w-2 rounded-full ${
-                        viewDeal.health === "green" ? "bg-emerald-500" : viewDeal.health === "yellow" ? "bg-amber-500" : "bg-red-500"
-                      }`}
-                    />
-                    {isAr ? healthLabels[viewDeal.health]?.ar : healthLabels[viewDeal.health]?.en}
+                    <div className={`h-2 w-2 rounded-full ${hc.dot}`} />
+                    {isAr ? hc.ar : hc.en}
                   </Badge>
                 </div>
 
-                {!isCancelled && (
-                  <div className="rounded-xl border border-border/40 bg-muted/10 p-4">
-                    <div className="flex items-center gap-1">
-                      {stageOrder.map((s, idx) => {
-                        const isActive = s === viewDeal.current_stage;
-                        const isPast = idx < stageIdx;
-                        return (
-                          <div key={s} className="flex-1 flex flex-col items-center gap-1">
-                            <div
-                              className={`flex h-7 w-7 items-center justify-center rounded-full border-2 ${
-                                isActive ? "border-primary bg-primary/10" : isPast ? "border-primary bg-primary/10" : "border-border"
-                              }`}
-                            >
-                              {isPast ? (
-                                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-                              ) : (
-                                <span className={`text-[9px] font-bold ${isActive ? "text-primary" : "text-muted-foreground/30"}`}>{idx + 1}</span>
-                              )}
-                            </div>
-                            <span className={`text-[8px] text-center ${isActive ? "font-medium text-primary" : isPast ? "text-primary" : "text-muted-foreground/40"}`}>
-                              {isAr ? stageConfig[s]?.ar : stageConfig[s]?.en}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                {!isCancelled && <DealStagePipeline currentStage={viewDeal.current_stage} isAr={isAr} />}
 
                 <DealAutomationPanel
                   isAr={isAr}
@@ -431,61 +350,14 @@ const CrmDeals: React.FC = () => {
                   onCloseDeal={handleCloseDeal}
                 />
 
-                {meetings.length > 0 && (
-                  <div className="space-y-2">
-                    <h6 className="text-xs font-medium text-foreground flex items-center gap-1.5">
-                      <Video className="h-3.5 w-3.5 text-primary" />
-                      {isAr ? "الاجتماعات" : "Meetings"}
-                    </h6>
-                    {meetings.map((m) => (
-                      <div key={m.id} className="rounded-lg border border-border/30 p-3 space-y-1">
-                        <div className="flex items-center gap-2">
-                          <CalendarClock className="h-3 w-3 text-primary" />
-                          <span className="text-xs font-medium">
-                            {new Date(m.scheduled_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", {
-                              weekday: "short",
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(m.scheduled_at).toLocaleTimeString(isAr ? "ar-SA" : "en-US", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
-                          <Badge variant="outline" className="text-[9px]">
-                            {m.meeting_type === "google_meet" ? "Google Meet" : isAr ? "حضوري" : "In Person"}
-                          </Badge>
-                        </div>
-                        {m.meet_link && (
-                          <a href={m.meet_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-primary hover:underline">
-                            <Link2 className="h-3 w-3" />
-                            {isAr ? "انضم للاجتماع" : "Join Meeting"}
-                          </a>
-                        )}
-                        {m.notes && <p className="text-xs text-muted-foreground">{m.notes}</p>}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <MeetingsList meetings={meetings} isAr={isAr} />
 
-                <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-primary shrink-0" />
-                  <div>
-                    <p className="text-xs text-primary">
-                      {isAr ? "حقوق المنصة محفوظة — عمولة 2.5%" : "Platform rights protected — 2.5% commission"}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {isAr ? "حالة العمولة:" : "Commission Status:"}{" "}
-                      {isAr
-                        ? commissionStatusLabels[viewDeal.commission_status]?.ar || viewDeal.commission_status
-                        : commissionStatusLabels[viewDeal.commission_status]?.en || viewDeal.commission_status}
-                    </p>
-                  </div>
-                </div>
+                <CommissionBreakdown isAr={isAr} showDisclaimer={false} />
 
                 <p className="text-[10px] text-muted-foreground">
+                  {isAr ? "حالة العمولة:" : "Commission:"}{" "}
+                  {isAr ? commissionStatusLabels[viewDeal.commission_status]?.ar : commissionStatusLabels[viewDeal.commission_status]?.en}
+                  {" • "}
                   {isAr ? "تاريخ الإنشاء:" : "Created:"} {new Date(viewDeal.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}
                 </p>
               </div>
