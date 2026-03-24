@@ -123,27 +123,30 @@ const FeatureDetailPage: React.FC = () => {
   const Icon = feature.icon;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-primary flex flex-col relative overflow-hidden">
+      <div className="luxury-grid absolute inset-0 opacity-20 pointer-events-none" />
       <Navbar />
       <PageHeader icon={Icon} title={content.title} description={content.intro} backgroundImage={headerFeaturesImg} />
-      <main className="container flex-1 py-16 md:py-24">
-        <div className="mx-auto max-w-3xl space-y-6">
+      
+      <main className="container flex-1 py-32 md:py-48 relative z-10">
+        <div className="mx-auto max-w-4xl space-y-px border border-white/5 bg-white/[0.02]">
           {content.sections.map((section, i) => (
-            <motion.section key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-              className="rounded-xl border border-border bg-card p-8 shadow-sm">
-              <h2 className="mb-3 text-xl font-medium text-foreground">{section.heading}</h2>
-              <p className="text-base font-light leading-relaxed text-muted-foreground">{section.text}</p>
+            <motion.section key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+              className="bg-primary p-16 transition-colors hover:bg-white/[0.03] border-b border-white/5">
+              <span className="block text-[9px] font-bold text-accent uppercase tracking-[0.4em] mb-6">SECTION 0{i+1}</span>
+              <h2 className="mb-8 text-2xl font-medium text-white uppercase tracking-tight">{section.heading}</h2>
+              <p className="text-base font-light leading-[1.8] text-white/40">{section.text}</p>
             </motion.section>
           ))}
 
-          <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="rounded-xl border border-border/50 bg-muted/30 p-8 shadow-sm">
-            <h3 className="mb-5 text-lg font-medium text-foreground">{isAr ? "أبرز المزايا" : "Key Benefits"}</h3>
-            <div className="space-y-4">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="bg-primary p-16 border-b border-white/5">
+            <h3 className="mb-10 text-[11px] font-bold uppercase tracking-[0.3em] text-white">{isAr ? "أبرز المزايا السيادية" : "Sovereign Benefits"}</h3>
+            <div className="grid gap-8">
               {content.points.map((point, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" strokeWidth={1.5} />
-                  <p className="text-base font-light leading-relaxed text-foreground">{point}</p>
+                <div key={i} className="flex items-start gap-4">
+                  <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-accent" strokeWidth={1.5} />
+                  <p className="text-base font-light leading-relaxed text-white/60">{point}</p>
                 </div>
               ))}
             </div>

@@ -15,24 +15,25 @@ const HowItWorksSection: React.FC = () => {
   ];
 
   return (
-    <section id="how-it-works" className="relative bg-background py-32 px-4 md:px-0 overflow-hidden">
-      <div className="container relative py-12">
+    <section id="how-it-works" className="relative bg-primary py-32 md:py-48 px-4 md:px-0 overflow-hidden">
+      <div className="luxury-grid absolute inset-0 opacity-20 pointer-events-none" />
+      <div className="container relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="mb-24 border-s-2 border-accent ps-8"
+          transition={{ duration: 1.2 }}
+          className="mb-32 text-center"
         >
-          <span className="mb-4 inline-block text-[10px] font-bold uppercase tracking-[0.3em] text-accent">
-            {isAr ? "إطار العمل المشترك" : "The Engagement Framework"}
+          <span className="mb-6 inline-block text-[10px] font-bold uppercase tracking-[0.4em] text-accent">
+            {isAr ? "إطار العمل المؤسسي" : "Sovereign Workflow"}
           </span>
-          <h2 className="text-4xl font-medium tracking-tight text-primary md:text-5xl uppercase leading-tight">
-            {isAr ? "مسار مؤسسي واضح من الفرصة حتى التنفيذ" : "A Clear Institutional Path from Asset to Execution"}
+          <h2 className="text-4xl md:text-6xl font-medium tracking-tight text-white uppercase leading-tight max-w-5xl mx-auto">
+            {isAr ? "مسار احترافي محدد من الأصول حتى الإغلاق الصفقة" : "A Distinct Institutional Path from Asset to Mandate Closure"}
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-px bg-border/40 border border-border/40 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-px bg-white/5 border border-white/5 md:grid-cols-2 lg:grid-cols-4">
           {steps.map((step, i) => (
             <motion.div
               key={step.num}
@@ -40,21 +41,21 @@ const HowItWorksSection: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: i * 0.1 }}
-              className="group relative flex flex-col bg-background p-12 transition-colors hover:bg-muted/30"
+              className="group relative flex flex-col bg-primary p-16 transition-all hover:bg-white/[0.03]"
             >
-              <div className="mb-10 flex h-16 w-16 items-center justify-center border border-border bg-muted/20 text-primary transition-all duration-500 group-hover:border-accent group-hover:bg-accent group-hover:text-primary">
-                <step.icon className="h-6 w-6" strokeWidth={1} />
+              <div className="mb-12 flex h-20 w-20 items-center justify-center border border-white/10 bg-white/5 text-accent transition-all duration-700 group-hover:border-accent group-hover:bg-accent group-hover:text-primary rounded-none">
+                <step.icon className="h-8 w-8" strokeWidth={1} />
               </div>
 
-              <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-primary transition-colors">
+              <h3 className="mb-6 text-[11px] font-bold uppercase tracking-[0.3em] text-white transition-colors">
                 {isAr ? step.titleAr : step.titleEn}
               </h3>
 
-              <p className="text-sm font-light leading-relaxed text-muted-foreground transition-colors max-w-[240px]">
+              <p className="text-sm font-light leading-[1.8] text-white/40 transition-colors">
                 {isAr ? step.descAr : step.descEn}
               </p>
 
-              <div className="absolute top-12 right-12 text-sm font-bold text-accent/20 tracking-widest">
+              <div className="absolute top-16 right-16 text-[10px] font-bold text-accent/10 tracking-[0.5em] group-hover:text-accent/30 transition-colors">
                 {step.num}
               </div>
             </motion.div>

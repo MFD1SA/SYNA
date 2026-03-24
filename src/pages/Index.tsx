@@ -31,11 +31,9 @@ const Index: React.FC = () => {
             <h2 className="text-3xl font-medium text-white mb-12 uppercase tracking-[0.2em]">
                 {isAr ? "نصنع قيمة تتجاوز الأرقام" : "Creating Value Beyond Numbers"}
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 grayscale opacity-40">
-                <div className="flex items-center justify-center text-white font-bold text-2xl">REGA</div>
-                <div className="flex items-center justify-center text-white font-bold text-2xl">MOMRAH</div>
-                <div className="flex items-center justify-center text-white font-bold text-2xl">PIF</div>
-                <div className="flex items-center justify-center text-white font-bold text-2xl">VISION 2030</div>
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-12 grayscale opacity-40 max-w-lg mx-auto">
+                <div className="flex items-center justify-center text-white font-bold text-2xl tracking-widest opacity-80">REGA</div>
+                <div className="flex items-center justify-center text-white font-bold text-2xl tracking-widest opacity-80">MOMRAH</div>
             </div>
           </div>
         </section>

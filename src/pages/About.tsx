@@ -38,25 +38,14 @@ const AboutPage: React.FC = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <div className="relative pt-40 pb-24 overflow-hidden bg-primary">
-         <img src={headerAboutImg} alt="SYNA" className="absolute inset-0 w-full h-full object-cover opacity-20 grayscale" />
-         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/60 to-transparent" />
-         <div className="container relative z-10">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
-              <span className="inline-block text-[10px] font-bold uppercase tracking-[0.4em] text-accent mb-6">
-                {isAr ? "عن الكيان الاستثماري" : "Institutional Profile"}
-              </span>
-              <h1 className="text-5xl md:text-7xl font-medium tracking-tight text-white mb-8 border-s-4 border-accent ps-8">
-                {isAr ? "سينا للاستثمارات العقارية" : "SYNA Real Estate Investments"}
-              </h1>
-              <p className="max-w-2xl text-xl font-light text-white/60 leading-relaxed text-balance">
-                {isAr 
-                  ? "نعمل كمحرك استراتيجي لرفع جودة الاستثمار العقاري من خلال ربط الفرص النوعية بالكفاءات التطويرية." 
-                  : "We act as a strategic driver to elevate real estate investment quality by connecting curated opportunities with development expertise."}
-              </p>
-            </motion.div>
-         </div>
-      </div>
+      <PageHeader 
+        icon={Landmark}
+        title={isAr ? "سيـــادة العقـــــار" : "Real Estate Sovereignty"}
+        description={isAr 
+          ? "الكيان الوطني الرائد في هندسة الصفقات الاستثمارية وتمكين الشراكات الكبرى بين كبار ملاك الأراضي والمطورين المعتمدين." 
+          : "The premier national entity for structuring investment deals and enabling major partnerships between elite landowners and certified developers."}
+        backgroundImage={headerAboutImg}
+      />
       
       <main className="py-32">
         <div className="container">

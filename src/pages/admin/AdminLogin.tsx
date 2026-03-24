@@ -11,9 +11,9 @@ import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.png";
 
 const AdminLogin: React.FC = () => {
-  const { t, lang, toggleLang } = useLanguage();
+  const { lang, toggleLang } = useLanguage();
   const isAr = lang === "ar";
-  usePageTitle(isAr ? "بوابة الإدارة" : "Admin Portal");
+  usePageTitle(isAr ? "بوابة النفاذ الإداري" : "Administrative Access");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -27,12 +27,11 @@ const AdminLogin: React.FC = () => {
     setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
+      toast({ variant: "destructive", title: isAr ? "خطأ في التحقق" : "Verification Error", description: error.message });
       setLoading(false);
       return;
     }
     if (data.user) {
-      // Verify admin role
       const { data: roleData } = await supabase
         .from("user_roles")
         .select("role")
@@ -44,81 +43,98 @@ const AdminLogin: React.FC = () => {
         await supabase.auth.signOut();
         toast({
           variant: "destructive",
-          title: isAr ? "غير مصرح" : "Unauthorized",
-          description: isAr ? "ليس لديك صلاحية الوصول لهذه البوابة" : "You don't have access to this portal",
+          title: isAr ? "نفاذ غير مصرح" : "Unauthorized Access",
+          description: isAr ? "لا يمتلك هذا الحساب صلاحيات الوصول الإداري." : "This account does not have administrative privileges.",
         });
         setLoading(false);
         return;
       }
 
-      toast({ title: isAr ? "أهلاً مدير النظام 👋" : "Welcome, System Admin 👋" });
-      // Small delay to let auth state propagate before navigating
+      toast({ title: isAr ? "تم النفاذ بنجاح" : "Access Granted" });
       setTimeout(() => navigate("/admincp/overview"), 100);
     }
     setLoading(false);
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="absolute top-4 end-4">
-        <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-1.5 text-muted-foreground hover:text-foreground">
-          <Globe className="h-4 w-4" />{t.nav.language}
-        </Button>
+    <div className="relative flex min-h-screen items-center justify-center bg-primary overflow-hidden">
+      {/* Cinematic Night Riyadh Background */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-black/70 z-10" />
+        <img 
+          src="https://images.unsplash.com/photo-1549413280-9280f2fc748a?q=80&w=2000&auto=format&fit=crop" 
+          alt="Riyadh Excellence" 
+          className="h-full w-full object-cover grayscale opacity-40 transition-transform duration-[20s] scale-110" 
+        />
       </div>
 
-      <div className="w-full max-w-sm mx-4">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-card shadow-sm border border-border/50">
-            <img src={logo} alt="SYNA" className="h-14 w-14 object-contain" />
-          </div>
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Shield className="h-5 w-5 text-primary" />
-            <h1 className="text-xl font-medium text-foreground tracking-tight">
-              {isAr ? "بوابة الإدارة" : "Admin Portal"}
-            </h1>
-          </div>
-          <p className="text-sm font-light text-muted-foreground">
-            {isAr ? "الوصول مقيّد لمسؤولي النظام فقط" : "Restricted access for system administrators only"}
-          </p>
+      <div className="absolute top-12 end-12 z-20">
+        <button 
+          onClick={toggleLang} 
+          className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 hover:text-white transition-colors"
+        >
+          {isAr ? "English" : "العربية"}
+        </button>
+      </div>
+
+      <div className="relative z-20 w-full max-w-sm px-6">
+        <div className="mb-16 border-s-2 border-accent ps-8">
+          <span className="block text-[10px] font-bold uppercase tracking-[0.4em] text-accent mb-4">
+            {isAr ? "بوابة الإدارة" : "Administrative Portal"}
+          </span>
+          <h1 className="text-3xl font-medium tracking-tight text-white uppercase">
+            {isAr ? "النفاذ المؤسسي" : "Institutional Access"}
+          </h1>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-5 rounded-2xl border border-border bg-card p-8 shadow-sm">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground">{t.auth.email}</Label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              dir="ltr"
-              className="h-12 rounded-xl border border-border/50 bg-background text-foreground transition-all focus:border-primary/50"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground">{t.auth.password}</Label>
-            <div className="relative">
-              <Input
+        <form onSubmit={handleLogin} className="space-y-10">
+          <div className="space-y-6">
+            <div className="space-y-2 border-b border-white/10 pb-4">
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">{isAr ? "البريد الإلكتروني" : "Email Address"}</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                dir="ltr"
+                className="w-full bg-transparent text-white focus:outline-none text-sm placeholder:text-white/10"
+                placeholder={isAr ? "admin@syna.sa" : "admin@syna.sa"}
+              />
+            </div>
+            <div className="space-y-2 border-b border-white/10 pb-4 relative">
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">{isAr ? "كلمة المرور" : "Password"}</label>
+              <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 dir="ltr"
-                className="h-12 rounded-xl border border-border/50 bg-background text-foreground transition-all focus:border-primary/50"
+                className="w-full bg-transparent text-white focus:outline-none text-sm placeholder:text-white/10"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                className="absolute end-0 top-8 text-white/20 hover:text-white transition-colors"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
           </div>
-          <Button type="submit" className="h-12 w-full gap-2 rounded-xl text-base shadow-sm mt-2" disabled={loading}>
-            <Shield className="h-4 w-4" />
-            {loading ? (isAr ? "جاري التحقق..." : "Verifying...") : (isAr ? "تسجيل الدخول" : "Sign In")}
-          </Button>
+          
+          <button 
+            type="submit" 
+            className="luxury-button w-full border-white/20 text-white hover:border-accent hover:bg-accent hover:text-primary h-16" 
+            disabled={loading}
+          >
+            {loading ? (isAr ? "جاري التحقق..." : "Validating...") : (isAr ? "تسجيل الدخول" : "Enter Portal")}
+          </button>
         </form>
+
+        <div className="mt-20 text-center">
+          <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20">
+            {isAr ? "سينا للاستثمارات العقارية ٢٠٢٤" : "SYNA Real Estate Investments 2024"}
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -36,58 +36,58 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="relative bg-primary text-primary-foreground pt-24 pb-12 overflow-hidden">
+    <footer className="relative bg-primary text-white pt-32 pb-16 overflow-hidden border-t border-white/5">
       {/* Background Decor */}
-      <div className="absolute top-0 right-0 w-1/3 h-full bg-accent/5 skew-x-[-12deg] translate-x-1/2 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-accent/[0.02] skew-x-[-15deg] translate-x-1/4 pointer-events-none" />
       <div className="luxury-grid absolute inset-0 opacity-10 pointer-events-none" />
 
       <div className="container relative z-10">
-        <div className="grid gap-16 md:grid-cols-12 border-b border-white/10 pb-20">
+        <div className="grid gap-20 lg:grid-cols-12 pb-24">
           {/* Brand & Corporate */}
-          <div className="md:col-span-4">
-            <Link to="/" className="flex items-center gap-4 mb-8">
-              <img src={logoImg} alt="SYNA" className="h-14 w-14 object-contain brightness-0 invert" />
-              <div className="flex flex-col leading-tight">
-                <span className="text-2xl font-semibold tracking-widest uppercase">SYNA</span>
-                <span className="text-[9px] uppercase tracking-[0.3em] text-accent font-bold">
+          <div className="lg:col-span-5">
+            <Link to="/" className="flex items-center gap-6 mb-12 group">
+              <img src={logoImg} alt="SYNA" className="h-16 w-16 object-contain brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity" />
+              <div className="flex flex-col leading-tight border-s border-white/10 ps-6">
+                <span className="text-3xl font-medium tracking-[0.2em] uppercase">SYNA</span>
+                <span className="text-[10px] uppercase tracking-[0.4em] text-accent font-bold">
                   {isAr ? "للاستثمارات العقارية" : "Real Estate Investments"}
                 </span>
               </div>
             </Link>
-            <p className="max-w-sm text-sm font-light leading-relaxed text-primary-foreground/60 mb-10 text-balance">
+            <p className="max-w-md text-sm font-light leading-[1.8] text-white/40 mb-12 text-balance">
               {isAr 
-                ? "كيان استثماري عقاري مؤسسي يعمل على تمكين التحول العمراني في المملكة العربية السعودية من خلال ربط الفرص النوعية بالمطورين الموثوقين والمستثمرين الاستراتيجيين."
-                : "An institutional real estate investment entity empowering urban transformation in Saudi Arabia by connecting quality opportunities with trusted developers and strategic investors."}
+                ? "كيان سيادي في منظومة الاستثمار العقاري، نختص في إدارة وتأجير العقارات المملوكة، وتمكين الشراكات الاستراتيجية النوعية التي ترتقي بالمشهد الصب في العاصمة الرياض."
+                : "A sovereign entity in the real estate investment ecosystem, specializing in asset management and enabling strategic partnerships that elevate the urban landscape of Riyadh."}
             </p>
-            <div className="flex flex-col gap-5">
-              <a href="mailto:info@syna.sa" className="flex items-center gap-4 text-sm font-medium transition-colors hover:text-accent">
-                <div className="flex h-10 w-10 items-center justify-center border border-white/10 bg-white/5">
-                  <Mail className="h-4 w-4" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+              <a href="mailto:info@syna.sa" className="flex items-center gap-5 group transition-colors">
+                <div className="flex h-12 w-12 items-center justify-center border border-white/10 bg-white/5 transition-colors group-hover:border-accent/40 group-hover:bg-accent/5">
+                  <Mail className="h-4 w-4 text-accent/60 group-hover:text-accent" strokeWidth={1.5} />
                 </div>
-                <span>info@syna.sa</span>
+                <span className="text-xs font-bold tracking-widest opacity-60 group-hover:opacity-100">INFO@SYNA.SA</span>
               </a>
-              <div className="flex items-center gap-4 text-sm font-medium text-primary-foreground/80">
-                <div className="flex h-10 w-10 items-center justify-center border border-white/10 bg-white/5">
-                  <MapPin className="h-4 w-4" />
+              <div className="flex items-center gap-5">
+                <div className="flex h-12 w-12 items-center justify-center border border-white/10 bg-white/5">
+                  <MapPin className="h-4 w-4 text-accent/60" strokeWidth={1.5} />
                 </div>
-                <span>{isAr ? "الرياض، المملكة العربية السعودية" : "Riyadh, Saudi Arabia"}</span>
+                <span className="text-xs font-bold tracking-widest opacity-60">{isAr ? "الرياض، المملكة" : "RIYADH, KSA"}</span>
               </div>
             </div>
           </div>
 
           {/* Navigation Links */}
-          <div className="md:col-span-5 grid grid-cols-2 md:grid-cols-3 gap-8">
-            {sections.map((section) => (
+          <div className="lg:col-span-4 grid grid-cols-2 gap-12">
+            {sections.slice(0, 2).map((section) => (
               <div key={section.title}>
-                <h4 className="mb-8 text-[11px] font-bold uppercase tracking-[0.2em] text-accent">
+                <h4 className="mb-10 text-[10px] font-bold uppercase tracking-[0.4em] text-accent">
                   {section.title}
                 </h4>
-                <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-6">
                   {section.links.map((link) => (
                     <Link
                       key={link.to}
                       to={link.to}
-                      className="text-xs font-medium text-primary-foreground/50 transition-colors hover:text-primary-foreground"
+                      className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/30 transition-all hover:text-white hover:ps-2"
                     >
                       {link.label}
                     </Link>
@@ -98,35 +98,35 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Newsletter/Inquiry */}
-          <div className="md:col-span-3">
-            <h4 className="mb-8 text-[11px] font-bold uppercase tracking-[0.2em] text-accent">
-              {isAr ? "تواصل تنفيذي" : "Executive Inquiry"}
+          <div className="lg:col-span-3">
+            <h4 className="mb-10 text-[10px] font-bold uppercase tracking-[0.4em] text-accent">
+              {isAr ? "النفاذ للمراسلات" : "Executive Desk"}
             </h4>
-            <p className="mb-8 text-xs font-light leading-relaxed text-primary-foreground/50">
+            <p className="mb-10 text-xs font-light leading-relaxed text-white/40">
               {isAr
-                ? "للاستفسارات الرسمية بشأن الشراكات الاستثمارية أو تطوير الأراضي."
-                : "For official inquiries regarding investment partnerships or land development."}
+                ? "للاستفسارات الرسمية بشأن الشراكات الاستثمارية الاستراتيجية."
+                : "For official executive inquiries regarding strategic investment mandates."}
             </p>
             <Link
               to="/contact"
-              className="flex w-full items-center justify-between border border-accent/40 bg-accent/5 px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-accent transition-all hover:bg-accent hover:text-primary"
+              className="luxury-button w-full h-14 border-white/10 text-white hover:border-accent hover:bg-accent hover:text-primary"
             >
-              {isAr ? "تقديم طلب اهتمام" : "Submit Interest"}
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em]">{isAr ? "تقديم طلب اهتمام" : "Submit Mandate"}</span>
               <ArrowUpRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
 
         {/* Legal Bottom bar */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-6 md:flex-row">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary-foreground/30" dir="ltr">
-            {isAr
-              ? `© ${new Date().getFullYear()} SYNA REAL ESTATE INVESTMENTS. ALL RIGHTS RESERVED.`
-              : `© ${new Date().getFullYear()} SYNA REAL ESTATE INVESTMENTS. ALL RIGHTS RESERVED.`}
+        <div className="pt-12 border-t border-white/5 flex flex-col items-center justify-between gap-8 md:flex-row">
+          <p className="text-[9px] font-bold uppercase tracking-[0.4em] text-white/20" dir="ltr">
+            © {new Date().getFullYear()} SYNA REAL ESTATE INVESTMENTS. INSTITUTIONAL SOVEREIGNTY.
           </p>
-          <div className="flex items-center gap-8 text-[10px] font-bold uppercase tracking-[0.2em] text-primary-foreground/30">
-            <span>RIYADH</span>
-            <span>SAUDI ARABIA</span>
+          <div className="flex items-center gap-12 text-[9px] font-bold uppercase tracking-[0.4em] text-white/20">
+            <Link to="/terms" className="hover:text-accent transition-colors">TERMS</Link>
+            <Link to="/privacy" className="hover:text-accent transition-colors">PRIVACY</Link>
+            <div className="h-4 w-px bg-white/5" />
+            <span className="text-white/40">HEADQUARTERS: RIYADH</span>
           </div>
         </div>
       </div>

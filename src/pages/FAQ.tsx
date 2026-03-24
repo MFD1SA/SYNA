@@ -40,29 +40,34 @@ const FAQPage: React.FC = () => {
   usePageTitle(isAr ? "الحوكمة والعمليات | الأسئلة الشائعة" : "Governance & Operations | FAQ");
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-primary flex flex-col relative overflow-hidden">
+      <div className="luxury-grid absolute inset-0 opacity-20 pointer-events-none" />
       <Navbar />
       <PageHeader 
         icon={HelpCircle} 
-        title={isAr ? "الحوكمة والعمليات" : "Governance & Operations"} 
-        description={isAr ? "دليل إجرائي ومعرفي لآلية عمل الشراكات الاستثمارية والمساهمات العقارية عبر سينا." : "A procedural and knowledge guide to the investment partnerships and real estate contributions via SYNA."} 
+        title={isAr ? "دليل الحوكمة والعمليات" : "Governance & Desk"} 
+        description={isAr ? "دليل إجرائي ومعرفي لآلية عمل الشراكات الاستثمارية والمساهمات العقارية عبر سينا للاستثمارات العقارية." : "An executive knowledge desk for investment frameworks and real estate contribution mandates via SYNA."} 
         backgroundImage={headerFaqImg} 
       />
-      <main className="container flex-1 py-24 md:py-40">
+
+      <main className="container flex-1 py-32 md:py-48 relative z-10">
         <div className="mx-auto max-w-4xl">
-          <div className="mb-16 border-s-2 border-accent ps-8">
-            <h2 className="text-3xl font-medium tracking-tight text-primary uppercase">{isAr ? "الأسئلة الأكثر تداولاً" : "Frequently Asked Questions"}</h2>
+          <div className="mb-24 text-center">
+            <span className="text-[10px] font-bold text-accent uppercase tracking-[0.4em] block mb-6">RESOURCES</span>
+            <h2 className="text-4xl md:text-5xl font-medium tracking-tight text-white uppercase">{isAr ? "الأسئلة الأكثر تداولاً" : "Executive FAQ"}</h2>
           </div>
           
-          <Accordion type="single" collapsible className="space-y-px bg-border/40 border-y border-border/40">
+          <Accordion type="single" collapsible className="space-y-4">
             {faqData.map((item, idx) => (
-              <motion.div key={idx} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.05 }}>
-                <AccordionItem value={`faq-${idx}`} className="border-none bg-background px-8 transition-all hover:bg-muted/30">
-                  <AccordionTrigger className="text-sm font-bold uppercase tracking-[0.1em] text-primary hover:no-underline py-8 text-start leading-relaxed">
-                    {isAr ? item.qAr : item.qEn}
+              <motion.div key={idx} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.05 }}>
+                <AccordionItem value={`faq-${idx}`} className="border border-white/5 bg-white/[0.02] px-10 transition-all hover:bg-white/[0.04] rounded-none">
+                  <AccordionTrigger className="text-[11px] font-bold uppercase tracking-[0.2em] text-white hover:no-underline py-10 transition-all group">
+                    <span className="text-start leading-relaxed ps-4 border-s-2 border-accent/0 group-data-[state=open]:border-accent transition-all">
+                      {isAr ? item.qAr : item.qEn}
+                    </span>
                   </AccordionTrigger>
-                  <AccordionContent className="text-sm font-light leading-relaxed text-muted-foreground pb-10 ps-0">
-                    <div className="max-w-3xl">
+                  <AccordionContent className="text-sm font-light leading-[1.8] text-white/40 pb-12 ps-4">
+                    <div className="max-w-3xl border-t border-white/5 pt-8">
                       {isAr ? item.aAr : item.aEn}
                     </div>
                   </AccordionContent>

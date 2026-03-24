@@ -35,28 +35,30 @@ const TermsPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-primary flex flex-col relative overflow-hidden">
+      <div className="luxury-grid absolute inset-0 opacity-20 pointer-events-none" />
       <Navbar />
       <PageHeader 
         icon={FileText} 
-        title={isAr ? "المتطلبات النظامية" : "Regulatory Requirements"} 
-        description={isAr ? "الأطر القانونية والحوكمة التي تنظم العمليات والتعاقدات عبر سينا للاستثمارات العقارية." : "The legal frameworks and governance governing operations and contracts via SYNA Real Estate Investments."} 
+        title={isAr ? "المتطلبات والسياسات" : "Regulatory Sandbox"} 
+        description={isAr ? "الأطر القانونية والحوكمة التي تنظم العمليات والتعاقدات عبر سينا للاستثمارات العقارية." : "The legal frameworks and sovereign governance protocols governing mandates via SYNA."} 
         backgroundImage={headerTermsImg} 
       />
-      <main className="container flex-1 py-24 md:py-40">
-        <div className="max-w-4xl mx-auto space-y-px bg-border/40 border border-border/40">
+
+      <main className="container flex-1 py-32 md:py-48 relative z-10">
+        <div className="max-w-4xl mx-auto space-y-px border border-white/5 bg-white/[0.02]">
           {sections.map((s, i) => (
-            <section key={i} className="bg-background p-12 transition-colors hover:bg-muted/30">
-              <span className="block text-[10px] font-bold text-accent uppercase tracking-widest mb-4">Section 0{i+1}</span>
-              <h2 className="mb-6 text-xl font-medium text-primary uppercase tracking-tight">{s.title}</h2>
-              <p className="text-base font-light leading-relaxed text-muted-foreground/80">{s.text}</p>
+            <section key={i} className="bg-primary p-16 transition-colors hover:bg-white/[0.03] border-b border-white/5 last:border-b-0">
+              <span className="block text-[9px] font-bold text-accent uppercase tracking-[0.4em] mb-6">ARTICLE 0{i+1}</span>
+              <h2 className="mb-8 text-2xl font-medium text-white uppercase tracking-tight">{s.title}</h2>
+              <p className="text-base font-light leading-[1.8] text-white/40">{s.text}</p>
             </section>
           ))}
         </div>
         
-        <div className="mt-20 text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary/40">
-                {isAr ? "آخر تحديث: مارس ٢٠٢٤" : "Last Updated: March 2024"}
+        <div className="mt-24 text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/20">
+                {isAr ? "آخر تحديث: مارس ٢٠٢٤" : "Last Verification: March 2024"}
             </p>
         </div>
       </main>

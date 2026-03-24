@@ -67,18 +67,52 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-none;
   }
 
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
   body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
-    font-weight: 400;
+    @apply bg-background text-foreground;
+    font-family: 'Inter', 'IBM Plex Sans Arabic', 'system-ui', sans-serif;
+    font-feature-settings: "kern", "liga", "clig";
+    letter-spacing: -0.01em;
   }
 
+  /* Premium Institutional Typography */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-medium tracking-tight text-primary uppercase;
+    @apply tracking-tight font-medium;
+    font-family: 'Inter', 'Alexandria', 'system-ui', sans-serif;
     line-height: 1.1;
+  }
+
+  .arabic-refined {
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    line-height: 1.6;
+    letter-spacing: normal;
+  }
+
+  /* Cinematic Layouts */
+  .cinematic-header {
+    @apply text-5xl md:text-7xl font-medium uppercase tracking-tighter;
+  }
+
+  .executive-sub {
+    @apply text-base md:text-lg font-light leading-relaxed max-w-xl text-muted-foreground;
+  }
+
+  .luxury-button {
+    @apply inline-flex h-14 items-center px-10 border border-primary text-[10px] font-bold uppercase tracking-[0.3em] transition-all hover:bg-primary hover:text-white;
+  }
+
+  /* Section Styling */
+  section {
+    @apply py-32 md:py-48;
   }
 }
 
@@ -97,4 +131,33 @@
   .syna-glass {
     @apply bg-background/70 backdrop-blur-2xl border-b border-border/30;
   }
+}
+
+/* Luxury Grid & Motifs */
+.luxury-grid {
+  background-image: radial-gradient(circle at 2px 2px, rgba(11, 20, 38, 0.05) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+/* Animated Underline */
+.hover-underline {
+  position: relative;
+}
+
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 1px;
+  bottom: -4px;
+  left: 0;
+  background-color: currentColor;
+  transform-origin: bottom right;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
 }

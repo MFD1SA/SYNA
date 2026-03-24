@@ -2,19 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link, useNavigate } from "react-router-dom";
-import { Globe, LogIn, UserPlus, Eye, EyeOff, Home, HardHat, Landmark, Loader2, Link2, CheckCircle2, XCircle } from "lucide-react";
+import { Globe, LogIn, UserPlus, Eye, EyeOff, Home, Loader2, Link2, CheckCircle2, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import logo from "@/assets/logo.png";
 import { motion } from "framer-motion";
 import { saudiCities } from "@/data/saudiCities";
-import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const DIGITS_ONLY_REGEX = /^[0-9]*$/;
 
@@ -39,7 +34,7 @@ const isValidGoogleDriveLink = (url: string): boolean => {
 const LoginPage: React.FC = () => {
   const { t, lang, toggleLang } = useLanguage();
   const isAr = lang === "ar";
-  usePageTitle(isAr ? "بوابة الشركاء" : "Partners Portal");
+  usePageTitle(isAr ? "بوابة النفاذ للشركاء" : "Partners Access Portal");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -71,10 +66,9 @@ const LoginPage: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const showWelcomeToast = () => {
-    toast({ title: portalType === "owner" ? (isAr ? "أهلاً بك 👋" : "Welcome 👋") : (isAr ? "أهلاً عزيزي المطور 👋" : "Welcome, Dear Developer 👋") });
+    toast({ title: portalType === "owner" ? (isAr ? "تم النفاذ بنجاح 👋" : "Access Granted 👋") : (isAr ? "أهلاً بك في فضاء الشركاء 👋" : "Welcome to the Partners Portal 👋") });
   };
 
-  // Validate Google Drive link
   const validateDriveLink = (url: string, setter: (v: boolean | null) => void) => {
     if (!url) { setter(null); return; }
     setter(isValidGoogleDriveLink(url));
@@ -88,7 +82,7 @@ const LoginPage: React.FC = () => {
     setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
+      toast({ variant: "destructive", title: isAr ? "خطأ في التحقق" : "Verification Error", description: error.message });
       setLoading(false);
       return;
     }
@@ -102,7 +96,7 @@ const LoginPage: React.FC = () => {
       const isOwner = roles.includes("owner");
       if (!isDev && !isOwner) {
         await supabase.auth.signOut();
-        toast({ variant: "destructive", title: isAr ? "غير مصرح" : "Unauthorized", description: isAr ? "حسابك غير مرتبط بأي دور في المنصة. تواصل مع مدير النظام." : "Your account is not linked to any role. Contact the administrator." });
+        toast({ variant: "destructive", title: isAr ? "غير مصرح" : "Unauthorized", description: isAr ? "حسابك غير مرتبط بأي نفاذ معتمد. تواصل مع الإدارة." : "Account not linked to any certified access. Contact management." });
         setLoading(false);
         return;
       }
@@ -113,18 +107,18 @@ const LoginPage: React.FC = () => {
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
-    if (!companyName.trim()) errs.companyName = isAr ? "يرجى إدخال اسم الشركة" : "Please enter company name";
-    if (!contactPerson.trim()) errs.contactPerson = isAr ? "يرجى إدخال اسم المسؤول" : "Please enter contact person name";
-    if (!crNumber || !DIGITS_ONLY_REGEX.test(crNumber)) errs.crNumber = isAr ? "يرجى إدخال رقم السجل التجاري" : "Please enter CR number";
-    if (!regEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regEmail)) errs.email = isAr ? "يرجى إدخال بريد إلكتروني صحيح" : "Please enter a valid email";
-    if (!phone || !DIGITS_ONLY_REGEX.test(phone) || phone.length < 9) errs.phone = isAr ? "يرجى إدخال رقم جوال صحيح" : "Please enter a valid phone number";
-    if (!city) errs.city = isAr ? "يرجى اختيار المدينة" : "Please select a city";
-    if (!crDriveLink || !isValidGoogleDriveLink(crDriveLink)) errs.crDriveLink = isAr ? "يرجى إدخال رابط Google Drive صحيح للسجل التجاري" : "Please enter a valid Google Drive link for CR";
-    if (!profileDriveLink || !isValidGoogleDriveLink(profileDriveLink)) errs.profileDriveLink = isAr ? "يرجى إدخال رابط Google Drive صحيح للبروفايل" : "Please enter a valid Google Drive link for profile";
-    if (selectedProjectTypes.length === 0) errs.projectTypes = isAr ? "يرجى اختيار نوع المشاريع" : "Please select project types";
-    if (selectedTargetCities.length === 0) errs.targetCities = isAr ? "يرجى اختيار المدن المستهدفة" : "Please select target cities";
-    if (!regPassword || regPassword.length < 8 || !/[a-zA-Z]/.test(regPassword) || !/[0-9]/.test(regPassword)) errs.password = isAr ? "كلمة المرور يجب أن تحتوي على حروف وأرقام (8 خانات)" : "Password must contain letters and numbers (min 8 chars)";
-    if (!acceptTerms) errs.terms = isAr ? "يجب الموافقة على الشروط والأحكام" : "You must accept the terms";
+    if (!companyName.trim()) errs.companyName = isAr ? "مطلوب" : "Required";
+    if (!contactPerson.trim()) errs.contactPerson = isAr ? "مطلوب" : "Required";
+    if (!crNumber || !DIGITS_ONLY_REGEX.test(crNumber)) errs.crNumber = isAr ? "رقم سجل غير صحيح" : "Invalid CR";
+    if (!regEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regEmail)) errs.email = isAr ? "بريد غير صحيح" : "Invalid email";
+    if (!phone || !DIGITS_ONLY_REGEX.test(phone) || phone.length < 9) errs.phone = isAr ? "رقم غير صحيح" : "Invalid phone";
+    if (!city) errs.city = isAr ? "مطلوب" : "Required";
+    if (!crDriveLink || !isValidGoogleDriveLink(crDriveLink)) errs.crDriveLink = isAr ? "رابط غير صحيح" : "Invalid link";
+    if (!profileDriveLink || !isValidGoogleDriveLink(profileDriveLink)) errs.profileDriveLink = isAr ? "رابط غير صحيح" : "Invalid link";
+    if (selectedProjectTypes.length === 0) errs.projectTypes = isAr ? "مطلوب" : "Required";
+    if (selectedTargetCities.length === 0) errs.targetCities = isAr ? "مطلوب" : "Required";
+    if (!regPassword || regPassword.length < 8) errs.password = isAr ? "8 خانات على الأقل" : "Min 8 chars";
+    if (!acceptTerms) errs.terms = isAr ? "الموافقة مطلوبة" : "Required";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -155,21 +149,15 @@ const LoginPage: React.FC = () => {
         throw new Error(res.data?.error || res.error?.message || "Registration failed");
       }
 
-      try {
-        await supabase.functions.invoke("send-deal-notification", {
-          body: { type: "new_developer_registered", registered_name: companyName, registered_email: regEmail, registered_phone: `+966${phone}` },
-        });
-      } catch {}
-
       toast({
-        title: isAr ? "تم استلام طلب التسجيل" : "Registration request received",
+        title: isAr ? "تم استلام طلب الانضمام" : "Access Request Received",
         description: isAr
-          ? "تم إرسال رابط التفعيل إلى بريدك الإلكتروني. سيتم مراجعة البيانات خلال 48 ساعة."
-          : "A verification link has been sent to your email. Your data will be reviewed within 48 hours.",
+          ? "سيتم مراجعة البيانات من قبل الإدارة والموافقة عليها خلال ٤٨ ساعة."
+          : "Your data will be reviewed and approved by management within 48 hours.",
       });
       setMode("login");
     } catch (err: any) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+      toast({ variant: "destructive", title: isAr ? "خطأ في التسجيل" : "Registration Error", description: err.message });
     }
     setLoading(false);
   };
@@ -182,304 +170,236 @@ const LoginPage: React.FC = () => {
     setSelectedTargetCities(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
   };
 
-  const inputClasses = "h-11 rounded-xl border-border/50 bg-background text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all";
-  const labelClasses = "font-medium text-sm text-foreground";
-  const sectionTitleClasses = "mb-3 text-sm font-semibold text-foreground border-b border-border/50 pb-2";
+  const inputClasses = "h-14 w-full bg-transparent border-b border-white/10 text-white focus:border-accent focus:outline-none transition-all placeholder:text-white/10 text-sm";
+  const labelClasses = "text-[10px] font-bold uppercase tracking-[0.2em] text-white/30";
+  const sectionTitleClasses = "mb-10 text-xs font-bold uppercase tracking-[0.3em] text-white border-s-2 border-accent ps-4";
 
   const DriveLinkInput = ({ value, onChange, valid, placeholder, error }: { value: string; onChange: (v: string) => void; valid: boolean | null; placeholder: string; error?: string }) => (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       <div className="relative">
-        <Input value={value} onChange={e => onChange(e.target.value)} dir="ltr" className={`${inputClasses} pe-10`} placeholder={placeholder} />
-        <div className="absolute end-3 top-1/2 -translate-y-1/2">
-          {valid === true && <CheckCircle2 className="h-4 w-4 text-emerald-500" />}
+        <input value={value} onChange={e => onChange(e.target.value)} dir="ltr" className={inputClasses} placeholder={placeholder} />
+        <div className="absolute end-0 top-1/2 -translate-y-1/2">
+          {valid === true && <CheckCircle2 className="h-4 w-4 text-accent" />}
           {valid === false && <XCircle className="h-4 w-4 text-destructive" />}
-          {valid === null && value && <Link2 className="h-4 w-4 text-muted-foreground" />}
+          {valid === null && value && <Link2 className="h-4 w-4 text-white/10" />}
         </div>
       </div>
-      {valid === false && value && (
-        <p className="text-[10px] text-destructive">{isAr ? "الرابط غير صالح — يجب أن يبدأ بـ https://drive.google.com/" : "Invalid link — must start with https://drive.google.com/"}</p>
-      )}
-      {valid === true && (
-        <p className="text-[10px] text-emerald-500">{isAr ? "✓ رابط Google Drive صالح" : "✓ Valid Google Drive link"}</p>
-      )}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <p className="text-[10px] uppercase tracking-wider text-destructive">{error}</p>}
     </div>
   );
 
   const LoginForm = (
-    <form onSubmit={handleLogin} className="space-y-5">
-      <div className="space-y-2">
-        <Label htmlFor={`${portalType}-email`} className={labelClasses}>{t.auth.email}</Label>
-        <Input id={`${portalType}-email`} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required dir="ltr" className={inputClasses} />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor={`${portalType}-password`} className={labelClasses}>{t.auth.password}</Label>
-        <div className="relative">
-          <Input id={`${portalType}-password`} type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required dir="ltr" className={inputClasses} />
-          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </button>
+    <form onSubmit={handleLogin} className="space-y-12">
+      <div className="space-y-8">
+        <div className="space-y-3">
+          <label className={labelClasses}>{t.auth.email}</label>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required dir="ltr" className={inputClasses} placeholder="executive@syna.sa" />
+        </div>
+        <div className="space-y-3">
+          <label className={labelClasses}>{t.auth.password}</label>
+          <div className="relative">
+            <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required dir="ltr" className={inputClasses} />
+            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute end-0 top-1/2 -translate-y-1/2 text-white/10 hover:text-white transition-colors">
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
       </div>
-      <Button type="submit" className="h-12 w-full gap-2 rounded-xl text-base font-medium transition-all duration-300 shadow-sm" disabled={loading}>
+      <button type="submit" className="luxury-button w-full h-16 border-white/10 text-white hover:border-accent hover:bg-accent hover:text-primary" disabled={loading}>
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
-        {isAr ? "دخول" : "Sign In"}
-      </Button>
+        {isAr ? "دخول البوابة" : "Enter Portal"}
+      </button>
     </form>
   );
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Left decorative panel */}
-      <div className="relative hidden w-[45%] overflow-hidden lg:flex lg:flex-col lg:items-center lg:justify-center bg-card border-e border-border/50">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute top-1/3 start-1/3 h-[500px] w-[500px] rounded-full bg-primary/5 blur-[120px]" />
-          <div className="absolute bottom-1/4 end-1/4 h-[300px] w-[300px] rounded-full bg-primary/5 blur-[100px]" />
-          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: `radial-gradient(circle, var(--primary) 0.5px, transparent 0.5px)`, backgroundSize: "40px 40px" }} />
+    <div className="relative flex min-h-screen bg-primary overflow-hidden">
+      {/* Cinematic Riyadh Background (Shared) */}
+      <div className="absolute inset-0 z-0 lg:w-[40%]">
+        <div className="absolute inset-0 bg-black/60 z-10" />
+        <img 
+            src="https://images.unsplash.com/photo-1549413280-9280f2fc748a?q=80&w=2000&auto=format&fit=crop" 
+            alt="Riyadh Architectural Excellence" 
+            className="h-full w-full object-cover grayscale opacity-40" 
+        />
+        <div className="absolute inset-x-12 bottom-12 z-20 hidden lg:block">
+            <div className="border-s-2 border-accent ps-8">
+                <span className="block text-[10px] font-bold uppercase tracking-[0.5em] text-accent mb-4">
+                    {isAr ? "سينا للاستثمارات العقارية" : "SYNA Real Estate Investments"}
+                </span>
+                <h2 className="text-4xl font-medium tracking-tight text-white uppercase leading-[1.1]">
+                    {isAr ? "سيـــادة العقـــــار" : "Real Estate Sovereignty"}
+                </h2>
+            </div>
         </div>
-        <motion.div animate={{ rotate: 360 }} transition={{ duration: 120, repeat: Infinity, ease: "linear" }} className="absolute h-[500px] w-[500px] rounded-full border border-primary/10" />
-        <motion.div animate={{ rotate: -360 }} transition={{ duration: 150, repeat: Infinity, ease: "linear" }} className="absolute h-[650px] w-[650px] rounded-full border border-primary/5" />
-        <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1 }} className="relative text-center">
-          <div className="relative mb-8">
-            <div className="absolute inset-0 scale-150 rounded-full bg-primary/5 blur-[40px]" />
-            <img src={logo} alt="SYNA" className="relative mx-auto h-36 w-36 object-contain" />
-          </div>
-          <h2 className="text-4xl font-medium tracking-tight text-foreground">SYNA</h2>
-          <p className="mt-3 text-sm font-light text-muted-foreground">{isAr ? "بوابة الشركاء" : "Partners Portal"}</p>
-        </motion.div>
       </div>
 
       {/* Right form panel */}
-      <div className="flex flex-1 items-center justify-center overflow-y-auto p-6 md:p-10">
-        <div className="fixed top-4 inset-x-6 z-10 flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-1.5 text-muted-foreground hover:text-foreground">
-            <Globe className="h-4 w-4" />{t.nav.language}
-          </Button>
-          <Button variant="ghost" size="sm" asChild className="gap-1.5 text-muted-foreground hover:text-foreground">
-            <Link to="/"><Home className="h-4 w-4" />{isAr ? "الرئيسية" : "Home"}</Link>
-          </Button>
+      <div className="relative z-20 flex flex-1 flex-col overflow-y-auto px-6 py-12 md:px-20 lg:py-20 lg:ms-[40%] bg-primary">
+        <div className="mb-16 flex items-center justify-between">
+            <Link to="/" className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/20 hover:text-white transition-colors">
+                {isAr ? "العودة للرئيسية" : "Back to Home"}
+            </Link>
+            <button onClick={toggleLang} className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/20 hover:text-white transition-colors">
+                {isAr ? "English" : "العربية"}
+            </button>
         </div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="w-full max-w-md">
-          <div className="mb-8 flex flex-col items-center lg:hidden">
-            <div className="relative">
-              <div className="absolute inset-0 scale-150 rounded-full bg-primary/5 blur-[30px]" />
-              <img src={logo} alt="SYNA" className="relative h-20 w-20 object-contain" />
-            </div>
-            <span className="mt-3 text-2xl font-medium text-foreground tracking-tight">SYNA</span>
-          </div>
+        <div className="mx-auto w-full max-w-md">
+          <div className="mb-16">
+            <Tabs value={portalType} onValueChange={(v) => { setPortalType(v as any); setMode("login"); }} className="mb-12">
+                <TabsList className="h-14 w-full rounded-none bg-white/5 p-1 border border-white/10">
+                <TabsTrigger value="developer" className="flex-1 text-[10px] font-bold uppercase tracking-widest rounded-none data-[state=active]:bg-white data-[state=active]:text-primary transition-all">
+                    {isAr ? "المطور" : "Developer"}
+                </TabsTrigger>
+                <TabsTrigger value="owner" className="flex-1 text-[10px] font-bold uppercase tracking-widest rounded-none data-[state=active]:bg-white data-[state=active]:text-primary transition-all">
+                    {isAr ? "المالك" : "Owner"}
+                </TabsTrigger>
+                </TabsList>
+            </Tabs>
 
-          <Tabs value={portalType} onValueChange={(v) => { setPortalType(v as any); setMode("login"); }} className="mb-6">
-            <TabsList className="w-full rounded-xl border border-border/50 bg-muted/30 p-1">
-              <TabsTrigger value="developer" className="flex-1 gap-1.5 rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all">
-                <HardHat className="h-3.5 w-3.5" />
-                {isAr ? "بوابة المطور" : "Developer Portal"}
-              </TabsTrigger>
-              <TabsTrigger value="owner" className="flex-1 gap-1.5 rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all">
-                <Landmark className="h-3.5 w-3.5" />
-                {isAr ? "بوابة المالك" : "Owner Portal"}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          <div className="mb-8 rounded-2xl border border-border/50 bg-muted/10 p-6 text-center shadow-sm">
-            <div className="flex items-center justify-center gap-2 mb-3">
-              {portalType === "developer" ? <HardHat className="h-5 w-5 text-primary" /> : <Landmark className="h-5 w-5 text-primary" />}
-              <p className="text-lg font-medium text-foreground">
-                {portalType === "developer" ? (isAr ? "بوابة المطور العقاري" : "Developer Portal") : (isAr ? "بوابة مالك الأرض" : "Land Owner Portal")}
+            <div className="mb-12">
+              <h1 className="text-3xl font-medium tracking-tight text-white uppercase mb-4">
+                {portalType === "developer" ? (isAr ? "بوابة المطور" : "Developer Portal") : (isAr ? "بوابة المالك" : "Owner Portal")}
+              </h1>
+              <p className="text-sm font-light text-white/40 leading-relaxed">
+                {portalType === "owner"
+                  ? (isAr ? "منطقة متابعة حالة الأصول ومؤشرات الاهتمام الاستثماري." : "Dedicated area for asset status and investment interest tracking.")
+                  : mode === "login"
+                    ? (isAr ? "النفاذ لمتابعة الصفقات المتأهلة وفرص التطوير المشترك." : "Access to track qualified deals and co-development opportunities.")
+                    : (isAr ? "تسجيل اهتمام كشريك تطوير مؤسسي لاستعراض الفرص النوعية." : "Register interest as an institutional developer to explore curated opportunities.")}
               </p>
             </div>
-            <p className="text-sm font-light leading-relaxed text-muted-foreground">
-              {portalType === "owner"
-                ? (isAr ? "تابع حالة أرضك ومؤشرات الاهتمام عبر منصة سينا" : "Track your land status and interest indicators via SYNA platform")
-                : mode === "login"
-                  ? (isAr ? "سجل دخولك لمتابعة الصفقات وفرص الشراكة العقارية" : "Sign in to track deals and real estate partnership opportunities")
-                  : (isAr ? "أنشئ حساباً كشريك تطوير معتمد واستعرض الفرص المتاحة" : "Create an account as a certified development partner and explore available opportunities")}
-            </p>
           </div>
 
-          {/* Owner Portal */}
           {portalType === "owner" && (
-            <>
+            <div className="space-y-12">
               {LoginForm}
-              <div className="mt-6 rounded-xl border border-border bg-card p-5 text-center shadow-sm">
-                <p className="text-xs font-light leading-relaxed text-muted-foreground">
-                  {isAr ? "ملاحظة: يتم إنشاء حسابات الملاك تلقائياً من قبل فريق سينا عند بدء إجراءات الشراكة. إذا لم تتلقَ بيانات الدخول، تفضل بالتواصل معنا." : "Note: Owner accounts are automatically created by the SYNA team when partnership procedures start. If you haven't received login credentials, please contact us."}
+              <div className="border-t border-white/5 pt-10">
+                <p className="text-[10px] font-medium leading-loose text-white/20 uppercase tracking-widest">
+                  {isAr ? "ملاحظة: يتم تفعيل حسابات الملاك تلقائياً من قبل الإدارة. يرجى مراجعة البريد الإلكتروني للحصول على بيانات النفاذ." : "Note: Owner accounts are activated by management. Please refer to your executive email for access credentials."}
                 </p>
               </div>
-            </>
+            </div>
           )}
 
-          {/* Developer Login */}
           {portalType === "developer" && mode === "login" && (
-            <>
+            <div className="space-y-12">
               {LoginForm}
-              <p className="mt-8 text-center text-sm font-light text-muted-foreground">
-                {isAr ? "ليس لديك حساب كشريك مطور؟" : "Don't have a developer partner account?"}{" "}
-                <button type="button" onClick={() => setMode("register")} className="text-primary font-medium hover:underline transition-all">
-                  {isAr ? "إنشاء حساب جديد" : "Create New Account"}
+              <div className="text-center pt-10 border-t border-white/5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20 mb-6">
+                   {isAr ? "ليس لديك حساب معتمد؟" : "NOT A CERTIFIED PARTNER?"}
+                </p>
+                <button type="button" onClick={() => setMode("register")} className="text-[10px] font-bold uppercase tracking-[0.3em] text-accent hover:underline">
+                  {isAr ? "طلب الانضمام كشريك" : "Request Partner Access"}
                 </button>
-              </p>
-            </>
+              </div>
+            </div>
           )}
 
-          {/* Developer Register */}
           {portalType === "developer" && mode === "register" && (
-            <>
-              <form onSubmit={handleRegister} className="space-y-8">
-                {/* Company Info */}
-                <div className="p-1">
-                  <h3 className={sectionTitleClasses}>{isAr ? "البيانات الأساسية للشركة" : "Basic Company Information"}</h3>
-                  <div className="space-y-4">
+            <div className="space-y-16">
+              <form onSubmit={handleRegister} className="space-y-16">
+                <div className="space-y-12">
+                  <h3 className={sectionTitleClasses}>{isAr ? "بيانات الهوية" : "Identity Data"}</h3>
+                  <div className="space-y-10">
                     <div className="space-y-2">
-                      <Label className={labelClasses}>{isAr ? "اسم الشركة *" : "Company Name *"}</Label>
-                      <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} required className={inputClasses} />
-                      {errors.companyName && <p className="text-xs text-destructive">{errors.companyName}</p>}
+                        <label className={labelClasses}>{isAr ? "اسم الكيان *" : "Entity Name *"}</label>
+                        <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} required className={inputClasses} />
                     </div>
                     <div className="space-y-2">
-                      <Label className={labelClasses}>{isAr ? "اسم المسؤول *" : "Contact Person *"}</Label>
-                      <Input value={contactPerson} onChange={(e) => setContactPerson(e.target.value)} required className={inputClasses} />
-                      {errors.contactPerson && <p className="text-xs text-destructive">{errors.contactPerson}</p>}
+                        <label className={labelClasses}>{isAr ? "المسؤول التنفيذي *" : "Executive Person *"}</label>
+                        <input value={contactPerson} onChange={(e) => setContactPerson(e.target.value)} required className={inputClasses} />
                     </div>
-                    <div className="space-y-2">
-                      <Label className={labelClasses}>{isAr ? "رقم السجل التجاري *" : "Commercial Register Number *"}</Label>
-                      <Input value={crNumber} onChange={(e) => setCrNumber(e.target.value.replace(/\D/g, ""))} required dir="ltr" className={inputClasses} placeholder="1010XXXXXX" />
-                      {errors.crNumber && <p className="text-xs text-destructive">{errors.crNumber}</p>}
-                    </div>
-                    <div className="space-y-2">
-                      <Label className={labelClasses}>{isAr ? "المدينة الرئيسية *" : "Main City *"}</Label>
-                      <Select value={city} onValueChange={setCity}>
-                        <SelectTrigger className={inputClasses}>
-                          <SelectValue placeholder={isAr ? "اختر المدينة" : "Select city"} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {saudiCities.map(c => (
-                            <SelectItem key={c.name.en} value={c.name.en}>{isAr ? c.name.ar : c.name.en}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {errors.city && <p className="text-xs text-destructive">{errors.city}</p>}
+                    <div className="grid gap-10 md:grid-cols-2">
+                        <div className="space-y-2">
+                        <label className={labelClasses}>{isAr ? "السجل التجاري *" : "Commercial Register *"}</label>
+                        <input value={crNumber} onChange={(e) => setCrNumber(e.target.value.replace(/\D/g, ""))} required dir="ltr" className={inputClasses} />
+                        </div>
+                        <div className="space-y-2">
+                        <label className={labelClasses}>{isAr ? "المقر *" : "HQ *"}</label>
+                        <Select value={city} onValueChange={setCity}>
+                            <SelectTrigger className="h-14 bg-transparent border-none border-b border-white/10 rounded-none focus:ring-0 px-0 text-white">
+                                <SelectValue placeholder={isAr ? "اختر" : "Select"} />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-none border-white/10 bg-primary text-white">
+                            {saudiCities.map(c => (
+                                <SelectItem key={c.name.en} value={c.name.en} className="rounded-none focus:bg-white/5">{isAr ? c.name.ar : c.name.en}</SelectItem>
+                            ))}
+                            </SelectContent>
+                        </Select>
+                        </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Project Types */}
-                <div className="p-1">
-                  <h3 className={sectionTitleClasses}>{isAr ? "مجالات التطوير العقاري *" : "Real Estate Development Types *"}</h3>
-                  <p className="text-xs text-muted-foreground mb-3">{isAr ? "حدد أنواع المشاريع التي تطورها شركتك" : "Select the project types your company develops"}</p>
-                  <div className="flex flex-wrap gap-2">
+                <div className="space-y-10">
+                  <h3 className={sectionTitleClasses}>{isAr ? "نطاق الاستثمار *" : "Investment Scope *"}</h3>
+                  <div className="grid grid-cols-2 gap-4">
                     {PROJECT_TYPES.map(pt => (
                       <button key={pt.value} type="button" onClick={() => toggleProjectType(pt.value)}
-                        className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${selectedProjectTypes.includes(pt.value) ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
+                        className={`px-4 py-3 text-[9px] font-bold uppercase tracking-[0.1em] transition-all border ${selectedProjectTypes.includes(pt.value) ? "border-accent bg-accent text-primary" : "border-white/10 text-white/30 hover:border-accent"}`}>
                         {isAr ? pt.ar : pt.en}
                       </button>
                     ))}
                   </div>
-                  {errors.projectTypes && <p className="text-xs text-destructive mt-2">{errors.projectTypes}</p>}
                 </div>
 
-                {/* Target Cities */}
-                <div className="p-1">
-                  <h3 className={sectionTitleClasses}>{isAr ? "النطاق الجغرافي المستهدف *" : "Target Geographic Scope *"}</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {saudiCities.slice(0, 10).map(c => (
-                      <button key={c.name.en} type="button" onClick={() => toggleTargetCity(c.name.en)}
-                        className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${selectedTargetCities.includes(c.name.en) ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
-                        {isAr ? c.name.ar : c.name.en}
-                      </button>
-                    ))}
-                  </div>
-                  {errors.targetCities && <p className="text-xs text-destructive mt-2">{errors.targetCities}</p>}
-                </div>
-
-                {/* Contact Info */}
-                <div className="p-1">
-                  <h3 className={sectionTitleClasses}>{isAr ? "معلومات التواصل" : "Contact Information"}</h3>
-                  <div className="space-y-4">
+                <div className="space-y-12">
+                  <h3 className={sectionTitleClasses}>{isAr ? "التواصل" : "Communication"}</h3>
+                  <div className="space-y-10">
                     <div className="space-y-2">
-                      <Label className={labelClasses}>{isAr ? "البريد الإلكتروني للشركة *" : "Company Email *"}</Label>
-                      <Input type="email" value={regEmail} onChange={(e) => setRegEmail(e.target.value)} required dir="ltr" className={inputClasses} placeholder="example@email.com" />
-                      {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
-                      <p className="text-xs text-muted-foreground">{isAr ? "سيُستخدم هذا البريد لتسجيل الدخول واستلام التنبيهات" : "Used for login and notifications"}</p>
+                      <label className={labelClasses}>{isAr ? "البريد الإداري *" : "Management Email *"}</label>
+                      <input type="email" value={regEmail} onChange={(e) => setRegEmail(e.target.value)} required dir="ltr" className={inputClasses} />
                     </div>
                     <div className="space-y-2">
-                      <Label className={labelClasses}>{isAr ? "رقم جوال المسؤول *" : "Contact Phone Number *"}</Label>
-                      <div className="flex gap-2">
-                        <div className="flex h-11 items-center rounded-xl border border-border/50 bg-muted px-4 text-sm font-medium text-foreground shrink-0">+966</div>
-                        <Input type="tel" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} required dir="ltr" className={inputClasses} placeholder="5XXXXXXXX" maxLength={10} />
+                      <label className={labelClasses}>{isAr ? "رقم الجوال *" : "Mobile *"}</label>
+                      <div className="flex gap-4">
+                        <div className="flex h-14 items-center border-b border-white/10 text-[10px] font-bold text-white/20 tracking-tighter">+966</div>
+                        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} required dir="ltr" className={inputClasses} maxLength={10} />
                       </div>
-                      {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
-                    </div>
-                    <div className="space-y-2">
-                      <Label className={labelClasses}>{isAr ? "الموقع الإلكتروني" : "Website"}</Label>
-                      <Input type="url" value={website} onChange={(e) => setWebsite(e.target.value)} dir="ltr" className={inputClasses} placeholder="https://example.com" />
                     </div>
                   </div>
                 </div>
 
-                {/* Documents - Google Drive Links */}
-                <div className="p-1">
-                  <h3 className={sectionTitleClasses}>{isAr ? "الوثائق الرسمية والمستندات (روابط Google Drive)" : "Official Documents (Google Drive Links)"}</h3>
-                  <div className="space-y-5">
-                    <div className="space-y-2">
-                      <Label className={labelClasses}>{isAr ? "رابط السجل التجاري *" : "Commercial Register Link *"}</Label>
-                      <DriveLinkInput value={crDriveLink} onChange={setCrDriveLink} valid={crLinkValid} placeholder="https://drive.google.com/file/d/..." error={errors.crDriveLink} />
+                <div className="space-y-12">
+                  <h3 className={sectionTitleClasses}>{isAr ? "الاعتمادات (Google Drive)" : "Credentials (Google Drive)"}</h3>
+                  <div className="space-y-10">
+                    <div className="space-y-3">
+                      <label className={labelClasses}>{isAr ? "رابط السجل التجاري *" : "CR Link *"}</label>
+                      <DriveLinkInput value={crDriveLink} onChange={setCrDriveLink} valid={crLinkValid} placeholder="https://drive.google.com/..." error={errors.crDriveLink} />
                     </div>
-                    <div className="space-y-2">
-                      <Label className={labelClasses}>{isAr ? "رابط الملف التعريفي للشركة (Company Profile) *" : "Company Profile Link *"}</Label>
-                      <DriveLinkInput value={profileDriveLink} onChange={setProfileDriveLink} valid={profileLinkValid} placeholder="https://drive.google.com/file/d/..." error={errors.profileDriveLink} />
-                    </div>
-                    <div className="rounded-lg bg-muted/50 p-3 border border-border/50">
-                      <p className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                        {isAr ? "يرجى التحقق من إعدادات مشاركة الرابط لتكون (أي شخص لديه الرابط - Anyone with the link)" : "Please verify link sharing settings are set to (Anyone with the link)"}
-                      </p>
+                    <div className="space-y-3">
+                      <label className={labelClasses}>{isAr ? "رابط ملف الكيان *" : "Profile Link *"}</label>
+                      <DriveLinkInput value={profileDriveLink} onChange={setProfileDriveLink} valid={profileLinkValid} placeholder="https://drive.google.com/..." error={errors.profileDriveLink} />
                     </div>
                   </div>
                 </div>
 
-                {/* Security */}
-                <div className="p-1">
-                  <h3 className={sectionTitleClasses}>{isAr ? "إعدادات الأمان" : "Security Settings"}</h3>
-                  <div className="space-y-2">
-                    <Label className={labelClasses}>{isAr ? "كلمة المرور *" : "Password *"}</Label>
-                    <div className="relative">
-                      <Input type={showRegPassword ? "text" : "password"} value={regPassword} onChange={(e) => setRegPassword(e.target.value)} required minLength={8} dir="ltr" className={inputClasses} placeholder={isAr ? "حروف + أرقام (8 خانات على الأقل)" : "Letters + numbers (min 8 chars)"} />
-                      <button type="button" onClick={() => setShowRegPassword(!showRegPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                        {showRegPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
+                <div className="space-y-10">
+                    <div className="flex items-start gap-4">
+                    <Checkbox id="terms" checked={acceptTerms} onCheckedChange={(checked) => setAcceptTerms(checked === true)} className="mt-1 border-white/20 rounded-none data-[state=checked]:bg-accent data-[state=checked]:border-accent" />
+                    <label htmlFor="terms" className="text-[9px] font-medium leading-[1.8] text-white/20 uppercase tracking-[0.15em]">
+                        {isAr ? "بإتمام التسجيل، أقر بصحة البيانات ومسؤوليتي القانونية، وأوافق على" : "By registering, I certify data accuracy and legal authority, agreeing to"}{" "}
+                        <Link to="/terms" className="text-accent underline">{t.auth.termsAndConditions}</Link>
+                    </label>
                     </div>
-                    {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
-                  </div>
+                    
+                    <button type="submit" className="luxury-button w-full h-16 border-white/10 text-white hover:border-accent hover:bg-accent hover:text-primary" disabled={loading}>
+                        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+                        {isAr ? "إرسال طلب الاعتماد" : "Submit Credentials"}
+                    </button>
                 </div>
-
-                {/* Terms */}
-                <div className="flex items-start gap-3 p-1">
-                  <Checkbox id="terms" checked={acceptTerms} onCheckedChange={(checked) => setAcceptTerms(checked === true)} className="mt-1" />
-                  <label htmlFor="terms" className="text-sm font-light leading-relaxed text-muted-foreground">
-                    {isAr ? "بإنشاء الحساب، أقر بأنني مفوض بتمثيل هذه الشركة، وأوافق على" : "By creating an account, I acknowledge that I am authorized to represent this company, and I agree to the"}{" "}
-                    <Link to="/terms" className="text-primary font-medium hover:underline">{t.auth.termsAndConditions}</Link>
-                    {" "}{isAr ? "و" : "and"}{" "}
-                    <Link to="/privacy" className="text-primary font-medium hover:underline">{t.auth.privacyPolicy}</Link>
-                    {isAr ? " الخاصة بمنصة سينا." : " of SYNA platform."}
-                  </label>
-                </div>
-                {errors.terms && <p className="text-xs text-destructive -mt-2 px-1">{errors.terms}</p>}
-
-                <Button type="submit" className="h-12 w-full gap-2 rounded-xl text-base font-medium shadow-sm" disabled={loading}>
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
-                  {isAr ? "إرسال طلب التسجيل" : "Submit Registration Request"}
-                </Button>
               </form>
-              <p className="mt-8 text-center text-sm font-light text-muted-foreground">
-                {isAr ? "لديك حساب كشريك معتمد؟" : "Have a certified partner account?"}{" "}
-                <button type="button" onClick={() => setMode("login")} className="text-primary font-medium hover:underline transition-all">
-                  {isAr ? "تسجيل الدخول" : "Sign In"}
+              
+              <div className="text-center pt-10 border-t border-white/5">
+                <button type="button" onClick={() => setMode("login")} className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/30 hover:text-white transition-colors">
+                  {isAr ? "العودة لتسجيل الدخول" : "Back to Sign In"}
                 </button>
-              </p>
-            </>
+              </div>
+            </div>
           )}
-        </motion.div>
+        </div>
       </div>
     </div>
   );
