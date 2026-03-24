@@ -22,31 +22,24 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="relative overflow-hidden border-t border-[hsl(210,22%,12%)] bg-[hsl(210,30%,3%)]">
-      {/* Subtle glow */}
-      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-px w-1/2 bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.2)] to-transparent" />
-      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-80 w-80 rounded-full bg-[hsl(200,80%,40%,0.03)] blur-[100px]" />
-
-      <div className="container relative py-16 md:py-20">
+    <footer className="relative bg-card border-t border-border/40 overflow-hidden">
+      <div className="container relative py-16 md:py-24">
         <div className="grid gap-12 md:grid-cols-12">
           {/* Brand column */}
           <div className="md:col-span-4">
-            <div className="flex items-center gap-2 mb-5">
-              <div className="relative">
-                <div className="absolute inset-0 scale-150 rounded-full bg-[hsl(200,80%,45%,0.1)] blur-[20px]" />
-                <img src={logoImg} alt="SYNA" className="relative h-20 w-20 object-contain" />
-              </div>
-              <span className="text-3xl font-medium tracking-tight text-white">SYNA</span>
+            <div className="flex items-center gap-3 mb-6">
+              <img src={logoImg} alt="SYNA" className="h-16 w-16 object-contain" />
+              <span className="text-2xl font-semibold tracking-tight text-foreground">SYNA</span>
             </div>
-            <p className="max-w-xs text-sm font-light leading-relaxed text-[hsl(210,15%,45%)] mb-6">
+            <p className="max-w-xs text-sm font-light leading-relaxed text-muted-foreground mb-8">
               {t.footer.desc}
             </p>
-            <div className="flex flex-col gap-3">
-              <a href="mailto:info@syna.sa" className="group flex items-center gap-2.5 text-sm text-[hsl(210,15%,45%)] transition-colors hover:text-[hsl(200,80%,60%)]">
+            <div className="flex flex-col gap-4">
+              <a href="mailto:info@syna.sa" className="group flex items-center gap-3 text-sm text-muted-foreground transition-colors hover:text-primary">
                 <Mail className="h-4 w-4" />
                 <span>info@syna.sa</span>
               </a>
-              <div className="flex items-center gap-2.5 text-sm text-[hsl(210,15%,45%)]">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4" />
                 <span>{isAr ? "المملكة العربية السعودية" : "Saudi Arabia"}</span>
               </div>
@@ -55,18 +48,18 @@ const Footer: React.FC = () => {
 
           {/* Quick Links */}
           <div className="md:col-span-3">
-            <h4 className="mb-5 text-sm font-medium uppercase tracking-wider text-[hsl(210,15%,55%)]">
+            <h4 className="mb-6 text-xs font-semibold uppercase tracking-widest text-foreground">
               {isAr ? "روابط سريعة" : "Quick Links"}
             </h4>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               {quickLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="group flex w-fit items-center gap-1.5 text-sm font-light text-[hsl(210,15%,45%)] transition-all duration-300 hover:text-white"
+                  className="group flex w-fit items-center gap-2 text-sm font-light text-muted-foreground transition-colors hover:text-primary"
                 >
                   <span>{link.label}</span>
-                  <ArrowUpRight className="h-3 w-3 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <ArrowUpRight className="h-3 w-3 opacity-0 transition-all duration-300 group-hover:opacity-100 rtl:group-hover:-translate-x-1 group-hover:translate-x-1" />
                 </Link>
               ))}
             </div>
@@ -74,15 +67,15 @@ const Footer: React.FC = () => {
 
           {/* Legal */}
           <div className="md:col-span-2">
-            <h4 className="mb-5 text-sm font-medium uppercase tracking-wider text-[hsl(210,15%,55%)]">
+            <h4 className="mb-6 text-xs font-semibold uppercase tracking-widest text-foreground">
               {isAr ? "قانوني" : "Legal"}
             </h4>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               {legalLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="w-fit text-sm font-light text-[hsl(210,15%,45%)] transition-colors duration-300 hover:text-white"
+                  className="w-fit text-sm font-light text-muted-foreground transition-colors hover:text-primary"
                 >
                   {link.label}
                 </Link>
@@ -92,29 +85,29 @@ const Footer: React.FC = () => {
 
           {/* CTA column */}
           <div className="md:col-span-3">
-            <h4 className="mb-5 text-sm font-medium uppercase tracking-wider text-[hsl(210,15%,55%)]">
+            <h4 className="mb-6 text-xs font-semibold uppercase tracking-widest text-foreground">
               {isAr ? "ابدأ الآن" : "Get Started"}
             </h4>
-            <p className="mb-5 text-sm font-light leading-relaxed text-[hsl(210,15%,45%)]">
+            <p className="mb-6 text-sm font-light leading-relaxed text-muted-foreground">
               {isAr
                 ? "انضم إلى منظومة الشراكات التطويرية والمساهمات العقارية وحوّل أرضك إلى مشروع منتج"
                 : "Join the development partnerships & contributions ecosystem and turn your land into a productive project"}
             </p>
             <Link
               to="/auth/login"
-              className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium text-white syna-gradient transition-all duration-300 hover:shadow-[0_8px_30px_-8px_hsl(200,80%,50%,0.3)] hover:scale-[1.02]"
+              className="inline-flex items-center gap-2 rounded-sm bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:-translate-y-0.5"
             >
-              {isAr ? "بوابة الشركاء" : "Partners Portal"}
+              {isAr ? "بوابة النظام" : "Platform Access"}
               <ArrowUpRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-[hsl(210,22%,10%)] pt-8 md:flex-row">
-          <p className="text-xs font-light text-[hsl(210,15%,35%)]">
+        <div className="mt-20 flex flex-col items-center justify-between gap-4 border-t border-border/40 pt-8 md:flex-row">
+          <p className="text-xs font-light text-muted-foreground" dir="ltr">
             {isAr
-              ? `جميع الحقوق محفوظة لـ شركة سينا © ${new Date().getFullYear()}`
+              ? `© ${new Date().getFullYear()} SYNA. جميع الحقوق محفوظة.`
               : `© ${new Date().getFullYear()} SYNA. All rights reserved.`}
           </p>
         </div>

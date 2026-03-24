@@ -275,58 +275,78 @@ const AdminDevelopers: React.FC = () => {
       {loading ? (
         <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-20 animate-pulse rounded-xl bg-muted" />)}</div>
       ) : (
-        <div className="space-y-2">
-          {filtered.map(dev => {
-            const sc = statusConfig[dev.verification_status];
-            return (
-              <div key={dev.id} className="rounded-xl border border-border/60 bg-card flex items-center justify-between p-4 hover:border-primary/20 transition-all">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
-                    <HardHat className="h-5 w-5 text-accent-foreground" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-foreground">{dev.company_name}</p>
-                      {dev.marketing_brand_name && <span className="text-xs text-muted-foreground">({dev.marketing_brand_name})</span>}
-                    </div>
-                    <p className="text-xs font-light text-muted-foreground">
-                      {isAr ? "سجل تجاري:" : "CR:"} {dev.cr_number} • {dev.email || "—"} • {dev.phone || "—"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={sc.variant} className="gap-1">
-                    <sc.icon className="h-3 w-3" />
-                    {sc.label}
-                  </Badge>
-                  {dev.verification_status === "pending_review" && (
-                    <>
-                      <Button size="sm" variant="outline" className="text-primary border-primary/20 hover:bg-primary/5" onClick={() => updateStatus(dev.id, "verified")}>
-                        <CheckCircle2 className="h-3.5 w-3.5 me-1" />{isAr ? "توثيق" : "Verify"}
-                      </Button>
-                      <Button size="sm" variant="outline" className="text-destructive border-destructive/20 hover:bg-destructive/5" onClick={() => updateStatus(dev.id, "rejected")}>
-                        <XCircle className="h-3.5 w-3.5 me-1" />{isAr ? "رفض" : "Reject"}
-                      </Button>
-                    </>
-                  )}
-                  <Button size="sm" variant="outline" onClick={() => openEdit(dev)}>
-                    <Pencil className="h-3.5 w-3.5 me-1" />{isAr ? "تعديل" : "Edit"}
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-blue-500 border-blue-500/20 hover:bg-blue-500/5" onClick={() => handleImpersonate(dev.user_id, dev.company_name)} disabled={impersonating === dev.user_id}>
-                    {impersonating === dev.user_id ? <Loader2 className="h-3.5 w-3.5 me-1 animate-spin" /> : <LogIn className="h-3.5 w-3.5 me-1" />}
-                    {isAr ? "دخول كمطور" : "Login as"}
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setPasswordDialog({ user_id: dev.user_id, name: dev.company_name })}>
-                    <KeyRound className="h-3.5 w-3.5 me-1" />{isAr ? "كلمة المرور" : "Password"}
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => setDeleteDialog(dev)} className="text-destructive hover:bg-destructive/10">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
-          {filtered.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">{isAr ? "لا يوجد مطورون" : "No developers found"}</p>}
+        <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-start">
+              <thead className="bg-muted/40 text-muted-foreground border-b border-border/60">
+                <tr>
+                  <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "المطور" : "Developer"}</th>
+                  <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "التواصل والسجل" : "Contact & CR"}</th>
+                  <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "الحالة" : "Status"}</th>
+                  <th className="px-5 py-3.5 font-medium text-end text-xs tracking-wide">{isAr ? "إجراءات" : "Actions"}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {filtered.map(dev => {
+                  const sc = statusConfig[dev.verification_status];
+                  return (
+                    <tr key={dev.id} className="hover:bg-muted/20 transition-colors group">
+                      <td className="px-5 py-4 min-w-[200px]">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent border border-border/50">
+                            <HardHat className="h-5 w-5 text-accent-foreground/70" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{dev.company_name}</p>
+                            {dev.marketing_brand_name && <p className="text-[11px] text-muted-foreground">{dev.marketing_brand_name}</p>}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 min-w-[200px]">
+                        <p className="text-xs text-foreground font-medium" dir="ltr">{dev.cr_number}</p>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">{dev.email || "—"}</p>
+                        <p className="text-[11px] text-muted-foreground" dir="ltr">{dev.phone || "—"}</p>
+                      </td>
+                      <td className="px-5 py-4">
+                        <Badge variant={sc.variant} className="gap-1 text-[10px] whitespace-nowrap">
+                          <sc.icon className="h-3.5 w-3.5" />
+                          {sc.label}
+                        </Badge>
+                      </td>
+                      <td className="px-5 py-4 text-end">
+                        <div className="flex items-center justify-end gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
+                          {dev.verification_status === "pending_review" && (
+                            <>
+                              <Button size="icon" variant="outline" className="h-8 w-8 text-emerald-600 border-emerald-600/20 hover:bg-emerald-600/10" onClick={() => updateStatus(dev.id, "verified")} title={isAr ? "توثيق" : "Verify"}>
+                                <CheckCircle2 className="h-4 w-4" />
+                              </Button>
+                              <Button size="icon" variant="outline" className="h-8 w-8 text-destructive border-destructive/20 hover:bg-destructive/10" onClick={() => updateStatus(dev.id, "rejected")} title={isAr ? "رفض" : "Reject"}>
+                                <XCircle className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                          <Button size="sm" variant="outline" className="h-8 text-[11px]" onClick={() => handleImpersonate(dev.user_id, dev.company_name)} disabled={impersonating === dev.user_id}>
+                            {impersonating === dev.user_id ? <Loader2 className="h-3 w-3 me-1 animate-spin" /> : <LogIn className="h-3 w-3 me-1" />}
+                            {isAr ? "دخول" : "Login"}
+                          </Button>
+                          <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => openEdit(dev)} title={isAr ? "تعديل" : "Edit"}>
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => setPasswordDialog({ user_id: dev.user_id, name: dev.company_name })} title={isAr ? "كلمة المرور" : "Password"}>
+                            <KeyRound className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => setDeleteDialog(dev)} title={isAr ? "حذف" : "Delete"}>
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            {filtered.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">{isAr ? "لا يوجد مطورون" : "No developers found"}</p>}
+          </div>
         </div>
       )}
 

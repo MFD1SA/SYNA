@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -128,7 +128,7 @@ const AdminTargets: React.FC = () => {
     setLoading(false);
   };
 
-  const fetchDealNews = async () => {
+  const fetchDealNews = useCallback(async () => {
     setNewsLoading(true);
     try {
       const text = await callAI(
@@ -142,12 +142,12 @@ const AdminTargets: React.FC = () => {
       toast({ variant: "destructive", title: isAr ? "فشل جلب الأخبار" : "Failed to fetch news" });
     }
     setNewsLoading(false);
-  };
+  }, [isAr, toast]);
 
   useEffect(() => {
     fetchCompanies();
     fetchDealNews();
-  }, []);
+  }, [fetchDealNews]);
 
   const handleAdd = async () => {
     if (!form.company_name.trim() || !user) return;

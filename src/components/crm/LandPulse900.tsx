@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ const LandPulse900: React.FC<LandPulse900Props> = ({ landId, lat, lng }) => {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPulse = async (forceRefresh = false) => {
+  const fetchPulse = useCallback(async (forceRefresh = false) => {
     if (!lat || !lng) return;
     setLoading(true);
     setError(null);
@@ -33,11 +33,11 @@ const LandPulse900: React.FC<LandPulse900Props> = ({ landId, lat, lng }) => {
       setError(e.message || "Error fetching pulse data");
     }
     setLoading(false);
-  };
+  }, [lat, lng, landId]);
 
   useEffect(() => {
     if (lat && lng) fetchPulse();
-  }, [landId, lat, lng]);
+  }, [fetchPulse, lat, lng]);
 
   if (!lat || !lng) {
     return (

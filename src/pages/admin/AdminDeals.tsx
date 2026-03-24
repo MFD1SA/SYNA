@@ -35,14 +35,46 @@ const statusLabels: Record<string, { ar: string; en: string }> = {
   info_requested: { ar: "معلومات مطلوبة", en: "Info Requested" },
 };
 
+export interface DealRequestData {
+  id: string;
+  developer_id: string;
+  land_id: string;
+  status: string;
+  proposed_project_type: string;
+  created_at: string;
+  commission_rate?: number;
+  proposal_summary?: string;
+  proposal_link?: string;
+  owner_response_notes?: string;
+  developers?: { company_name: string; marketing_brand_name?: string; website?: string };
+  lands?: { city: string; district: string; land_area_sqm: number | string; estimated_total_value?: number | string };
+}
+
+export interface DealData {
+  id: string;
+  current_stage: string;
+  health: "green" | "yellow" | "red";
+  commission_status: string;
+  created_at: string;
+  closed_at?: string;
+  developer_id: string;
+  developers?: { company_name: string; marketing_brand_name?: string };
+  lands?: {
+    city: string; district: string; land_area_sqm: number | string;
+    estimated_price_per_sqm: number | string; estimated_total_value: number | string;
+    owner_name: string; partnership_goal?: string; project_model?: string;
+    deed_number?: string; plan_number?: string;
+  };
+}
+
 const AdminDeals: React.FC = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
   const { toast } = useToast();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "إدارة الصفقات" : "Manage Deals");
-  const [requests, setRequests] = useState<any[]>([]);
-  const [deals, setDeals] = useState<any[]>([]);
+  const [requests, setRequests] = useState<DealRequestData[]>([]);
+  const [deals, setDeals] = useState<DealData[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [viewReq, setViewReq] = useState<any>(null);
@@ -346,38 +378,56 @@ const AdminDeals: React.FC = () => {
           {loading ? (
             <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 animate-pulse rounded-xl bg-muted" />)}</div>
           ) : (
-            <div className="space-y-2">
-              {filteredRequests.map(req => (
-                <div key={req.id} className="rounded-xl border border-border/60 bg-card flex items-center justify-between p-4 transition-all hover:border-primary/20">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <Building2 className="h-3.5 w-3.5 text-primary shrink-0" strokeWidth={1.5} />
-                      <p className="text-sm font-medium text-foreground">
-                        {req.developers?.marketing_brand_name || req.developers?.company_name || "—"}
-                      </p>
-                      <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
-                        {req.lands?.city}{req.lands?.district ? ` / ${req.lands.district}` : ""}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground ps-5">
-                      {req.proposed_project_type} • {Number(req.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"} • {new Date(req.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { month: "short", day: "numeric" })}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={req.status === "approved" ? "default" : req.status === "rejected" ? "destructive" : "outline"} className="text-[10px]">
-                      {req.status === "pending" && <Clock className="h-3 w-3 me-1" />}
-                      {req.status === "approved" && <CheckCircle2 className="h-3 w-3 me-1" />}
-                      {req.status === "rejected" && <XCircle className="h-3 w-3 me-1" />}
-                      {isAr ? statusLabels[req.status]?.ar : statusLabels[req.status]?.en}
-                    </Badge>
-                    <Button size="sm" variant="outline" className="gap-1" onClick={() => { setViewReq(req); setRejectNotes(""); setDevWebsite(req.developers?.website || ""); }}>
-                      <Eye className="h-3.5 w-3.5" />{isAr ? "عرض" : "View"}
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              {filteredRequests.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">{isAr ? "لا توجد طلبات" : "No requests"}</p>}
+            <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-start">
+                  <thead className="bg-muted/40 text-muted-foreground border-b border-border/60">
+                    <tr>
+                      <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "المطور والموقع" : "Developer & Location"}</th>
+                      <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "المقترح المساحة" : "Proposal & Area"}</th>
+                      <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "الحالة" : "Status"}</th>
+                      <th className="px-5 py-3.5 font-medium text-end text-xs tracking-wide">{isAr ? "إجراءات" : "Actions"}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/40">
+                    {filteredRequests.map(req => (
+                      <tr key={req.id} className="hover:bg-muted/20 transition-colors group">
+                        <td className="px-5 py-4 min-w-[220px]">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <Building2 className="h-4 w-4 text-primary shrink-0" strokeWidth={1.5} />
+                            <p className="text-sm font-medium text-foreground">
+                              {req.developers?.marketing_brand_name || req.developers?.company_name || "—"}
+                            </p>
+                          </div>
+                          <span className="text-xs text-muted-foreground ms-6">
+                            {req.lands?.city}{req.lands?.district ? ` - ${req.lands.district}` : ""}
+                          </span>
+                        </td>
+                        <td className="px-5 py-4 min-w-[200px]">
+                          <p className="text-sm text-foreground font-medium">{req.proposed_project_type}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {Number(req.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"} • {new Date(req.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { month: "short", day: "numeric" })}
+                          </p>
+                        </td>
+                        <td className="px-5 py-4">
+                          <Badge variant={req.status === "approved" ? "default" : req.status === "rejected" ? "destructive" : "outline"} className="text-[10px]">
+                            {req.status === "pending" && <Clock className="h-3 w-3 me-1" />}
+                            {req.status === "approved" && <CheckCircle2 className="h-3 w-3 me-1" />}
+                            {req.status === "rejected" && <XCircle className="h-3 w-3 me-1" />}
+                            {isAr ? statusLabels[req.status]?.ar : statusLabels[req.status]?.en}
+                          </Badge>
+                        </td>
+                        <td className="px-5 py-4 text-end">
+                          <Button size="sm" variant="outline" className="h-8 opacity-70 group-hover:opacity-100 transition-opacity gap-1" onClick={() => { setViewReq(req); setRejectNotes(""); setDevWebsite(req.developers?.website || ""); }}>
+                            <Eye className="h-3.5 w-3.5" />{isAr ? "عرض" : "View"}
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {filteredRequests.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">{isAr ? "لا توجد طلبات" : "No requests"}</p>}
+              </div>
             </div>
           )}
         </TabsContent>
@@ -387,58 +437,69 @@ const AdminDeals: React.FC = () => {
           {loading ? (
             <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-20 animate-pulse rounded-xl bg-muted" />)}</div>
           ) : (
-            <div className="space-y-3">
-              {filteredDeals.map(deal => {
-                const sc = stageConfig[deal.current_stage] || stageConfig.listed;
-                const StageIcon = sc.icon;
-                const hc = healthColors[deal.health] || healthColors.green;
-                const isClosed = deal.current_stage === "deal_closed";
-                const isCancelled = deal.current_stage === "deal_cancelled";
-                const progress = getStageProgress(deal.current_stage);
-                const meetings = dealMeetings[deal.id] || [];
-
-                return (
-                  <div key={deal.id} className="rounded-xl border border-border/60 bg-card overflow-hidden transition-all hover:border-primary/20">
-                    <div className="p-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Building2 className="h-4 w-4 text-primary shrink-0" strokeWidth={1.5} />
-                            <span className="text-sm font-medium text-foreground truncate">
-                              {deal.developers?.marketing_brand_name || deal.developers?.company_name || "—"}
-                            </span>
-                            <ArrowRight className="h-3 w-3 text-muted-foreground shrink-0" />
-                            <span className="text-xs text-muted-foreground truncate">
+            <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-start">
+                  <thead className="bg-muted/40 text-muted-foreground border-b border-border/60">
+                    <tr>
+                      <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "معلومات الصفقة" : "Deal Info"}</th>
+                      <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide min-w-[300px]">{isAr ? "مسار الصفقة (Pipeline)" : "Pipeline Progress"}</th>
+                      <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "الحالة والمؤشر" : "Health & Status"}</th>
+                      <th className="px-5 py-3.5 font-medium text-end text-xs tracking-wide">{isAr ? "إجراءات" : "Actions"}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/40">
+                    {filteredDeals.map(deal => {
+                      const sc = stageConfig[deal.current_stage] || stageConfig.listed;
+                      const StageIcon = sc.icon;
+                      const hc = healthColors[deal.health] || healthColors.green;
+                      const isClosed = deal.current_stage === "deal_closed";
+                      const isCancelled = deal.current_stage === "deal_cancelled";
+                      
+                      return (
+                        <tr key={deal.id} className="hover:bg-muted/20 transition-colors group">
+                          <td className="px-5 py-4 min-w-[200px] align-top">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Building2 className="h-4 w-4 text-primary shrink-0" strokeWidth={1.5} />
+                              <span className="text-sm font-medium text-foreground">
+                                {deal.developers?.marketing_brand_name || deal.developers?.company_name || "—"}
+                              </span>
+                            </div>
+                            <span className="text-xs text-muted-foreground ms-6">
                               {deal.lands?.city}{deal.lands?.district ? ` - ${deal.lands.district}` : ""}
                             </span>
-                          </div>
-
-                          {!isCancelled && (
-                            <div className="mt-2">
+                          </td>
+                          <td className="px-5 py-4 align-top pt-5">
+                            {!isCancelled ? (
                               <DealStagePipeline currentStage={deal.current_stage} isAr={isAr} compact />
+                            ) : (
+                              <span className="text-xs text-muted-foreground italic px-2">{isAr ? "الصفقة ملغاة" : "Deal cancelled"}</span>
+                            )}
+                          </td>
+                          <td className="px-5 py-4 align-top">
+                            <div className="flex flex-col gap-1.5 items-start">
+                              <Badge variant="outline" className={`text-[10px] gap-1 ${hc.bg} ${hc.text} border-transparent`}>
+                                <div className={`h-1.5 w-1.5 rounded-full ${deal.health === "green" ? "bg-emerald-500" : deal.health === "yellow" ? "bg-amber-500" : "bg-red-500"}`} />
+                                {isAr ? hc.ar : hc.en}
+                              </Badge>
+                              <Badge variant="outline" className={`text-[10px] gap-1 ${sc.color}`}>
+                                <StageIcon className="h-3 w-3" />
+                                {isAr ? sc.ar : sc.en}
+                              </Badge>
                             </div>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-2 shrink-0">
-                          <Badge variant="outline" className={`text-[10px] gap-1 ${hc.bg} ${hc.text} border-transparent`}>
-                            <div className={`h-1.5 w-1.5 rounded-full ${deal.health === "green" ? "bg-emerald-500" : deal.health === "yellow" ? "bg-amber-500" : "bg-red-500"}`} />
-                            {isAr ? hc.ar : hc.en}
-                          </Badge>
-                          <Badge variant="outline" className={`text-[10px] gap-1 ${sc.color}`}>
-                            <StageIcon className="h-3 w-3" />
-                            {isAr ? sc.ar : sc.en}
-                          </Badge>
-                          <Button size="sm" variant="outline" className="gap-1" onClick={() => setViewDeal(deal)}>
-                            <Eye className="h-3.5 w-3.5" />{isAr ? "تفاصيل" : "Details"}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-              {filteredDeals.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">{isAr ? "لا توجد صفقات" : "No deals"}</p>}
+                          </td>
+                          <td className="px-5 py-4 text-end align-top">
+                            <Button size="sm" variant="outline" className="h-8 opacity-70 group-hover:opacity-100 transition-opacity gap-1" onClick={() => setViewDeal(deal)}>
+                              <Eye className="h-3.5 w-3.5" />{isAr ? "تفاصيل" : "Details"}
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                {filteredDeals.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">{isAr ? "لا توجد صفقات" : "No deals"}</p>}
+              </div>
             </div>
           )}
         </TabsContent>

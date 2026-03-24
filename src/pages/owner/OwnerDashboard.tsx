@@ -18,20 +18,20 @@ import {
   Radar, Brain, TrendingUp, Shield, FileText,
   ThumbsUp, ThumbsDown, AlertTriangle, ChevronDown, ChevronUp,
   Loader2, BarChart3, Users, GitCompareArrows, ExternalLink,
-  Info, XCircle, CalendarClock, Clock,
+  Info, XCircle, CalendarClock, Clock, Activity, LineChart, ShieldCheck
 } from "lucide-react";
 
 const statusLabels: Record<string, { ar: string; en: string; color: string }> = {
-  active_approved: { ar: "نشطة - مالك موافق", en: "Active - Owner Approved", color: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" },
-  active: { ar: "نشطة", en: "Active", color: "bg-blue-500/10 text-blue-700 border-blue-500/20" },
-  pending: { ar: "قيد المراجعة", en: "Under Review", color: "bg-amber-500/10 text-amber-700 border-amber-500/20" },
-  draft: { ar: "مسودة", en: "Draft", color: "bg-muted text-muted-foreground border-border" },
+  active_approved: { ar: "نشطة - تم الاعتماد", en: "Active - Approved", color: "bg-primary/5 text-primary border-primary/20" },
+  active: { ar: "نشطة", en: "Active", color: "bg-muted text-foreground border-border/50" },
+  pending: { ar: "قيد المراجعة", en: "Under Review", color: "bg-amber-500/10 text-amber-500 border-amber-500/20" },
+  draft: { ar: "مسودة", en: "Draft", color: "bg-muted/50 text-muted-foreground border-border/30" },
 };
 
 const recLabels: Record<string, { ar: string; en: string; color: string; icon: React.ElementType }> = {
-  accept: { ar: "يُوصى بالقبول", en: "Recommended", color: "text-emerald-700 bg-emerald-500/10 border-emerald-500/20", icon: ThumbsUp },
-  cautious: { ar: "يُنصح بالتريث", en: "Proceed with Caution", color: "text-amber-700 bg-amber-500/10 border-amber-500/20", icon: AlertTriangle },
-  reject: { ar: "يُوصى بالرفض", en: "Not Recommended", color: "text-red-700 bg-red-500/10 border-red-500/20", icon: ThumbsDown },
+  accept: { ar: "استثمار موصى به", en: "Recommended", color: "text-primary bg-primary/5 border-primary/20", icon: ShieldCheck },
+  cautious: { ar: "يُنصح بالمراقبة", en: "Proceed with Caution", color: "text-amber-500 bg-amber-500/10 border-amber-500/20", icon: Activity },
+  reject: { ar: "عالي المخاطر", en: "High Risk", color: "text-destructive bg-destructive/5 border-destructive/20", icon: AlertTriangle },
 };
 
 interface DeveloperAnalysis {
@@ -48,39 +48,19 @@ interface DeveloperAnalysis {
   needs_financing: boolean;
   status: string;
   created_at: string;
-  stats: {
-    total_requests: number;
-    approved_requests: number;
-    rejected_requests: number;
-    active_deals: number;
-    closed_deals: number;
-    cancelled_deals: number;
-    health_ratio: number;
-  };
-  ai_analysis: {
-    overall_score: number;
-    profile_score: number;
-    track_record_score: number;
-    proposal_score: number;
-    reliability_score: number;
-    recommendation: string;
-    recommendation_reason_ar: string;
-    strengths_ar: string[];
-    weaknesses_ar: string[];
-    negotiation_tips_ar?: string[];
-    summary_ar: string;
-  };
+  stats: { total_requests: number; approved_requests: number; rejected_requests: number; active_deals: number; closed_deals: number; cancelled_deals: number; health_ratio: number; };
+  ai_analysis: { overall_score: number; profile_score: number; track_record_score: number; proposal_score: number; reliability_score: number; recommendation: string; recommendation_reason_ar: string; strengths_ar: string[]; weaknesses_ar: string[]; negotiation_tips_ar?: string[]; summary_ar: string; };
   error?: boolean;
 }
 
 const ScoreBar = ({ label, score, max, color }: { label: string; score: number; max: number; color: string }) => (
-  <div className="space-y-1">
-    <div className="flex items-center justify-between text-xs">
-      <span className="font-light text-muted-foreground">{label}</span>
-      <span className="font-medium text-foreground">{score}/{max}</span>
+  <div className="space-y-1.5">
+    <div className="flex items-center justify-between text-[11px] uppercase tracking-wider">
+      <span className="font-medium text-muted-foreground">{label}</span>
+      <span className="font-semibold text-foreground">{score}/{max}</span>
     </div>
-    <div className="h-2 w-full rounded-full bg-muted">
-      <div className={`h-2 rounded-full ${color} transition-all duration-700`} style={{ width: `${(score / max) * 100}%` }} />
+    <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+      <div className={`h-full rounded-full ${color} transition-all duration-700 ease-out`} style={{ width: `${(score / max) * 100}%` }} />
     </div>
   </div>
 );
@@ -90,7 +70,7 @@ const OwnerDashboard: React.FC = () => {
   const { lang } = useLanguage();
   const { toast } = useToast();
   const isAr = lang === "ar";
-  usePageTitle(isAr ? "صفحة مالك الأرض" : "Landowner Dashboard");
+  usePageTitle(isAr ? "لوحة المستثمر | الأرض" : "Investor Dashboard | Land");
 
   const [ownerName, setOwnerName] = useState("");
   const [lands, setLands] = useState<any[]>([]);
@@ -170,9 +150,14 @@ const OwnerDashboard: React.FC = () => {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 75) return "bg-emerald-500";
-    if (score >= 50) return "bg-amber-500";
-    return "bg-red-500";
+    if (score >= 80) return "bg-primary font-medium text-primary-foreground";
+    if (score >= 60) return "bg-muted-foreground text-white font-medium";
+    return "bg-destructive text-destructive-foreground font-medium";
+  };
+  const getProgressColor = (score: number) => {
+    if (score >= 80) return "bg-primary";
+    if (score >= 60) return "bg-muted-foreground";
+    return "bg-destructive";
   };
 
   const totalRequests = Object.values(requests).reduce((a, b) => a + b, 0);
@@ -182,255 +167,151 @@ const OwnerDashboard: React.FC = () => {
     try {
       const { error } = await supabase.from("deal_requests").update({ status: "approved" }).eq("id", a.request_id);
       if (error) throw error;
-      // Audit log for owner approval
       try {
         await logAudit(user?.id || "", user?.email, "owner_approve_request", "deal_request", a.request_id, {
-          developer_name: a.developer_name,
-          developer_id: a.developer_id,
-          land_city: landCity,
-          land_district: landDistrict,
-          approved_by: "owner",
+          developer_name: a.developer_name, developer_id: a.developer_id, land_city: landCity, land_district: landDistrict, approved_by: "owner",
         });
       } catch {}
-      toast({ title: isAr ? "تمت الموافقة على الطلب" : "Request approved" });
+      toast({ title: isAr ? "تمت التوصية بالموافقة" : "Request approved" });
 
-      // Send single notification (fix: was sending twice)
       try {
         const { data: devInfo } = await supabase.from("developers").select("email").eq("id", a.developer_id).maybeSingle();
         if (devInfo?.email) {
           await supabase.functions.invoke("send-deal-notification", {
-            body: {
-              type: "request_approved",
-              developer_name: a.developer_name,
-              developer_email: devInfo.email,
-              owner_name: ownerName,
-              land_city: landCity,
-              land_district: landDistrict,
-            },
+            body: { type: "request_approved", developer_name: a.developer_name, developer_email: devInfo.email, owner_name: ownerName, land_city: landCity, land_district: landDistrict },
           });
         }
-        // Show meeting dialog
-        setMeetingDialog({
-          requestId: a.request_id,
-          devName: a.developer_name,
-          devEmail: devInfo?.email || "",
-          landCity,
-          landDistrict,
-          approvedAt: new Date().toISOString(),
-        });
+        setMeetingDialog({ requestId: a.request_id, devName: a.developer_name, devEmail: devInfo?.email || "", landCity, landDistrict, approvedAt: new Date().toISOString() });
       } catch (e) { console.error("Notification error:", e); }
 
       setAnalyses(prev => {
         const updated = { ...prev };
-        Object.keys(updated).forEach(key => {
-          updated[key] = updated[key].map(item =>
-            item.request_id === a.request_id ? { ...item, status: "approved" } : item
-          );
-        });
+        Object.keys(updated).forEach(key => { updated[key] = updated[key].map(item => item.request_id === a.request_id ? { ...item, status: "approved" } : item); });
         return updated;
       });
-    } catch (err: any) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
-    } finally {
-      setActionLoading(false);
-    }
+    } catch (err: any) { toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message }); } finally { setActionLoading(false); }
   };
 
   const handleRejectRequest = async () => {
     if (!rejectDialog) return;
     setActionLoading(true);
     try {
-      const { error } = await supabase.from("deal_requests").update({
-        status: "rejected",
-        owner_response_notes: rejectNotes || null,
-      }).eq("id", rejectDialog.requestId);
+      const { error } = await supabase.from("deal_requests").update({ status: "rejected", owner_response_notes: rejectNotes || null }).eq("id", rejectDialog.requestId);
       if (error) throw error;
-      toast({ title: isAr ? "تم رفض الطلب" : "Request rejected" });
+      toast({ title: isAr ? "تم استبعاد المطور" : "Developer excluded" });
       try {
-        await supabase.functions.invoke("send-deal-notification", {
-          body: {
-            type: "request_rejected",
-            developer_name: rejectDialog.devName,
-            developer_email: rejectDialog.devEmail,
-            owner_name: ownerName,
-            land_city: rejectDialog.landCity,
-            land_district: rejectDialog.landDistrict,
-            reject_reason: rejectNotes,
-          },
-        });
+        await supabase.functions.invoke("send-deal-notification", { body: { type: "request_rejected", developer_name: rejectDialog.devName, developer_email: rejectDialog.devEmail, owner_name: ownerName, land_city: rejectDialog.landCity, land_district: rejectDialog.landDistrict, reject_reason: rejectNotes } });
       } catch (e) { console.error("Notification error:", e); }
       setAnalyses(prev => {
         const updated = { ...prev };
-        Object.keys(updated).forEach(key => {
-          updated[key] = updated[key].map(item =>
-            item.request_id === rejectDialog.requestId ? { ...item, status: "rejected" } : item
-          );
-        });
+        Object.keys(updated).forEach(key => { updated[key] = updated[key].map(item => item.request_id === rejectDialog.requestId ? { ...item, status: "rejected" } : item); });
         return updated;
       });
-      setRejectDialog(null);
-      setRejectNotes("");
-    } catch (err: any) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
-    } finally {
-      setActionLoading(false);
-    }
+      setRejectDialog(null); setRejectNotes("");
+    } catch (err: any) { toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message }); } finally { setActionLoading(false); }
   };
 
-  const getMinMeetingDate = (approvedAt: string) => {
-    const d = new Date(approvedAt);
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split("T")[0];
-  };
+  const getMinMeetingDate = (approvedAt: string) => { const d = new Date(approvedAt); d.setDate(d.getDate() + 1); return d.toISOString().split("T")[0]; };
 
   const handleScheduleMeeting = async () => {
-    if (!meetingDialog || !meetingDate || !meetingTime) {
-      toast({ variant: "destructive", title: isAr ? "يرجى تحديد التاريخ والوقت" : "Please select date and time" });
-      return;
-    }
+    if (!meetingDialog || !meetingDate || !meetingTime) { toast({ variant: "destructive", title: isAr ? "يرجى تحديد التاريخ والوقت" : "Please select date and time" }); return; }
     setActionLoading(true);
     try {
-      await supabase.functions.invoke("send-deal-notification", {
-        body: {
-          type: "meeting_scheduled",
-          developer_name: meetingDialog.devName,
-          developer_email: meetingDialog.devEmail,
-          owner_name: ownerName,
-          owner_email: user?.email,
-          land_city: meetingDialog.landCity,
-          land_district: meetingDialog.landDistrict,
-          meeting_date: meetingDate,
-          meeting_time: meetingTime,
-        },
-      });
-      toast({ title: isAr ? "تم إرسال طلب الاجتماع للمدير" : "Meeting request sent to admin" });
-      setMeetingDialog(null);
-      setMeetingDate("");
-      setMeetingTime("13:00");
-      setMeetingNotes("");
-    } catch (err: any) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
-    } finally {
-      setActionLoading(false);
-    }
+      await supabase.functions.invoke("send-deal-notification", { body: { type: "meeting_scheduled", developer_name: meetingDialog.devName, developer_email: meetingDialog.devEmail, owner_name: ownerName, owner_email: user?.email, land_city: meetingDialog.landCity, land_district: meetingDialog.landDistrict, meeting_date: meetingDate, meeting_time: meetingTime } });
+      toast({ title: isAr ? "تم إرسال طلب التنسيق للمدير" : "Coordination request sent to admin" });
+      setMeetingDialog(null); setMeetingDate(""); setMeetingTime("13:00"); setMeetingNotes("");
+    } catch (err: any) { toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message }); } finally { setActionLoading(false); }
   };
 
   return (
     <OwnerLayout>
-      {/* Welcome header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-medium text-foreground">
-          {isAr ? `مرحباً، ${ownerName || "مالك الأرض"}` : `Welcome, ${ownerName || "Landowner"}`}
-        </h1>
-        <p className="mt-1 text-sm font-light text-muted-foreground">
-          {isAr ? "تابع حالة أراضيك واستعرض تحليلات المطورين المهتمين" : "Track your lands and review developer analyses"}
-        </p>
-      </div>
-
-      {/* Summary Stats */}
-      {!loading && lands.length > 0 && (
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="syna-card p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-light text-muted-foreground">{isAr ? "أراضيي" : "My Lands"}</span>
-              <Landmark className="h-4 w-4 text-primary" strokeWidth={1.5} />
-            </div>
-            <p className="text-2xl font-medium text-foreground">{lands.length}</p>
-          </div>
-          <div className="syna-card p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-light text-muted-foreground">{isAr ? "مطورون مهتمون" : "Interested Devs"}</span>
-              <Users className="h-4 w-4 text-primary" strokeWidth={1.5} />
-            </div>
-            <p className="text-2xl font-medium text-foreground">{totalRequests}</p>
-          </div>
-          <div className="syna-card p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-light text-muted-foreground">{isAr ? "أراضي موافق عليها" : "Approved Lands"}</span>
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" strokeWidth={1.5} />
-            </div>
-            <p className="text-2xl font-medium text-foreground">{lands.filter(l => l.owner_approved).length}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Approved Requests - Meeting Scheduling Section */}
-      {!loading && approvedRequests.length > 0 && (
-        <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <CalendarClock className="h-5 w-5 text-emerald-600" />
-            <h2 className="text-sm font-medium text-foreground">
-              {isAr ? `طلبات مقبولة تحتاج جدولة اجتماع (${approvedRequests.length})` : `Approved Requests - Schedule Meeting (${approvedRequests.length})`}
-            </h2>
-          </div>
-          <div className="space-y-2">
-            {approvedRequests.map(req => (
-              <div key={req.id} className="flex items-center justify-between rounded-lg border border-border/40 bg-card p-3">
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">
-                    {req.developers?.marketing_brand_name || req.developers?.company_name || "—"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {req.lands?.city}{req.lands?.district ? ` - ${req.lands.district}` : ""} • {req.proposed_project_type}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 border-emerald-500/20">
-                    <CheckCircle2 className="h-2.5 w-2.5 me-1" />{isAr ? "مقبول" : "Approved"}
-                  </Badge>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="gap-1.5"
-                    disabled={actionLoading}
-                    onClick={() => {
-                      setMeetingDialog({
-                        requestId: req.id,
-                        devName: req.developers?.marketing_brand_name || req.developers?.company_name || "",
-                        devEmail: req.developers?.email || "",
-                        landCity: req.lands?.city || "",
-                        landDistrict: req.lands?.district,
-                        approvedAt: req.updated_at,
-                      });
-                    }}
-                  >
-                    <CalendarClock className="h-3.5 w-3.5 text-primary" />
-                    {isAr ? "جدولة اجتماع" : "Schedule Meeting"}
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {!loading && lands.length > 0 && (
-        <div className="mb-4 flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
-          <Info className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-          <p className="text-xs font-light text-amber-800">
-            {isAr
-              ? "تحليلات الذكاء الاصطناعي استرشادية وتعتمد على البيانات المسجلة في النظام. ننصح بالتحقق المستقل قبل اتخاذ أي قرار."
-              : "AI analyses are advisory and based on system-registered data. Independent verification is recommended before any decision."}
+      {/* Welcome Header */}
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-border/50 pb-6">
+        <div>
+          <h1 className="text-3xl font-medium text-foreground tracking-tight">
+            {isAr ? `نظرة الاستثمار، ${ownerName || ""}` : `Investment Overview, ${ownerName || ""}`}
+          </h1>
+          <p className="mt-2 text-sm font-light text-muted-foreground">
+            {isAr ? "قم بتقييم العروض المقدمة واستعراض المؤشرات الاستخبارية للمطورين العقاريين." : "Evaluate proposals and review intelligence metrics for real estate developers."}
           </p>
         </div>
+      </div>
+
+      {/* Summary KPI Cards */}
+      {!loading && lands.length > 0 && (
+        <div className="grid md:grid-cols-3 gap-4 mb-8">
+          <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">{isAr ? "الأصول المدرجة" : "Listed Assets"}</span>
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center"><Landmark className="h-4 w-4 text-primary" strokeWidth={1.5} /></div>
+            </div>
+            <p className="text-3xl font-semibold text-foreground tracking-tight">{lands.length}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">{isAr ? "الكيانات المهتمة" : "Interested Entities"}</span>
+              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center"><Users className="h-4 w-4 text-foreground" strokeWidth={1.5} /></div>
+            </div>
+            <p className="text-3xl font-semibold text-foreground tracking-tight">{totalRequests}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">{isAr ? "الصفقات الموثقة" : "Secured Deals"}</span>
+              <div className="h-8 w-8 rounded-full bg-primary/5 border border-primary/20 flex items-center justify-center"><CheckCircle2 className="h-4 w-4 text-primary" strokeWidth={1.5} /></div>
+            </div>
+            <p className="text-3xl font-semibold text-foreground tracking-tight">{lands.filter(l => l.owner_approved).length}</p>
+          </div>
+        </div>
       )}
 
+      {/* Meeting Needed Module */}
+      {!loading && approvedRequests.length > 0 && (
+        <div className="mb-8 rounded-xl border border-primary/20 bg-background overflow-hidden relative shadow-sm">
+          <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+          <div className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <CalendarClock className="h-5 w-5 text-primary" />
+                <h2 className="text-base font-medium text-foreground tracking-tight">
+                  {isAr ? `تنسيق اجتماعات لصفقات مقبولة (${approvedRequests.length})` : `Schedule Meetings for Approved Deals (${approvedRequests.length})`}
+                </h2>
+              </div>
+              <p className="text-xs text-muted-foreground font-light">{isAr ? "يرجى استكمال جدول التنسيق مع المطورين لبدء التنفيذ" : "Please finalize meeting schedules with developers to proceed."}</p>
+            </div>
+            <div className="flex flex-col gap-2 w-full sm:w-auto">
+              {approvedRequests.map(req => (
+                <div key={req.id} className="flex items-center justify-between bg-muted/20 border border-border/50 rounded-lg p-3 w-full sm:min-w-[300px]">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{req.developers?.marketing_brand_name || req.developers?.company_name || "—"}</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{req.lands?.city} • {req.proposed_project_type}</p>
+                  </div>
+                  <Button size="sm" variant="outline" className="h-8 text-xs font-medium" onClick={() => setMeetingDialog({ requestId: req.id, devName: req.developers?.marketing_brand_name || req.developers?.company_name || "", devEmail: req.developers?.email || "", landCity: req.lands?.city || "", landDistrict: req.lands?.district, approvedAt: req.updated_at })}>
+                    {isAr ? "تنسيق موعد" : "Coordinate"}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Asset View */}
       {loading ? (
-        <div className="grid gap-4">
-          {[1, 2].map(i => <div key={i} className="h-48 animate-pulse rounded-xl bg-muted" />)}
+        <div className="grid gap-6">
+          {[1, 2].map(i => <div key={i} className="h-48 animate-pulse rounded-2xl bg-muted/50 border border-border/50" />)}
         </div>
       ) : lands.length === 0 ? (
-        <div className="flex flex-col items-center py-16 text-center">
-          <Landmark className="mb-4 h-12 w-12 text-muted-foreground/30" strokeWidth={1} />
-          <p className="text-sm font-light text-muted-foreground">
-            {isAr ? "لا توجد أراضي مسجلة حالياً — تواصل مع مدير النظام لربط أراضيك" : "No lands registered — contact admin to link your lands"}
+        <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-border/50 rounded-2xl bg-card">
+          <Landmark className="mb-5 h-12 w-12 text-muted-foreground/30" strokeWidth={1} />
+          <h3 className="text-lg font-medium text-foreground mb-2">{isAr ? "محفظة الأصول فارغة" : "Asset Portfolio Empty"}</h3>
+          <p className="text-sm font-light text-muted-foreground max-w-sm">
+            {isAr ? "لم يتم تبويب أي أصول عقارية تحت إدارتكم. يرجى التواصل مع فريق سينا للإدراج." : "No real estate assets registered under your administration. Contact SYNA for listing."}
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {lands.map(land => {
-            const status = getLandStatus(land);
-            const statusInfo = statusLabels[status] || statusLabels.draft;
+            const statusInfo = statusLabels[getLandStatus(land)] || statusLabels.draft;
             const reqCount = requests[land.id] || 0;
             const pulse = pulseSnapshots[land.id];
             const isExpanded = expandedLand === land.id;
@@ -438,144 +319,128 @@ const OwnerDashboard: React.FC = () => {
             const isAnalyzing = analyzingLand === land.id;
 
             return (
-              <div key={land.id} className="syna-card overflow-hidden">
-                {/* Land header */}
-                <div className="p-5">
-                  <div className="mb-3 flex items-start justify-between">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-primary" strokeWidth={1.5} />
-                      <h3 className="font-medium text-foreground">{land.city}</h3>
-                      {land.district && <span className="text-sm font-light text-muted-foreground">— {land.district}</span>}
+              <div key={land.id} className="rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 hover:shadow-md">
+                
+                {/* Land Top Section */}
+                <div className="p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-5">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-primary" strokeWidth={2} />
+                        <h3 className="text-xl font-medium text-foreground tracking-tight">{land.city}</h3>
+                        {land.district && <span className="text-sm text-muted-foreground">| {land.district}</span>}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground font-medium uppercase tracking-wider mt-2">
+                        <span>{Number(land.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</span>
+                        <span className="h-3 w-px bg-border"></span>
+                        {land.street_width_m && <span>{isAr ? "شارع" : "St"}: {land.street_width_m}{isAr ? "م" : "m"}</span>}
+                        {land.partnership_model && <>
+                          <span className="h-3 w-px bg-border"></span>
+                          <span>{land.partnership_model}</span>
+                        </>}
+                      </div>
                     </div>
-                    <Badge variant="outline" className={`text-[10px] ${statusInfo.color}`}>
-                      {isAr ? statusInfo.ar : statusInfo.en}
-                    </Badge>
+                    <Badge variant="outline" className={`text-xs px-2.5 py-1 ${statusInfo.color}`}>{isAr ? statusInfo.ar : statusInfo.en}</Badge>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 text-xs font-light text-muted-foreground mb-4">
-                    <span>{Number(land.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</span>
-                    {land.street_width_m && <span>{isAr ? "شارع:" : "Street:"} {land.street_width_m}{isAr ? "م" : "m"}</span>}
-                    {land.partnership_model && <span>{isAr ? "نموذج:" : "Model:"} {land.partnership_model}</span>}
-                  </div>
+                  {land.owner_approved && (
+                    <div className="mb-4 inline-flex items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/5 px-3 py-1.5">
+                      <ShieldCheck className="h-4 w-4 text-primary" />
+                      <span className="text-xs font-medium text-primary uppercase tracking-wide">{isAr ? "صفقة معتمدة للتنفيذ" : "Approved for Execution"}</span>
+                    </div>
+                  )}
 
-                  <div className="flex flex-wrap items-center gap-2">
-                    {land.owner_approved && (
-                      <div className="flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                        <span className="text-xs font-light text-emerald-700">{isAr ? "مالك موافق" : "Owner Approved"}</span>
-                      </div>
-                    )}
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-1.5"
-                      onClick={() => analyzeDevs(land.id)}
-                      disabled={isAnalyzing || reqCount === 0}
-                    >
-                      {isAnalyzing ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Brain className="h-3.5 w-3.5 text-primary" />
-                      )}
-                      <span className="text-xs">
-                        {reqCount > 0
-                          ? (isAr ? `تحليل ${reqCount} مطور مهتم` : `Analyze ${reqCount} interested developers`)
-                          : (isAr ? "لا يوجد مطورون مهتمون" : "No interested developers")
-                        }
-                      </span>
-                      {reqCount > 0 && !isAnalyzing && (
-                        isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />
-                      )}
-                    </Button>
-                  </div>
-
-                  {/* Pulse summary */}
                   {pulse && (
-                    <div className="mt-3 rounded-lg border border-border/40 bg-muted/20 p-3">
-                      <div className="flex items-center gap-1.5 mb-2">
-                        <Radar className="h-3.5 w-3.5 text-primary" />
-                        <span className="text-xs font-medium text-foreground">{isAr ? "نبض الموقع 900م" : "Location Pulse 900m"}</span>
+                    <div className="mb-5 rounded-xl border border-border/40 bg-muted/10 p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Radar className="h-4 w-4 text-primary" />
+                        <span className="text-xs font-semibold uppercase tracking-widest text-foreground">{isAr ? "المرصد الإقليمي" : "Regional Observatory"} (900m)</span>
                       </div>
-                      <p className="text-xs font-light text-muted-foreground line-clamp-2">
+                      <p className="text-sm font-light text-muted-foreground leading-relaxed line-clamp-2">
                         {isAr ? pulse.ai_report_ar : pulse.ai_report_en || pulse.ai_report_ar}
                       </p>
                     </div>
                   )}
+
+                  <div className="flex justify-start">
+                    <Button
+                      variant={isExpanded ? "secondary" : "default"}
+                      className={`h-11 px-6 gap-2 rounded-xl transition-all shadow-sm ${!isExpanded ? "syna-gradient" : ""}`}
+                      onClick={() => analyzeDevs(land.id)}
+                      disabled={isAnalyzing || reqCount === 0}
+                    >
+                      {isAnalyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Brain className="h-4 w-4" />}
+                      <span className="font-medium">
+                        {reqCount > 0
+                          ? (isAr ? `تقرير استخباري لـ ${reqCount} مطور` : `Intelligence Report for ${reqCount} Developers`)
+                          : (isAr ? "لا صفقات معلقة" : "No pending proposals")}
+                      </span>
+                      {reqCount > 0 && !isAnalyzing && (isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />)}
+                    </Button>
+                  </div>
                 </div>
 
-                {/* Expanded: Developer analyses */}
+                {/* Developer Analyses Dropdown */}
                 {isExpanded && (
-                  <div className="border-t border-border/40 bg-muted/10 p-5">
+                  <div className="border-t border-border bg-muted/5">
                     {isAnalyzing ? (
-                      <div className="flex flex-col items-center py-8 gap-3">
+                      <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                        <p className="text-sm font-light text-muted-foreground">
-                          {isAr ? "جاري تحليل المطورين بالذكاء الاصطناعي..." : "AI analyzing developers..."}
-                        </p>
+                        <p className="text-sm font-medium text-foreground">{isAr ? "استخلاص المؤشرات وتحليل المطورين..." : "Extracting metrics & analyzing developers..."}</p>
                       </div>
                     ) : landAnalyses.length === 0 ? (
-                      <p className="text-center text-sm font-light text-muted-foreground py-4">
-                        {isAr ? "لا توجد طلبات شراكة على هذه الأرض" : "No partnership requests for this land"}
-                      </p>
+                      <div className="py-10 text-center text-muted-foreground"><p className="text-sm font-light">{isAr ? "لا توجد ترشيحات حالية" : "No current prospects"}</p></div>
                     ) : (
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
-                            <Users className="h-4 w-4 text-primary" />
-                            {isAr ? `${landAnalyses.length} مطور مهتم` : `${landAnalyses.length} interested developers`}
+                      <div className="p-6 space-y-6">
+                        <div className="flex items-center justify-between border-b border-border/50 pb-4">
+                          <h4 className="text-lg font-medium text-foreground tracking-tight flex items-center gap-2">
+                            <LineChart className="h-5 w-5 text-primary" />
+                            {isAr ? "مؤشرات المطورين" : "Developer Metrics Analytics"}
                           </h4>
                           {landAnalyses.length > 1 && (
-                            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setShowCompare(showCompare === land.id ? null : land.id)}>
-                              <GitCompareArrows className="h-3.5 w-3.5 text-primary" />
-                              <span className="text-xs">{isAr ? "مقارنة الجميع" : "Compare All"}</span>
+                            <Button variant="outline" size="sm" className="h-9 px-4 gap-2 text-xs font-medium bg-background" onClick={() => setShowCompare(showCompare === land.id ? null : land.id)}>
+                              <GitCompareArrows className="h-4 w-4" /> {isAr ? "المصفوفة المقارنة" : "Comparative Matrix"}
                             </Button>
                           )}
                         </div>
 
-                        {/* Compare All Table */}
+                        {/* Comparison Table */}
                         {showCompare === land.id && landAnalyses.length > 1 && (
-                          <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-4">
-                            <h5 className="text-sm font-medium text-primary flex items-center gap-2">
-                              <GitCompareArrows className="h-4 w-4" />
-                              {isAr ? "مقارنة المطورين المهتمين" : "Developers Comparison"}
-                            </h5>
+                          <div className="rounded-xl border border-border bg-background overflow-hidden shadow-sm">
                             <div className="overflow-x-auto">
-                              <table className="w-full text-xs">
-                                <thead>
-                                  <tr className="border-b border-border/40">
-                                    <th className="py-2 pe-3 text-start font-medium text-muted-foreground">{isAr ? "المطور" : "Developer"}</th>
-                                    <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "التقييم" : "Score"}</th>
-                                    <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "البروفايل" : "Profile"}</th>
-                                    <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "الإنجازات" : "Track"}</th>
-                                    <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "المقترح" : "Proposal"}</th>
-                                    <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "الموثوقية" : "Reliab."}</th>
-                                    <th className="py-2 px-2 text-center font-medium text-muted-foreground">{isAr ? "التوصية" : "Rec."}</th>
+                              <table className="w-full text-sm text-left rtl:text-right">
+                                <thead className="text-xs text-muted-foreground uppercase tracking-wider bg-muted/50 border-b border-border">
+                                  <tr>
+                                    <th className="px-4 py-3 font-medium">{isAr ? "الكيان التطويري" : "Entity"}</th>
+                                    <th className="px-4 py-3 font-medium text-center">{isAr ? "المؤشر العام" : "Composite"}</th>
+                                    <th className="px-4 py-3 font-medium text-center">{isAr ? "الملف التعريفي" : "Profile"}</th>
+                                    <th className="px-4 py-3 font-medium text-center">{isAr ? "سجل التشغيل" : "Track Record"}</th>
+                                    <th className="px-4 py-3 font-medium text-center">{isAr ? "العرض الفني" : "Proposal"}</th>
+                                    <th className="px-4 py-3 font-medium text-center">{isAr ? "مؤشر الثقة" : "Trust"}</th>
+                                    <th className="px-4 py-3 font-medium text-center">{isAr ? "القرار" : "Verdict"}</th>
                                   </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="divide-y divide-border/50">
                                   {[...landAnalyses].filter(a => !a.error).sort((a, b) => b.ai_analysis.overall_score - a.ai_analysis.overall_score).map((a, idx) => {
                                     const rec = recLabels[a.ai_analysis.recommendation] || recLabels.cautious;
                                     const isBest = idx === 0;
                                     return (
-                                      <tr key={a.request_id} className={`border-b border-border/20 ${isBest ? "bg-emerald-500/5" : ""}`}>
-                                        <td className="py-2 pe-3 font-medium text-foreground">
-                                          <div className="flex items-center gap-1.5">
-                                            {isBest && <span className="text-[10px] text-emerald-600">★</span>}
+                                      <tr key={a.request_id} className={`hover:bg-muted/20 transition-colors ${isBest ? "bg-primary/5" : ""}`}>
+                                        <td className="px-4 py-3 font-medium text-foreground">
+                                          <div className="flex items-center gap-2">
+                                            {isBest && <ShieldCheck className="h-4 w-4 text-primary" />}
                                             {a.developer_brand || a.developer_name}
                                           </div>
                                         </td>
-                                        <td className="py-2 px-2 text-center">
-                                          <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold text-white ${getScoreColor(a.ai_analysis.overall_score)}`}>
-                                            {a.ai_analysis.overall_score}
-                                          </span>
+                                        <td className="px-4 py-3 text-center">
+                                          <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-xs ${getScoreColor(a.ai_analysis.overall_score)}`}>{a.ai_analysis.overall_score}</span>
                                         </td>
-                                        <td className="py-2 px-2 text-center text-foreground">{a.ai_analysis.profile_score}/20</td>
-                                        <td className="py-2 px-2 text-center text-foreground">{a.ai_analysis.track_record_score}/30</td>
-                                        <td className="py-2 px-2 text-center text-foreground">{a.ai_analysis.proposal_score}/25</td>
-                                        <td className="py-2 px-2 text-center text-foreground">{a.ai_analysis.reliability_score}/25</td>
-                                        <td className="py-2 px-2 text-center">
-                                          <Badge variant="outline" className={`text-[10px] ${rec.color}`}>{isAr ? rec.ar : rec.en}</Badge>
+                                        <td className="px-4 py-3 text-center text-muted-foreground">{a.ai_analysis.profile_score}/20</td>
+                                        <td className="px-4 py-3 text-center text-muted-foreground">{a.ai_analysis.track_record_score}/30</td>
+                                        <td className="px-4 py-3 text-center text-muted-foreground">{a.ai_analysis.proposal_score}/25</td>
+                                        <td className="px-4 py-3 text-center text-muted-foreground">{a.ai_analysis.reliability_score}/25</td>
+                                        <td className="px-4 py-3 text-center">
+                                          <Badge variant="outline" className={`text-[10px] uppercase font-bold tracking-wider ${rec.color}`}>{isAr ? rec.ar : rec.en}</Badge>
                                         </td>
                                       </tr>
                                     );
@@ -586,217 +451,160 @@ const OwnerDashboard: React.FC = () => {
                           </div>
                         )}
 
-                        {/* Individual Developer Cards */}
-                        {landAnalyses.map((a) => {
-                          if (a.error) return null;
-                          const ai = a.ai_analysis;
-                          const rec = recLabels[ai.recommendation] || recLabels.cautious;
-                          const RecIcon = rec.icon;
-                          const isDevExpanded = expandedDev === a.request_id;
+                        {/* Detail Cards */}
+                        <div className="grid gap-4">
+                          {landAnalyses.map((a) => {
+                            if (a.error) return null;
+                            const ai = a.ai_analysis;
+                            const rec = recLabels[ai.recommendation] || recLabels.cautious;
+                            const RecIcon = rec.icon;
+                            const isDevExpanded = expandedDev === a.request_id;
 
-                          return (
-                            <div key={a.request_id} className="rounded-xl border border-border/40 bg-card overflow-hidden">
-                              <button
-                                className="flex w-full items-center gap-3 p-4 text-start hover:bg-muted/20 transition-colors"
-                                onClick={() => setExpandedDev(isDevExpanded ? null : a.request_id)}
-                              >
-                                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${getScoreColor(ai.overall_score)} text-white font-bold text-sm`}>
-                                  {ai.overall_score}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 mb-0.5">
-                                    <h5 className="font-medium text-foreground truncate">{a.developer_brand || a.developer_name}</h5>
-                                    {a.verification_status === "verified" && (
-                                      <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 border-emerald-500/20 shrink-0">
-                                        <Shield className="h-2.5 w-2.5 me-1" />{isAr ? "موثق" : "Verified"}
-                                      </Badge>
-                                    )}
-                                  </div>
-                                  <p className="text-xs font-light text-muted-foreground truncate">{a.proposed_project_type} • {a.stats.closed_deals} {isAr ? "صفقات" : "deals"}</p>
-                                  <p className="text-xs font-light text-muted-foreground mt-0.5 line-clamp-1">{ai.summary_ar}</p>
-                                </div>
-                                <div className="flex items-center gap-2 shrink-0">
-                                  <Badge variant="outline" className={`text-[10px] ${rec.color}`}>
-                                    <RecIcon className="h-2.5 w-2.5 me-1" />
-                                    {isAr ? rec.ar : rec.en}
-                                  </Badge>
-                                  {isDevExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
-                                </div>
-                              </button>
-
-                              {isDevExpanded && (
-                                <div className="border-t border-border/40 p-5 space-y-4">
-                                  <div className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${rec.color}`}>
-                                    <RecIcon className="h-4 w-4" />
-                                    <span className="text-sm font-medium">{isAr ? rec.ar : rec.en}</span>
-                                    <span className="text-xs font-light">— {ai.recommendation_reason_ar}</span>
-                                  </div>
-
-                                  <div className="grid grid-cols-2 gap-3">
-                                    <ScoreBar label={isAr ? "قوة البروفايل" : "Profile Strength"} score={ai.profile_score} max={20} color={getScoreColor(ai.profile_score * 5)} />
-                                    <ScoreBar label={isAr ? "سجل الإنجازات" : "Track Record"} score={ai.track_record_score} max={30} color={getScoreColor(ai.track_record_score * 3.33)} />
-                                    <ScoreBar label={isAr ? "جودة المقترح" : "Proposal Quality"} score={ai.proposal_score} max={25} color={getScoreColor(ai.proposal_score * 4)} />
-                                    <ScoreBar label={isAr ? "الموثوقية" : "Reliability"} score={ai.reliability_score} max={25} color={getScoreColor(ai.reliability_score * 4)} />
-                                  </div>
-
-                                  <div className="grid grid-cols-3 gap-2">
-                                    {[
-                                      { label: isAr ? "صفقات ناجحة" : "Closed Deals", value: a.stats.closed_deals, icon: TrendingUp },
-                                      { label: isAr ? "صفقات نشطة" : "Active Deals", value: a.stats.active_deals, icon: BarChart3 },
-                                      { label: isAr ? "نسبة الصحة" : "Health Ratio", value: `${a.stats.health_ratio}%`, icon: Shield },
-                                    ].map((kpi, i) => (
-                                      <div key={i} className="rounded-lg border border-border/40 bg-muted/20 p-2.5 text-center">
-                                        <kpi.icon className="mx-auto mb-1 h-3.5 w-3.5 text-muted-foreground" />
-                                        <p className="text-lg font-medium text-foreground">{kpi.value}</p>
-                                        <p className="text-[10px] font-light text-muted-foreground">{kpi.label}</p>
+                            return (
+                              <div key={a.request_id} className="rounded-xl border border-border bg-background overflow-hidden hover:border-primary/30 transition-colors shadow-sm">
+                                {/* Card Header Toggle */}
+                                <button className="w-full flex items-center justify-between p-5 focus:outline-none" onClick={() => setExpandedDev(isDevExpanded ? null : a.request_id)}>
+                                  <div className="flex items-center gap-4">
+                                    <div className={`flex flex-col items-center justify-center h-14 w-14 rounded-xl ${getScoreColor(ai.overall_score)} shadow-inner-sm`}>
+                                      <span className="text-xl font-bold leading-none">{ai.overall_score}</span>
+                                    </div>
+                                    <div className="text-start">
+                                      <div className="flex items-center gap-2">
+                                        <h5 className="text-lg font-semibold text-foreground tracking-tight">{a.developer_brand || a.developer_name}</h5>
+                                        {a.verification_status === "verified" && (
+                                          <ShieldCheck className="h-4 w-4 text-primary" />
+                                        )}
                                       </div>
-                                    ))}
-                                  </div>
-
-                                  <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-2">
-                                    <div className="flex items-center gap-1.5">
-                                      <FileText className="h-3.5 w-3.5 text-primary" />
-                                      <span className="text-xs font-medium text-foreground">{isAr ? "تفاصيل المقترح" : "Proposal Details"}</span>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-2 text-xs font-light text-muted-foreground">
-                                      <span>{isAr ? "نوع المشروع:" : "Type:"} {a.proposed_project_type}</span>
-                                      {a.estimated_duration_months && (
-                                        <span>{isAr ? "المدة:" : "Duration:"} {a.estimated_duration_months} {isAr ? "شهر" : "months"}</span>
-                                      )}
-                                    </div>
-                                    <p className="text-xs font-light text-muted-foreground">{a.proposal_summary}</p>
-                                  </div>
-
-                                  <p className="text-sm font-light text-foreground leading-relaxed">{ai.summary_ar}</p>
-
-                                  <div className="grid grid-cols-2 gap-3">
-                                    <div className="space-y-1.5">
-                                      <span className="text-xs font-medium text-emerald-700">{isAr ? "نقاط القوة" : "Strengths"}</span>
-                                      {ai.strengths_ar?.map((s, i) => (
-                                        <div key={i} className="flex items-start gap-1.5 text-xs font-light text-muted-foreground">
-                                          <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-emerald-500" />
-                                          <span>{s}</span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                    <div className="space-y-1.5">
-                                      <span className="text-xs font-medium text-red-700">{isAr ? "نقاط الضعف" : "Weaknesses"}</span>
-                                      {ai.weaknesses_ar?.map((w, i) => (
-                                        <div key={i} className="flex items-start gap-1.5 text-xs font-light text-muted-foreground">
-                                          <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-red-500" />
-                                          <span>{w}</span>
-                                        </div>
-                                      ))}
+                                      <p className="text-xs text-muted-foreground font-light uppercase tracking-wider mt-1">{a.proposed_project_type} • {a.stats.closed_deals} {isAr ? "صفقة منجزة" : "Deals Closed"}</p>
                                     </div>
                                   </div>
-
-                                  {ai.negotiation_tips_ar && ai.negotiation_tips_ar.length > 0 && (
-                                    <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-1.5">
-                                      <span className="text-xs font-medium text-primary">{isAr ? "نصائح للتفاوض" : "Negotiation Tips"}</span>
-                                      {ai.negotiation_tips_ar.map((t, i) => (
-                                        <div key={i} className="flex items-start gap-1.5 text-xs font-light text-foreground">
-                                          <span className="shrink-0 text-primary">{i + 1}.</span>
-                                          <span>{t}</span>
-                                        </div>
-                                      ))}
+                                  <div className="flex items-center gap-4">
+                                    <Badge variant="outline" className={`hidden md:flex items-center gap-1.5 px-3 py-1 ${rec.color}`}>
+                                      <RecIcon className="h-3.5 w-3.5" />
+                                      <span className="text-[11px] uppercase tracking-wider font-bold">{isAr ? rec.ar : rec.en}</span>
+                                    </Badge>
+                                    <div className="h-8 w-8 rounded-full border border-border flex items-center justify-center bg-muted/50 hover:bg-muted text-muted-foreground">
+                                      {isDevExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                                     </div>
-                                  )}
+                                  </div>
+                                </button>
 
-                                  {/* Website Analysis */}
-                                  <div className="border-t border-border/40 pt-4">
-                                    <h6 className="text-xs font-medium text-foreground mb-2 flex items-center gap-1.5">
-                                      <Globe className="h-3.5 w-3.5 text-primary" />
-                                      {isAr ? "تحليل الموقع والسوشيال ميديا والأخبار" : "Website, Social Media & News Analysis"}
-                                    </h6>
-                                    {a.developer_website ? (
-                                      <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                          <ExternalLink className="h-3 w-3 text-primary" />
-                                          <a href={a.developer_website.startsWith("http") ? a.developer_website : `https://${a.developer_website}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                                            {a.developer_website}
-                                          </a>
-                                        </div>
-                                        <DevWebsiteAnalysis developerName={a.developer_name} developerId={a.developer_id} isAr={isAr} autoUrl={a.developer_website} />
+                                {/* Expanded Analysis Content */}
+                                {isDevExpanded && (
+                                  <div className="border-t border-border p-6 bg-muted/5 space-y-8 animate-in slide-in-from-top-2 duration-300">
+                                    
+                                    {/* Exec Summary & Verdict */}
+                                    <div className="grid md:grid-cols-3 gap-6">
+                                      <div className="md:col-span-2 space-y-3">
+                                        <h6 className="text-sm font-medium text-foreground flex items-center gap-2">
+                                          <div className="h-1.5 w-1.5 rounded-full bg-primary" /> {isAr ? "ملخص التحليل الاقتصادي" : "Economic Analysis Summary"}
+                                        </h6>
+                                        <p className="text-sm font-light text-muted-foreground leading-relaxed">{ai.summary_ar}</p>
                                       </div>
-                                    ) : (
-                                      <div className="space-y-2">
-                                        <p className="text-xs text-muted-foreground font-light">
-                                          {isAr ? "لم يُسجل المطور موقعاً إلكترونياً. يمكنك إدخال رابط يدوياً:" : "Developer didn't register a website. You can enter one manually:"}
-                                        </p>
-                                        <DevWebsiteAnalysis developerName={a.developer_name} developerId={a.developer_id} isAr={isAr} />
+                                      <div className={`rounded-xl border p-4 flex flex-col justify-center ${rec.color}`}>
+                                        <span className="text-[10px] uppercase tracking-widest font-bold mb-2 block">{isAr ? "التوصية الاستراتيجية" : "Strategic Action"}</span>
+                                        <div className="flex items-start gap-2">
+                                          <RecIcon className="h-5 w-5 shrink-0 mt-0.5" />
+                                          <span className="text-sm font-medium leading-tight">{ai.recommendation_reason_ar}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Metrics Grid */}
+                                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                                      <ScoreBar label={isAr ? "قوة الكيان" : "Entity Strength"} score={ai.profile_score} max={20} color={getProgressColor(ai.profile_score * 5)} />
+                                      <ScoreBar label={isAr ? "سجل التنفيذ" : "Execution Record"} score={ai.track_record_score} max={30} color={getProgressColor(ai.track_record_score * 3.33)} />
+                                      <ScoreBar label={isAr ? "جدوى المقترح" : "Proposal Viability"} score={ai.proposal_score} max={25} color={getProgressColor(ai.proposal_score * 4)} />
+                                      <ScoreBar label={isAr ? "مؤشر الثقة" : "Trust Index"} score={ai.reliability_score} max={25} color={getProgressColor(ai.reliability_score * 4)} />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                      {[
+                                        { label: isAr ? "تاريخ الإنجاز" : "History", val: a.stats.closed_deals, suffix: isAr ? "مشروع" : "Proj" },
+                                        { label: isAr ? "مشاريع جارية" : "In Progress", val: a.stats.active_deals, suffix: "" },
+                                        { label: isAr ? "صحة العمليات" : "Ops Health", val: `${a.stats.health_ratio}`, suffix: "%" },
+                                        { label: isAr ? "مدة التنفيذ" : "Timeframe", val: a.estimated_duration_months || "—", suffix: isAr ? "شهر" : "mo" }
+                                      ].map((k, i) => (
+                                        <div key={i} className="rounded-xl border border-border/50 bg-background p-4 flex flex-col px-5">
+                                          <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium mb-1">{k.label}</span>
+                                          <div className="flex items-baseline gap-1 mt-auto">
+                                            <span className="text-2xl font-semibold text-foreground">{k.val}</span>
+                                            <span className="text-xs text-muted-foreground">{k.suffix}</span>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+
+                                    {/* Strengths & Weaknesses */}
+                                    <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-border/50">
+                                      <div className="space-y-3">
+                                        <span className="text-xs font-semibold text-foreground uppercase tracking-widest flex items-center gap-2">
+                                          <CheckCircle2 className="h-4 w-4 text-primary" /> {isAr ? "عوامل القوة التنافسية" : "Competitive Strengths"}
+                                        </span>
+                                        <ul className="space-y-2.5">
+                                          {ai.strengths_ar?.map((s, i) => (
+                                            <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground font-light leading-relaxed">
+                                              <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0 mt-1.5" /> <span>{s}</span>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                      <div className="space-y-3">
+                                        <span className="text-xs font-semibold text-foreground uppercase tracking-widest flex items-center gap-2">
+                                          <AlertTriangle className="h-4 w-4 text-muted-foreground" /> {isAr ? "تحذيرات اقتصادية" : "Economic Caveats"}
+                                        </span>
+                                        <ul className="space-y-2.5">
+                                          {ai.weaknesses_ar?.map((w, i) => (
+                                            <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground font-light leading-relaxed">
+                                              <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0 mt-1.5" /> <span>{w}</span>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    </div>
+
+                                    {/* Negotiation Tips */}
+                                    {ai.negotiation_tips_ar && ai.negotiation_tips_ar.length > 0 && (
+                                      <div className="rounded-xl border border-primary/20 bg-primary/5 p-5">
+                                        <div className="flex items-center gap-2 mb-3">
+                                          <FileText className="h-4 w-4 text-primary" />
+                                          <span className="text-sm font-medium text-primary">{isAr ? "استراتيجية التفاوض المقترحة" : "Suggested Negotiation Strategy"}</span>
+                                        </div>
+                                        <div className="grid gap-2">
+                                          {ai.negotiation_tips_ar.map((t, i) => (
+                                            <div key={i} className="flex items-start gap-2 text-sm text-foreground font-light bg-background/50 p-2.5 rounded-lg border border-primary/10">
+                                              <span className="text-primary font-medium shrink-0">{i + 1}.</span> <span>{t}</span>
+                                            </div>
+                                          ))}
+                                        </div>
                                       </div>
                                     )}
-                                  </div>
 
-                                  {/* Action Buttons */}
-                                  {a.status === "pending" && (
-                                    <div className="border-t border-border/40 pt-4 flex items-center gap-2">
-                                      <Button size="sm" className="flex-1 gap-1.5 syna-gradient" disabled={actionLoading} onClick={() => handleApproveRequest(a, land.city, land.district)}>
-                                        <CheckCircle2 className="h-3.5 w-3.5" />
-                                        {isAr ? "قبول الطلب" : "Approve"}
-                                      </Button>
-                                      <Button
-                                        size="sm"
-                                        variant="destructive"
-                                        className="flex-1 gap-1.5"
-                                        disabled={actionLoading}
-                                        onClick={async () => {
+                                    {/* Web Analysis Sub-Module Component */}
+                                    <div className="pt-2">
+                                      <DevWebsiteAnalysis developerName={a.developer_name} developerId={a.developer_id} isAr={isAr} autoUrl={a.developer_website} />
+                                    </div>
+
+                                    {/* Actions */}
+                                    {a.status === "pending" && (
+                                      <div className="pt-6 border-t border-border flex flex-col sm:flex-row gap-3">
+                                        <Button className="h-12 w-full sm:flex-1 gap-2 font-medium" disabled={actionLoading} onClick={() => handleApproveRequest(a, land.city, land.district)}>
+                                          <ShieldCheck className="h-4 w-4" /> {isAr ? "الموافقة المبدئية للشراكة" : "Grant Preliminary Approval"}
+                                        </Button>
+                                        <Button variant="outline" className="h-12 w-full sm:flex-1 gap-2 font-medium border-border hover:bg-destructive/5 hover:text-destructive hover:border-destructive/30" disabled={actionLoading} onClick={async () => {
                                           const { data: devInfo } = await supabase.from("developers").select("email").eq("id", a.developer_id).maybeSingle();
-                                          setRejectDialog({
-                                            requestId: a.request_id,
-                                            devName: a.developer_name,
-                                            devEmail: devInfo?.email || "",
-                                            landCity: land.city,
-                                            landDistrict: land.district,
-                                          });
-                                        }}
-                                      >
-                                        <XCircle className="h-3.5 w-3.5" />
-                                        {isAr ? "رفض الطلب" : "Reject"}
-                                      </Button>
-                                    </div>
-                                  )}
-                                  {a.status === "approved" && (
-                                    <div className="border-t border-border/40 pt-4">
-                                      <div className="flex items-center gap-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 mb-2">
-                                        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                                        <span className="text-xs font-medium text-emerald-700">{isAr ? "تمت الموافقة" : "Approved"}</span>
+                                          setRejectDialog({ requestId: a.request_id, devName: a.developer_name, devEmail: devInfo?.email || "", landCity: land.city, landDistrict: land.district });
+                                        }}>
+                                          <XCircle className="h-4 w-4" /> {isAr ? "استبعاد الكيان" : "Exclude Entity"}
+                                        </Button>
                                       </div>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        className="w-full gap-1.5"
-                                        disabled={actionLoading}
-                                        onClick={async () => {
-                                          const { data: devInfo } = await supabase.from("developers").select("email").eq("id", a.developer_id).maybeSingle();
-                                          setMeetingDialog({
-                                            requestId: a.request_id,
-                                            devName: a.developer_name,
-                                            devEmail: devInfo?.email || "",
-                                            landCity: land.city,
-                                            landDistrict: land.district,
-                                            approvedAt: new Date().toISOString(),
-                                          });
-                                        }}
-                                      >
-                                        <CalendarClock className="h-3.5 w-3.5 text-primary" />
-                                        {isAr ? "جدولة اجتماع" : "Schedule Meeting"}
-                                      </Button>
-                                    </div>
-                                  )}
-                                  {a.status === "rejected" && (
-                                    <div className="border-t border-border/40 pt-4">
-                                      <div className="flex items-center gap-2 rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2">
-                                        <XCircle className="h-4 w-4 text-destructive" />
-                                        <span className="text-xs font-medium text-destructive">{isAr ? "تم رفض الطلب" : "Request Rejected"}</span>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -809,86 +617,76 @@ const OwnerDashboard: React.FC = () => {
 
       {/* Reject Dialog */}
       <Dialog open={!!rejectDialog} onOpenChange={o => { if (!o) { setRejectDialog(null); setRejectNotes(""); } }}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md border-border bg-card">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <XCircle className="h-5 w-5 text-destructive" />
-              {isAr ? "رفض الطلب" : "Reject Request"}
+            <DialogTitle className="flex items-center gap-2 text-foreground">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              {isAr ? "استبعاد الكيان التطويري" : "Exclude Development Entity"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              {isAr ? `هل تريد رفض طلب ${rejectDialog?.devName}؟` : `Reject ${rejectDialog?.devName}'s request?`}
+          <div className="space-y-4 pt-2">
+            <p className="text-sm font-light text-muted-foreground leading-relaxed">
+              {isAr ? `تأكيد استبعاد طلب الاستثمار المقدم من:` : `Confirm exclusion of investment request from:`} <strong className="text-foreground">{rejectDialog?.devName}</strong>
             </p>
-            <div className="space-y-1.5">
-              <Label className="text-xs">{isAr ? "سبب الرفض (اختياري)" : "Rejection Reason (optional)"}</Label>
-              <Textarea value={rejectNotes} onChange={e => setRejectNotes(e.target.value)} rows={3} placeholder={isAr ? "أدخل سبب الرفض..." : "Enter rejection reason..."} />
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground uppercase tracking-wider">{isAr ? "مذكرة الرفض (اختياري، تظهر للمطور)" : "Rejection Memo (optional)"}</Label>
+              <Textarea value={rejectNotes} onChange={e => setRejectNotes(e.target.value)} rows={3} placeholder={isAr ? "اكتب أسباب فنية أو مالية..." : "Note technical or financial reasons..."} className="resize-none bg-muted/50 border-border" />
             </div>
           </div>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => { setRejectDialog(null); setRejectNotes(""); }}>{isAr ? "إلغاء" : "Cancel"}</Button>
-            <Button variant="destructive" onClick={handleRejectRequest} disabled={actionLoading}>
-              {actionLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin me-1" /> : <XCircle className="h-3.5 w-3.5 me-1" />}
-              {isAr ? "تأكيد الرفض" : "Confirm Reject"}
+          <DialogFooter className="gap-2 sm:gap-0 mt-4">
+            <Button variant="ghost" onClick={() => { setRejectDialog(null); setRejectNotes(""); }}>{isAr ? "تراجع" : "Cancel"}</Button>
+            <Button variant="destructive" onClick={handleRejectRequest} disabled={actionLoading} className="gap-2">
+              {actionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
+              {isAr ? "تأكيد واستبعاد" : "Confirm Exclusion"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Meeting Scheduling Dialog */}
+      {/* Meeting Dialig */}
       <Dialog open={!!meetingDialog} onOpenChange={o => { if (!o) { setMeetingDialog(null); setMeetingDate(""); setMeetingTime("13:00"); setMeetingNotes(""); } }}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md border-border bg-card">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-foreground">
               <CalendarClock className="h-5 w-5 text-primary" />
-              {isAr ? "جدولة اجتماع" : "Schedule Meeting"}
+              {isAr ? "جدولة الاجتماع المبدئي" : "Schedule Preliminary Meeting"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
-              <p className="text-xs text-primary font-medium mb-1">{isAr ? "تنبيه" : "Note"}</p>
-              <p className="text-xs text-muted-foreground">
-                {isAr
-                  ? "سيتم إرسال تفاصيل الاجتماع إلى مدير النظام للتنسيق مع المطور. الأوقات المتاحة من 1 ظهراً إلى 5 عصراً."
-                  : "Meeting details will be sent to the admin to coordinate with the developer. Available times: 1 PM - 5 PM."}
-              </p>
+          <div className="space-y-5 pt-2">
+            <div className="space-y-1.5 text-xs text-muted-foreground">
+              <span className="text-foreground font-medium">{meetingDialog?.devName}</span><br/>
+              {meetingDialog?.landCity} {meetingDialog?.landDistrict ? ` - ${meetingDialog.landDistrict}` : ""}
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">{isAr ? "المطور" : "Developer"}</Label>
-              <p className="text-sm text-foreground bg-muted/30 rounded-lg p-2.5 border border-border/40">{meetingDialog?.devName}</p>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">{isAr ? "تاريخ الاجتماع" : "Meeting Date"}</Label>
-              <Input type="date" dir="ltr" value={meetingDate} onChange={e => setMeetingDate(e.target.value)} min={meetingDialog ? getMinMeetingDate(meetingDialog.approvedAt) : ""} />
-              <p className="text-[10px] text-muted-foreground">{isAr ? "يجب أن يكون بعد القبول بيوم على الأقل" : "Must be at least 1 day after approval"}</p>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">{isAr ? "وقت الاجتماع" : "Meeting Time"}</Label>
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <select className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm" value={meetingTime} onChange={e => setMeetingTime(e.target.value)}>
-                  <option value="13:00">{isAr ? "1:00 ظهراً" : "1:00 PM"}</option>
-                  <option value="13:30">{isAr ? "1:30 ظهراً" : "1:30 PM"}</option>
-                  <option value="14:00">{isAr ? "2:00 ظهراً" : "2:00 PM"}</option>
-                  <option value="14:30">{isAr ? "2:30 ظهراً" : "2:30 PM"}</option>
-                  <option value="15:00">{isAr ? "3:00 عصراً" : "3:00 PM"}</option>
-                  <option value="15:30">{isAr ? "3:30 عصراً" : "3:30 PM"}</option>
-                  <option value="16:00">{isAr ? "4:00 عصراً" : "4:00 PM"}</option>
-                  <option value="16:30">{isAr ? "4:30 عصراً" : "4:30 PM"}</option>
-                  <option value="17:00">{isAr ? "5:00 عصراً" : "5:00 PM"}</option>
-                </select>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground uppercase tracking-wider">{isAr ? "التاريخ" : "Date"}</Label>
+                <Input type="date" dir="ltr" value={meetingDate} onChange={e => setMeetingDate(e.target.value)} min={meetingDialog ? getMinMeetingDate(meetingDialog.approvedAt) : ""} className="h-11 bg-muted/50 border-border text-sm" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground uppercase tracking-wider">{isAr ? "الوقت (1م - 5م)" : "Time (1PM-5PM)"}</Label>
+                <div className="relative">
+                  <Clock className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <select className="w-full h-11 ps-9 pe-3 rounded-md border border-border bg-muted/50 text-sm focus-visible:ring-1 focus-visible:ring-primary appearance-none" value={meetingTime} onChange={e => setMeetingTime(e.target.value)}>
+                    <option value="13:00">1:00 PM</option><option value="13:30">1:30 PM</option>
+                    <option value="14:00">2:00 PM</option><option value="14:30">2:30 PM</option>
+                    <option value="15:00">3:00 PM</option><option value="15:30">3:30 PM</option>
+                    <option value="16:00">4:00 PM</option><option value="16:30">4:30 PM</option>
+                    <option value="17:00">5:00 PM</option>
+                  </select>
+                </div>
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">{isAr ? "ملاحظات (اختياري)" : "Notes (optional)"}</Label>
-              <Textarea value={meetingNotes} onChange={e => setMeetingNotes(e.target.value)} rows={2} placeholder={isAr ? "ملاحظات إضافية..." : "Additional notes..."} />
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground uppercase tracking-wider">{isAr ? "أجندة مقترحة (للإدارة)" : "Proposed Agenda (for Admin)"}</Label>
+              <Textarea value={meetingNotes} onChange={e => setMeetingNotes(e.target.value)} rows={2} placeholder={isAr ? "حدد المحاور..." : "Key points to discuss..."} className="bg-muted/50 border-border resize-none" />
             </div>
           </div>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => { setMeetingDialog(null); setMeetingDate(""); setMeetingTime("13:00"); setMeetingNotes(""); }}>{isAr ? "إلغاء" : "Cancel"}</Button>
-            <Button onClick={handleScheduleMeeting} disabled={actionLoading || !meetingDate} className="syna-gradient gap-1.5">
-              {actionLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CalendarClock className="h-3.5 w-3.5" />}
-              {isAr ? "إرسال طلب الاجتماع" : "Send Meeting Request"}
+          <DialogFooter className="gap-2 sm:gap-0 mt-4">
+            <Button variant="ghost" onClick={() => { setMeetingDialog(null); setMeetingDate(""); setMeetingTime("13:00"); setMeetingNotes(""); }}>{isAr ? "إلغاء" : "Cancel"}</Button>
+            <Button onClick={handleScheduleMeeting} disabled={actionLoading || !meetingDate} className="gap-2">
+              {actionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
+              {isAr ? "اعتماد وإرسال للإدارة" : "Approve & Send to Admin"}
             </Button>
           </DialogFooter>
         </DialogContent>

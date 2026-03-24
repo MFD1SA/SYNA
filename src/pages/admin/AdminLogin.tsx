@@ -59,41 +59,43 @@ const AdminLogin: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[hsl(210,25%,8%)]">
+    <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="absolute top-4 end-4">
-        <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-1.5 text-[hsl(210,15%,55%)]">
+        <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-1.5 text-muted-foreground hover:text-foreground">
           <Globe className="h-4 w-4" />{t.nav.language}
         </Button>
       </div>
 
       <div className="w-full max-w-sm mx-4">
-        <div className="mb-6 text-center">
-          <img src={logo} alt="DOMA" className="mx-auto mb-4 h-16 w-16 rounded-xl object-contain" />
-          <div className="flex items-center justify-center gap-2 mb-1">
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-card shadow-sm border border-border/50">
+            <img src={logo} alt="SYNA" className="h-14 w-14 object-contain" />
+          </div>
+          <div className="flex items-center justify-center gap-2 mb-2">
             <Shield className="h-5 w-5 text-primary" />
-            <h1 className="text-lg font-medium text-white">
+            <h1 className="text-xl font-medium text-foreground tracking-tight">
               {isAr ? "بوابة الإدارة" : "Admin Portal"}
             </h1>
           </div>
-          <p className="text-xs text-[hsl(210,15%,55%)]">
-            {isAr ? "الوصول مقيّد للمسؤولين فقط" : "Restricted access for administrators only"}
+          <p className="text-sm font-light text-muted-foreground">
+            {isAr ? "الوصول مقيّد لمسؤولي النظام فقط" : "Restricted access for system administrators only"}
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-4 rounded-2xl border border-[hsl(210,20%,18%)] bg-[hsl(210,25%,11%)] p-6">
+        <form onSubmit={handleLogin} className="space-y-5 rounded-2xl border border-border bg-card p-8 shadow-sm">
           <div className="space-y-2">
-            <Label className="text-sm font-light text-[hsl(210,15%,70%)]">{t.auth.email}</Label>
+            <Label className="text-sm font-medium text-foreground">{t.auth.email}</Label>
             <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               dir="ltr"
-              className="h-11 rounded-xl border-[hsl(210,20%,18%)] bg-[hsl(210,25%,14%)] text-white"
+              className="h-12 rounded-xl border border-border/50 bg-background text-foreground transition-all focus:border-primary/50"
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-sm font-light text-[hsl(210,15%,70%)]">{t.auth.password}</Label>
+            <Label className="text-sm font-medium text-foreground">{t.auth.password}</Label>
             <div className="relative">
               <Input
                 type={showPassword ? "text" : "password"}
@@ -101,20 +103,20 @@ const AdminLogin: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 dir="ltr"
-                className="h-11 rounded-xl border-[hsl(210,20%,18%)] bg-[hsl(210,25%,14%)] text-white"
+                className="h-12 rounded-xl border border-border/50 bg-background text-foreground transition-all focus:border-primary/50"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute end-3 top-1/2 -translate-y-1/2 text-[hsl(210,15%,55%)] hover:text-white"
+                className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
           </div>
-          <Button type="submit" className="h-11 w-full gap-2 rounded-xl doma-gradient doma-shadow" disabled={loading}>
+          <Button type="submit" className="h-12 w-full gap-2 rounded-xl text-base shadow-sm mt-2" disabled={loading}>
             <Shield className="h-4 w-4" />
-            {loading ? (isAr ? "جاري الدخول..." : "Signing in...") : (isAr ? "دخول" : "Sign In")}
+            {loading ? (isAr ? "جاري التحقق..." : "Verifying...") : (isAr ? "تسجيل الدخول" : "Sign In")}
           </Button>
         </form>
       </div>

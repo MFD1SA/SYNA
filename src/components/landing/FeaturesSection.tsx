@@ -1,6 +1,6 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Eye, Layers, Handshake, Video, ArrowLeft, ArrowRight } from "lucide-react";
+import { Eye, ShieldCheck, Handshake, Network, ArrowLeft, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -8,9 +8,9 @@ type FeatureKey = "privacy" | "verification" | "dealCrm" | "meetings";
 
 const features: { key: FeatureKey; icon: typeof Eye; slug: string }[] = [
   { key: "privacy", icon: Eye, slug: "privacy" },
-  { key: "verification", icon: Layers, slug: "structured-access" },
+  { key: "verification", icon: ShieldCheck, slug: "structured-access" },
   { key: "dealCrm", icon: Handshake, slug: "deal-tracking" },
-  { key: "meetings", icon: Video, slug: "meetings" },
+  { key: "meetings", icon: Network, slug: "meetings" },
 ];
 
 const FeaturesSection: React.FC = () => {
@@ -19,29 +19,27 @@ const FeaturesSection: React.FC = () => {
   const Arrow = isAr ? ArrowLeft : ArrowRight;
 
   return (
-    <section id="features" className="relative bg-[hsl(210,30%,4%)] py-14 md:py-18">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-2/3 bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.15)] to-transparent" />
-      </div>
-
-      <div className="container relative">
+    <section id="features" className="relative bg-background py-20 px-4 md:px-0">
+      <div className="container relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="mx-auto mb-10 max-w-3xl text-center"
+          className="mx-auto mb-16 max-w-3xl text-center"
         >
-          <h2 className="mb-3 text-2xl font-medium text-white md:text-3xl lg:text-4xl">
+          <span className="mb-4 inline-block rounded-full bg-muted/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {isAr ? "المميزات المؤسسية" : "Institutional Features"}
+          </span>
+          <h2 className="mb-6 text-3xl font-semibold tracking-tight text-foreground md:text-5xl">
             {t.features.title}
           </h2>
-          <p className="text-sm font-light text-[hsl(210,15%,50%)] md:text-base">
+          <p className="text-lg font-light leading-relaxed text-muted-foreground">
             {t.features.subtitle}
           </p>
         </motion.div>
 
-        {/* Equal-height grid with flex stretch */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {features.map(({ key, icon: Icon, slug }, i) => (
             <motion.div
               key={key}
@@ -53,27 +51,23 @@ const FeaturesSection: React.FC = () => {
             >
               <Link
                 to={`/features/${slug}`}
-                className="group relative flex flex-1 flex-col overflow-hidden rounded-2xl border border-[hsl(210,22%,12%)] bg-gradient-to-b from-[hsl(210,28%,8%)] to-[hsl(210,28%,6%)] p-6 no-underline transition-all duration-500 hover:border-[hsl(200,80%,45%,0.3)] hover:shadow-[0_16px_40px_-12px_hsl(200,80%,50%,0.1)]"
+                className="group relative flex flex-1 flex-col overflow-hidden rounded-xl border border-border/50 bg-card p-8 transition-all duration-300 hover:border-border hover:shadow-lg hover:-translate-y-1"
               >
-                {/* Top accent line */}
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,50%,0)] to-transparent transition-all duration-500 group-hover:via-[hsl(200,80%,50%,0.4)]" />
-
-                <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[hsl(200,80%,45%,0.12)] bg-[hsl(200,80%,45%,0.06)] transition-all duration-400 group-hover:border-[hsl(200,80%,45%,0.25)] group-hover:bg-[hsl(200,80%,45%,0.1)]">
-                  <Icon className="h-5 w-5 text-[hsl(200,80%,55%)]" strokeWidth={1.5} />
+                <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-lg bg-muted text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+                  <Icon className="h-6 w-6" strokeWidth={1.5} />
                 </div>
 
-                <h3 className="mb-2 text-base font-medium text-white">
+                <h3 className="mb-3 text-lg font-medium text-foreground">
                   {t.features[key]}
                 </h3>
 
-                {/* Fixed-height description area */}
-                <p className="mb-auto text-sm font-light leading-relaxed text-[hsl(210,15%,50%)]">
+                <p className="mb-8 text-sm font-light leading-relaxed text-muted-foreground">
                   {t.features[`${key}Desc`]}
                 </p>
 
-                <div className="mt-4 flex items-center gap-1.5 text-xs font-light text-[hsl(200,80%,55%)] opacity-0 transition-all duration-300 group-hover:opacity-100">
-                  <span>{isAr ? "اكتشف المزيد" : "Learn more"}</span>
-                  <Arrow className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                <div className="mt-auto flex items-center gap-2 text-sm font-medium text-primary">
+                  <span>{isAr ? "اقرأ المزيد" : "Read More"}</span>
+                  <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
                 </div>
               </Link>
             </motion.div>

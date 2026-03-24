@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -108,7 +108,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }, [searchQuery, isAr]);
 
   // Fetch notifications
-  const fetchNotifs = async () => {
+  const fetchNotifs = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
       .from("notifications")
@@ -127,9 +127,9 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }));
     setNotifications(mapped);
     setUnreadCount(mapped.filter(n => !n.is_read).length);
-  };
+  }, [user, isAr]);
 
-  useEffect(() => { fetchNotifs(); }, [user]);
+  useEffect(() => { fetchNotifs(); }, [fetchNotifs]);
 
   // Realtime notifications
   useEffect(() => {
@@ -139,7 +139,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` }, () => fetchNotifs())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [user]);
+  }, [user, fetchNotifs]);
 
   const markAsRead = async (id: string) => {
     await supabase.from("notifications").update({ is_read: true }).eq("id", id);

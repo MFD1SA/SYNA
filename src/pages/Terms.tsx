@@ -8,7 +8,7 @@ import { FileText } from "lucide-react";
 import headerTermsImg from "@/assets/header-terms.jpg";
 
 const TermsPage: React.FC = () => {
-  const { t, lang } = useLanguage();
+  const { lang } = useLanguage();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "الشروط والأحكام" : "Terms & Conditions");
 
@@ -35,15 +35,15 @@ const TermsPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[hsl(210,30%,4%)]">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <PageHeader icon={FileText} title={isAr ? "الشروط والأحكام" : "Terms & Conditions"} description={isAr ? "الشروط والأحكام التي تنظّم استخدام منصة سينا والعلاقة بين الأطراف" : "The terms and conditions governing the use of the SYNA platform and the relationship between parties"} backgroundImage={headerTermsImg} />
-      <main className="container py-10">
-        <div className="max-w-3xl mx-auto space-y-5">
+      <main className="container flex-1 py-16 md:py-24">
+        <div className="max-w-4xl mx-auto space-y-6">
           {sections.map((s, i) => (
-            <section key={i} className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6">
-              <h2 className="mb-2 text-lg font-medium text-white">{s.title}</h2>
-              <p className="text-sm font-light leading-relaxed text-[hsl(210,15%,50%)]">{s.text}</p>
+            <section key={i} className="rounded-xl border border-border bg-card p-8 shadow-sm transition-all hover:shadow-md">
+              <h2 className="mb-3 text-xl font-medium text-foreground">{s.title}</h2>
+              <p className="text-base font-light leading-relaxed text-muted-foreground">{s.text}</p>
             </section>
           ))}
         </div>

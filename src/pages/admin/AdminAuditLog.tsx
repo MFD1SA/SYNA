@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -53,7 +53,7 @@ const AdminAuditLog: React.FC = () => {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     setLoading(true);
     let query = supabase
       .from("audit_logs")
@@ -69,9 +69,9 @@ const AdminAuditLog: React.FC = () => {
     setLogs(data || []);
     setHasMore((data?.length || 0) === PAGE_SIZE);
     setLoading(false);
-  };
+  }, [page, entityFilter, actionFilter, search]);
 
-  useEffect(() => { fetchLogs(); }, [page, entityFilter, actionFilter, search]);
+  useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
   return (
     <AdminLayout>

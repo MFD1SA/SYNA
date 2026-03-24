@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Globe, Loader2, Building2, TrendingUp, AlertTriangle,
   CheckCircle2, Star, ExternalLink, BarChart3, X,
-  Share2, Newspaper, ThumbsUp, ThumbsDown, Minus,
+  Share2, Newspaper, ThumbsUp, ThumbsDown, Minus, AreaChart
 } from "lucide-react";
 
 interface SocialPlatform { platform: string; url: string; summary_ar: string; }
@@ -33,28 +33,28 @@ interface WebsiteAnalysis {
 
 interface Props { developerName: string; developerId: string; isAr: boolean; autoUrl?: string; }
 
+// Enterprise muted colors replacing generic colors
 const recStyles: Record<string, { ar: string; en: string; color: string }> = {
-  strong: { ar: "حضور قوي", en: "Strong Presence", color: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" },
-  moderate: { ar: "حضور متوسط", en: "Moderate Presence", color: "bg-amber-500/10 text-amber-700 border-amber-500/20" },
-  weak: { ar: "حضور ضعيف", en: "Weak Presence", color: "bg-red-500/10 text-red-700 border-red-500/20" },
+  strong: { ar: "حضور قوي", en: "Strong Presence", color: "bg-primary/5 text-primary border-primary/20" },
+  moderate: { ar: "حضور متوسط", en: "Moderate Presence", color: "bg-muted text-foreground border-border" },
+  weak: { ar: "حضور ضعيف", en: "Weak Presence", color: "bg-destructive/5 text-destructive border-destructive/20" },
 };
 
 const socialStrengthStyles: Record<string, { ar: string; color: string }> = {
-  strong: { ar: "حضور قوي", color: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" },
-  moderate: { ar: "حضور متوسط", color: "bg-amber-500/10 text-amber-700 border-amber-500/20" },
-  weak: { ar: "حضور ضعيف", color: "bg-red-500/10 text-red-700 border-red-500/20" },
-  absent: { ar: "غير موجود", color: "bg-muted text-muted-foreground border-border" },
+  strong: { ar: "قيادي", color: "bg-primary/5 text-primary border-primary/20" },
+  moderate: { ar: "مستقر", color: "bg-muted text-foreground border-border" },
+  weak: { ar: "محدود", color: "bg-destructive/5 text-destructive border-destructive/20" },
+  absent: { ar: "غير متوفر", color: "bg-transparent text-muted-foreground border-border/50" },
 };
 
 const coverageStyles: Record<string, { ar: string; color: string }> = {
-  high: { ar: "تغطية عالية", color: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" },
-  moderate: { ar: "تغطية متوسطة", color: "bg-amber-500/10 text-amber-700 border-amber-500/20" },
-  low: { ar: "تغطية محدودة", color: "bg-red-500/10 text-red-700 border-red-500/20" },
-  none: { ar: "لا تغطية", color: "bg-muted text-muted-foreground border-border" },
+  high: { ar: "تغطية بارزة", color: "bg-primary/5 text-primary border-primary/20" },
+  moderate: { ar: "تغطية اعتيادية", color: "bg-muted text-foreground border-border" },
+  low: { ar: "تغطية محدودة", color: "bg-destructive/5 text-destructive border-destructive/20" },
+  none: { ar: "لا توجد تغطية", color: "bg-transparent text-muted-foreground border-border/50" },
 };
 
 const sentimentIcon = { positive: ThumbsUp, negative: ThumbsDown, neutral: Minus };
-const sentimentColor = { positive: "text-emerald-600", negative: "text-red-600", neutral: "text-muted-foreground" };
 
 const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr, autoUrl }) => {
   const { toast } = useToast();
@@ -63,7 +63,6 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
   const [result, setResult] = useState<WebsiteAnalysis | null>(null);
   const [scrapedUrl, setScrapedUrl] = useState("");
 
-  // Auto-fetch developer website from DB if no autoUrl provided
   useEffect(() => {
     if (autoUrl || url) return;
     const fetchWebsite = async () => {
@@ -71,7 +70,7 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
       if (data?.website) setUrl(data.website);
     };
     fetchWebsite();
-  }, [developerId, autoUrl]);
+  }, [developerId, autoUrl, url]);
 
   const analyze = async () => {
     if (!url.trim()) { toast({ variant: "destructive", title: isAr ? "أدخل رابط الموقع" : "Enter website URL" }); return; }
@@ -89,7 +88,7 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
     } finally { setLoading(false); }
   };
 
-  const getScoreColor = (s: number) => s >= 75 ? "bg-emerald-500" : s >= 50 ? "bg-amber-500" : "bg-red-500";
+  const getScoreColor = (s: number) => s >= 75 ? "bg-primary" : s >= 50 ? "bg-muted-foreground" : "bg-destructive";
 
   return (
     <div className="space-y-4">
@@ -97,180 +96,242 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
           <Globe className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input type="url" placeholder={isAr ? "أدخل رابط موقع المطور..." : "Enter developer website URL..."} value={url} onChange={(e) => setUrl(e.target.value)} className="ps-9 text-sm" dir="ltr" onKeyDown={(e) => e.key === "Enter" && analyze()} />
+          <Input 
+            type="url" 
+            placeholder={isAr ? "أدخل رابط موقع المطور..." : "Enter developer website URL..."} 
+            value={url} 
+            onChange={(e) => setUrl(e.target.value)} 
+            className="ps-9 text-sm rounded-xl h-11 bg-muted/30 border-border/60 focus-visible:ring-1 focus-visible:ring-primary shadow-inner-sm transition-all" 
+            dir="ltr" 
+            onKeyDown={(e) => e.key === "Enter" && analyze()} 
+          />
         </div>
-        <Button onClick={analyze} disabled={loading} size="sm" className="gap-1.5 shrink-0">
-          {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <BarChart3 className="h-3.5 w-3.5" />}
-          {isAr ? "تحليل شامل" : "Full Analysis"}
+        <Button onClick={analyze} disabled={loading} size="sm" className="h-11 px-5 rounded-xl gap-2 shadow-sm font-medium">
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <AreaChart className="h-4 w-4" />}
+          {isAr ? "تحليل شامل" : "Run Analysis"}
         </Button>
       </div>
 
       {/* Loading */}
       {loading && (
-        <div className="flex flex-col items-center py-6 gap-3 rounded-xl border border-border/40 bg-muted/10">
+        <div className="flex flex-col items-center justify-center py-10 gap-3 rounded-2xl border border-border/50 bg-card/50 shadow-sm">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <div className="text-center">
-            <p className="text-sm font-medium text-foreground">{isAr ? "جاري التحليل الشامل..." : "Running comprehensive analysis..."}</p>
-            <p className="text-xs font-light text-muted-foreground mt-1">{isAr ? "جلب الموقع + السوشيال ميديا + الأخبار (30-60 ثانية)" : "Website + Social Media + News (30-60s)"}</p>
+            <p className="text-sm font-medium text-foreground">{isAr ? "جاري استخراج البيانات وتحليلها..." : "Extracting and analyzing data..."}</p>
+            <p className="text-[11px] font-light text-muted-foreground mt-1">{isAr ? "الويب، السوشيال ميديا، والسجلات (30-60 ثانية)" : "Web, social, and records (30-60s)"}</p>
           </div>
         </div>
       )}
 
-      {/* Result */}
+      {/* Result Card: Enterprise Level */}
       {result && !loading && (
-        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-5">
-          {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-primary" />
+        <div className="flex flex-col rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+          
+          {/* Header Section */}
+          <div className="p-6 border-b border-border/50 bg-muted/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-background border border-border shadow-sm">
+                <Building2 className="h-5 w-5 text-primary" strokeWidth={1.5} />
+              </div>
               <div>
-                <h4 className="text-sm font-medium text-foreground">{isAr ? "التحليل الشامل للمطور" : "Comprehensive Developer Analysis"}</h4>
-                <a href={scrapedUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1 mt-0.5">
+                <h4 className="text-base font-medium text-foreground tracking-tight">{isAr ? "التقرير الاستخباري للشركة" : "Corporate Intelligence Report"}</h4>
+                <a href={scrapedUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 mt-0.5">
                   {scrapedUrl} <ExternalLink className="h-3 w-3" />
                 </a>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className={`relative h-14 w-14 rounded-full border-4 flex items-center justify-center ${result.overall_score >= 75 ? "border-emerald-500" : result.overall_score >= 50 ? "border-amber-500" : "border-red-500"}`}>
-                <span className="text-base font-bold text-foreground">{result.overall_score}</span>
+            
+            <div className="flex items-center gap-4">
+              <div className="text-end">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-0.5">{isAr ? "المؤشر الموحد" : "Composite Index"}</p>
+                <div className="flex text-2xl font-semibold text-foreground items-baseline gap-1">
+                  {result.overall_score} <span className="text-xs font-normal text-muted-foreground">/100</span>
+                </div>
               </div>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setResult(null)}><X className="h-3 w-3" /></Button>
+              <div className="h-10 w-px bg-border hidden sm:block"></div>
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-muted" onClick={() => setResult(null)}>
+                <X className="h-4 w-4" />
+              </Button>
             </div>
           </div>
 
-          <Badge variant="outline" className={`text-xs ${(recStyles[result.recommendation_level] || recStyles.moderate).color}`}>
-            {isAr ? (recStyles[result.recommendation_level] || recStyles.moderate).ar : (recStyles[result.recommendation_level] || recStyles.moderate).en}
-          </Badge>
-
-          <p className="text-sm font-light text-foreground leading-relaxed">{result.company_overview_ar}</p>
-
-          {/* Score bars */}
-          <div className="space-y-2">
-            {[
-              { label: isAr ? "جودة الموقع" : "Website Quality", score: result.website_quality_score },
-              { label: isAr ? "التقييم العام" : "Overall Score", score: result.overall_score },
-            ].map((s) => (
-              <div key={s.label} className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-light text-muted-foreground">{s.label}</span>
-                  <span className="font-medium">{s.score}/100</span>
+          <div className="p-6 space-y-8">
+            {/* Overview & Verdict */}
+            <div className="grid lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                  <h5 className="text-sm font-medium text-foreground">{isAr ? "الملخص التنفيذي" : "Executive Summary"}</h5>
                 </div>
-                <div className="h-2 w-full rounded-full bg-muted">
-                  <div className={`h-2 rounded-full ${getScoreColor(s.score)} transition-all duration-700`} style={{ width: `${s.score}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Projects */}
-          <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-2">
-            <div className="flex items-center gap-1.5">
-              <TrendingUp className="h-3.5 w-3.5 text-primary" />
-              <span className="text-xs font-medium text-foreground">{isAr ? `المشاريع (${result.projects_count} مشروع تقريباً)` : `Projects (~${result.projects_count})`}</span>
-            </div>
-            <p className="text-xs font-light text-muted-foreground">{result.projects_summary_ar}</p>
-            {result.notable_projects_ar && result.notable_projects_ar.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-1">
-                {result.notable_projects_ar.map((p, i) => (<Badge key={i} variant="secondary" className="text-[10px] font-light"><Star className="h-2.5 w-2.5 me-1" />{p}</Badge>))}
-              </div>
-            )}
-          </div>
-
-          {/* Financial indicators */}
-          {result.financial_strength_indicators_ar && (
-            <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
-              <span className="text-xs font-medium text-foreground block mb-1">{isAr ? "مؤشرات القوة المالية" : "Financial Indicators"}</span>
-              <p className="text-xs font-light text-muted-foreground">{result.financial_strength_indicators_ar}</p>
-            </div>
-          )}
-
-          {/* === Social Media Section === */}
-          {result.social_media_presence && (
-            <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <Share2 className="h-3.5 w-3.5 text-primary" />
-                  <span className="text-xs font-medium text-foreground">{isAr ? "السوشيال ميديا" : "Social Media"}</span>
-                </div>
-                {(() => {
-                  const s = socialStrengthStyles[result.social_media_presence!.overall_strength] || socialStrengthStyles.absent;
-                  return <Badge variant="outline" className={`text-[10px] ${s.color}`}>{s.ar}</Badge>;
-                })()}
-              </div>
-              <p className="text-xs font-light text-muted-foreground">{result.social_media_presence.analysis_ar}</p>
-              {result.social_media_presence.platforms_found.length > 0 && (
-                <div className="space-y-1.5">
-                  {result.social_media_presence.platforms_found.map((p, i) => (
-                    <div key={i} className="flex items-start gap-2 text-xs">
-                      <Badge variant="secondary" className="text-[10px] shrink-0">{p.platform}</Badge>
-                      <span className="font-light text-muted-foreground flex-1">{p.summary_ar}</span>
-                      {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3 w-3 text-primary shrink-0" /></a>}
+                <p className="text-sm font-light text-muted-foreground leading-relaxed">{result.company_overview_ar}</p>
+                
+                {/* Score bars block */}
+                <div className="grid sm:grid-cols-2 gap-4 mt-4 pt-4 border-t border-border/50">
+                  {[
+                    { label: isAr ? "مؤشر حضور الويب" : "Web Presence Index", score: result.website_quality_score },
+                    { label: isAr ? "المؤشر الاستثماري الموحد" : "Unified Investment Index", score: result.overall_score },
+                  ].map((s) => (
+                    <div key={s.label} className="space-y-1.5">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-light text-muted-foreground">{s.label}</span>
+                        <span className="font-medium text-foreground">{s.score}/100</span>
+                      </div>
+                      <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                        <div className={`h-full rounded-full ${getScoreColor(s.score)} transition-all duration-1000 ease-out`} style={{ width: `${s.score}%` }} />
+                      </div>
                     </div>
                   ))}
                 </div>
-              )}
-            </div>
-          )}
-
-          {/* === News Section === */}
-          {result.news_intelligence && (
-            <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <Newspaper className="h-3.5 w-3.5 text-primary" />
-                  <span className="text-xs font-medium text-foreground">{isAr ? "الأخبار والتغطية الإعلامية" : "News Coverage"}</span>
-                </div>
-                {(() => {
-                  const c = coverageStyles[result.news_intelligence!.coverage_level] || coverageStyles.none;
-                  return <Badge variant="outline" className={`text-[10px] ${c.color}`}>{c.ar}</Badge>;
-                })()}
               </div>
-              <p className="text-xs font-light text-muted-foreground">{result.news_intelligence.analysis_ar}</p>
-              {result.news_intelligence.articles.length > 0 && (
-                <div className="space-y-2">
-                  {result.news_intelligence.articles.slice(0, 5).map((a, i) => {
-                    const SIcon = sentimentIcon[a.sentiment as keyof typeof sentimentIcon] || Minus;
-                    const sColor = sentimentColor[a.sentiment as keyof typeof sentimentColor] || sentimentColor.neutral;
-                    return (
-                      <div key={i} className="rounded-md border border-border/30 bg-card p-2 space-y-1">
-                        <div className="flex items-center gap-1.5">
-                          <SIcon className={`h-3 w-3 shrink-0 ${sColor}`} />
-                          <span className="text-xs font-medium text-foreground flex-1">{a.title_ar}</span>
-                          {a.url && <a href={a.url} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3 w-3 text-primary shrink-0" /></a>}
-                        </div>
-                        <p className="text-[11px] font-light text-muted-foreground ps-4">{a.summary_ar}</p>
+
+              {/* Verdict Side Plate */}
+              <div className="rounded-xl border border-border/60 bg-muted/20 p-5 flex flex-col">
+                <span className="text-[10px] text-muted-foreground uppercase tracking-widest mb-3">{isAr ? "قرار خوارزمية التحليل" : "Algorithmic Verdict"}</span>
+                <Badge variant="outline" className={`w-fit text-xs font-medium px-3 py-1 bg-background shadow-sm border-border ${recStyles[result.recommendation_level]?.color || recStyles.moderate.color}`}>
+                  {isAr ? recStyles[result.recommendation_level]?.ar : recStyles[result.recommendation_level]?.en}
+                </Badge>
+                <div className="mt-4 pt-4 border-t border-border/50">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest mb-2 block">{isAr ? "توصية الاستراتيجية" : "Strategic Rec."}</span>
+                  <p className="text-xs font-light text-foreground leading-relaxed">{result.recommendation_ar}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Matrix Data */}
+            <div className="grid md:grid-cols-2 gap-6">
+              
+              {/* Projects Subcard */}
+              <div className="rounded-xl border border-border/40 p-5 space-y-4 hover:border-primary/20 transition-colors">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                  <span className="text-sm font-medium text-foreground">{isAr ? `محفظة المشاريع` : `Project Portfolio`} <span className="text-muted-foreground font-normal">({result.projects_count})</span></span>
+                </div>
+                <p className="text-xs font-light text-muted-foreground leading-relaxed">{result.projects_summary_ar}</p>
+                {result.notable_projects_ar && result.notable_projects_ar.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {result.notable_projects_ar.map((p, i) => (
+                      <Badge key={i} variant="secondary" className="text-[10px] font-light bg-background border border-border rounded-md px-2 py-0.5">
+                        <Star className="h-2.5 w-2.5 me-1.5 text-primary" />{p}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Financial & Strengths Subcard */}
+              <div className="space-y-6">
+                {result.financial_strength_indicators_ar && (
+                  <div className="rounded-xl border border-border/40 p-5 hover:border-primary/20 transition-colors">
+                    <div className="flex items-center gap-2 mb-3">
+                      <BarChart3 className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                      <span className="text-sm font-medium text-foreground">{isAr ? "الملاءة المالية المتوقعة" : "Estimated Financial Strength"}</span>
+                    </div>
+                    <p className="text-xs font-light text-muted-foreground leading-relaxed">{result.financial_strength_indicators_ar}</p>
+                  </div>
+                )}
+                
+                {/* Pros & Cons Mini Matrix */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <span className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> {isAr ? "المميزات التنافسية" : "Competitive Edges"}
+                    </span>
+                    <ul className="space-y-2">
+                      {result.strengths_ar?.map((s, i) => (
+                        <li key={i} className="flex items-start gap-2 text-[11px] font-light text-muted-foreground leading-snug">
+                          <div className="h-1 w-1 rounded-full bg-primary shrink-0 mt-1.5" />
+                          <span>{s}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="space-y-3">
+                    <span className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                      <AlertTriangle className="h-3.5 w-3.5 text-muted-foreground" /> {isAr ? "نقاط التحوط" : "Hedging Points"}
+                    </span>
+                    <ul className="space-y-2">
+                      {result.weaknesses_ar?.map((w, i) => (
+                        <li key={i} className="flex items-start gap-2 text-[11px] font-light text-muted-foreground leading-snug">
+                          <div className="h-1 w-1 rounded-full bg-muted-foreground shrink-0 mt-1.5" />
+                          <span>{w}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Social & Intelligence Tracks */}
+            {(result.social_media_presence || result.news_intelligence) && (
+              <div className="grid md:grid-cols-2 gap-6 pt-6 border-t border-border/50">
+                
+                {/* Social Media */}
+                {result.social_media_presence && (
+                  <div className="space-y-4 rounded-xl border border-border/40 p-5 bg-background">
+                    <div className="flex items-center justify-between border-b border-border/50 pb-3">
+                      <div className="flex items-center gap-2">
+                        <Share2 className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                        <span className="text-sm font-medium text-foreground">{isAr ? "البصمة الرقمية" : "Digital Footprint"}</span>
                       </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
+                      <Badge variant="outline" className={`text-[10px] uppercase font-medium ${(socialStrengthStyles[result.social_media_presence.overall_strength] || socialStrengthStyles.absent).color}`}>
+                        {isAr ? socialStrengthStyles[result.social_media_presence.overall_strength]?.ar : socialStrengthStyles[result.social_media_presence.overall_strength]?.ar}
+                      </Badge>
+                    </div>
+                    <p className="text-xs font-light text-muted-foreground leading-relaxed">{result.social_media_presence.analysis_ar}</p>
+                    
+                    {result.social_media_presence.platforms_found.length > 0 && (
+                      <div className="space-y-2.5 pt-2">
+                        {result.social_media_presence.platforms_found.map((p, i) => (
+                          <div key={i} className="flex items-start gap-3 p-2.5 rounded-lg bg-muted/30 border border-border/50">
+                            <Badge variant="secondary" className="text-[9px] font-medium tracking-wide uppercase bg-background border-border shrink-0">{p.platform}</Badge>
+                            <span className="text-[11px] font-light text-muted-foreground leading-tight">{p.summary_ar}</span>
+                            {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" className="shrink-0 ms-auto text-muted-foreground hover:text-primary mt-0.5"><ExternalLink className="h-3 w-3" /></a>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
 
-          {/* Strengths & Weaknesses */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <span className="text-xs font-medium text-emerald-700">{isAr ? "نقاط القوة" : "Strengths"}</span>
-              {result.strengths_ar?.map((s, i) => (
-                <div key={i} className="flex items-start gap-1.5 text-xs font-light text-muted-foreground">
-                  <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-emerald-500" /><span>{s}</span>
-                </div>
-              ))}
-            </div>
-            <div className="space-y-1.5">
-              <span className="text-xs font-medium text-red-700">{isAr ? "نقاط الضعف" : "Weaknesses"}</span>
-              {result.weaknesses_ar?.map((w, i) => (
-                <div key={i} className="flex items-start gap-1.5 text-xs font-light text-muted-foreground">
-                  <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-red-500" /><span>{w}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Recommendation */}
-          <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
-            <span className="text-xs font-medium text-primary block mb-1">{isAr ? "توصية للمالك" : "Owner Recommendation"}</span>
-            <p className="text-xs font-light text-foreground">{result.recommendation_ar}</p>
+                {/* News Intelligence */}
+                {result.news_intelligence && (
+                  <div className="space-y-4 rounded-xl border border-border/40 p-5 bg-background">
+                    <div className="flex items-center justify-between border-b border-border/50 pb-3">
+                      <div className="flex items-center gap-2">
+                        <Newspaper className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                        <span className="text-sm font-medium text-foreground">{isAr ? "الرصد الإعلامي" : "Media Tracking"}</span>
+                      </div>
+                      <Badge variant="outline" className={`text-[10px] uppercase font-medium ${(coverageStyles[result.news_intelligence.coverage_level] || coverageStyles.none).color}`}>
+                        {isAr ? coverageStyles[result.news_intelligence.coverage_level]?.ar : coverageStyles[result.news_intelligence.coverage_level]?.ar}
+                      </Badge>
+                    </div>
+                    <p className="text-xs font-light text-muted-foreground leading-relaxed">{result.news_intelligence.analysis_ar}</p>
+                    
+                    {result.news_intelligence.articles.length > 0 && (
+                      <div className="space-y-2.5 pt-2">
+                        {result.news_intelligence.articles.slice(0, 3).map((a, i) => {
+                          const SIcon = sentimentIcon[a.sentiment as keyof typeof sentimentIcon] || Minus;
+                          return (
+                            <div key={i} className="flex flex-col gap-1.5 p-3 rounded-lg bg-muted/30 border border-border/50">
+                              <div className="flex items-start justify-between gap-3">
+                                <span className="text-xs font-medium text-foreground line-clamp-1">{a.title_ar}</span>
+                                <div className="flex items-center gap-2 shrink-0">
+                                  <SIcon className={`h-3 w-3 ${a.sentiment === 'positive' ? 'text-primary' : a.sentiment === 'negative' ? 'text-destructive' : 'text-muted-foreground'}`} />
+                                  {a.url && <a href={a.url} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3 w-3 text-muted-foreground hover:text-primary" /></a>}
+                                </div>
+                              </div>
+                              <p className="text-[10px] font-light text-muted-foreground line-clamp-2">{a.summary_ar}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

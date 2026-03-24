@@ -174,78 +174,97 @@ const CrmDashboard: React.FC = () => {
       </div>
 
       {/* Request Breakdown */}
-      <div className="mt-5 syna-card p-5">
-        <h3 className="mb-3 text-sm font-medium text-foreground">
-          {isAr ? "تفصيل الطلبات" : "Request Breakdown"}
-        </h3>
-        <div className="grid gap-3 sm:grid-cols-3">
+      <div className="mt-6 rounded-2xl border border-border/60 bg-card p-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-5">
+          <h3 className="text-base font-medium text-foreground">
+            {isAr ? "تحليل مسار الطلبات" : "Requests Pipeline"}
+          </h3>
+          <Button variant="ghost" size="sm" onClick={() => navigate("/crm/my-requests")} className="text-xs text-primary hover:bg-primary/5 mt-2 sm:mt-0">
+            {isAr ? "عرض التفاصيل" : "View Details"}
+            <ArrowRight className="h-3.5 w-3.5 ms-1.5" />
+          </Button>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
           {requestBreakdown.map((item) => (
-            <div key={item.label} className="flex items-center gap-3 rounded-xl border border-border/40 p-3">
-              <item.icon className={`h-4 w-4 ${item.color}`} strokeWidth={1.5} />
+            <div key={item.label} className="group flex items-center gap-4 rounded-xl border border-border/40 bg-muted/10 p-5 transition-colors hover:bg-muted/30 hover:border-border/60">
+              <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-background border border-border/50 shadow-sm shrink-0`}>
+                <item.icon className={`h-5 w-5 ${item.color}`} strokeWidth={1.5} />
+              </div>
               <div>
-                <p className="text-lg font-medium text-foreground" dir="ltr">{loading ? "—" : item.value}</p>
-                <p className="text-xs font-light text-muted-foreground">{item.label}</p>
+                <p className="text-2xl font-semibold text-foreground tracking-tight" dir="ltr">{loading ? "—" : item.value}</p>
+                <p className="text-xs font-medium text-muted-foreground mt-0.5">{item.label}</p>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="mt-5 syna-card p-5">
-        <h3 className="mb-3 text-sm font-medium text-foreground">
-          {isAr ? "إجراءات سريعة" : "Quick Actions"}
-        </h3>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div onClick={() => navigate("/crm/browse")} className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
-            <Search className="h-5 w-5 text-primary" strokeWidth={1.5} />
-            <div>
-              <p className="text-sm font-medium text-foreground">{isAr ? "استعراض الفرص" : "Browse Opportunities"}</p>
-              <p className="text-xs font-light text-muted-foreground">{isAr ? "ابحث عن فرص تطوير جديدة" : "Find new development opportunities"}</p>
-            </div>
-          </div>
-          <div onClick={() => navigate("/crm/my-requests")} className="flex items-center gap-3 rounded-xl border border-border/40 p-4 transition-colors hover:bg-surface cursor-pointer">
-            <FileText className="h-5 w-5 text-primary" strokeWidth={1.5} />
-            <div>
-              <p className="text-sm font-medium text-foreground">{isAr ? "متابعة طلباتي" : "Track My Requests"}</p>
-              <p className="text-xs font-light text-muted-foreground">{isAr ? "تابع حالة طلبات الشراكة" : "Monitor partnership request status"}</p>
+      {/* Two-Column Section: Deal Flow & Quick Actions */}
+      <div className="mt-6 grid lg:grid-cols-3 gap-6">
+        
+        {/* Deal Flow Visual */}
+        <div className="lg:col-span-2 rounded-2xl border border-border/60 bg-card p-6 shadow-sm flex flex-col">
+          <h3 className="text-base font-medium text-foreground mb-4">
+            {isAr ? "المنهجية القياسية للصفقات" : "Standard Deal Lifecycle"}
+          </h3>
+          <p className="text-xs font-light text-muted-foreground mb-6 max-w-xl leading-relaxed">
+            {isAr ? "يوضح هذا المسار رحلة الصفقة من الإدراج وحتى الإغلاق عبر منصة سينا." : "This timeline details the journey of an opportunity from listing to closing."}
+          </p>
+          <div className="mt-auto overflow-hidden relative">
+            <div className="flex items-center gap-0 overflow-x-auto pb-4 scrollbar-thin">
+              {[
+                { ar: "مسودة", en: "Draft" },
+                { ar: "نشر", en: "Publish" },
+                { ar: "استلام", en: "Receive" },
+                { ar: "مراجعة", en: "Review" },
+                { ar: "تفاوض", en: "Negotiate" },
+                { ar: "إغلاق", en: "Close" },
+              ].map((stage, idx, arr) => (
+                <React.Fragment key={stage.en}>
+                  <div className="flex flex-col items-center gap-2 shrink-0">
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-full border ${idx === arr.length - 1 ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600" : "bg-muted border-border/50 text-muted-foreground"}`}>
+                      <span className="text-xs font-medium">{idx + 1}</span>
+                    </div>
+                    <span className="text-[10px] font-medium text-foreground whitespace-nowrap">
+                      {isAr ? stage.ar : stage.en}
+                    </span>
+                  </div>
+                  {idx < arr.length - 1 && (
+                    <div className="w-12 h-px bg-border/60 mb-5 relative">
+                      <TrendingUp className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-2.5 w-2.5 text-muted-foreground/30" />
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Deal Flow Visual */}
-      <div className="mt-5 syna-card p-5">
-        <h3 className="mb-3 text-sm font-medium text-foreground">
-          {isAr ? "مسار الصفقة" : "Deal Flow"}
-        </h3>
-        <div className="flex items-center gap-1 overflow-x-auto pb-2">
-          {[
-            { ar: "مسودة", en: "Draft" },
-            { ar: "أرض معتمدة", en: "Approved" },
-            { ar: "فرصة منشورة", en: "Published" },
-            { ar: "استقبال عروض", en: "Receiving" },
-            { ar: "تم التقديم", en: "Applied" },
-            { ar: "تم الاستلام", en: "Received" },
-            { ar: "معاينة", en: "Preview" },
-            { ar: "مراجعة", en: "Review" },
-            { ar: "مطور مختار", en: "Selected" },
-            { ar: "تفاوض", en: "Negotiation" },
-            { ar: "اتفاق", en: "Agreed" },
-            { ar: "مشروع نشط", en: "Active" },
-            { ar: "مغلقة", en: "Closed" },
-          ].map((stage, idx, arr) => (
-            <React.Fragment key={stage.en}>
-              <div className="flex shrink-0 items-center justify-center rounded-lg border border-border/40 bg-card px-3 py-1.5">
-                <span className="text-[10px] font-light text-muted-foreground whitespace-nowrap">
-                  {isAr ? stage.ar : stage.en}
-                </span>
+        {/* Quick Actions */}
+        <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm">
+          <h3 className="text-base font-medium text-foreground mb-5">
+            {isAr ? "إجراءات رئيسية" : "Core Actions"}
+          </h3>
+          <div className="flex flex-col gap-3">
+            <div onClick={() => navigate("/crm/browse")} className="group flex items-start gap-4 rounded-xl border border-border/40 p-4 transition-all hover:bg-primary/5 hover:border-primary/20 cursor-pointer">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <Search className="h-4 w-4 text-primary" strokeWidth={1.5} />
               </div>
-              {idx < arr.length - 1 && (
-                <TrendingUp className="h-3 w-3 shrink-0 text-border" strokeWidth={1.5} />
-              )}
-            </React.Fragment>
-          ))}
+              <div>
+                <p className="text-sm font-medium text-foreground">{isAr ? "مستكشف الفرص" : "Opportunity Explorer"}</p>
+                <p className="text-[11px] font-light text-muted-foreground leading-relaxed mt-1">{isAr ? "عرض الفرص المعروضة وتحليلها مكانياً" : "View listed opportunities and analyze."}</p>
+              </div>
+            </div>
+            <div onClick={() => navigate("/crm/my-requests")} className="group flex items-start gap-4 rounded-xl border border-border/40 p-4 transition-all hover:bg-primary/5 hover:border-primary/20 cursor-pointer">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <FileText className="h-4 w-4 text-primary" strokeWidth={1.5} />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">{isAr ? "بوابة الشراكات" : "Partnerships Portal"}</p>
+                <p className="text-[11px] font-light text-muted-foreground leading-relaxed mt-1">{isAr ? "متابعة موقف طلبات التطوير الخاصة بك" : "Monitor your development requests."}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </CrmLayout>

@@ -93,13 +93,8 @@ const OpportunitiesSection: React.FC = () => {
   const items = [...lands, ...lands];
 
   return (
-    <section className="relative bg-[hsl(210,30%,5%)] py-14 md:py-18 overflow-hidden">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.12)] to-transparent" />
-        <div className="absolute top-1/2 end-[5%] h-[400px] w-[400px] rounded-full bg-[hsl(200,80%,40%,0.03)] blur-[120px]" />
-      </div>
-
-      <div className="container relative mb-12">
+    <section className="relative bg-muted/20 py-20 overflow-hidden border-y border-border/40">
+      <div className="container relative mb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -107,59 +102,62 @@ const OpportunitiesSection: React.FC = () => {
           transition={{ duration: 0.7 }}
           className="text-center"
         >
-          <h2 className="mb-3 text-3xl font-medium text-white md:text-4xl lg:text-5xl">
+          <span className="mb-4 inline-block rounded-full bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground shadow-sm">
+            {isAr ? "الفرص الحالية" : "Current Opportunities"}
+          </span>
+          <h2 className="mb-6 text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl">
             {isAr ? "فرص التطوير المتاحة" : "Available Development Opportunities"}
           </h2>
-          <p className="mx-auto max-w-xl text-base font-light text-[hsl(210,15%,50%)]">
-            {isAr ? "أراضي مختارة جاهزة للشراكات التطويرية والمساهمات العقارية عبر مدن المملكة" : "Selected lands ready for development partnerships and real estate contributions across Saudi cities"}
+          <p className="mx-auto max-w-2xl text-lg font-light leading-relaxed text-muted-foreground">
+            {isAr 
+              ? "أراضي مختارة بعناية تغطي أهم النطاقات الجغرافية، وهي معتمدة وجاهزة للشراكات الاستراتيجية مع المطورين والمستثمرين." 
+              : "Carefully selected lands covering prime geographical zones, verified and ready for strategic partnerships with developers and investors."}
           </p>
         </motion.div>
       </div>
 
-      <div ref={scrollRef} className="flex gap-5 overflow-hidden px-4" style={{ scrollBehavior: "auto" }}>
+      <div ref={scrollRef} className="flex gap-6 overflow-hidden px-6" style={{ scrollBehavior: "auto" }}>
         {items.map((land, i) => {
           const imgSrc = land.image_url || placeholders[i % placeholders.length];
           return (
             <div
               key={`${land.id}-${i}`}
-              className="group min-w-[340px] max-w-[340px] shrink-0 overflow-hidden rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] transition-all duration-500 hover:border-[hsl(200,80%,45%,0.25)] hover:shadow-[0_16px_50px_-12px_hsl(200,80%,50%,0.12)]"
+              className="group min-w-[360px] max-w-[360px] shrink-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-500 hover:shadow-lg hover:-translate-y-1"
             >
-              <div className="relative h-48 overflow-hidden">
-                <img src={imgSrc} alt={isAr ? cityNameAr[land.city] || land.city : land.city} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,28%,7%)] via-black/30 to-transparent" />
-                <div className="absolute top-3 start-3">
-                  <span className="rounded-full syna-gradient px-3 py-1 text-[11px] font-medium text-white shadow-lg">
+              <div className="relative h-56 overflow-hidden">
+                <img src={imgSrc} alt={isAr ? cityNameAr[land.city] || land.city : land.city} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute top-4 start-4 flex gap-2">
+                  <span className="rounded-sm bg-primary/90 px-3 py-1.5 text-xs font-medium text-primary-foreground backdrop-blur-md">
                     {isAr ? (goalLabels[land.partnership_goal]?.ar || "للشراكة") : (goalLabels[land.partnership_goal]?.en || "Partnership")}
                   </span>
-                </div>
-                <div className="absolute top-3 end-3">
-                  <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-md">
+                  <span className="rounded-sm bg-white/20 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
                     {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
                   </span>
                 </div>
                 <div className="absolute bottom-4 start-4">
-                  <h3 className="text-lg font-medium text-white">{isAr ? (cityNameAr[land.city] || land.city) : land.city}</h3>
+                  <h3 className="text-xl font-semibold text-white">{isAr ? (cityNameAr[land.city] || land.city) : land.city}</h3>
                   {land.district && (
-                    <p className="text-xs text-white/70">{isAr ? `حي ${districtNameAr[land.district] || land.district}` : land.district}</p>
+                    <p className="mt-1 text-sm font-light text-white/80">{isAr ? `حي ${districtNameAr[land.district] || land.district}` : land.district}</p>
                   )}
                 </div>
               </div>
-              <div className="p-5">
-                <div className="mb-4 flex items-center justify-between text-xs text-[hsl(210,15%,50%)]">
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="h-3.5 w-3.5 text-[hsl(200,80%,55%)]" />
+              <div className="p-6">
+                <div className="mb-6 flex items-center justify-between text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-primary" />
                     <span>{isAr ? (cityNameAr[land.city] || land.city) : land.city}</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Ruler className="h-3.5 w-3.5 text-[hsl(200,80%,55%)]" />
-                    <span>{land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}</span>
+                  <div className="flex items-center gap-2">
+                    <Ruler className="h-4 w-4 text-primary" />
+                    <span className="font-medium" dir="ltr">{land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}</span>
                   </div>
                 </div>
                 <button
                   onClick={() => navigate(`/opportunity/${land.id}`)}
-                  className="w-full rounded-xl border border-[hsl(200,80%,45%,0.2)] bg-[hsl(200,80%,45%,0.06)] py-2.5 text-sm font-medium text-[hsl(200,80%,60%)] transition-all duration-300 hover:bg-[hsl(200,80%,45%,0.12)] hover:border-[hsl(200,80%,45%,0.35)] hover:text-white"
+                  className="w-full rounded-md border border-border bg-transparent py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                 >
-                  {isAr ? "التفاصيل" : "Details"}
+                  {isAr ? "عرض التفاصيل" : "View Details"}
                 </button>
               </div>
             </div>

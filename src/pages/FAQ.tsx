@@ -40,23 +40,21 @@ const FAQPage: React.FC = () => {
   usePageTitle(isAr ? "الأسئلة الشائعة" : "FAQ");
 
   return (
-    <div className="min-h-screen bg-[hsl(210,30%,4%)]">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <PageHeader icon={HelpCircle} title={isAr ? "الأسئلة الشائعة" : "Frequently Asked Questions"} description={isAr ? "إجابات واضحة على أبرز الاستفسارات حول منصة سينا وآلية عملها" : "Clear answers to the most common questions about the SYNA platform and how it works"} backgroundImage={headerFaqImg} />
-      <main className="py-12 md:py-16">
-        <div className="container">
-          <div className="mx-auto max-w-2xl">
-            <Accordion type="single" collapsible className="space-y-3">
-              {faqData.map((item, idx) => (
-                <motion.div key={idx} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.05 }}>
-                  <AccordionItem value={`faq-${idx}`} className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] px-5 transition-colors hover:border-[hsl(200,80%,45%,0.15)]">
-                    <AccordionTrigger className="text-sm font-medium text-white hover:no-underline py-5">{isAr ? item.qAr : item.qEn}</AccordionTrigger>
-                    <AccordionContent className="text-sm font-light leading-relaxed text-[hsl(210,15%,50%)] pb-5">{isAr ? item.aAr : item.aEn}</AccordionContent>
-                  </AccordionItem>
-                </motion.div>
-              ))}
-            </Accordion>
-          </div>
+      <main className="container flex-1 py-16 md:py-24">
+        <div className="mx-auto max-w-3xl">
+          <Accordion type="single" collapsible className="space-y-4">
+            {faqData.map((item, idx) => (
+              <motion.div key={idx} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.05 }}>
+                <AccordionItem value={`faq-${idx}`} className="rounded-xl border border-border bg-card px-6 transition-all hover:bg-muted/30">
+                  <AccordionTrigger className="text-base font-medium text-foreground hover:no-underline py-5">{isAr ? item.qAr : item.qEn}</AccordionTrigger>
+                  <AccordionContent className="text-sm font-light leading-relaxed text-muted-foreground pb-6">{isAr ? item.aAr : item.aEn}</AccordionContent>
+                </AccordionItem>
+              </motion.div>
+            ))}
+          </Accordion>
         </div>
       </main>
       <Footer />

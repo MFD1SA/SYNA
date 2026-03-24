@@ -8,7 +8,7 @@ import { Scale } from "lucide-react";
 import headerUsagePolicyImg from "@/assets/header-usage-policy.jpg";
 
 const UsagePolicyPage: React.FC = () => {
-  const { t, lang } = useLanguage();
+  const { lang } = useLanguage();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "سياسة الاستخدام" : "Usage Policy");
 
@@ -29,15 +29,15 @@ const UsagePolicyPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[hsl(210,30%,4%)]">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <PageHeader icon={Scale} title={isAr ? "سياسة الاستخدام" : "Usage Policy"} description={isAr ? "القواعد والضوابط التي تحكم استخدام منصة سينا لضمان بيئة آمنة واحترافية" : "The rules and guidelines governing the use of the SYNA platform to ensure a safe and professional environment"} backgroundImage={headerUsagePolicyImg} />
-      <main className="container py-10">
-        <div className="max-w-3xl mx-auto space-y-5">
+      <main className="container flex-1 py-16 md:py-24">
+        <div className="max-w-4xl mx-auto space-y-6">
           {sections.map((s, i) => (
-            <section key={i} className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6">
-              <h2 className="mb-2 text-lg font-medium text-white">{s.title}</h2>
-              <p className="text-sm font-light leading-relaxed text-[hsl(210,15%,50%)]">{s.text}</p>
+            <section key={i} className="rounded-xl border border-border bg-card p-8 shadow-sm transition-all hover:shadow-md">
+              <h2 className="mb-3 text-xl font-medium text-foreground">{s.title}</h2>
+              <p className="text-base font-light leading-relaxed text-muted-foreground">{s.text}</p>
             </section>
           ))}
         </div>

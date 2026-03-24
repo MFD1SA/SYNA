@@ -81,12 +81,12 @@ const OpportunityDetail: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[hsl(210,30%,4%)]">
+      <div className="min-h-screen bg-background">
         <Navbar />
         <div className="flex items-center justify-center py-40">
           <div className="flex flex-col items-center gap-4">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[hsl(200,80%,55%)] border-t-transparent" />
-            <p className="text-sm text-[hsl(210,15%,50%)]">{isAr ? "جاري التحميل..." : "Loading..."}</p>
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <p className="text-sm text-muted-foreground">{isAr ? "جاري التحميل..." : "Loading..."}</p>
           </div>
         </div>
       </div>
@@ -95,14 +95,14 @@ const OpportunityDetail: React.FC = () => {
 
   if (!land) {
     return (
-      <div className="min-h-screen bg-[hsl(210,30%,4%)]">
+      <div className="min-h-screen bg-background">
         <Navbar />
         <div className="flex flex-col items-center justify-center py-40 gap-6">
-          <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)]">
-            <MapPin className="h-8 w-8 text-[hsl(210,15%,40%)]" />
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-border bg-card shadow-sm">
+            <MapPin className="h-8 w-8 text-muted-foreground" />
           </div>
-          <p className="text-[hsl(210,15%,50%)]">{isAr ? "لم يتم العثور على هذه الفرصة" : "Opportunity not found"}</p>
-          <Button onClick={() => navigate("/")} className="syna-gradient">{isAr ? "العودة للرئيسية" : "Back to Home"}</Button>
+          <p className="text-muted-foreground font-light">{isAr ? "لم يتم العثور على هذه الفرصة" : "Opportunity not found"}</p>
+          <Button onClick={() => navigate("/")} className="shadow-sm">{isAr ? "العودة للرئيسية" : "Back to Home"}</Button>
         </div>
         <Footer />
       </div>
@@ -130,7 +130,7 @@ const OpportunityDetail: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[hsl(210,30%,4%)]">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <main>
         {/* ── Cinematic Hero ── */}
@@ -144,17 +144,17 @@ const OpportunityDetail: React.FC = () => {
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
           {/* Multi-layer overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,30%,4%)] via-[hsl(210,30%,4%,0.5)] to-[hsl(210,30%,4%,0.15)]" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[hsl(210,30%,4%,0.6)] to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
 
           {/* Bottom accent */}
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.4)] to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
           <div className="absolute bottom-0 inset-x-0 container pb-8 md:pb-12">
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}>
               <Button
                 variant="ghost"
-                className="text-white/50 hover:text-white hover:bg-white/10 mb-5 gap-2 -ms-3 text-xs rounded-xl"
+                className="text-white/60 hover:text-white hover:bg-white/10 mb-5 gap-2 -ms-3 text-xs rounded-xl"
                 onClick={() => navigate("/")}
               >
                 {isAr ? <ArrowRight className="h-3.5 w-3.5" /> : <ArrowLeft className="h-3.5 w-3.5" />}
@@ -162,12 +162,12 @@ const OpportunityDetail: React.FC = () => {
               </Button>
 
               <div className="flex items-center gap-2.5 mb-4">
-                <span className="rounded-full syna-gradient px-4 py-1.5 text-[11px] font-medium text-white shadow-[0_4px_20px_-4px_hsl(200,80%,50%,0.4)]">
+                <span className="rounded-full bg-primary/20 border border-primary/30 px-4 py-1.5 text-[11px] font-medium text-primary shadow-sm">
                   {land.partnership_goal === "real_estate_contribution"
                     ? (isAr ? "مساهمة عقارية" : "Real Estate Contribution")
                     : (isAr ? "فرصة تطويرية" : "Development Opportunity")}
                 </span>
-                <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-[11px] font-medium text-white/90 backdrop-blur-lg">
+                <span className="rounded-full border border-border/50 bg-black/30 px-3 py-1.5 text-[11px] font-medium text-white/90 backdrop-blur-md">
                   {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
                 </span>
               </div>
@@ -179,13 +179,13 @@ const OpportunityDetail: React.FC = () => {
                 }
               </h1>
 
-              <div className="flex items-center gap-4 text-sm text-white/50">
+              <div className="flex items-center gap-4 text-sm text-white/60">
                 <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" />{isAr ? cityAr : land.city}</span>
-                <span className="h-3 w-px bg-white/15" />
+                <span className="h-3 w-px bg-white/20" />
                 <span className="flex items-center gap-1.5"><Maximize2 className="h-3.5 w-3.5" />{land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}</span>
                 {land.partnership_goal && (
                   <>
-                    <span className="h-3 w-px bg-white/15 hidden sm:block" />
+                    <span className="h-3 w-px bg-white/20 hidden sm:block" />
                     <span className="hidden sm:flex items-center gap-1.5"><Handshake className="h-3.5 w-3.5" />{isAr ? goalLabels[land.partnership_goal]?.ar : goalLabels[land.partnership_goal]?.en}</span>
                   </>
                 )}
@@ -207,22 +207,22 @@ const OpportunityDetail: React.FC = () => {
                   { icon: MapPin, val: isAr ? cityAr : land.city, unit: "", label: isAr ? "المدينة" : "City" },
                   { icon: Calendar, val: land.expected_dev_duration_months || "—", unit: land.expected_dev_duration_months ? (isAr ? "شهر" : "mo") : "", label: isAr ? "المدة المتوقعة" : "Duration" },
                 ].map((s, i) => (
-                  <div key={i} className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-4 text-center transition-all duration-300 hover:border-[hsl(200,80%,45%,0.2)]">
-                    <s.icon className="mx-auto h-4.5 w-4.5 text-[hsl(200,80%,55%)] mb-2" strokeWidth={1.5} />
-                    <p className="text-lg font-medium text-white leading-tight">{s.val} <span className="text-xs text-[hsl(210,15%,45%)]">{s.unit}</span></p>
-                    <p className="text-[11px] text-[hsl(210,15%,45%)] mt-1">{s.label}</p>
+                  <div key={i} className="rounded-2xl border border-border bg-card p-4 text-center transition-all duration-300 hover:border-primary/30 shadow-sm">
+                    <s.icon className="mx-auto h-4.5 w-4.5 text-primary mb-2" strokeWidth={1.5} />
+                    <p className="text-lg font-medium text-foreground leading-tight">{s.val} <span className="text-xs text-muted-foreground">{s.unit}</span></p>
+                    <p className="text-[11px] font-light text-muted-foreground mt-1">{s.label}</p>
                   </div>
                 ))}
               </motion.div>
 
               {/* Description */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-                className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6">
-                <h2 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
-                  <div className="h-1 w-1 rounded-full syna-gradient" />
+                className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                <h2 className="text-lg font-medium text-foreground mb-4 flex items-center gap-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary" />
                   {isAr ? "تفاصيل الفرصة" : "Opportunity Details"}
                 </h2>
-                <div className="space-y-4 text-sm text-[hsl(210,15%,55%)] leading-relaxed">
+                <div className="space-y-4 text-sm font-light text-muted-foreground leading-relaxed">
                   <p>
                     {isAr
                       ? `تتوفر أرض ${usageLabels[land.usage_type]?.ar || ""} بمساحة ${land.land_area_sqm?.toLocaleString()} متر مربع في ${land.district ? `حي ${districtNameAr[land.district] || land.district} ب` : ""}${cityAr}، وهي فرصة استثمارية مميزة لتطوير ${land.project_type || "مشروع عقاري"} يلبي الطلب المتنامي على العقارات في المنطقة.`
@@ -244,33 +244,33 @@ const OpportunityDetail: React.FC = () => {
 
                 {/* Dimensions */}
                 {(land.length_m || land.width_m || land.street_width_m) && (
-                  <div className="mt-6 pt-5 border-t border-[hsl(210,22%,12%)]">
-                    <h3 className="text-sm font-medium text-white mb-3">{isAr ? "الأبعاد" : "Dimensions"}</h3>
+                  <div className="mt-6 pt-5 border-t border-border">
+                    <h3 className="text-sm font-medium text-foreground mb-3">{isAr ? "الأبعاد" : "Dimensions"}</h3>
                     <div className="grid grid-cols-3 gap-3">
                       {land.length_m && (
-                        <div className="flex items-center gap-2.5 rounded-xl bg-[hsl(210,25%,10%)] border border-[hsl(210,22%,14%)] p-3">
-                          <MoveVertical className="h-4 w-4 text-[hsl(200,80%,55%)] shrink-0" strokeWidth={1.5} />
+                        <div className="flex items-center gap-2.5 rounded-xl bg-muted/50 border border-border/50 p-3">
+                          <MoveVertical className="h-4 w-4 text-primary shrink-0" strokeWidth={1.5} />
                           <div>
-                            <p className="text-sm font-medium text-white">{land.length_m} {isAr ? "م" : "m"}</p>
-                            <p className="text-[10px] text-[hsl(210,15%,45%)]">{isAr ? "الطول" : "Length"}</p>
+                            <p className="text-sm font-medium text-foreground">{land.length_m} {isAr ? "م" : "m"}</p>
+                            <p className="text-[10px] text-muted-foreground">{isAr ? "الطول" : "Length"}</p>
                           </div>
                         </div>
                       )}
                       {land.width_m && (
-                        <div className="flex items-center gap-2.5 rounded-xl bg-[hsl(210,25%,10%)] border border-[hsl(210,22%,14%)] p-3">
-                          <MoveHorizontal className="h-4 w-4 text-[hsl(200,80%,55%)] shrink-0" strokeWidth={1.5} />
+                        <div className="flex items-center gap-2.5 rounded-xl bg-muted/50 border border-border/50 p-3">
+                          <MoveHorizontal className="h-4 w-4 text-primary shrink-0" strokeWidth={1.5} />
                           <div>
-                            <p className="text-sm font-medium text-white">{land.width_m} {isAr ? "م" : "m"}</p>
-                            <p className="text-[10px] text-[hsl(210,15%,45%)]">{isAr ? "العرض" : "Width"}</p>
+                            <p className="text-sm font-medium text-foreground">{land.width_m} {isAr ? "م" : "m"}</p>
+                            <p className="text-[10px] text-muted-foreground">{isAr ? "العرض" : "Width"}</p>
                           </div>
                         </div>
                       )}
                       {land.street_width_m && (
-                        <div className="flex items-center gap-2.5 rounded-xl bg-[hsl(210,25%,10%)] border border-[hsl(210,22%,14%)] p-3">
-                          <Route className="h-4 w-4 text-[hsl(200,80%,55%)] shrink-0" strokeWidth={1.5} />
+                        <div className="flex items-center gap-2.5 rounded-xl bg-muted/50 border border-border/50 p-3">
+                          <Route className="h-4 w-4 text-primary shrink-0" strokeWidth={1.5} />
                           <div>
-                            <p className="text-sm font-medium text-white">{land.street_width_m} {isAr ? "م" : "m"}</p>
-                            <p className="text-[10px] text-[hsl(210,15%,45%)]">{isAr ? "عرض الشارع" : "Street"}</p>
+                            <p className="text-sm font-medium text-foreground">{land.street_width_m} {isAr ? "م" : "m"}</p>
+                            <p className="text-[10px] text-muted-foreground">{isAr ? "عرض الشارع" : "Street"}</p>
                           </div>
                         </div>
                       )}
@@ -281,21 +281,21 @@ const OpportunityDetail: React.FC = () => {
 
               {/* Why This Opportunity */}
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6">
-                <h2 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
-                  <div className="h-1 w-1 rounded-full syna-gradient" />
+                className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                <h2 className="text-lg font-medium text-foreground mb-4 flex items-center gap-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary" />
                   {isAr ? "لماذا هذه الفرصة؟" : "Why This Opportunity?"}
                 </h2>
                 <div className="grid sm:grid-cols-2 gap-3">
                   {features.map((f, idx) => (
                     <motion.div key={idx} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.08 }}
-                      className="flex gap-3 p-4 rounded-xl bg-[hsl(210,25%,10%)] border border-[hsl(210,22%,14%)] transition-all duration-300 hover:border-[hsl(200,80%,45%,0.2)]">
-                      <div className="shrink-0 flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(200,80%,45%,0.08)] border border-[hsl(200,80%,45%,0.1)]">
-                        <f.icon className="h-5 w-5 text-[hsl(200,80%,55%)]" strokeWidth={1.5} />
+                      className="flex gap-3 p-4 rounded-xl bg-muted/30 border border-border/50 transition-all duration-300 hover:border-primary/30">
+                      <div className="shrink-0 flex h-10 w-10 items-center justify-center rounded-xl bg-background border border-border shadow-sm">
+                        <f.icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-white">{f.title}</p>
-                        <p className="text-xs text-[hsl(210,15%,50%)] mt-1 leading-relaxed">{f.desc}</p>
+                        <p className="text-sm font-medium text-foreground">{f.title}</p>
+                        <p className="text-xs font-light text-muted-foreground mt-1 leading-relaxed">{f.desc}</p>
                       </div>
                     </motion.div>
                   ))}
@@ -306,24 +306,24 @@ const OpportunityDetail: React.FC = () => {
             {/* ── Sidebar ── */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
               className="space-y-4">
-              <div className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6 sticky top-24">
-                <h3 className="text-base font-medium text-white mb-5 flex items-center gap-2">
-                  <div className="h-1 w-1 rounded-full syna-gradient" />
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sticky top-24">
+                <h3 className="text-base font-medium text-foreground mb-5 flex items-center gap-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary" />
                   {isAr ? "ملخص الفرصة" : "Opportunity Summary"}
                 </h3>
 
                 <div className="space-y-0">
                   {summaryItems.map((item, i) => (
-                    <div key={i} className="flex justify-between py-3 border-b border-[hsl(210,22%,12%)] last:border-0">
-                      <span className="text-xs text-[hsl(210,15%,45%)]">{item.label}</span>
-                      <span className="text-xs font-medium text-white">{item.value}</span>
+                    <div key={i} className="flex justify-between py-3 border-b border-border/50 last:border-0">
+                      <span className="text-xs font-light text-muted-foreground">{item.label}</span>
+                      <span className="text-xs font-medium text-foreground">{item.value}</span>
                     </div>
                   ))}
                 </div>
 
                 <div className="mt-6 space-y-3">
                   <Button
-                    className="w-full gap-2 syna-gradient border-0 text-white rounded-xl h-11 text-sm transition-all duration-300 hover:shadow-[0_8px_30px_-8px_hsl(200,80%,50%,0.35)]"
+                    className="w-full gap-2 shadow-sm rounded-xl h-11 text-sm transition-all duration-300"
                     onClick={() => navigate("/auth/register")}
                   >
                     <Handshake className="h-4 w-4" />
@@ -331,16 +331,16 @@ const OpportunityDetail: React.FC = () => {
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full border-[hsl(210,22%,16%)] bg-transparent text-[hsl(210,15%,70%)] hover:bg-[hsl(210,22%,12%)] hover:text-white rounded-xl h-11 text-sm"
+                    className="w-full bg-transparent hover:bg-muted text-foreground rounded-xl h-11 text-sm border-border"
                     onClick={() => navigate("/auth/login")}
                   >
                     {isAr ? "تسجيل الدخول" : "Login"}
                   </Button>
                 </div>
 
-                <div className="mt-5 flex items-start gap-2.5 p-3.5 rounded-xl bg-[hsl(200,80%,45%,0.05)] border border-[hsl(200,80%,45%,0.1)]">
-                  <CheckCircle2 className="h-4 w-4 text-[hsl(200,80%,55%)] mt-0.5 shrink-0" strokeWidth={1.5} />
-                  <p className="text-[11px] text-[hsl(210,15%,50%)] leading-relaxed">
+                <div className="mt-5 flex items-start gap-2.5 p-3.5 rounded-xl bg-muted/50 border border-border/50">
+                  <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" strokeWidth={1.5} />
+                  <p className="text-[11px] font-light text-muted-foreground leading-relaxed">
                     {isAr
                       ? "للاطلاع على تفاصيل الموقع الدقيق وبيانات الصك، يرجى التسجيل كمطور معتمد. سيتم مراجعة طلبك خلال 24 ساعة."
                       : "To access exact location details and deed information, please register as a certified developer. Your application will be reviewed within 24 hours."

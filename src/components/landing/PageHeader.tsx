@@ -10,27 +10,19 @@ interface PageHeaderProps {
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({ icon: Icon, title, description, backgroundImage }) => (
-  <div className="relative w-full overflow-hidden bg-[hsl(210,30%,4%)]">
+  <div className="relative w-full overflow-hidden bg-card border-b border-border/40">
     {/* Background image */}
     {backgroundImage && (
       <img
         src={backgroundImage}
         alt=""
         aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-cover object-center"
+        className="absolute inset-0 h-full w-full object-cover object-center opacity-40 mix-blend-overlay"
       />
     )}
 
-    {/* Dark overlay for readability */}
-    <div className="absolute inset-0 bg-[hsl(210,30%,4%,0.7)]" />
-
-    {/* Decorative elements */}
-    <div className="pointer-events-none absolute inset-0">
-      <div className="absolute -top-32 end-[-10%] h-[400px] w-[400px] rounded-full bg-[hsl(200,80%,40%,0.06)] blur-[120px]" />
-      <div className="absolute -bottom-32 start-[-8%] h-[300px] w-[300px] rounded-full bg-[hsl(195,85%,50%,0.04)] blur-[100px]" />
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[hsl(210,30%,4%)] to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.2)] to-transparent" />
-    </div>
+    {/* Elegant subtle gradient overlay */}
+    <div className="absolute inset-0 bg-gradient-to-b from-background/80 to-card/95" />
 
     <div className="container relative z-10 py-20 md:py-28 pt-28 md:pt-32">
       <motion.div
@@ -39,11 +31,11 @@ const PageHeader: React.FC<PageHeaderProps> = ({ icon: Icon, title, description,
         transition={{ duration: 0.7 }}
         className="mx-auto max-w-2xl text-center"
       >
-        <div className="mb-4 inline-flex items-center justify-center rounded-xl border border-[hsl(200,80%,45%,0.15)] bg-[hsl(200,80%,45%,0.06)] p-3 backdrop-blur-sm">
-          <Icon className="h-6 w-6 text-[hsl(200,80%,55%)]" strokeWidth={1.5} />
+        <div className="mb-6 inline-flex items-center justify-center rounded-2xl border border-muted/50 bg-muted/30 p-4 shadow-sm backdrop-blur-md">
+          <Icon className="h-7 w-7 text-primary" strokeWidth={1.5} />
         </div>
-        <h1 className="mb-3 text-3xl font-medium text-white md:text-4xl">{title}</h1>
-        <p className="text-base font-light leading-relaxed text-[hsl(210,15%,65%)]">{description}</p>
+        <h1 className="mb-4 text-4xl font-semibold tracking-tight text-foreground md:text-5xl">{title}</h1>
+        <p className="text-lg font-light leading-relaxed text-muted-foreground">{description}</p>
       </motion.div>
     </div>
   </div>

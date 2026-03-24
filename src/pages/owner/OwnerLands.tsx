@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -34,14 +34,14 @@ const OwnerLands: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editInitialData, setEditInitialData] = useState<Partial<LandFormData>>({});
 
-  const fetchLands = async () => {
+  const fetchLands = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase.from("lands").select("*").eq("owner_id", user.id).order("created_at", { ascending: false });
     setLands(data || []);
     setLoading(false);
-  };
+  }, [user]);
 
-  useEffect(() => { fetchLands(); }, [user]);
+  useEffect(() => { fetchLands(); }, [fetchLands]);
 
   const handleSubmit = async (form: LandFormData) => {
     if (!user) return;

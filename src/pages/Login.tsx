@@ -182,9 +182,9 @@ const LoginPage: React.FC = () => {
     setSelectedTargetCities(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
   };
 
-  const inputClasses = "h-11 rounded-xl border-[hsl(210,22%,16%)] bg-[hsl(210,28%,8%)] text-white placeholder:text-[hsl(210,15%,35%)] focus:border-[hsl(200,80%,45%,0.4)] focus:ring-[hsl(200,80%,45%,0.2)]";
-  const labelClasses = "font-light text-sm text-[hsl(210,15%,60%)]";
-  const sectionTitleClasses = "mb-3 text-sm font-medium text-white border-b border-[hsl(210,22%,14%)] pb-2";
+  const inputClasses = "h-11 rounded-xl border-border/50 bg-background text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all";
+  const labelClasses = "font-medium text-sm text-foreground";
+  const sectionTitleClasses = "mb-3 text-sm font-semibold text-foreground border-b border-border/50 pb-2";
 
   const DriveLinkInput = ({ value, onChange, valid, placeholder, error }: { value: string; onChange: (v: string) => void; valid: boolean | null; placeholder: string; error?: string }) => (
     <div className="space-y-1.5">
@@ -192,17 +192,17 @@ const LoginPage: React.FC = () => {
         <Input value={value} onChange={e => onChange(e.target.value)} dir="ltr" className={`${inputClasses} pe-10`} placeholder={placeholder} />
         <div className="absolute end-3 top-1/2 -translate-y-1/2">
           {valid === true && <CheckCircle2 className="h-4 w-4 text-emerald-500" />}
-          {valid === false && <XCircle className="h-4 w-4 text-red-400" />}
-          {valid === null && value && <Link2 className="h-4 w-4 text-[hsl(210,15%,40%)]" />}
+          {valid === false && <XCircle className="h-4 w-4 text-destructive" />}
+          {valid === null && value && <Link2 className="h-4 w-4 text-muted-foreground" />}
         </div>
       </div>
       {valid === false && value && (
-        <p className="text-[10px] text-red-400">{isAr ? "الرابط غير صالح — يجب أن يبدأ بـ https://drive.google.com/" : "Invalid link — must start with https://drive.google.com/"}</p>
+        <p className="text-[10px] text-destructive">{isAr ? "الرابط غير صالح — يجب أن يبدأ بـ https://drive.google.com/" : "Invalid link — must start with https://drive.google.com/"}</p>
       )}
       {valid === true && (
-        <p className="text-[10px] text-emerald-400">{isAr ? "✓ رابط Google Drive صالح" : "✓ Valid Google Drive link"}</p>
+        <p className="text-[10px] text-emerald-500">{isAr ? "✓ رابط Google Drive صالح" : "✓ Valid Google Drive link"}</p>
       )}
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 
@@ -216,12 +216,12 @@ const LoginPage: React.FC = () => {
         <Label htmlFor={`${portalType}-password`} className={labelClasses}>{t.auth.password}</Label>
         <div className="relative">
           <Input id={`${portalType}-password`} type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required dir="ltr" className={inputClasses} />
-          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 text-[hsl(210,15%,45%)] hover:text-white transition-colors">
+          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
       </div>
-      <Button type="submit" className="h-12 w-full gap-2 rounded-xl syna-gradient text-base font-medium transition-all duration-300 hover:shadow-[0_8px_30px_-8px_hsl(200,80%,50%,0.3)] hover:scale-[1.01]" disabled={loading}>
+      <Button type="submit" className="h-12 w-full gap-2 rounded-xl text-base font-medium transition-all duration-300 shadow-sm" disabled={loading}>
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
         {isAr ? "دخول" : "Sign In"}
       </Button>
@@ -229,33 +229,33 @@ const LoginPage: React.FC = () => {
   );
 
   return (
-    <div className="flex min-h-screen bg-[hsl(210,30%,4%)]">
+    <div className="flex min-h-screen bg-background">
       {/* Left decorative panel */}
-      <div className="relative hidden w-[45%] overflow-hidden lg:flex lg:flex-col lg:items-center lg:justify-center">
+      <div className="relative hidden w-[45%] overflow-hidden lg:flex lg:flex-col lg:items-center lg:justify-center bg-card border-e border-border/50">
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute top-1/3 start-1/3 h-[500px] w-[500px] rounded-full bg-[hsl(200,80%,45%,0.08)] blur-[160px]" />
-          <div className="absolute bottom-1/4 end-1/4 h-[300px] w-[300px] rounded-full bg-[hsl(195,85%,50%,0.05)] blur-[120px]" />
-          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: `radial-gradient(circle, hsl(200 80% 60%) 0.5px, transparent 0.5px)`, backgroundSize: "40px 40px" }} />
+          <div className="absolute top-1/3 start-1/3 h-[500px] w-[500px] rounded-full bg-primary/5 blur-[120px]" />
+          <div className="absolute bottom-1/4 end-1/4 h-[300px] w-[300px] rounded-full bg-primary/5 blur-[100px]" />
+          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: `radial-gradient(circle, var(--primary) 0.5px, transparent 0.5px)`, backgroundSize: "40px 40px" }} />
         </div>
-        <motion.div animate={{ rotate: 360 }} transition={{ duration: 80, repeat: Infinity, ease: "linear" }} className="absolute h-[500px] w-[500px] rounded-full border border-[hsl(200,80%,40%,0.06)]" />
-        <motion.div animate={{ rotate: -360 }} transition={{ duration: 100, repeat: Infinity, ease: "linear" }} className="absolute h-[650px] w-[650px] rounded-full border border-[hsl(195,85%,50%,0.04)]" />
+        <motion.div animate={{ rotate: 360 }} transition={{ duration: 120, repeat: Infinity, ease: "linear" }} className="absolute h-[500px] w-[500px] rounded-full border border-primary/10" />
+        <motion.div animate={{ rotate: -360 }} transition={{ duration: 150, repeat: Infinity, ease: "linear" }} className="absolute h-[650px] w-[650px] rounded-full border border-primary/5" />
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1 }} className="relative text-center">
           <div className="relative mb-8">
-            <div className="absolute inset-0 scale-150 rounded-full bg-[hsl(200,80%,45%,0.12)] blur-[50px]" />
-            <img src={logo} alt="SYNA" className="relative mx-auto h-36 w-36 object-contain drop-shadow-[0_0_30px_hsl(200,80%,50%,0.3)]" />
+            <div className="absolute inset-0 scale-150 rounded-full bg-primary/5 blur-[40px]" />
+            <img src={logo} alt="SYNA" className="relative mx-auto h-36 w-36 object-contain" />
           </div>
-          <h2 className="text-4xl font-medium tracking-tight" style={{ background: "linear-gradient(135deg, white, hsl(200,80%,70%))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>SYNA</h2>
-          <p className="mt-3 text-sm font-light text-[hsl(210,15%,50%)]">{isAr ? "بوابة الشركاء" : "Partners Portal"}</p>
+          <h2 className="text-4xl font-medium tracking-tight text-foreground">SYNA</h2>
+          <p className="mt-3 text-sm font-light text-muted-foreground">{isAr ? "بوابة الشركاء" : "Partners Portal"}</p>
         </motion.div>
       </div>
 
       {/* Right form panel */}
       <div className="flex flex-1 items-center justify-center overflow-y-auto p-6 md:p-10">
         <div className="fixed top-4 inset-x-6 z-10 flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-1.5 text-[hsl(210,15%,50%)] hover:bg-[hsl(210,22%,12%)] hover:text-white">
+          <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-1.5 text-muted-foreground hover:text-foreground">
             <Globe className="h-4 w-4" />{t.nav.language}
           </Button>
-          <Button variant="ghost" size="sm" asChild className="gap-1.5 text-[hsl(210,15%,50%)] hover:bg-[hsl(210,22%,12%)] hover:text-white">
+          <Button variant="ghost" size="sm" asChild className="gap-1.5 text-muted-foreground hover:text-foreground">
             <Link to="/"><Home className="h-4 w-4" />{isAr ? "الرئيسية" : "Home"}</Link>
           </Button>
         </div>
@@ -263,38 +263,38 @@ const LoginPage: React.FC = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="w-full max-w-md">
           <div className="mb-8 flex flex-col items-center lg:hidden">
             <div className="relative">
-              <div className="absolute inset-0 scale-150 rounded-full bg-[hsl(200,80%,45%,0.1)] blur-[30px]" />
+              <div className="absolute inset-0 scale-150 rounded-full bg-primary/5 blur-[30px]" />
               <img src={logo} alt="SYNA" className="relative h-20 w-20 object-contain" />
             </div>
-            <span className="mt-3 text-2xl font-medium text-white tracking-tight">SYNA</span>
+            <span className="mt-3 text-2xl font-medium text-foreground tracking-tight">SYNA</span>
           </div>
 
           <Tabs value={portalType} onValueChange={(v) => { setPortalType(v as any); setMode("login"); }} className="mb-6">
-            <TabsList className="w-full rounded-xl border border-[hsl(210,22%,14%)] bg-[hsl(210,28%,7%)] p-1">
-              <TabsTrigger value="developer" className="flex-1 gap-1.5 rounded-lg text-[hsl(210,15%,55%)] data-[state=active]:bg-[hsl(210,22%,14%)] data-[state=active]:text-white data-[state=active]:shadow-none">
+            <TabsList className="w-full rounded-xl border border-border/50 bg-muted/30 p-1">
+              <TabsTrigger value="developer" className="flex-1 gap-1.5 rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all">
                 <HardHat className="h-3.5 w-3.5" />
                 {isAr ? "بوابة المطور" : "Developer Portal"}
               </TabsTrigger>
-              <TabsTrigger value="owner" className="flex-1 gap-1.5 rounded-lg text-[hsl(210,15%,55%)] data-[state=active]:bg-[hsl(210,22%,14%)] data-[state=active]:text-white data-[state=active]:shadow-none">
+              <TabsTrigger value="owner" className="flex-1 gap-1.5 rounded-lg text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all">
                 <Landmark className="h-3.5 w-3.5" />
                 {isAr ? "بوابة المالك" : "Owner Portal"}
               </TabsTrigger>
             </TabsList>
           </Tabs>
 
-          <div className="mb-6 rounded-2xl border border-[hsl(200,80%,45%,0.12)] bg-[hsl(200,80%,45%,0.04)] p-5 text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              {portalType === "developer" ? <HardHat className="h-5 w-5 text-[hsl(200,80%,55%)]" /> : <Landmark className="h-5 w-5 text-[hsl(200,80%,55%)]" />}
-              <p className="text-base font-medium text-white">
+          <div className="mb-8 rounded-2xl border border-border/50 bg-muted/10 p-6 text-center shadow-sm">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              {portalType === "developer" ? <HardHat className="h-5 w-5 text-primary" /> : <Landmark className="h-5 w-5 text-primary" />}
+              <p className="text-lg font-medium text-foreground">
                 {portalType === "developer" ? (isAr ? "بوابة المطور العقاري" : "Developer Portal") : (isAr ? "بوابة مالك الأرض" : "Land Owner Portal")}
               </p>
             </div>
-            <p className="text-xs text-[hsl(210,15%,50%)]">
+            <p className="text-sm font-light leading-relaxed text-muted-foreground">
               {portalType === "owner"
-                ? (isAr ? "تابع حالة أرضك ومؤشرات الاهتمام" : "Track your land status and interest indicators")
+                ? (isAr ? "تابع حالة أرضك ومؤشرات الاهتمام عبر منصة سينا" : "Track your land status and interest indicators via SYNA platform")
                 : mode === "login"
-                  ? (isAr ? "سجّل دخولك لبدء رحلة الشراكة" : "Sign in to start your partnership journey")
-                  : (isAr ? "أنشئ حساباً جديداً لبدء رحلة الشراكة" : "Create an account to start your partnership journey")}
+                  ? (isAr ? "سجل دخولك لمتابعة الصفقات وفرص الشراكة العقارية" : "Sign in to track deals and real estate partnership opportunities")
+                  : (isAr ? "أنشئ حساباً كشريك تطوير معتمد واستعرض الفرص المتاحة" : "Create an account as a certified development partner and explore available opportunities")}
             </p>
           </div>
 
@@ -302,9 +302,9 @@ const LoginPage: React.FC = () => {
           {portalType === "owner" && (
             <>
               {LoginForm}
-              <div className="mt-5 rounded-xl border border-[hsl(210,22%,14%)] bg-[hsl(210,28%,7%)] p-4 text-center">
-                <p className="text-xs font-light text-[hsl(210,15%,45%)]">
-                  {isAr ? "يتم إنشاء حسابات الملاك من قبل مدير النظام. تواصل معنا للحصول على بيانات الدخول." : "Owner accounts are created by the admin. Contact us for login credentials."}
+              <div className="mt-6 rounded-xl border border-border bg-card p-5 text-center shadow-sm">
+                <p className="text-xs font-light leading-relaxed text-muted-foreground">
+                  {isAr ? "ملاحظة: يتم إنشاء حسابات الملاك تلقائياً من قبل فريق سينا عند بدء إجراءات الشراكة. إذا لم تتلقَ بيانات الدخول، تفضل بالتواصل معنا." : "Note: Owner accounts are automatically created by the SYNA team when partnership procedures start. If you haven't received login credentials, please contact us."}
                 </p>
               </div>
             </>
@@ -314,10 +314,10 @@ const LoginPage: React.FC = () => {
           {portalType === "developer" && mode === "login" && (
             <>
               {LoginForm}
-              <p className="mt-6 text-center text-sm font-light text-[hsl(210,15%,50%)]">
-                {isAr ? "ليس لديك حساب؟" : "Don't have an account?"}{" "}
-                <button type="button" onClick={() => setMode("register")} className="text-[hsl(200,80%,55%)] hover:text-[hsl(200,80%,70%)] transition-colors">
-                  {isAr ? "إنشاء حساب" : "Create Account"}
+              <p className="mt-8 text-center text-sm font-light text-muted-foreground">
+                {isAr ? "ليس لديك حساب كشريك مطور؟" : "Don't have a developer partner account?"}{" "}
+                <button type="button" onClick={() => setMode("register")} className="text-primary font-medium hover:underline transition-all">
+                  {isAr ? "إنشاء حساب جديد" : "Create New Account"}
                 </button>
               </p>
             </>
@@ -326,28 +326,28 @@ const LoginPage: React.FC = () => {
           {/* Developer Register */}
           {portalType === "developer" && mode === "register" && (
             <>
-              <form onSubmit={handleRegister} className="space-y-6">
+              <form onSubmit={handleRegister} className="space-y-8">
                 {/* Company Info */}
-                <div>
-                  <h3 className={sectionTitleClasses}>{isAr ? "بيانات الشركة" : "Company Information"}</h3>
-                  <div className="space-y-3">
-                    <div className="space-y-1.5">
+                <div className="p-1">
+                  <h3 className={sectionTitleClasses}>{isAr ? "البيانات الأساسية للشركة" : "Basic Company Information"}</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
                       <Label className={labelClasses}>{isAr ? "اسم الشركة *" : "Company Name *"}</Label>
                       <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} required className={inputClasses} />
-                      {errors.companyName && <p className="text-xs text-red-400">{errors.companyName}</p>}
+                      {errors.companyName && <p className="text-xs text-destructive">{errors.companyName}</p>}
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <Label className={labelClasses}>{isAr ? "اسم المسؤول *" : "Contact Person *"}</Label>
                       <Input value={contactPerson} onChange={(e) => setContactPerson(e.target.value)} required className={inputClasses} />
-                      {errors.contactPerson && <p className="text-xs text-red-400">{errors.contactPerson}</p>}
+                      {errors.contactPerson && <p className="text-xs text-destructive">{errors.contactPerson}</p>}
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <Label className={labelClasses}>{isAr ? "رقم السجل التجاري *" : "Commercial Register Number *"}</Label>
                       <Input value={crNumber} onChange={(e) => setCrNumber(e.target.value.replace(/\D/g, ""))} required dir="ltr" className={inputClasses} placeholder="1010XXXXXX" />
-                      {errors.crNumber && <p className="text-xs text-red-400">{errors.crNumber}</p>}
+                      {errors.crNumber && <p className="text-xs text-destructive">{errors.crNumber}</p>}
                     </div>
-                    <div className="space-y-1.5">
-                      <Label className={labelClasses}>{isAr ? "المدينة *" : "City *"}</Label>
+                    <div className="space-y-2">
+                      <Label className={labelClasses}>{isAr ? "المدينة الرئيسية *" : "Main City *"}</Label>
                       <Select value={city} onValueChange={setCity}>
                         <SelectTrigger className={inputClasses}>
                           <SelectValue placeholder={isAr ? "اختر المدينة" : "Select city"} />
@@ -358,58 +358,59 @@ const LoginPage: React.FC = () => {
                           ))}
                         </SelectContent>
                       </Select>
-                      {errors.city && <p className="text-xs text-red-400">{errors.city}</p>}
+                      {errors.city && <p className="text-xs text-destructive">{errors.city}</p>}
                     </div>
                   </div>
                 </div>
 
                 {/* Project Types */}
-                <div>
-                  <h3 className={sectionTitleClasses}>{isAr ? "نوع المشاريع *" : "Project Types *"}</h3>
+                <div className="p-1">
+                  <h3 className={sectionTitleClasses}>{isAr ? "مجالات التطوير العقاري *" : "Real Estate Development Types *"}</h3>
+                  <p className="text-xs text-muted-foreground mb-3">{isAr ? "حدد أنواع المشاريع التي تطورها شركتك" : "Select the project types your company develops"}</p>
                   <div className="flex flex-wrap gap-2">
                     {PROJECT_TYPES.map(pt => (
                       <button key={pt.value} type="button" onClick={() => toggleProjectType(pt.value)}
-                        className={`rounded-lg border px-3 py-1.5 text-xs transition-all ${selectedProjectTypes.includes(pt.value) ? "border-[hsl(200,80%,45%,0.5)] bg-[hsl(200,80%,45%,0.1)] text-[hsl(200,80%,55%)]" : "border-[hsl(210,22%,16%)] text-[hsl(210,15%,50%)] hover:border-[hsl(210,22%,25%)]"}`}>
+                        className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${selectedProjectTypes.includes(pt.value) ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
                         {isAr ? pt.ar : pt.en}
                       </button>
                     ))}
                   </div>
-                  {errors.projectTypes && <p className="text-xs text-red-400 mt-1">{errors.projectTypes}</p>}
+                  {errors.projectTypes && <p className="text-xs text-destructive mt-2">{errors.projectTypes}</p>}
                 </div>
 
                 {/* Target Cities */}
-                <div>
-                  <h3 className={sectionTitleClasses}>{isAr ? "المدن المستهدفة *" : "Target Cities *"}</h3>
+                <div className="p-1">
+                  <h3 className={sectionTitleClasses}>{isAr ? "النطاق الجغرافي المستهدف *" : "Target Geographic Scope *"}</h3>
                   <div className="flex flex-wrap gap-2">
                     {saudiCities.slice(0, 10).map(c => (
                       <button key={c.name.en} type="button" onClick={() => toggleTargetCity(c.name.en)}
-                        className={`rounded-lg border px-3 py-1.5 text-xs transition-all ${selectedTargetCities.includes(c.name.en) ? "border-[hsl(200,80%,45%,0.5)] bg-[hsl(200,80%,45%,0.1)] text-[hsl(200,80%,55%)]" : "border-[hsl(210,22%,16%)] text-[hsl(210,15%,50%)] hover:border-[hsl(210,22%,25%)]"}`}>
+                        className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${selectedTargetCities.includes(c.name.en) ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
                         {isAr ? c.name.ar : c.name.en}
                       </button>
                     ))}
                   </div>
-                  {errors.targetCities && <p className="text-xs text-red-400 mt-1">{errors.targetCities}</p>}
+                  {errors.targetCities && <p className="text-xs text-destructive mt-2">{errors.targetCities}</p>}
                 </div>
 
                 {/* Contact Info */}
-                <div>
-                  <h3 className={sectionTitleClasses}>{isAr ? "بيانات التواصل" : "Contact Information"}</h3>
-                  <div className="space-y-3">
-                    <div className="space-y-1.5">
-                      <Label className={labelClasses}>{isAr ? "البريد الإلكتروني *" : "Email *"}</Label>
+                <div className="p-1">
+                  <h3 className={sectionTitleClasses}>{isAr ? "معلومات التواصل" : "Contact Information"}</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className={labelClasses}>{isAr ? "البريد الإلكتروني للشركة *" : "Company Email *"}</Label>
                       <Input type="email" value={regEmail} onChange={(e) => setRegEmail(e.target.value)} required dir="ltr" className={inputClasses} placeholder="example@email.com" />
-                      {errors.email && <p className="text-xs text-red-400">{errors.email}</p>}
-                      <p className="text-[10px] text-[hsl(210,15%,40%)]">{isAr ? "سيتم إرسال رسالة تحقق إلى هذا البريد" : "A verification email will be sent to this address"}</p>
+                      {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+                      <p className="text-xs text-muted-foreground">{isAr ? "سيُستخدم هذا البريد لتسجيل الدخول واستلام التنبيهات" : "Used for login and notifications"}</p>
                     </div>
-                    <div className="space-y-1.5">
-                      <Label className={labelClasses}>{isAr ? "رقم الجوال *" : "Phone Number *"}</Label>
+                    <div className="space-y-2">
+                      <Label className={labelClasses}>{isAr ? "رقم جوال المسؤول *" : "Contact Phone Number *"}</Label>
                       <div className="flex gap-2">
-                        <div className="flex h-11 items-center rounded-xl border border-[hsl(210,22%,16%)] bg-[hsl(210,28%,8%)] px-3 text-sm text-[hsl(210,15%,50%)] shrink-0">+966</div>
+                        <div className="flex h-11 items-center rounded-xl border border-border/50 bg-muted px-4 text-sm font-medium text-foreground shrink-0">+966</div>
                         <Input type="tel" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} required dir="ltr" className={inputClasses} placeholder="5XXXXXXXX" maxLength={10} />
                       </div>
-                      {errors.phone && <p className="text-xs text-red-400">{errors.phone}</p>}
+                      {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <Label className={labelClasses}>{isAr ? "الموقع الإلكتروني" : "Website"}</Label>
                       <Input type="url" value={website} onChange={(e) => setWebsite(e.target.value)} dir="ltr" className={inputClasses} placeholder="https://example.com" />
                     </div>
@@ -417,58 +418,62 @@ const LoginPage: React.FC = () => {
                 </div>
 
                 {/* Documents - Google Drive Links */}
-                <div>
-                  <h3 className={sectionTitleClasses}>{isAr ? "الوثائق (روابط Google Drive)" : "Documents (Google Drive Links)"}</h3>
-                  <div className="space-y-4">
-                    <div className="space-y-1.5">
+                <div className="p-1">
+                  <h3 className={sectionTitleClasses}>{isAr ? "الوثائق الرسمية والمستندات (روابط Google Drive)" : "Official Documents (Google Drive Links)"}</h3>
+                  <div className="space-y-5">
+                    <div className="space-y-2">
                       <Label className={labelClasses}>{isAr ? "رابط السجل التجاري *" : "Commercial Register Link *"}</Label>
                       <DriveLinkInput value={crDriveLink} onChange={setCrDriveLink} valid={crLinkValid} placeholder="https://drive.google.com/file/d/..." error={errors.crDriveLink} />
                     </div>
-                    <div className="space-y-1.5">
-                      <Label className={labelClasses}>{isAr ? "رابط البروفايل التعريفي للشركة *" : "Company Profile Link *"}</Label>
+                    <div className="space-y-2">
+                      <Label className={labelClasses}>{isAr ? "رابط الملف التعريفي للشركة (Company Profile) *" : "Company Profile Link *"}</Label>
                       <DriveLinkInput value={profileDriveLink} onChange={setProfileDriveLink} valid={profileLinkValid} placeholder="https://drive.google.com/file/d/..." error={errors.profileDriveLink} />
                     </div>
-                    <p className="text-[10px] text-[hsl(210,15%,40%)]">
-                      {isAr ? "تأكد من أن الروابط قابلة للوصول (Anyone with the link)" : "Ensure links are accessible (Anyone with the link)"}
-                    </p>
+                    <div className="rounded-lg bg-muted/50 p-3 border border-border/50">
+                      <p className="text-xs font-medium text-muted-foreground flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                        {isAr ? "يرجى التحقق من إعدادات مشاركة الرابط لتكون (أي شخص لديه الرابط - Anyone with the link)" : "Please verify link sharing settings are set to (Anyone with the link)"}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
                 {/* Security */}
-                <div>
-                  <h3 className={sectionTitleClasses}>{isAr ? "الأمان" : "Security"}</h3>
-                  <div className="space-y-1.5">
+                <div className="p-1">
+                  <h3 className={sectionTitleClasses}>{isAr ? "إعدادات الأمان" : "Security Settings"}</h3>
+                  <div className="space-y-2">
                     <Label className={labelClasses}>{isAr ? "كلمة المرور *" : "Password *"}</Label>
                     <div className="relative">
-                      <Input type={showRegPassword ? "text" : "password"} value={regPassword} onChange={(e) => setRegPassword(e.target.value)} required minLength={8} dir="ltr" className={inputClasses} placeholder={isAr ? "حروف + أرقام (8 خانات)" : "Letters + numbers (min 8 chars)"} />
-                      <button type="button" onClick={() => setShowRegPassword(!showRegPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 text-[hsl(210,15%,45%)] hover:text-white transition-colors">
+                      <Input type={showRegPassword ? "text" : "password"} value={regPassword} onChange={(e) => setRegPassword(e.target.value)} required minLength={8} dir="ltr" className={inputClasses} placeholder={isAr ? "حروف + أرقام (8 خانات على الأقل)" : "Letters + numbers (min 8 chars)"} />
+                      <button type="button" onClick={() => setShowRegPassword(!showRegPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                         {showRegPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
-                    {errors.password && <p className="text-xs text-red-400">{errors.password}</p>}
+                    {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
                   </div>
                 </div>
 
                 {/* Terms */}
-                <div className="flex items-start gap-2.5">
-                  <Checkbox id="terms" checked={acceptTerms} onCheckedChange={(checked) => setAcceptTerms(checked === true)} className="border-[hsl(210,22%,20%)] data-[state=checked]:bg-[hsl(200,80%,45%)] data-[state=checked]:border-[hsl(200,80%,45%)]" />
-                  <label htmlFor="terms" className="text-sm font-light leading-relaxed text-[hsl(210,15%,50%)]">
-                    {isAr ? "أوافق على" : "I agree to the"}{" "}
-                    <Link to="/terms" className="text-[hsl(200,80%,55%)] hover:underline">{t.auth.termsAndConditions}</Link>
+                <div className="flex items-start gap-3 p-1">
+                  <Checkbox id="terms" checked={acceptTerms} onCheckedChange={(checked) => setAcceptTerms(checked === true)} className="mt-1" />
+                  <label htmlFor="terms" className="text-sm font-light leading-relaxed text-muted-foreground">
+                    {isAr ? "بإنشاء الحساب، أقر بأنني مفوض بتمثيل هذه الشركة، وأوافق على" : "By creating an account, I acknowledge that I am authorized to represent this company, and I agree to the"}{" "}
+                    <Link to="/terms" className="text-primary font-medium hover:underline">{t.auth.termsAndConditions}</Link>
                     {" "}{isAr ? "و" : "and"}{" "}
-                    <Link to="/privacy" className="text-[hsl(200,80%,55%)] hover:underline">{t.auth.privacyPolicy}</Link>
+                    <Link to="/privacy" className="text-primary font-medium hover:underline">{t.auth.privacyPolicy}</Link>
+                    {isAr ? " الخاصة بمنصة سينا." : " of SYNA platform."}
                   </label>
                 </div>
-                {errors.terms && <p className="text-xs text-red-400 -mt-2">{errors.terms}</p>}
+                {errors.terms && <p className="text-xs text-destructive -mt-2 px-1">{errors.terms}</p>}
 
-                <Button type="submit" className="h-12 w-full gap-2 rounded-xl syna-gradient text-base font-medium transition-all duration-300 hover:shadow-[0_8px_30px_-8px_hsl(200,80%,50%,0.3)] hover:scale-[1.01]" disabled={loading}>
+                <Button type="submit" className="h-12 w-full gap-2 rounded-xl text-base font-medium shadow-sm" disabled={loading}>
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
-                  {isAr ? "إنشاء حساب" : "Create Account"}
+                  {isAr ? "إرسال طلب التسجيل" : "Submit Registration Request"}
                 </Button>
               </form>
-              <p className="mt-6 text-center text-sm font-light text-[hsl(210,15%,50%)]">
-                {isAr ? "لديك حساب؟" : "Have an account?"}{" "}
-                <button type="button" onClick={() => setMode("login")} className="text-[hsl(200,80%,55%)] hover:text-[hsl(200,80%,70%)] transition-colors">
+              <p className="mt-8 text-center text-sm font-light text-muted-foreground">
+                {isAr ? "لديك حساب كشريك معتمد؟" : "Have a certified partner account?"}{" "}
+                <button type="button" onClick={() => setMode("login")} className="text-primary font-medium hover:underline transition-all">
                   {isAr ? "تسجيل الدخول" : "Sign In"}
                 </button>
               </p>

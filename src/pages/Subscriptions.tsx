@@ -14,10 +14,10 @@ const SubscriptionsPage: React.FC = () => {
   usePageTitle(isAr ? "الشراكات" : "Partnerships");
 
   return (
-    <div className="min-h-screen bg-[hsl(210,30%,4%)]">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <PageHeader icon={Handshake} title={isAr ? "الشراكات" : "Partnerships"} description={isAr ? "كيف تعمل شراكات التطوير العقاري عبر منصة سينا" : "How real estate development partnerships work through the SYNA platform"} backgroundImage={headerPartnershipsImg} />
-      <main>
+      <main className="flex-1">
         <SubscriptionsSection />
       </main>
       <Footer />

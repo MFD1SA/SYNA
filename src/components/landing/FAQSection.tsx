@@ -41,24 +41,25 @@ const FAQSection: React.FC = () => {
   const isAr = lang === "ar";
 
   return (
-    <section className="relative bg-[hsl(210,28%,6%)] py-14 md:py-18">
-      <div className="pointer-events-none absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.1)] to-transparent" />
-
+    <section className="relative bg-background py-20 px-4 md:px-0">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="mx-auto mb-12 max-w-xl text-center"
+          className="mx-auto mb-16 max-w-2xl text-center"
         >
-          <h2 className="text-3xl font-medium text-white md:text-4xl">
+          <span className="mb-4 inline-block rounded-full bg-muted/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {isAr ? "مركز المعرفة" : "Knowledge Base"}
+          </span>
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
             {isAr ? "الأسئلة الشائعة" : "Frequently Asked Questions"}
           </h2>
         </motion.div>
 
-        <div className="mx-auto max-w-2xl">
-          <Accordion type="single" collapsible className="space-y-3">
+        <div className="mx-auto max-w-3xl">
+          <Accordion type="single" collapsible className="space-y-4">
             {topFaq.map((item, idx) => (
               <motion.div
                 key={idx}
@@ -67,11 +68,11 @@ const FAQSection: React.FC = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: idx * 0.08 }}
               >
-                <AccordionItem value={`faq-${idx}`} className="rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] px-5 transition-colors hover:border-[hsl(200,80%,45%,0.15)]">
-                  <AccordionTrigger className="text-sm font-medium text-white hover:no-underline py-5">
+                <AccordionItem value={`faq-${idx}`} className="rounded-xl border border-border/50 bg-card px-6 transition-colors hover:border-border">
+                  <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline py-6">
                     {isAr ? item.qAr : item.qEn}
                   </AccordionTrigger>
-                  <AccordionContent className="text-sm font-light leading-relaxed text-[hsl(210,15%,50%)] pb-5">
+                  <AccordionContent className="text-sm font-light leading-relaxed text-muted-foreground pb-6">
                     {isAr ? item.aAr : item.aEn}
                   </AccordionContent>
                 </AccordionItem>
@@ -84,10 +85,11 @@ const FAQSection: React.FC = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
-            className="mt-8 text-center"
+            className="mt-10 text-center"
           >
-            <Link to="/faq" className="inline-flex items-center gap-1.5 text-sm font-light text-[hsl(200,80%,55%)] transition-colors hover:text-[hsl(200,80%,70%)]">
-              {isAr ? "عرض جميع الأسئلة الشائعة ←" : "View all FAQ →"}
+            <Link to="/faq" className="inline-flex items-center gap-2 text-sm font-medium text-primary transition-colors hover:text-primary/80">
+              {isAr ? "عرض جميع الأسئلة الشائعة" : "View all FAQ"}
+              <span className="rtl:-scale-x-100">→</span>
             </Link>
           </motion.div>
         </div>

@@ -27,23 +27,24 @@ const LogosSection: React.FC = () => {
       ];
 
   return (
-    <section className="relative bg-[hsl(210,30%,4%)] py-14 md:py-18">
-      <div className="pointer-events-none absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.1)] to-transparent" />
-
+    <section className="relative bg-muted/20 py-20 border-y border-border/40">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="mx-auto mb-14 max-w-xl text-center"
+          className="mx-auto mb-16 max-w-2xl text-center"
         >
-          <h2 className="text-3xl font-medium text-white md:text-4xl">
+          <span className="mb-4 inline-block rounded-full bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground shadow-sm">
+            {lang === "ar" ? "القطاعات المستهدفة" : "Target Sectors"}
+          </span>
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
             {t.logos.title}
           </h2>
         </motion.div>
 
-        <div className="mx-auto grid max-w-4xl grid-cols-2 gap-4 md:grid-cols-3">
+        <div className="mx-auto grid max-w-5xl grid-cols-2 gap-6 md:grid-cols-3">
           {sectors.map((sector, idx) => {
             const Icon = sectorIcons[idx];
             return (
@@ -53,13 +54,13 @@ const LogosSection: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.08 }}
-                className="group flex flex-col items-center gap-3 rounded-2xl border border-[hsl(210,22%,12%)] bg-[hsl(210,28%,7%)] p-6 text-center transition-all duration-500 hover:border-[hsl(200,80%,45%,0.25)] hover:shadow-[0_12px_40px_-10px_hsl(200,80%,50%,0.08)]"
+                className="group flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-8 text-center shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[hsl(200,80%,45%,0.12)] bg-[hsl(200,80%,45%,0.06)] transition-all duration-300 group-hover:border-[hsl(200,80%,45%,0.25)] group-hover:bg-[hsl(200,80%,45%,0.1)]">
-                  <Icon className="h-5 w-5 text-[hsl(200,80%,55%)]" strokeWidth={1.2} />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+                  <Icon className="h-5 w-5" strokeWidth={1.5} />
                 </div>
-                <span className="text-sm font-medium text-white">{sector.name}</span>
-                <span className="text-xs font-light leading-snug text-[hsl(210,15%,45%)]">{sector.desc}</span>
+                <span className="text-base font-medium text-foreground">{sector.name}</span>
+                <span className="text-xs font-light leading-relaxed text-muted-foreground">{sector.desc}</span>
               </motion.div>
             );
           })}

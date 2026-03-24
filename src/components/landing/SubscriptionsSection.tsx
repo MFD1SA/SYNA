@@ -15,13 +15,7 @@ const HowItWorksSection: React.FC = () => {
   ];
 
   return (
-    <section id="how-it-works" className="relative bg-[hsl(210,28%,6%)] py-14 md:py-18">
-      {/* Background */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(200,80%,45%,0.1)] to-transparent" />
-        <div className="absolute bottom-1/3 start-[5%] h-[350px] w-[350px] rounded-full bg-[hsl(200,80%,40%,0.03)] blur-[120px]" />
-      </div>
-
+    <section id="how-it-works" className="relative bg-background py-20 px-4 md:px-0">
       <div className="container relative">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -30,16 +24,19 @@ const HowItWorksSection: React.FC = () => {
           transition={{ duration: 0.7 }}
           className="mx-auto mb-16 max-w-2xl text-center"
         >
-          <h2 className="mb-4 text-3xl font-medium text-white md:text-4xl lg:text-5xl">
+          <span className="mb-4 inline-block rounded-full bg-muted/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {isAr ? "آلية العمل" : "How It Works"}
+          </span>
+          <h2 className="mb-6 text-3xl font-semibold tracking-tight text-foreground md:text-5xl">
             {t.howItWorks.title}
           </h2>
-          <p className="text-base font-light text-[hsl(210,15%,50%)] md:text-lg">
+          <p className="text-lg font-light leading-relaxed text-muted-foreground">
             {t.howItWorks.subtitle}
           </p>
         </motion.div>
 
-        <div className="mx-auto max-w-4xl">
-          <div className="grid gap-5 md:grid-cols-2">
+        <div className="mx-auto max-w-5xl">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {steps.map(({ num, icon: Icon, titleKey, descKey }, i) => (
               <motion.div
                 key={num}
@@ -47,24 +44,23 @@ const HowItWorksSection: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="group relative flex gap-5 overflow-hidden rounded-2xl border border-[hsl(210,22%,12%)] bg-gradient-to-br from-[hsl(210,28%,8%)] to-[hsl(210,28%,6%)] p-6 transition-all duration-500 hover:border-[hsl(200,80%,45%,0.25)] hover:shadow-[0_12px_40px_-10px_hsl(200,80%,50%,0.08)]"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-border/50 bg-card p-8 shadow-sm transition-all duration-300 hover:border-border hover:shadow-lg hover:-translate-y-1"
               >
                 {/* Number watermark */}
-                <div className="pointer-events-none absolute -end-4 -bottom-4 text-7xl font-bold text-[hsl(200,80%,45%,0.03)] transition-all duration-500 group-hover:text-[hsl(200,80%,45%,0.06)]">
+                <div className="pointer-events-none absolute -bottom-6 -right-4 text-9xl font-bold text-muted/30 transition-colors duration-500 group-hover:text-primary/10">
                   {num}
                 </div>
 
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[hsl(200,80%,45%,0.15)] bg-[hsl(200,80%,45%,0.06)] text-sm font-medium text-[hsl(200,80%,60%)] transition-all duration-400 group-hover:border-[hsl(200,80%,45%,0.3)] group-hover:bg-[hsl(200,80%,45%,0.1)] group-hover:shadow-[0_0_20px_-5px_hsl(200,80%,50%,0.2)]">
-                  {num}
-                </div>
-                <div className="relative">
-                  <div className="mb-2 flex items-center gap-2">
-                    <Icon className="h-4 w-4 text-[hsl(200,80%,55%)]" strokeWidth={1.5} />
-                    <h3 className="text-base font-medium text-white">
-                      {t.howItWorks[titleKey]}
-                    </h3>
+                <div>
+                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-lg bg-muted text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+                    <Icon className="h-6 w-6" strokeWidth={1.5} />
                   </div>
-                  <p className="text-sm font-light leading-relaxed text-[hsl(210,15%,50%)]">
+                  
+                  <h3 className="mb-3 text-lg font-medium text-foreground">
+                    {t.howItWorks[titleKey]}
+                  </h3>
+                  
+                  <p className="relative z-10 text-sm font-light leading-relaxed text-muted-foreground">
                     {t.howItWorks[descKey]}
                   </p>
                 </div>

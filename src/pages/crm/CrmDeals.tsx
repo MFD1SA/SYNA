@@ -168,34 +168,59 @@ const CrmDeals: React.FC = () => {
           <p className="text-sm font-light text-muted-foreground">{isAr ? "لا توجد صفقات بعد" : "No deals yet"}</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {deals.map((d) => {
-            const stage = stageConfig[d.current_stage] || { ar: d.current_stage, en: d.current_stage, color: "" };
-            const isCancelled = d.current_stage === "deal_cancelled";
-            const isClosed = d.current_stage === "deal_closed";
-            const hc = healthLabels[d.health] || healthLabels.green;
-            return (
-              <div key={d.id} className="rounded-xl border border-border/60 bg-card p-4 transition-all hover:border-primary/20 cursor-pointer" onClick={() => openDealDetail(d)}>
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className={`h-2.5 w-2.5 rounded-full ${hc.dot}`} />
-                      <Building2 className="h-3.5 w-3.5 text-primary" strokeWidth={1.5} />
-                      <h3 className="text-sm font-medium text-foreground">{d.lands?.city}{d.lands?.district ? ` - ${d.lands.district}` : ""}</h3>
-                    </div>
-                    <p className="text-xs font-light text-muted-foreground ps-5">{Number(d.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</p>
-                  </div>
-                  <div className="text-end flex items-center gap-2">
-                    <Badge variant="outline" className={`text-[10px] ${isClosed ? "bg-emerald-500/10 text-emerald-600" : isCancelled ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"}`}>
-                      {isAr ? stage.ar : stage.en}
-                    </Badge>
-                    <Eye className="h-3.5 w-3.5 text-muted-foreground" />
-                  </div>
-                </div>
-                {!isCancelled && <DealStagePipeline currentStage={d.current_stage} isAr={isAr} compact />}
-              </div>
-            );
-          })}
+        <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-start">
+              <thead className="bg-muted/40 text-muted-foreground border-b border-border/60">
+                <tr>
+                  <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "معلومات الصفقة" : "Deal Info"}</th>
+                  <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide min-w-[300px]">{isAr ? "مسار الصفقة (Pipeline)" : "Pipeline Progress"}</th>
+                  <th className="px-5 py-3.5 font-medium text-end text-xs tracking-wide">{isAr ? "الحالة" : "Status"}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {deals.map((d) => {
+                  const stage = stageConfig[d.current_stage] || { ar: d.current_stage, en: d.current_stage, color: "" };
+                  const isCancelled = d.current_stage === "deal_cancelled";
+                  const isClosed = d.current_stage === "deal_closed";
+                  const hc = healthLabels[d.health] || healthLabels.green;
+                  
+                  return (
+                    <tr key={d.id} className="hover:bg-muted/20 transition-colors group cursor-pointer" onClick={() => openDealDetail(d)}>
+                      <td className="px-5 py-4 min-w-[200px] align-top">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Building2 className="h-4 w-4 text-primary shrink-0" strokeWidth={1.5} />
+                          <h3 className="text-sm font-medium text-foreground">{d.lands?.city}{d.lands?.district ? ` - ${d.lands.district}` : ""}</h3>
+                        </div>
+                        <p className="text-xs font-light text-muted-foreground ms-6">{Number(d.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</p>
+                      </td>
+                      <td className="px-5 py-4 align-top pt-5">
+                        {!isCancelled ? (
+                          <DealStagePipeline currentStage={d.current_stage} isAr={isAr} compact />
+                        ) : (
+                          <span className="text-xs text-muted-foreground italic px-2">{isAr ? "الصفقة ملغاة" : "Deal cancelled"}</span>
+                        )}
+                      </td>
+                      <td className="px-5 py-4 text-end align-top">
+                        <div className="flex flex-col items-end gap-1.5">
+                          <Badge variant="outline" className={`text-[10px] ${isClosed ? "bg-emerald-500/10 text-emerald-600" : isCancelled ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"}`}>
+                            {isAr ? stage.ar : stage.en}
+                          </Badge>
+                          <Badge variant="outline" className={`text-[10px] gap-1 border-transparent ${hc.bg} ${hc.text}`}>
+                            <div className={`h-1 w-1 rounded-full ${hc.dot}`} />
+                            {isAr ? hc.ar : hc.en}
+                          </Badge>
+                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Eye className="h-3.5 w-3.5 text-muted-foreground hover:text-primary" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

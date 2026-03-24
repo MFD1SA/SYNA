@@ -36,11 +36,17 @@ const LocationMap: React.FC<LocationMapProps> = ({ lat, lng, onChange, isAr, rea
 
   const defaultCenter: [number, number] = [24.7136, 46.6753]; // Riyadh
 
+  const onChangeRef = useRef(onChange);
+  useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
+
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
-    const center: [number, number] = lat && lng ? [lat, lng] : defaultCenter;
-    const map = L.map(containerRef.current, { attributionControl: true }).setView(center, lat && lng ? 14 : 6);
+    const currentReadOnly = readOnly;
+    const currentLat = lat;
+    const currentLng = lng;
+    const center: [number, number] = currentLat && currentLng ? [currentLat, currentLng] : defaultCenter;
+    const map = L.map(containerRef.current, { attributionControl: true }).setView(center, currentLat && currentLng ? 14 : 6);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -49,18 +55,18 @@ const LocationMap: React.FC<LocationMapProps> = ({ lat, lng, onChange, isAr, rea
 
     mapRef.current = map;
 
-    if (lat && lng) {
-      const marker = L.marker([lat, lng], { draggable: !readOnly }).addTo(map);
-      if (!readOnly) {
+    if (currentLat && currentLng) {
+      const marker = L.marker([currentLat, currentLng], { draggable: !currentReadOnly }).addTo(map);
+      if (!currentReadOnly) {
         marker.on("dragend", () => {
           const pos = marker.getLatLng();
-          onChange(pos.lat, pos.lng);
+          onChangeRef.current(pos.lat, pos.lng);
         });
       }
       markerRef.current = marker;
     }
 
-    if (!readOnly) {
+    if (!currentReadOnly) {
       map.on("click", (e: L.LeafletMouseEvent) => {
         const { lat: newLat, lng: newLng } = e.latlng;
         if (markerRef.current) {
@@ -69,11 +75,11 @@ const LocationMap: React.FC<LocationMapProps> = ({ lat, lng, onChange, isAr, rea
           const marker = L.marker([newLat, newLng], { draggable: true }).addTo(map);
           marker.on("dragend", () => {
             const pos = marker.getLatLng();
-            onChange(pos.lat, pos.lng);
+            onChangeRef.current(pos.lat, pos.lng);
           });
           markerRef.current = marker;
         }
-        onChange(newLat, newLng);
+        onChangeRef.current(newLat, newLng);
       });
     }
 
@@ -82,7 +88,8 @@ const LocationMap: React.FC<LocationMapProps> = ({ lat, lng, onChange, isAr, rea
       mapRef.current = null;
       markerRef.current = null;
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Intentionally empty to run once, refs used for closures
 
   // Update marker when lat/lng changes externally
   useEffect(() => {
@@ -95,21 +102,21 @@ const LocationMap: React.FC<LocationMapProps> = ({ lat, lng, onChange, isAr, rea
         if (!readOnly) {
           marker.on("dragend", () => {
             const pos = marker.getLatLng();
-            onChange(pos.lat, pos.lng);
+            onChangeRef.current(pos.lat, pos.lng);
           });
         }
         markerRef.current = marker;
       }
       mapRef.current.setView([lat, lng], 14);
     }
-  }, [lat, lng]);
+  }, [lat, lng, readOnly]);
 
   const handleMyLocation = () => {
     if (!navigator.geolocation || !mapRef.current) return;
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        onChange(latitude, longitude);
+        onChangeRef.current(latitude, longitude);
         mapRef.current?.setView([latitude, longitude], 15);
       },
       () => {},
@@ -156,7 +163,7 @@ const LocationMap: React.FC<LocationMapProps> = ({ lat, lng, onChange, isAr, rea
   const selectResult = (result: any) => {
     const rLat = parseFloat(result.lat);
     const rLng = parseFloat(result.lon);
-    onChange(rLat, rLng);
+    onChangeRef.current(rLat, rLng);
     mapRef.current?.setView([rLat, rLng], 15);
     setSearchResults([]);
     setSearchQuery(result.display_name?.split(",")[0] || "");

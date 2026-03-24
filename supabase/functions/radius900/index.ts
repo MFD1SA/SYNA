@@ -58,7 +58,7 @@ serve(async (req) => {
     `;
 
     let pois: any[] = [];
-    let poiCategories: Record<string, number> = {};
+    const poiCategories: Record<string, number> = {};
 
     try {
       const overpassRes = await fetch("https://overpass-api.de/api/interpreter", {
@@ -104,7 +104,7 @@ serve(async (req) => {
     // Generate AI report
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     let aiReportAr = "";
-    let aiReportEn = "";
+    const aiReportEn = "";
 
     if (LOVABLE_API_KEY) {
       try {

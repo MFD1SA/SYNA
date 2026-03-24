@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import CrmLayout from "@/components/crm/CrmLayout";
-import { Send, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Send, Clock, CheckCircle2, XCircle, AlertCircle, MapPin, Building2 } from "lucide-react";
 
 const statusConfig: Record<string, { ar: string; en: string; color: string; icon: React.ElementType }> = {
   pending: { ar: "قيد المراجعة", en: "Pending", color: "bg-yellow-500/10 text-yellow-600", icon: Clock },
@@ -57,40 +57,56 @@ const CrmMyRequests: React.FC = () => {
           <p className="mt-1 text-xs font-light text-muted-foreground">{isAr ? "استعرض الأراضي المتاحة لتقديم طلبك الأول" : "Browse available lands to submit your first request"}</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {requests.map((r) => {
-            const st = statusConfig[r.status] || statusConfig.pending;
-            const StatusIcon = st.icon;
-            return (
-              <div key={r.id} className="syna-card p-5">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-foreground mb-1">
-                      {r.lands?.city}{r.lands?.district ? ` - ${r.lands.district}` : ""}
-                    </h3>
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-xs font-light text-muted-foreground">
-                      <span>{isAr ? "المساحة:" : "Area:"} {Number(r.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</span>
-                      <span>{isAr ? "نوع المشروع:" : "Type:"} {r.proposed_project_type}</span>
-                      <span>{isAr ? "العمولة:" : "Commission:"} {r.commission_rate}%</span>
-                      <span>{isAr ? "التاريخ:" : "Date:"} {new Date(r.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US")}</span>
-                    </div>
-                    {r.proposal_summary && (
-                      <p className="mt-2 text-xs font-light text-muted-foreground line-clamp-2">{r.proposal_summary}</p>
-                    )}
-                    {r.owner_response_notes && (
-                      <div className="mt-2 rounded-lg border border-border/40 bg-muted/30 p-2 text-xs font-light text-muted-foreground">
-                        <span className="font-medium">{isAr ? "ملاحظات المالك:" : "Owner notes:"}</span> {r.owner_response_notes}
-                      </div>
-                    )}
-                  </div>
-                  <span className={`flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs ${st.color}`}>
-                    <StatusIcon className="h-3 w-3" />
-                    {isAr ? st.ar : st.en}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
+        <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-start">
+              <thead className="bg-muted/40 text-muted-foreground border-b border-border/60">
+                <tr>
+                  <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "الموقع والمساحة" : "Location & Area"}</th>
+                  <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "تفاصيل المقترح" : "Proposal Details"}</th>
+                  <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "التاريخ والحالة" : "Date & Status"}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {requests.map((r) => {
+                  const st = statusConfig[r.status] || statusConfig.pending;
+                  const StatusIcon = st.icon;
+                  return (
+                    <tr key={r.id} className="hover:bg-muted/20 transition-colors group">
+                      <td className="px-5 py-4 min-w-[200px] align-top">
+                        <h3 className="text-sm font-medium text-foreground flex items-center gap-1.5 mb-1">
+                          <MapPin className="h-3.5 w-3.5 text-primary" />
+                          {r.lands?.city}{r.lands?.district ? ` - ${r.lands.district}` : ""}
+                        </h3>
+                        <p className="text-xs font-light text-muted-foreground ms-5">{Number(r.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</p>
+                      </td>
+                      <td className="px-5 py-4 min-w-[250px] align-top max-w-sm">
+                        <div className="space-y-1.5 text-xs font-light text-muted-foreground">
+                          <div className="flex items-center gap-1.5"><Building2 className="h-3.5 w-3.5 text-primary" /> <span className="font-medium text-foreground">{r.proposed_project_type}</span></div>
+                          {r.proposal_summary && <p className="line-clamp-2 leading-relaxed">{r.proposal_summary}</p>}
+                          {r.owner_response_notes && (
+                            <div className="rounded-md border border-border/40 bg-muted/30 p-2 mt-2 leading-relaxed text-yellow-600/80">
+                              <span className="font-medium text-yellow-600 me-1">{isAr ? "ملاحظات الإدارة:" : "Admin notes:"}</span> {r.owner_response_notes}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 align-top">
+                        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] mb-2 ${st.color}`}>
+                          <StatusIcon className="h-3 w-3" />
+                          {isAr ? st.ar : st.en}
+                        </span>
+                        <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                          <Clock className="h-3 w-3" />
+                          {new Date(r.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { year: "numeric", month: "short", day: "numeric" })}
+                        </p>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </CrmLayout>
