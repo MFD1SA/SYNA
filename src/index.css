@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,68 +6,73 @@
 
 @layer base {
   :root {
-    /* SYNA Real Estate Investments — Luxury Institutional Identity */
-    /* Primary Canvas: Refined Ivory/Off-White */
-    --background: 45 15% 98%; 
-    --foreground: 220 35% 12%; /* Deep charcoal navy */
+    /* ─── SYNA Institutional Color System ─────────────────── */
+    /* Warm Ivory Canvas */
+    --background: 40 20% 97%;
+    --foreground: 214 52% 12%;
 
-    /* Brand Primary: Institutional Deep Navy */
-    --primary: 220 35% 12%; 
-    --primary-foreground: 45 15% 98%;
+    /* Deep Navy — Brand Primary */
+    --primary: 214 52% 12%;
+    --primary-foreground: 40 20% 97%;
 
-    /* Brand Accent: Sophisticated Royal Gold / Desert Sand */
-    --accent: 38 45% 55%; 
-    --accent-foreground: 45 15% 98%;
+    /* Refined Desert Gold — Brand Accent */
+    --accent: 36 48% 52%;
+    --accent-foreground: 214 52% 12%;
 
-    /* Brand Secondary: Subtle Platinum */
-    --secondary: 220 15% 94%;
-    --secondary-foreground: 220 35% 12%;
+    /* Light Platinum Surface */
+    --secondary: 214 18% 93%;
+    --secondary-foreground: 214 52% 12%;
 
-    /* Muted Canvas - Professional Gray */
-    --muted: 220 10% 92%;
-    --muted-foreground: 220 10% 40%;
+    /* Professional Muted */
+    --muted: 214 12% 90%;
+    --muted-foreground: 214 18% 42%;
 
-    /* Surfaces */
-    --card: 45 15% 100%;
-    --card-foreground: 220 35% 12%;
-    --popover: 45 15% 100%;
-    --popover-foreground: 220 35% 12%;
+    /* Card & Popover Surfaces */
+    --card: 40 20% 100%;
+    --card-foreground: 214 52% 12%;
+    --popover: 40 20% 100%;
+    --popover-foreground: 214 52% 12%;
 
     /* Structural */
-    --border: 220 15% 88%;
-    --input: 220 15% 88%;
-    --ring: 220 35% 12%;
-    --radius: 0.125rem; /* Sharp, institutional corners */
+    --border: 214 18% 86%;
+    --input: 214 18% 86%;
+    --ring: 36 48% 52%;
+    --radius: 0.125rem;
 
-    --destructive: 0 84.2% 40%;
-    --destructive-foreground: 210 40% 98%;
+    /* Top Strip */
+    --strip-bg: 214 58% 8%;
+    --strip-fg: 214 20% 70%;
+    --strip-accent: 36 48% 60%;
+
+    /* Header */
+    --header-bg: 214 52% 12%;
+    --header-fg: 40 20% 97%;
+
+    --destructive: 0 72% 38%;
+    --destructive-foreground: 0 0% 98%;
   }
 
   .dark {
-    --background: 220 35% 6%;
-    --foreground: 45 15% 98%;
-
-    --card: 220 35% 8%;
-    --card-foreground: 45 15% 98%;
-
-    --primary: 45 15% 98%;
-    --primary-foreground: 220 35% 12%;
-
-    --accent: 38 45% 60%;
-    --accent-foreground: 220 35% 12%;
-
-    --border: 220 35% 20%;
-    --input: 220 35% 20%;
-    --ring: 45 15% 98%;
-
-    --muted: 220 35% 12%;
-    --muted-foreground: 220 10% 65%;
+    --background: 214 52% 6%;
+    --foreground: 40 20% 96%;
+    --card: 214 52% 8%;
+    --card-foreground: 40 20% 96%;
+    --primary: 40 20% 96%;
+    --primary-foreground: 214 52% 12%;
+    --accent: 36 48% 58%;
+    --accent-foreground: 214 52% 12%;
+    --border: 214 40% 18%;
+    --input: 214 40% 18%;
+    --ring: 36 48% 58%;
+    --muted: 214 40% 14%;
+    --muted-foreground: 214 18% 60%;
   }
 }
 
 @layer base {
   * {
     @apply border-border outline-none;
+    box-sizing: border-box;
   }
 
   html {
@@ -76,88 +81,129 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
-  
+
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', 'IBM Plex Sans Arabic', 'system-ui', sans-serif;
-    font-feature-settings: "kern", "liga", "clig";
+    font-family: 'Cairo', 'Inter', 'system-ui', sans-serif;
+    font-feature-settings: "kern", "liga";
+  }
+
+  /* ── Arabic text — Cairo, connected, institutional ── */
+  :lang(ar),
+  [dir="rtl"],
+  .arabic-text {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 400;
+    line-height: 1.75;
+    letter-spacing: 0;
+  }
+
+  /* ── Headings ── */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cairo', 'Inter', sans-serif;
+    font-weight: 600;
+    line-height: 1.15;
     letter-spacing: -0.01em;
   }
 
-  /* Premium Institutional Typography */
-  h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight font-medium;
-    font-family: 'Inter', 'Alexandria', 'system-ui', sans-serif;
-    line-height: 1.1;
-  }
-
-  .arabic-refined {
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
-    line-height: 1.6;
-    letter-spacing: normal;
-  }
-
-  /* Cinematic Layouts */
+  /* ── Typography Utilities ── */
   .cinematic-header {
-    @apply text-5xl md:text-7xl font-medium uppercase tracking-tighter;
+    @apply text-5xl md:text-7xl font-bold;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .cinematic-header:lang(ar),
+  [dir="rtl"] .cinematic-header {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.2;
   }
 
   .executive-sub {
-    @apply text-base md:text-lg font-light leading-relaxed max-w-xl text-muted-foreground;
+    @apply text-base md:text-lg font-light leading-relaxed max-w-2xl;
+    color: hsl(var(--header-fg) / 0.55);
   }
 
+  [dir="rtl"] .executive-sub {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 300;
+    line-height: 1.8;
+    letter-spacing: 0;
+  }
+
+  /* ── Luxury Button ── */
   .luxury-button {
-    @apply inline-flex h-14 items-center px-10 border border-primary text-[10px] font-bold uppercase tracking-[0.3em] transition-all hover:bg-primary hover:text-white;
+    @apply inline-flex items-center gap-3 px-10 h-14 border text-[11px] font-bold uppercase tracking-[0.25em] transition-all duration-300;
   }
 
-  /* Section Styling */
+  [dir="rtl"] .luxury-button {
+    font-family: 'Cairo', sans-serif;
+    letter-spacing: 0.05em;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  /* ── Section Defaults ── */
   section {
     @apply py-32 md:py-48;
   }
 }
 
 @layer utilities {
+  /* Subtle architectural grid */
   .luxury-grid {
-    background-size: 40px 40px;
-    background-image: 
-      linear-gradient(to right, hsl(var(--border) / 0.2) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--border) / 0.2) 1px, transparent 1px);
+    background-image: radial-gradient(circle at 1px 1px, rgba(11, 28, 46, 0.06) 1px, transparent 0);
+    background-size: 36px 36px;
+  }
+
+  /* Glass nav effect */
+  .syna-glass {
+    @apply backdrop-blur-2xl border-b;
+    background: hsl(var(--header-bg) / 0.97);
+    border-color: hsl(var(--strip-accent) / 0.12);
+  }
+
+  /* Hover underline animation */
+  .hover-underline {
+    position: relative;
+  }
+
+  .hover-underline::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 1px;
+    bottom: -3px;
+    left: 0;
+    background-color: hsl(var(--accent));
+    transform-origin: bottom right;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hover-underline:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
   }
 
   .text-balance {
     text-wrap: balance;
   }
 
-  .syna-glass {
-    @apply bg-background/70 backdrop-blur-2xl border-b border-border/30;
+  /* Strip specific */
+  .top-strip {
+    background: hsl(var(--strip-bg));
+    color: hsl(var(--strip-fg));
+    height: 40px;
   }
-}
 
-/* Luxury Grid & Motifs */
-.luxury-grid {
-  background-image: radial-gradient(circle at 2px 2px, rgba(11, 20, 38, 0.05) 1px, transparent 0);
-  background-size: 40px 40px;
-}
-
-/* Animated Underline */
-.hover-underline {
-  position: relative;
-}
-
-.hover-underline::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  transform: scaleX(0);
-  height: 1px;
-  bottom: -4px;
-  left: 0;
-  background-color: currentColor;
-  transform-origin: bottom right;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.hover-underline:hover::after {
-  transform: scaleX(1);
-  transform-origin: bottom left;
+  /* Gold divider */
+  .gold-divider {
+    width: 40px;
+    height: 1px;
+    background: hsl(var(--accent));
+    opacity: 0.6;
+  }
 }

@@ -2,13 +2,21 @@ import React, { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
-import { Shield, Eye, EyeOff, Globe } from "lucide-react";
+import { Shield, Eye, EyeOff, Lock, ChevronRight, ChevronLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import logo from "@/assets/logo.png";
+
+// SYNA High-End Color Palette
+const COLORS = {
+  primary: "#0E3A5D",
+  secondary: "#0B2F4A",
+  accent: "#2C78B7",
+  softBlue: "#6FA4C9",
+  bgLight: "#F1F4F7",
+  bgSecondary: "#E4EAF0",
+  textPrimary: "#0B2F4A",
+  textSecondary: "#4B5563",
+};
 
 const AdminLogin: React.FC = () => {
   const { lang, toggleLang } = useLanguage();
@@ -57,83 +65,181 @@ const AdminLogin: React.FC = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-primary overflow-hidden">
-      {/* Cinematic Night Riyadh Background */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-black/70 z-10" />
-        <img 
-          src="https://images.unsplash.com/photo-1549413280-9280f2fc748a?q=80&w=2000&auto=format&fit=crop" 
-          alt="Riyadh Excellence" 
-          className="h-full w-full object-cover grayscale opacity-40 transition-transform duration-[20s] scale-110" 
+    <div 
+      className="relative flex min-h-screen items-center justify-center overflow-hidden"
+      style={{ backgroundColor: COLORS.bgLight }}
+    >
+      {/* Abstract Institutional Background Layers */}
+      <div className="absolute inset-0 z-0 opacity-40">
+        <div 
+          className="absolute right-[-10%] top-[-20%] h-[800px] w-[800px] rounded-full blur-[120px]"
+          style={{ backgroundColor: `${COLORS.softBlue}33` }}
+        />
+        <div 
+          className="absolute left-[-5%] bottom-[-10%] h-[600px] w-[600px] rounded-full blur-[100px]"
+          style={{ backgroundColor: `${COLORS.accent}1A` }}
         />
       </div>
 
-      <div className="absolute top-12 end-12 z-20">
+      {/* Structural Framing Grid (Subtle) */}
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.03]"
+        style={{ 
+          backgroundImage: `linear-gradient(${COLORS.secondary} 1px, transparent 1px), linear-gradient(90deg, ${COLORS.secondary} 1px, transparent 1px)`,
+          backgroundSize: '40px 40px'
+        }}
+      />
+
+      {/* Top Header/Language Bar */}
+      <div className="absolute top-0 w-full px-8 py-6 flex justify-between items-center z-30">
+        <div className="flex items-center gap-2">
+            <div className="h-8 w-[2px]" style={{ backgroundColor: COLORS.accent }} />
+            <span className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: COLORS.secondary }}>
+                SYNA <span className="opacity-40">SYSTEMS</span>
+            </span>
+        </div>
         <button 
           onClick={toggleLang} 
-          className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 hover:text-white transition-colors"
+          className="text-[10px] font-bold uppercase tracking-[0.3em] transition-all hover:opacity-100 opacity-40"
+          style={{ color: COLORS.secondary }}
         >
           {isAr ? "English" : "العربية"}
         </button>
       </div>
 
-      <div className="relative z-20 w-full max-w-sm px-6">
-        <div className="mb-16 border-s-2 border-accent ps-8">
-          <span className="block text-[10px] font-bold uppercase tracking-[0.4em] text-accent mb-4">
-            {isAr ? "بوابة الإدارة" : "Administrative Portal"}
-          </span>
-          <h1 className="text-3xl font-medium tracking-tight text-white uppercase">
-            {isAr ? "النفاذ المؤسسي" : "Institutional Access"}
-          </h1>
-        </div>
-
-        <form onSubmit={handleLogin} className="space-y-10">
-          <div className="space-y-6">
-            <div className="space-y-2 border-b border-white/10 pb-4">
-              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">{isAr ? "البريد الإلكتروني" : "Email Address"}</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                dir="ltr"
-                className="w-full bg-transparent text-white focus:outline-none text-sm placeholder:text-white/10"
-                placeholder={isAr ? "admin@syna.sa" : "admin@syna.sa"}
-              />
-            </div>
-            <div className="space-y-2 border-b border-white/10 pb-4 relative">
-              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">{isAr ? "كلمة المرور" : "Password"}</label>
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                dir="ltr"
-                className="w-full bg-transparent text-white focus:outline-none text-sm placeholder:text-white/10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute end-0 top-8 text-white/20 hover:text-white transition-colors"
+      {/* Main Form Centerpiece */}
+      <div className="relative z-20 w-full max-w-lg px-6">
+        <div 
+          className="relative overflow-hidden shadow-[0_40px_100px_-20px_rgba(11,47,74,0.15)] transition-all"
+          style={{ backgroundColor: "#FFFFFF", borderRadius: '4px', border: `1px solid ${COLORS.bgSecondary}` }}
+        >
+          {/* Subtle Decorative Accent Top Line */}
+          <div className="h-[3px] w-full" style={{ backgroundColor: COLORS.primary }} />
+          
+          <div className="p-12 md:p-16">
+            <div className="mb-14 text-center">
+              <div 
+                className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-full"
+                style={{ backgroundColor: COLORS.bgLight }}
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
+                <Lock className="h-6 w-6" style={{ color: COLORS.primary }} />
+              </div>
+              
+              <h1 
+                className="mb-4 text-2xl font-bold tracking-tight uppercase"
+                style={{ color: COLORS.primary }}
+              >
+                {isAr ? "تحقـق النفاذ الإداري" : "ADMINISTRATOR ACCESS"}
+              </h1>
+              <p className="text-xs font-medium tracking-wide opacity-50 uppercase" style={{ color: COLORS.textSecondary }}>
+                {isAr ? "بروتوكول وصول آمن للنظم الإدارية" : "Secure Access Protocol for Internal Systems"}
+              </p>
             </div>
+
+            <form onSubmit={handleLogin} className="space-y-8">
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label 
+                    className="text-[10px] font-bold uppercase tracking-[0.2em] ps-1"
+                    style={{ color: COLORS.textSecondary }}
+                  >
+                    {isAr ? "البريد الإداري المركزي" : "Central Admin Email"}
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    dir="ltr"
+                    className="h-14 w-full px-5 transition-all border outline-none focus:ring-0 text-sm font-medium"
+                    style={{ 
+                        backgroundColor: COLORS.bgLight, 
+                        borderColor: COLORS.bgSecondary,
+                        color: COLORS.textPrimary,
+                        borderRadius: '2px'
+                    }}
+                    placeholder="executive@syna.sa"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center px-1">
+                    <label 
+                        className="text-[10px] font-bold uppercase tracking-[0.2em]"
+                        style={{ color: COLORS.textSecondary }}
+                    >
+                        {isAr ? "كلمة المرور المشفرة" : "Encrypted Password"}
+                    </label>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      dir="ltr"
+                      className="h-14 w-full px-5 transition-all border outline-none focus:ring-0 text-sm font-medium"
+                      style={{ 
+                        backgroundColor: COLORS.bgLight, 
+                        borderColor: COLORS.bgSecondary,
+                        color: COLORS.textPrimary,
+                        borderRadius: '2px'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute end-4 top-1/2 -translate-y-1/2 transition-colors opacity-30 hover:opacity-100"
+                      style={{ color: COLORS.textPrimary }}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className="group relative h-16 w-full flex items-center justify-center gap-4 transition-all duration-300 font-bold text-[11px] uppercase tracking-[0.3em] overflow-hidden"
+                  style={{ 
+                    backgroundColor: COLORS.primary, 
+                    color: "#FFFFFF",
+                    borderRadius: '2px'
+                  }}
+                >
+                  <div className="absolute inset-0 bg-white/5 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
+                  
+                  {loading ? (
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+                  ) : (
+                    <>
+                      {isAr ? "تأكيـد الـدخول" : "Confirm Entry"}
+                      {isAr ? <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" /> : <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />}
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
           
-          <button 
-            type="submit" 
-            className="luxury-button w-full border-white/20 text-white hover:border-accent hover:bg-accent hover:text-primary h-16" 
-            disabled={loading}
+          <div 
+            className="px-12 py-8 text-center border-t flex items-center justify-center gap-2"
+            style={{ backgroundColor: COLORS.bgLight, borderColor: COLORS.bgSecondary }}
           >
-            {loading ? (isAr ? "جاري التحقق..." : "Validating...") : (isAr ? "تسجيل الدخول" : "Enter Portal")}
-          </button>
-        </form>
+            <Shield className="h-3 w-3 opacity-30" style={{ color: COLORS.textPrimary }} />
+            <p className="text-[9px] font-bold uppercase tracking-[0.4em] opacity-40" style={{ color: COLORS.textPrimary }}>
+              {isAr ? "نظام مشفر ومراقب بالكامل" : "Fully Encrypted & Monitored System"}
+            </p>
+          </div>
+        </div>
 
-        <div className="mt-20 text-center">
-          <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20">
-            {isAr ? "سينا للاستثمارات العقارية ٢٠٢٤" : "SYNA Real Estate Investments 2024"}
-          </p>
+        {/* Footer Credit */}
+        <div className="mt-12 text-center opacity-40">
+            <p className="text-[9px] font-bold uppercase tracking-[0.5em]" style={{ color: COLORS.secondary }}>
+                {isAr ? "سينا للاستثمارات العقارية ٢٠٢٤ | النفاذ الإداري" : "SYNA Real Estate Investments 2024 | Admin Node"}
+            </p>
         </div>
       </div>
     </div>

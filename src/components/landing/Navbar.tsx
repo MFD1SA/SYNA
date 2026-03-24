@@ -1,59 +1,176 @@
 import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Link } from "react-router-dom";
-import { Globe, Handshake, LogIn } from "lucide-react";
+import { LogIn } from "lucide-react";
 import logoImg from "@/assets/logo.png";
-import { Button } from "@/components/ui/button";
 
 const Navbar: React.FC = () => {
-  const { t, lang, toggleLang } = useLanguage();
+  const { t, lang } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const isAr = lang === "ar";
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const headerStyle: React.CSSProperties = {
+    position: "fixed",
+    top: "40px", /* height of TopStrip */
+    left: 0,
+    right: 0,
+    zIndex: 50,
+    transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
+    background: scrolled
+      ? "hsl(var(--header-bg) / 0.98)"
+      : "hsl(var(--header-bg))",
+    borderBottom: scrolled
+      ? "1px solid hsl(var(--strip-accent) / 0.15)"
+      : "1px solid hsl(var(--strip-accent) / 0.08)",
+    backdropFilter: scrolled ? "blur(20px)" : "none",
+    padding: scrolled ? "14px 0" : "20px 0",
+  };
+
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? "border-b border-white/5 bg-primary/95 backdrop-blur-2xl py-4" : "bg-transparent py-8"}`}>
+    <nav style={headerStyle} dir={isAr ? "rtl" : "ltr"}>
       <div className="container flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-5 group">
-          <div className="relative">
-            <img src={logoImg} alt="SYNA" className="h-10 w-10 object-contain brightness-0 invert opacity-90 group-hover:opacity-100 transition-opacity" />
-            {!scrolled && <div className="absolute -inset-4 bg-accent/10 blur-2xl rounded-full opacity-50" />}
-          </div>
-          <div className="flex flex-col leading-tight border-s border-white/10 ps-5">
-            <span className="text-xl font-medium tracking-[0.2em] text-white">SYNA</span>
-            <span className="text-[9px] uppercase tracking-[0.4em] text-accent font-bold">
+
+        {/* ── Brand ── */}
+        <Link
+          to="/"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "16px",
+            textDecoration: "none",
+          }}
+        >
+          <img
+            src={logoImg}
+            alt="SYNA"
+            style={{
+              height: "36px",
+              width: "36px",
+              objectFit: "contain",
+              filter: "brightness(0) invert(1)",
+              opacity: 0.9,
+              transition: "opacity 0.2s",
+            }}
+          />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              lineHeight: 1,
+              borderInlineStart: "1px solid hsl(var(--strip-accent) / 0.2)",
+              paddingInlineStart: "16px",
+              gap: "3px",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "18px",
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 600,
+                letterSpacing: "0.22em",
+                color: "hsl(var(--header-fg))",
+                lineHeight: 1,
+              }}
+            >
+              SYNA
+            </span>
+            <span
+              style={{
+                fontSize: "9px",
+                fontFamily: isAr ? "'Cairo', sans-serif" : "'Inter', sans-serif",
+                fontWeight: 500,
+                letterSpacing: isAr ? "0.05em" : "0.3em",
+                color: "hsl(var(--strip-accent))",
+                textTransform: isAr ? "none" : "uppercase",
+                lineHeight: 1,
+                opacity: 0.85,
+              }}
+            >
               {isAr ? "للاستثمارات العقارية" : "Real Estate Investments"}
             </span>
           </div>
         </Link>
 
-        <div className="flex items-center gap-10">
-          <div className="hidden items-center gap-10 md:flex">
-            <Link to="/about" className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 transition-all hover:text-accent hover:tracking-[0.4em]">
-              {t.nav.about}
+        {/* ── Nav Links (desktop) ── */}
+        <div
+          className="hidden md:flex items-center"
+          style={{ gap: "40px" }}
+        >
+          {[
+            { to: "/about", label: isAr ? "من نحن" : "About" },
+            { to: "/contact", label: isAr ? "تواصل معنا" : "Contact" },
+          ].map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              className="hover-underline"
+              style={{
+                fontSize: isAr ? "13px" : "10px",
+                fontFamily: isAr ? "'Cairo', sans-serif" : "'Inter', sans-serif",
+                fontWeight: isAr ? 500 : 700,
+                letterSpacing: isAr ? "0.02em" : "0.22em",
+                color: "hsl(var(--header-fg) / 0.5)",
+                textTransform: isAr ? "none" : "uppercase",
+                textDecoration: "none",
+                transition: "color 0.25s",
+              }}
+              onMouseEnter={(e) =>
+                ((e.currentTarget as HTMLElement).style.color =
+                  "hsl(var(--strip-accent))")
+              }
+              onMouseLeave={(e) =>
+                ((e.currentTarget as HTMLElement).style.color =
+                  "hsl(var(--header-fg) / 0.5)")
+              }
+            >
+              {label}
             </Link>
-            <Link to="/contact" className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 transition-all hover:text-accent hover:tracking-[0.4em]">
-              {isAr ? "التواصل" : "Contact"}
-            </Link>
-          </div>
-
-          <div className="h-4 w-px bg-white/10" />
-
-          <button onClick={toggleLang} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 transition-colors hover:text-white">
-            <Globe className="h-3.5 w-3.5 text-accent/60" />
-            {lang === "ar" ? "English" : "العربية"}
-          </button>
-
-          <Link to="/auth/login" className="luxury-button h-11 px-8 text-white border-white/10 hover:border-accent hover:bg-accent hover:text-primary">
-            {isAr ? "بوابة الشركاء" : "Partners Portal"}
-            <LogIn className="h-3 w-3" />
-          </Link>
+          ))}
         </div>
+
+        {/* ── Partners Portal CTA ── */}
+        <Link
+          to="/auth/login"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "10px",
+            padding: isAr ? "0 24px" : "0 28px",
+            height: "42px",
+            border: "1px solid hsl(var(--strip-accent) / 0.4)",
+            fontSize: isAr ? "12px" : "9px",
+            fontFamily: isAr ? "'Cairo', sans-serif" : "'Inter', sans-serif",
+            fontWeight: isAr ? 600 : 700,
+            letterSpacing: isAr ? "0.03em" : "0.25em",
+            color: "hsl(var(--header-fg) / 0.85)",
+            textTransform: isAr ? "none" : "uppercase",
+            textDecoration: "none",
+            transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+            whiteSpace: "nowrap",
+          }}
+          onMouseEnter={(e) => {
+            const el = e.currentTarget as HTMLElement;
+            el.style.background = "hsl(var(--strip-accent))";
+            el.style.borderColor = "hsl(var(--strip-accent))";
+            el.style.color = "hsl(var(--header-bg))";
+          }}
+          onMouseLeave={(e) => {
+            const el = e.currentTarget as HTMLElement;
+            el.style.background = "transparent";
+            el.style.borderColor = "hsl(var(--strip-accent) / 0.4)";
+            el.style.color = "hsl(var(--header-fg) / 0.85)";
+          }}
+        >
+          {isAr ? "بوابة الشركاء" : "Partners Portal"}
+          <LogIn size={13} style={{ opacity: 0.7 }} />
+        </Link>
+
       </div>
     </nav>
   );
