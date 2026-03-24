@@ -95,7 +95,7 @@ const AdminLogin: React.FC = () => {
                                     dir="ltr" 
                                     className={inputClasses} 
                                     style={{ borderRadius: '4px' }}
-                                    placeholder="admin@syna.sa"
+                                    placeholder="admin@cidoma.com"
                                 />
                             </div>
                             <div className="space-y-2">

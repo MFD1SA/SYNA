@@ -60,11 +60,11 @@ const Footer: React.FC = () => {
                 : "A sovereign entity in the real estate investment ecosystem, specializing in asset management and enabling strategic partnerships that elevate the urban landscape of Riyadh."}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-              <a href="mailto:info@syna.sa" className="flex items-center gap-5 group transition-colors">
+              <a href="mailto:info@cidoma.com" className="flex items-center gap-5 group transition-colors">
                 <div className="flex h-12 w-12 items-center justify-center border border-white/10 bg-white/5 transition-colors group-hover:border-accent/40 group-hover:bg-accent/5">
                   <Mail className="h-4 w-4 text-accent/60 group-hover:text-accent" strokeWidth={1.5} />
                 </div>
-                <span className="text-xs font-bold tracking-widest opacity-60 group-hover:opacity-100">INFO@SYNA.SA</span>
+                <span className="text-xs font-bold tracking-widest opacity-60 group-hover:opacity-100">INFO@CIDOMA.COM</span>
               </a>
               <div className="flex items-center gap-5">
                 <div className="flex h-12 w-12 items-center justify-center border border-white/10 bg-white/5">

@@ -219,7 +219,7 @@ const LoginPage: React.FC = () => {
             dir="ltr" 
             className={inputClasses} 
             style={{ borderRadius: '4px' }}
-            placeholder="executive@syna.sa" 
+            placeholder="executive@cidoma.com" 
           />
         </div>
         <div className="space-y-2">
