@@ -42,77 +42,58 @@ const AdminLogin: React.FC = () => {
         setLoading(false);
     };
 
-    const inputClasses = "h-16 w-full px-6 transition-all border border-slate-200 outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 text-sm font-medium bg-white rounded-md";
-    const labelClasses = "text-sm font-bold text-slate-700 mb-3 block ps-1 text-start";
+    const inputClasses = "h-14 w-full px-5 transition-all border border-slate-200 outline-none focus:border-primary/60 text-sm font-medium bg-white rounded-[4px] shadow-sm";
+    const labelClasses = "text-[12px] font-bold text-slate-600 mb-2.5 block ps-0.5 uppercase tracking-wider text-start";
 
     return (
-        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0B2F4A]">
-            {/* Background */}
+        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0A263D]">
+            {/* Background Texture Overlay */}
             <div className="absolute inset-0 z-0">
-                <div className="absolute inset-0 z-10 bg-secondary/80 mix-blend-multiply" />
-                <img src={saudiAbstract} className="h-full w-full object-cover opacity-60" alt="Institutional Texture" />
+                <div className="absolute inset-0 z-10 bg-[#0B2F4A]/90 mix-blend-multiply" />
+                <img src={saudiAbstract} className="h-full w-full object-cover opacity-30" alt="Engineered Backdrop" />
             </div>
 
-            {/* Navigation Overlay */}
-            <div className="absolute top-12 left-12 right-12 z-20 flex items-center justify-between">
-                <Link to="/" className="group flex items-center gap-4 text-xs font-bold text-white/40 hover:text-white transition-colors uppercase tracking-widest">
+            {/* Navigation Navigation */}
+            <div className="absolute top-10 left-10 right-10 z-20 flex items-center justify-between">
+                <Link to="/" className="group flex items-center gap-3 text-[10px] font-bold text-white/30 hover:text-white transition-colors uppercase tracking-[0.4em]">
                     {isAr ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-                    {isAr ? "العودة للرئيسية" : "Index"}
+                    {isAr ? "الرجوع" : "Index"}
                 </Link>
                 <div className="flex items-center gap-8">
-                    <button onClick={toggleLang} className="text-xs font-bold text-white/40 hover:text-white transition-colors uppercase tracking-widest">
+                    <button onClick={toggleLang} className="text-[10px] font-bold text-white/30 hover:text-white transition-colors uppercase tracking-[0.4em]">
                         {isAr ? "ENGLISH" : "العربية"}
                     </button>
                     <Globe className="h-4 w-4 text-white/10" />
                 </div>
             </div>
 
-            {/* Admin Command Card */}
-            <div className="relative z-10 w-full max-w-lg p-6 animate-in fade-in zoom-in-95 duration-1000">
-                <div className="bg-white border border-slate-100 shadow-[0_50px_100px_-30px_rgba(0,0,0,0.5)] p-12 md:p-16 rounded-lg">
-                    <div className="mb-14 flex flex-col items-center">
-                        <div className="mb-10 flex h-20 w-20 items-center justify-center bg-primary rounded-xl shadow-2xl shadow-primary/20">
-                            <Lock className="h-8 w-8 text-white" />
+            {/* Admin Central Command Card */}
+            <div className="relative z-10 w-full max-w-[480px] p-6 animate-in fade-in duration-700">
+                <div className="bg-white border border-slate-200/50 shadow-[0_30px_70px_-20px_rgba(0,0,0,0.5)] p-12 md:p-14 rounded-[4px]">
+                    <div className="mb-12 flex flex-col items-center">
+                        <div className="mb-8 flex h-16 w-16 items-center justify-center bg-primary rounded-[4px] shadow-lg shadow-primary/10">
+                            <Lock className="h-7 w-7 text-white" />
                         </div>
-                        <h1 className="text-4xl font-bold tracking-tight text-primary uppercase mb-2">
-                           {isAr ? "النفاذ الإداري" : "Admin Access"}
+                        <h1 className="text-3xl font-bold tracking-tight text-primary uppercase mb-1.5">
+                           {isAr ? "النفاذ الإداري" : "Admin Login"}
                         </h1>
-                        <span className="text-xs font-bold text-slate-300 uppercase tracking-[0.4em]">
-                           {isAr ? "بوابة الأمان المركزي" : "Central Oversight Portal"}
+                        <span className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.4em]">
+                           {isAr ? "بوابة الأمان المركزي" : "Control Protocol"}
                         </span>
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-10">
-                        <div className="space-y-8">
-                            <div className="space-y-3">
-                                <label className={labelClasses}>{isAr ? "البريد الإلكتروني" : "Admin Email"}</label>
-                                <input 
-                                    type="email" 
-                                    value={email} 
-                                    onChange={(e) => setEmail(e.target.value)} 
-                                    required 
-                                    dir="ltr" 
-                                    className={inputClasses} 
-                                    placeholder="admin@cidoma.com"
-                                />
+                    <form onSubmit={handleLogin} className="space-y-8">
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className={labelClasses}>{isAr ? "البريد الإلكتروني" : "Admin Identification"}</label>
+                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required dir="ltr" className={inputClasses} placeholder="admin@cidoma.com" />
                             </div>
-                            <div className="space-y-3">
-                                <label className={labelClasses}>{isAr ? "كلمة المرور" : "Password"}</label>
+                            <div className="space-y-2">
+                                <label className={labelClasses}>{isAr ? "كلمة المرور" : "System Password"}</label>
                                 <div className="relative">
-                                    <input 
-                                        type={showPassword ? "text" : "password"} 
-                                        value={password} 
-                                        onChange={(e) => setPassword(e.target.value)} 
-                                        required 
-                                        dir="ltr" 
-                                        className={inputClasses} 
-                                    />
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setShowPassword(!showPassword)} 
-                                        className="absolute end-5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-primary transition-colors"
-                                    >
-                                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                    <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required dir="ltr" className={inputClasses} />
+                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute end-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-primary transition-colors">
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                     </button>
                                 </div>
                             </div>
@@ -121,25 +102,25 @@ const AdminLogin: React.FC = () => {
                         <button 
                             type="submit" 
                             disabled={loading}
-                            className="h-20 w-full flex items-center justify-center gap-4 transition-all duration-300 font-bold text-sm uppercase tracking-widest bg-primary text-white shadow-xl shadow-primary/10 hover:shadow-primary/30 rounded-md active:scale-[0.98]"
+                            className="h-16 w-full flex items-center justify-center gap-3 transition-all duration-300 font-bold text-[13px] uppercase tracking-[0.2em] bg-primary text-white shadow-xl shadow-primary/5 rounded-[4px]"
                         >
-                            {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : (
+                            {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : (
                               <>
-                                {isAr ? "دخول النظام" : "Authenticate Entry"}
-                                <ShieldCheck className="h-5 w-5" />
+                                {isAr ? "دخول النظام" : "Initiate Entry"}
+                                <ShieldCheck className="h-4 w-4" />
                               </>
                             )}
                         </button>
                     </form>
                     
-                    <div className="mt-12 flex items-center justify-center gap-4 text-[10px] font-bold text-slate-200 uppercase tracking-widest border-t border-slate-50 pt-10">
-                        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                        {isAr ? "نظام الأمان نشط" : "Global Security Active"}
+                    <div className="mt-10 flex items-center justify-center gap-4 text-[9px] font-bold text-slate-200 uppercase tracking-[0.3em] border-t border-slate-50 pt-10">
+                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        {isAr ? "نظام الأمان مفعل" : "Control Node Active"}
                     </div>
                 </div>
                 
-                <p className="mt-16 text-center text-[10px] font-bold text-white/20 uppercase tracking-[0.5em]">
-                   {isAr ? "المملكة العربية السعودية" : "Kingdom Of Saudi Arabia"}
+                <p className="mt-12 text-center text-[9px] font-bold text-white/10 uppercase tracking-[0.4em]">
+                   {isAr ? "المملكة العربية السعودية" : "Kingdom Of Saudi Arabia / CIDOMA"}
                 </p>
             </div>
         </div>
