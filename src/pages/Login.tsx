@@ -11,44 +11,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import kafdElite from "@/assets/riyadh-kafd-elite.png";
 import saudiAbstract from "@/assets/saudi-abstract.png";
 
-// SYNA High-End Institutional Color Palette
-const COLORS = {
-  primary: "#0E3A5D",
-  secondary: "#0B2F4A",
-  accent: "#2C78B7",
-  softBlue: "#6FA4C9",
-  bgLight: "#F8FAFC",
-  bgSecondary: "#F1F5F9",
-  textPrimary: "#0B2F4A",
-  textSecondary: "#64748B",
-  border: "#E2E8F0"
-};
-
-const IMAGES = {
-    developer: kafdElite,
-    owner: saudiAbstract
-};
-
-const DIGITS_ONLY_REGEX = /^[0-9]*$/;
-
-const PROJECT_TYPES = [
-  { value: "residential", ar: "سكني", en: "Residential" },
-  { value: "commercial", ar: "تجاري", en: "Commercial" },
-  { value: "mixed", ar: "سكني تجاري", en: "Mixed Use" },
-  { value: "hospitality", ar: "ضيافة وفندقة", en: "Hospitality" },
-  { value: "industrial", ar: "صناعي", en: "Industrial" },
-  { value: "retail", ar: "تجزئة", en: "Retail" },
-];
-
-const isValidGoogleDriveLink = (url: string): boolean => {
-  if (!url) return false;
-  const patterns = [
-    /^https:\/\/drive\.google\.com\//,
-    /^https:\/\/docs\.google\.com\//,
-  ];
-  return patterns.some(p => p.test(url));
-};
-
 const LoginPage: React.FC = () => {
   const { t, lang, toggleLang } = useLanguage();
   const isAr = lang === "ar";
@@ -77,7 +39,6 @@ const LoginPage: React.FC = () => {
   const [crDriveLink, setCrDriveLink] = useState("");
   const [profileDriveLink, setProfileDriveLink] = useState("");
   const [selectedProjectTypes, setSelectedProjectTypes] = useState<string[]>([]);
-  const [selectedTargetCities, setSelectedTargetCities] = useState<string[]>([]);
   const [crLinkValid, setCrLinkValid] = useState<boolean | null>(null);
   const [profileLinkValid, setProfileLinkValid] = useState<boolean | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -85,14 +46,6 @@ const LoginPage: React.FC = () => {
   const showWelcomeToast = () => {
     toast({ title: portalType === "owner" ? (isAr ? "تم إثبات النفاذ" : "Access Confirmed") : (isAr ? "تم الاتصال بنظام الشركاء" : "Partners System Connected") });
   };
-
-  const validateDriveLink = (url: string, setter: (v: boolean | null) => void) => {
-    if (!url) { setter(null); return; }
-    setter(isValidGoogleDriveLink(url));
-  };
-
-  useEffect(() => { validateDriveLink(crDriveLink, setCrLinkValid); }, [crDriveLink]);
-  useEffect(() => { validateDriveLink(profileDriveLink, setProfileLinkValid); }, [profileDriveLink]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,15 +78,9 @@ const LoginPage: React.FC = () => {
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
     if (!companyName.trim()) errs.companyName = isAr ? "مطلوب" : "Required";
-    if (!contactPerson.trim()) errs.contactPerson = isAr ? "مطلوب" : "Required";
-    if (!crNumber || !DIGITS_ONLY_REGEX.test(crNumber)) errs.crNumber = isAr ? "رقم سجل غير صحيح" : "Invalid CR";
-    if (!regEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regEmail)) errs.email = isAr ? "بريد غير صحيح" : "Invalid email";
-    if (!phone || !DIGITS_ONLY_REGEX.test(phone) || phone.length < 9) errs.phone = isAr ? "رقم غير صحيح" : "Invalid phone";
-    if (!city) errs.city = isAr ? "مطلوب" : "Required";
-    if (!crDriveLink || !isValidGoogleDriveLink(crDriveLink)) errs.crDriveLink = isAr ? "رابط غير صحيح" : "Invalid link";
-    if (!profileDriveLink || !isValidGoogleDriveLink(profileDriveLink)) errs.profileDriveLink = isAr ? "رابط غير صحيح" : "Invalid link";
-    if (selectedProjectTypes.length === 0) errs.projectTypes = isAr ? "مطلوب" : "Required";
-    if (!regPassword || regPassword.length < 8) errs.password = isAr ? "8 خانات على الأقل" : "Min 8 chars";
+    if (!crNumber) errs.crNumber = isAr ? "مطلوب" : "Required";
+    if (!regEmail) errs.email = isAr ? "مطلوب" : "Required";
+    if (!phone) errs.phone = isAr ? "مطلوب" : "Required";
     if (!acceptTerms) errs.terms = isAr ? "الموافقة مطلوبة" : "Required";
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -156,61 +103,27 @@ const LoginPage: React.FC = () => {
           phone: `+966${phone}`,
           city,
           project_types: selectedProjectTypes,
-          target_cities: selectedTargetCities,
         },
       });
 
-      if (res.error || res.data?.error) {
-        throw new Error(res.data?.error || res.error?.message || "Registration failed");
-      }
+      if (res.error || res.data?.error) throw new Error(res.data?.error || "Registration failed");
 
-      toast({
-        title: isAr ? "تم استلام الطلب المؤسسي" : "Institutional Request Received",
-        description: isAr
-          ? "يتم مراجعة الطلب من قبل قسم الالتزام والموافقة عليه." 
-          : "The request is being reviewed and approved by the compliance department.",
-      });
+      toast({ title: isAr ? "تم استلام الطلب المؤسسي" : "Request Received" });
       setMode("login");
     } catch (err: any) {
-      toast({ variant: "destructive", title: isAr ? "خطأ في الاعتماد" : "Accreditation Error", description: err.message });
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
     }
     setLoading(false);
   };
 
-  const toggleProjectType = (value: string) => {
-    setSelectedProjectTypes(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
-  };
-
-  const inputClasses = "h-16 w-full px-6 transition-all border-none outline-none ring-1 ring-slate-100 focus:ring-2 focus:ring-accent/20 text-sm font-medium bg-slate-50";
-  const labelClasses = "text-[11px] font-bold uppercase tracking-[0.25em] ps-1 mb-3 block text-slate-400";
-  const sectionTitleClasses = "mb-12 text-[12px] font-bold uppercase tracking-[0.4em] ps-5 border-s-4 border-accent text-primary";
-
-  const DriveLinkInput = ({ value, onChange, valid, placeholder, error }: { value: string; onChange: (v: string) => void; valid: boolean | null; placeholder: string; error?: string }) => (
-    <div className="space-y-3">
-      <div className="relative">
-        <input 
-            value={value} 
-            onChange={e => onChange(e.target.value)} 
-            dir="ltr" 
-            className={inputClasses} 
-            placeholder={placeholder}
-            style={{ borderRadius: '4px' }}
-        />
-        <div className="absolute end-5 top-1/2 -translate-y-1/2">
-          {valid === true && <CheckCircle2 className="h-5 w-5 text-emerald-500" />}
-          {valid === false && <XCircle className="h-5 w-5 text-destructive" />}
-          {valid === null && value && <Link2 className="h-5 w-5 opacity-20" />}
-        </div>
-      </div>
-      {error && <p className="text-[10px] uppercase font-bold tracking-widest text-destructive ps-1">{error}</p>}
-    </div>
-  );
+  const inputClasses = "h-16 w-full px-6 transition-all border border-slate-200 outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 text-sm font-medium bg-white rounded-md";
+  const labelClasses = "text-sm font-bold text-slate-700 mb-3 block ps-1";
 
   const LoginForm = (
     <form onSubmit={handleLogin} className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="space-y-8">
-        <div className="space-y-2">
-          <label className={labelClasses}>{t.auth.email}</label>
+        <div className="space-y-3">
+          <label className={labelClasses}>{isAr ? "البريد الإلكتروني المؤسسي" : "Official Executive Email"}</label>
           <input 
             type="email" 
             value={email} 
@@ -218,26 +131,24 @@ const LoginPage: React.FC = () => {
             required 
             dir="ltr" 
             className={inputClasses} 
-            style={{ borderRadius: '4px' }}
             placeholder="executive@cidoma.com" 
           />
         </div>
-        <div className="space-y-2">
-          <label className={labelClasses}>{t.auth.password}</label>
+        <div className="space-y-3">
+          <label className={labelClasses}>{isAr ? "كلمة المرور" : "Password"}</label>
           <div className="relative">
             <input 
-                type={showPassword ? "text" : "password"} 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                required 
-                dir="ltr" 
-                className={inputClasses} 
-                style={{ borderRadius: '4px' }}
+              type={showPassword ? "text" : "password"} 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+              dir="ltr" 
+              className={inputClasses} 
             />
             <button 
-                type="button" 
-                onClick={() => setShowPassword(!showPassword)} 
-                className="absolute end-5 top-1/2 -translate-y-1/2 transition-colors text-slate-400 hover:text-primary"
+              type="button" 
+              onClick={() => setShowPassword(!showPassword)} 
+              className="absolute end-5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-primary transition-colors"
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -248,290 +159,221 @@ const LoginPage: React.FC = () => {
       <button 
         type="submit" 
         disabled={loading}
-        className="group relative h-20 w-full flex items-center justify-center gap-5 transition-all duration-500 font-bold text-[13px] uppercase tracking-[0.4em] overflow-hidden bg-primary text-white shadow-xl shadow-primary/10 hover:shadow-primary/30"
-        style={{ borderRadius: '4px' }}
+        className="h-20 w-full flex items-center justify-center gap-4 transition-all duration-300 font-bold text-sm uppercase tracking-widest bg-primary text-white shadow-xl shadow-primary/10 hover:shadow-primary/30 rounded-md active:scale-[0.98]"
       >
-        <div className="absolute inset-0 bg-accent transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500 opacity-20" />
-        {loading ? (
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-white" />
-        ) : (
+        {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : (
           <>
-            {isAr ? "إثبات النفاذ" : "Authenticate Entrance"}
-            <ShieldCheck className="h-5 w-5 transition-transform group-hover:scale-110" />
+            {isAr ? "دخول النظام" : "Authenticate Entry"}
+            <ShieldCheck className="h-5 w-5" />
           </>
         )}
       </button>
 
-      <div className="pt-8 text-center" />
+      <div className="pt-8 text-center">
+        <button type="button" className="text-xs font-bold text-slate-300 hover:text-primary transition-colors uppercase tracking-widest">
+            {isAr ? "نسيت كلمة المرور؟" : "Forgot Credentials?"}
+        </button>
+      </div>
     </form>
   );
 
   return (
-    <div className="relative flex min-h-screen overflow-hidden bg-[#F1F4F7]">
-      {/* Left Visual Content Panel */}
+    <div className="relative flex min-h-screen overflow-hidden bg-[#F8FAFC]">
+      {/* Left Panel: Authority & Context */}
       <div className="relative hidden w-[42%] flex-col justify-between lg:flex overflow-hidden">
-        {/* Extreme High-Quality Saudi Visual */}
         <div className="absolute inset-0 z-0">
-            <div className="absolute inset-0 z-10 bg-gradient-to-tr from-secondary/95 via-secondary/70 to-transparent" />
-            <img 
-                key={portalType}
-                src={portalType === 'developer' ? IMAGES.developer : IMAGES.owner} 
-                className="h-full w-full object-cover animate-in fade-in duration-2000 zoom-in-110" 
-                alt="Institutional Excellence" 
-            />
+          <div className="absolute inset-0 z-10 bg-secondary/80 mix-blend-multiply" />
+          <img 
+            key={portalType}
+            src={portalType === 'developer' ? kafdElite : saudiAbstract} 
+            className="h-full w-full object-cover animate-in fade-in duration-1000 scale-105" 
+            alt="Institutional Authority" 
+          />
         </div>
 
-        <div className="relative z-20 p-20 pt-24">
-            <div className="flex items-center gap-6 mb-32 animate-in slide-in-from-top-6 duration-1000">
-                <div className="h-10 w-[4px] bg-accent" />
-                <div className="flex flex-col">
-                    <span className="text-[16px] font-bold uppercase tracking-[0.5em] text-white">SYNA</span>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">{isAr ? "النظام العقاري الموحد" : "ULTIMATE ASSET ENGINE"}</span>
-                </div>
+        <div className="relative z-20 p-24">
+          <div className="mb-40 flex items-center gap-6">
+            <div className="h-12 w-1 bg-accent" />
+            <div className="flex flex-col">
+                <span className="text-3xl font-bold tracking-widest text-white">SYNA</span>
+                <span className="text-[10px] uppercase font-bold tracking-[0.4em] text-white/40">Real Estate Infrastructure</span>
             </div>
+          </div>
 
-            <div className="max-w-xl space-y-12 animate-in slide-in-from-left-8 duration-1200 delay-300">
-                <div className="space-y-6">
-                    <span className="inline-block px-4 py-1.5 border border-accent/30 bg-accent/10 backdrop-blur-md text-[9px] font-bold uppercase tracking-[0.6em] text-accent">
-                        {isAr ? "بوابة الأمان المؤسسي" : "SECURE INSTITUTIONAL ARCHWAY"}
-                    </span>
-                    <h1 className="text-6xl font-medium tracking-tight text-white uppercase leading-[1.05]">
-                        {portalType === 'developer' 
-                            ? (isAr ? "سيادة التطوير" : "Development Sovereignty") 
-                            : (isAr ? "إدارة الأصول" : "Asset Authority")}
-                    </h1>
-                </div>
-
-                <div className="h-[1px] w-40 bg-white/20" />
-
-                <div className="space-y-8">
-                    <p className="text-[13px] font-light leading-relaxed text-white/60 uppercase tracking-[0.2em]">
-                        {portalType === 'owner'
-                          ? (isAr ? "مركز تحكم الملاك للاطلاع على أداء المحفظة الاستثمارية والتقارير التنفيذية للأصول." : "Owners' command center for portfolio performance monitoring and executive asset reporting.")
-                          : (isAr ? "منصة المطورين المعتمدين لمتابعة الصفقات المتأهلة وفرص الاستثمار والنمو المشترك." : "Certified developers' platform for qualified deals, investment opportunities, and joint growth.")}
-                    </p>
-                    
-                    <div className="flex items-center gap-10">
-                        <div className="flex flex-col gap-1">
-                            <span className="text-[16px] font-bold text-white tracking-widest">2024</span>
-                            <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest">{isAr ? "النظام" : "VERSION"}</span>
-                        </div>
-                        <div className="h-10 w-[1px] bg-white/10" />
-                        <div className="flex flex-col gap-1">
-                            <span className="text-[16px] font-bold text-white tracking-widest">SR 1B+</span>
-                            <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest">{isAr ? "قيمة الأصول" : "ASSET VALUE"}</span>
-                        </div>
-                    </div>
-                </div>
+          <div className="max-w-md space-y-10 animate-in slide-in-from-left-8 duration-700">
+            <div className="space-y-4">
+               <span className="inline-block px-4 py-1.5 bg-accent/10 border border-accent/20 text-[10px] font-bold text-accent uppercase tracking-widest">
+                  {isAr ? "تحكم النفاذ المركزي" : "Central Access Control"}
+               </span>
+               <h1 className="text-5xl font-bold tracking-tight text-white leading-tight uppercase">
+                  {portalType === 'developer' ? (isAr ? "نظام كبار المطورين" : "Strategic Developer Access") : (isAr ? "بوابة ملاك الأصول" : "Asset Owner Sovereignty")}
+               </h1>
             </div>
+            <p className="text-lg font-light leading-relaxed text-white/60">
+                {portalType === 'developer' 
+                  ? (isAr ? "إثبات الهوية للوصول لفرص التطوير العقاري والفرص النوعية المدعومة بالبيانات." : "Authenticate identity to access strategic development mandates and data-backed opportunities.")
+                  : (isAr ? "تتبع وحماية الأصول العقارية وإدارة المحفظة الاستثمارية بموثوقية عالية." : "Secure monitoring of property portfolios and autonomous asset management with ultimate trust.")}
+            </p>
+          </div>
         </div>
 
-        <div className="relative z-20 p-20 animate-in fade-in duration-1000 delay-700">
-            <div className="flex items-center gap-6 text-[10px] font-bold uppercase tracking-[0.5em] text-white/30">
-                <div className="h-[1px] w-20 bg-white/10" />
-                <span>{isAr ? "سينا لحلول الاستثمار العقاري - المملكة العربية السعودية" : "SYNA REAL ESTATE SOLUTIONS - KSA"}</span>
-            </div>
+        <div className="relative z-20 p-24">
+           <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.5em] border-t border-white/5 pt-10">
+              {isAr ? "المملكة العربية السعودية - الرياض" : "Kingdom of Saudi Arabia - Riyadh"}
+           </p>
         </div>
       </div>
 
-      {/* Right Form Panel */}
-      <div className="relative flex flex-1 flex-col overflow-y-auto px-8 py-12 md:px-24 lg:py-20 lg:justify-center">
-        {/* Top Navigation */}
-        <div className="absolute top-12 left-8 right-8 flex items-center justify-between md:left-24 md:right-24">
-            <Link to="/" className="group flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400 transition-colors hover:text-primary">
+      {/* Right Panel: The Core Form */}
+      <div className="relative flex flex-1 flex-col overflow-y-auto px-8 py-20 lg:px-24 lg:justify-center">
+        {/* Top Actions */}
+        <div className="absolute top-12 left-8 right-8 flex items-center justify-between lg:left-24 lg:right-24">
+            <Link to="/" className="group flex items-center gap-4 text-xs font-bold text-slate-400 hover:text-primary transition-colors uppercase tracking-widest">
                 {isAr ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-                {isAr ? "رجوع بالفهرس" : "INDEX"}
+                {isAr ? "العودة للرئيسية" : "Back to Index"}
             </Link>
-            <div className="flex items-center gap-10">
-                <button onClick={toggleLang} className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400 transition-colors hover:text-primary">
-                    {isAr ? "ENGLISH" : "العربية"}
-                </button>
-                <div className="h-4 w-[1px] bg-slate-200" />
-                <Globe className="h-4 w-4 text-slate-200" />
+            <div className="flex items-center gap-8">
+               <button onClick={toggleLang} className="text-xs font-bold text-slate-400 hover:text-primary transition-colors uppercase tracking-widest">
+                  {isAr ? "ENGLISH" : "العربية"}
+               </button>
+               <Globe className="h-4 w-4 text-slate-200" />
             </div>
         </div>
 
-        <div className="mx-auto w-full max-w-xl">
-            {/* ELITE ROLE SELECTION (Side-by-Side Professional Choice) */}
-            <div className="mb-20 grid grid-cols-2 gap-6 p-1.5 bg-white shadow-sm border border-slate-100" style={{ borderRadius: '6px' }}>
-                <button 
-                    onClick={() => { setPortalType("developer"); setMode("login"); }}
-                    className={`relative flex items-center justify-center gap-4 p-5 transition-all duration-500 overflow-hidden ${portalType === 'developer' ? 'text-white' : 'text-slate-400 hover:text-primary'}`}
-                >
-                    {portalType === 'developer' && <div className="absolute inset-0 bg-primary animate-in fade-in zoom-in-95 duration-500" style={{ borderRadius: '4px' }} />}
-                    <Building2 className={`relative z-10 h-4 w-4 ${portalType === 'developer' ? 'opacity-100' : 'opacity-40'}`} />
-                    <span className="relative z-10 text-[11px] font-bold uppercase tracking-[0.3em]">{isAr ? "بوابة المطور" : "DEVELOPER"}</span>
-                </button>
-                <button 
-                    onClick={() => { setPortalType("owner"); setMode("login"); }}
-                    className={`relative flex items-center justify-center gap-4 p-5 transition-all duration-500 overflow-hidden ${portalType === 'owner' ? 'text-white' : 'text-slate-400 hover:text-primary'}`}
-                >
-                    {portalType === 'owner' && <div className="absolute inset-0 bg-primary animate-in fade-in zoom-in-95 duration-500" style={{ borderRadius: '4px' }} />}
-                    <UserCircle className={`relative z-10 h-4 w-4 ${portalType === 'owner' ? 'opacity-100' : 'opacity-40'}`} />
-                    <span className="relative z-10 text-[11px] font-bold uppercase tracking-[0.3em]">{isAr ? "بوابة المالك" : "OWNER"}</span>
-                </button>
-            </div>
+        <div className="mx-auto w-full max-w-lg">
+           {/* SIMPLE & POWERFUL ROLE SELECTION */}
+           <div className="mb-16">
+              <span className="mb-6 block text-[10px] font-bold text-slate-300 uppercase tracking-[0.3em] text-center">
+                 {isAr ? "حدد نوع النفاذ" : "Select Entrance Protocol"}
+              </span>
+              <div className="grid grid-cols-2 gap-4 p-1.5 bg-slate-100/50 rounded-xl">
+                 <button 
+                  onClick={() => { setPortalType("developer"); setMode("login"); }}
+                  className={`flex flex-col items-center justify-center gap-3 py-6 transition-all duration-300 rounded-lg ${portalType === 'developer' ? 'bg-white shadow-xl shadow-slate-200/50 text-primary border border-slate-100' : 'text-slate-400 hover:text-slate-600'}`}
+                 >
+                    <Building2 className="h-5 w-5" />
+                    <span className="text-[11px] font-bold uppercase tracking-widest">{isAr ? "مطور عقاري" : "Developer"}</span>
+                 </button>
+                 <button 
+                  onClick={() => { setPortalType("owner"); setMode("login"); }}
+                  className={`flex flex-col items-center justify-center gap-3 py-6 transition-all duration-300 rounded-lg ${portalType === 'owner' ? 'bg-white shadow-xl shadow-slate-200/50 text-primary border border-slate-100' : 'text-slate-400 hover:text-slate-600'}`}
+                 >
+                    <UserCircle className="h-5 w-5" />
+                    <span className="text-[11px] font-bold uppercase tracking-widest">{isAr ? "مالك عقار" : "Property Owner"}</span>
+                 </button>
+              </div>
+           </div>
 
-            {/* THE FORM CARD (High Precision & Depth) */}
-            <div className="relative animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                {/* Visual context switch */}
-                <div className="mb-14 ps-2">
-                    <h2 className="text-4xl font-bold tracking-tight text-primary uppercase mb-5 leading-tight">
-                        {portalType === "developer" ? (isAr ? "نظام الشركاء المعتمدين" : "CERTIFIED PARTNERS PORTAL") : (isAr ? "بوابة ملاك الأصول" : "ASSET OWNERS PORTAL")}
-                    </h2>
-                    <p className="text-[13px] font-semibold text-slate-400 uppercase tracking-widest leading-relaxed max-w-sm">
-                        {portalType === "owner"
-                        ? (isAr ? "التحقق من بيانات النفاذ للوصول للمحفظة العقارية." : "Validate executive credentials to access the property portfolio.")
-                        : mode === "login"
-                            ? (isAr ? "تسجيل النفاذ للأدوات المؤسسية وفرص التطوير." : "Sign in to access institutional tools and development flow.")
-                            : (isAr ? "تقديم وثائق الاعتماد للانضمام لشبكة مطوري سينا." : "Submit accreditation documents to join SYNA developer network.")}
-                    </p>
+           {/* THE CORE FORM CARD */}
+           <div className="relative bg-white border border-slate-100 shadow-[0_40px_100px_-20px_rgba(14,58,93,0.12)] p-12 lg:p-16 rounded-lg animate-in fade-in slide-in-from-bottom-8 duration-700">
+              <div className="mb-12 border-s-4 border-primary ps-6">
+                 <h2 className="text-3xl font-bold tracking-tight text-primary uppercase mb-2">
+                    {mode === 'login' ? (isAr ? "تسجيل النفاذ" : "Portal Access") : (isAr ? "طلب اعتماد" : "Accreditation")}
+                 </h2>
+                 <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">
+                    {portalType === "developer" ? (isAr ? "نظام الشراكات العقارية" : "Institutional Partner Network") : (isAr ? "تحقق الملاك المعتمدين" : "Verified Owner Environment")}
+                 </p>
+              </div>
+
+              {portalType === "owner" && LoginForm}
+
+              {portalType === "developer" && mode === "login" && (
+                <div className="space-y-12">
+                   {LoginForm}
+                   <div className="pt-10 flex flex-col items-center gap-8 border-t border-slate-50">
+                      <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{isAr ? "أو يمكنك" : "OR INITIATE"}</span>
+                      <button onClick={() => setMode("register")} className="flex items-center gap-4 text-xs font-bold text-accent hover:text-primary transition-colors uppercase tracking-widest">
+                         {isAr ? "تقديم طلب اعتماد جديد" : "Request New Accreditation"}
+                         <ArrowRight className="h-4 w-4" />
+                      </button>
+                   </div>
                 </div>
+              )}
 
-                <div className="bg-white border border-slate-100 shadow-[0_50px_100px_-30px_rgba(14,58,93,0.18)] p-12 md:p-16" style={{ borderRadius: '8px' }}>
-                    {portalType === "owner" && (
-                        <div className="space-y-12">
-                            {LoginForm}
-                            <div className="pt-10 border-t border-slate-50 flex items-start gap-4">
-                                <div className="h-10 w-[2px] bg-slate-100" />
-                                <p className="text-[10px] font-bold leading-loose text-slate-300 uppercase tracking-[0.2em] max-w-xs">
-                                    {isAr ? "تفعيل الحسابات يتم حصرياً عبر قنوات الربط المركزية." : "Account activation is handled exclusively via central linkage channels."}
-                                </p>
+              {portalType === "developer" && mode === "register" && (
+                <form onSubmit={handleRegister} className="space-y-12 animate-in fade-in slide-in-from-right-4 duration-500">
+                   <div className="space-y-10">
+                      <div className="space-y-8">
+                         <div className="space-y-3">
+                            <label className={labelClasses}>{isAr ? "الاسم التجاري للكيان" : "Official Company Name"}</label>
+                            <input value={companyName} onChange={e => setCompanyName(e.target.value)} required className={inputClasses} />
+                         </div>
+                         <div className="grid gap-8 md:grid-cols-2">
+                            <div className="space-y-3">
+                               <label className={labelClasses}>{isAr ? "رقم السجل التجاري" : "CR Number"}</label>
+                               <input value={crNumber} onChange={e => setCrNumber(e.target.value.replace(/\D/g, ""))} required dir="ltr" className={inputClasses} />
                             </div>
-                        </div>
-                    )}
-
-                    {portalType === "developer" && mode === "login" && (
-                        <div className="space-y-12">
-                            {LoginForm}
-                            <div className="pt-12 border-t border-slate-50 flex flex-col items-center gap-8">
-                                <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-300">
-                                    {isAr ? "طلب اعتماد مطور جديد" : "NEW DEVELOPER ACCREDITATION"}
-                                </span>
-                                <button 
-                                    type="button" 
-                                    onClick={() => setMode("register")} 
-                                    className="group flex items-center gap-4 text-[11px] font-bold uppercase tracking-[0.3em] text-accent transition-all hover:gap-6"
-                                >
-                                    {isAr ? "بدء عملية التسجيل المؤسسي" : "Begin Institutional Registration"}
-                                    {isAr ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
-                                </button>
+                            <div className="space-y-3">
+                               <label className={labelClasses}>{isAr ? "المقر الرئيسي" : "Corporate City"}</label>
+                               <Select value={city} onValueChange={setCity}>
+                                  <SelectTrigger className="h-16 w-full border border-slate-200 bg-white px-6 font-medium text-sm rounded-md focus:border-primary focus:ring-4 focus:ring-primary/5">
+                                     <SelectValue placeholder={isAr ? "اختر المدينة" : "Select City"} />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-white border-slate-200">
+                                     {saudiCities.map(c => (
+                                        <SelectItem key={c.name.en} value={c.name.en}>{isAr ? c.name.ar : c.name.en}</SelectItem>
+                                     ))}
+                                  </SelectContent>
+                               </Select>
                             </div>
-                        </div>
-                    )}
+                         </div>
+                      </div>
 
-                    {portalType === "developer" && mode === "register" && (
-                        <div className="space-y-16 animate-in fade-in slide-in-from-right-4 duration-500">
-                            <form onSubmit={handleRegister} className="space-y-16">
-                                <div className="space-y-12">
-                                    <h3 className={sectionTitleClasses}>{isAr ? "بيانات الكيان الاستثماري" : "Investment Entity DATA"}</h3>
-                                    <div className="grid gap-10 md:grid-cols-2">
-                                        <div className="space-y-3">
-                                            <label className={labelClasses}>{isAr ? "الاسم التجاري *" : "Commercial Name *"}</label>
-                                            <input value={companyName} onChange={e => setCompanyName(e.target.value)} required className={inputClasses} style={{ borderRadius: '4px' }} />
-                                        </div>
-                                        <div className="space-y-3">
-                                            <label className={labelClasses}>{isAr ? "رقم السجل التجاري *" : "CR Number *"}</label>
-                                            <input value={crNumber} onChange={e => setCrNumber(e.target.value.replace(/\D/g, ""))} required dir="ltr" className={inputClasses} style={{ borderRadius: '4px' }} />
-                                        </div>
-                                    </div>
-                                    <div className="grid gap-10 md:grid-cols-2">
-                                        <div className="space-y-3">
-                                            <label className={labelClasses}>{isAr ? "المقر الرئيسي *" : "Corporate HQ *"}</label>
-                                            <Select value={city} onValueChange={setCity}>
-                                                <SelectTrigger className="h-16 bg-slate-50 border-none ring-1 ring-slate-100 text-sm font-medium px-6 rounded-[4px] focus:ring-2 focus:ring-accent/20">
-                                                    <SelectValue placeholder={isAr ? "اختر المدينة" : "Select HQ"} />
-                                                </SelectTrigger>
-                                                <SelectContent className="rounded-[4px] border-slate-100 bg-white">
-                                                    {saudiCities.map(c => (
-                                                        <SelectItem key={c.name.en} value={c.name.en} className="focus:bg-slate-50">{isAr ? c.name.ar : c.name.en}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div className="space-y-3">
-                                            <label className={labelClasses}>{isAr ? "نطاق التطوير *" : "Development Scope *"}</label>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                {PROJECT_TYPES.slice(0, 4).map(pt => (
-                                                    <button key={pt.value} type="button" onClick={() => toggleProjectType(pt.value)} 
-                                                            className={`h-16 border text-[9px] font-bold uppercase tracking-widest transition-all ${selectedProjectTypes.includes(pt.value) ? 'bg-primary border-primary text-white' : 'bg-slate-50 border-transparent text-slate-400 hover:border-slate-200'}`}
-                                                            style={{ borderRadius: '4px' }}>
-                                                        {isAr ? pt.ar : pt.en}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                      <div className="space-y-8">
+                         <div className="space-y-3">
+                            <label className={labelClasses}>{isAr ? "رابط السجل (Drive/Pdf)" : "CR Documents Link"}</label>
+                            <div className="relative">
+                              <input value={crDriveLink} onChange={e => setCrDriveLink(e.target.value)} required dir="ltr" className={inputClasses} placeholder="https://..." />
+                              <Link2 className="absolute end-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
+                            </div>
+                         </div>
+                         <div className="grid gap-8 md:grid-cols-2">
+                            <div className="space-y-3">
+                               <label className={labelClasses}>{isAr ? "البريد الإلكتروني" : "Email"}</label>
+                               <input type="email" value={regEmail} onChange={e => setRegEmail(e.target.value)} required dir="ltr" className={inputClasses} />
+                            </div>
+                            <div className="space-y-3">
+                               <label className={labelClasses}>{isAr ? "رقم الجوال" : "Mobile"}</label>
+                               <div className="flex gap-2">
+                                  <div className="flex h-16 w-20 items-center justify-center bg-slate-50 border border-slate-200 text-xs font-bold text-slate-400 rounded-md">+966</div>
+                                  <input value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, ""))} required dir="ltr" className={inputClasses} maxLength={10} />
+                               </div>
+                            </div>
+                         </div>
+                      </div>
+                   </div>
 
-                                <div className="space-y-12">
-                                    <h3 className={sectionTitleClasses}>{isAr ? "الاعتمادات التنفيذية" : "EXECUTIVE CREDENTIALS"}</h3>
-                                    <div className="grid gap-10 md:grid-cols-2">
-                                        <div className="space-y-3">
-                                            <label className={labelClasses}>{isAr ? "رابط السجل (OneDrive/Drive) *" : "CR Link *"}</label>
-                                            <DriveLinkInput value={crDriveLink} onChange={setCrDriveLink} valid={crLinkValid} placeholder="https://..." error={errors.crDriveLink} />
-                                        </div>
-                                        <div className="space-y-3">
-                                            <label className={labelClasses}>{isAr ? "ملف الكيان التنفيذي *" : "Entity Profile *"}</label>
-                                            <DriveLinkInput value={profileDriveLink} onChange={setProfileDriveLink} valid={profileLinkValid} placeholder="https://..." error={errors.profileDriveLink} />
-                                        </div>
-                                    </div>
-                                </div>
+                   <div className="space-y-10 pt-6">
+                      <div className="flex items-start gap-4 p-6 bg-slate-50 rounded-md border border-slate-100">
+                         <Checkbox id="terms" checked={acceptTerms} onCheckedChange={c => setAcceptTerms(c === true)} className="mt-1 h-5 w-5 data-[state=checked]:bg-primary rounded-sm" />
+                         <label htmlFor="terms" className="text-xs font-medium leading-relaxed text-slate-400 uppercase tracking-widest">
+                            {isAr ? "أوافق على معايير الالتزام والموافقة على" : "I AGREE TO COMPLIANCE STANDARDS AND"}{" "}
+                            <Link to="/terms" className="text-primary underline font-bold">TERMS</Link>
+                         </label>
+                      </div>
 
-                                <div className="space-y-12">
-                                    <h3 className={sectionTitleClasses}>{isAr ? "قنوات التواصل المؤسسي" : "INSTITUTIONAL CHANNELS"}</h3>
-                                    <div className="grid gap-10 md:grid-cols-2">
-                                        <div className="space-y-3">
-                                            <label className={labelClasses}>{isAr ? "البريد الإلكتروني *" : "Official Email *"}</label>
-                                            <input type="email" value={regEmail} onChange={e => setRegEmail(e.target.value)} required dir="ltr" className={inputClasses} style={{ borderRadius: '4px' }} />
-                                        </div>
-                                        <div className="space-y-3">
-                                            <label className={labelClasses}>{isAr ? "رقم جوال المسؤول *" : "Official Mobile *"}</label>
-                                            <div className="flex gap-3">
-                                                <div className="flex h-16 w-20 items-center justify-center bg-slate-100 text-[10px] font-bold text-slate-400" style={{ borderRadius: '4px' }}>+966</div>
-                                                <input type="tel" value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, ""))} required dir="ltr" className={inputClasses} maxLength={10} style={{ borderRadius: '4px' }} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                      <button 
+                        type="submit" 
+                        disabled={loading}
+                        className="h-20 w-full flex items-center justify-center gap-4 transition-all duration-300 font-bold text-sm uppercase tracking-widest bg-primary text-white shadow-xl shadow-primary/10 hover:shadow-primary/30 rounded-md"
+                      >
+                         {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : (
+                           <>
+                             {isAr ? "إرسال طلب الاعتماد" : "Submit Accreditation"}
+                             <UserPlus className="h-5 w-5" />
+                           </>
+                         )}
+                      </button>
 
-                                <div className="pt-10 space-y-12">
-                                    <div className="flex items-start gap-5 p-8 bg-slate-50 border border-slate-100" style={{ borderRadius: '4px' }}>
-                                        <Checkbox id="terms" checked={acceptTerms} onCheckedChange={c => setAcceptTerms(c === true)} className="mt-1.5 h-5 w-5 border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
-                                        <label htmlFor="terms" className="text-[11px] font-medium leading-loose text-slate-500 uppercase tracking-widest">
-                                            {isAr ? "بطلب التسجيل أوافق على شروط سياسة الالتزام و" : "BY REQUESTING, I AGREE TO COMPLIANCE TERMS AND"}{" "}
-                                            <Link to="/terms" className="text-accent underline font-bold">{t.auth.termsAndConditions}</Link>
-                                        </label>
-                                    </div>
-                                    
-                                    <button 
-                                        type="submit" 
-                                        disabled={loading}
-                                        className="group relative h-22 w-full flex items-center justify-center gap-5 transition-all duration-500 font-bold text-[13px] uppercase tracking-[0.4em] overflow-hidden bg-primary text-white shadow-2xl shadow-primary/20"
-                                        style={{ borderRadius: '4px' }}
-                                    >
-                                        <div className="absolute inset-0 bg-accent transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500 opacity-20" />
-                                        {loading ? (
-                                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-white" />
-                                        ) : (
-                                            <>
-                                                {isAr ? "إرسال طلب الاعتماد" : "Submit For Accreditation"}
-                                                <UserPlus className="h-5 w-5 transition-transform group-hover:scale-110" />
-                                            </>
-                                        )}
-                                    </button>
-                                    
-                                    <div className="text-center pt-6">
-                                        <button type="button" onClick={() => setMode("login")} className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-300 hover:text-primary transition-colors">
-                                            {isAr ? "العودة لتسجيل النفاذ" : "BACK TO PORTAL ACCESS"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    )}
-                </div>
-            </div>
+                      <div className="text-center pt-4">
+                        <button onClick={() => setMode("login")} className="text-xs font-bold text-slate-300 hover:text-primary transition-colors uppercase tracking-widest">
+                            {isAr ? "العودة لتسجيل الدخول" : "Back to Sign In"}
+                        </button>
+                      </div>
+                   </div>
+                </form>
+              )}
+           </div>
         </div>
       </div>
     </div>
