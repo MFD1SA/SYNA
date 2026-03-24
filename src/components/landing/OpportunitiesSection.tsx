@@ -93,71 +93,68 @@ const OpportunitiesSection: React.FC = () => {
   const items = [...lands, ...lands];
 
   return (
-    <section className="relative bg-muted/20 py-20 overflow-hidden border-y border-border/40">
-      <div className="container relative mb-16">
+    <section className="relative bg-background py-32 overflow-hidden border-y border-border/40">
+      <div className="container relative mb-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="text-center"
+          transition={{ duration: 1 }}
+          className="border-s-2 border-accent ps-8"
         >
-          <span className="mb-4 inline-block rounded-full bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground shadow-sm">
-            {isAr ? "الفرص الحالية" : "Current Opportunities"}
+          <span className="mb-4 inline-block text-[10px] font-bold uppercase tracking-[0.3em] text-accent">
+            {isAr ? "الفرص الاستثمارية الحالية" : "Current Investment Opportunities"}
           </span>
-          <h2 className="mb-6 text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl">
-            {isAr ? "فرص التطوير المتاحة" : "Available Development Opportunities"}
+          <h2 className="text-4xl font-medium tracking-tight text-primary md:text-5xl uppercase leading-tight">
+            {isAr ? "أصول عقارية استراتيجية جاهزة للتطوير" : "Strategic Real Estate Assets Ready for Development"}
           </h2>
-          <p className="mx-auto max-w-2xl text-lg font-light leading-relaxed text-muted-foreground">
-            {isAr 
-              ? "أراضي مختارة بعناية تغطي أهم النطاقات الجغرافية، وهي معتمدة وجاهزة للشراكات الاستراتيجية مع المطورين والمستثمرين." 
-              : "Carefully selected lands covering prime geographical zones, verified and ready for strategic partnerships with developers and investors."}
-          </p>
         </motion.div>
       </div>
 
-      <div ref={scrollRef} className="flex gap-6 overflow-hidden px-6" style={{ scrollBehavior: "auto" }}>
+      <div ref={scrollRef} className="flex gap-px overflow-hidden px-0 bg-border/40 border-y border-border/40" style={{ scrollBehavior: "auto" }}>
         {items.map((land, i) => {
           const imgSrc = land.image_url || placeholders[i % placeholders.length];
           return (
             <div
               key={`${land.id}-${i}`}
-              className="group min-w-[360px] max-w-[360px] shrink-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-500 hover:shadow-lg hover:-translate-y-1"
+              className="group min-w-[400px] max-w-[400px] shrink-0 bg-background transition-colors hover:bg-muted/30"
             >
-              <div className="relative h-56 overflow-hidden">
-                <img src={imgSrc} alt={isAr ? cityNameAr[land.city] || land.city : land.city} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute top-4 start-4 flex gap-2">
-                  <span className="rounded-sm bg-primary/90 px-3 py-1.5 text-xs font-medium text-primary-foreground backdrop-blur-md">
+              <div className="relative h-64 overflow-hidden">
+                <img src={imgSrc} alt={isAr ? cityNameAr[land.city] || land.city : land.city} className="h-full w-full object-cover grayscale opacity-90 transition-all duration-700 group-hover:grayscale-0 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent" />
+                <div className="absolute top-6 start-6 flex gap-2">
+                  <span className="bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">
                     {isAr ? (goalLabels[land.partnership_goal]?.ar || "للشراكة") : (goalLabels[land.partnership_goal]?.en || "Partnership")}
                   </span>
-                  <span className="rounded-sm bg-white/20 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
+                  <span className="bg-white/10 backdrop-blur-md px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
                     {isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}
                   </span>
                 </div>
-                <div className="absolute bottom-4 start-4">
-                  <h3 className="text-xl font-semibold text-white">{isAr ? (cityNameAr[land.city] || land.city) : land.city}</h3>
+              </div>
+              <div className="p-10">
+                <div className="mb-8">
+                  <h3 className="text-xl font-medium text-primary uppercase tracking-tight">{isAr ? (cityNameAr[land.city] || land.city) : land.city}</h3>
                   {land.district && (
-                    <p className="mt-1 text-sm font-light text-white/80">{isAr ? `حي ${districtNameAr[land.district] || land.district}` : land.district}</p>
+                    <p className="mt-2 text-xs font-bold uppercase tracking-widest text-accent">{isAr ? `حي ${districtNameAr[land.district] || land.district}` : land.district}</p>
                   )}
                 </div>
-              </div>
-              <div className="p-6">
-                <div className="mb-6 flex items-center justify-between text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-primary" />
-                    <span>{isAr ? (cityNameAr[land.city] || land.city) : land.city}</span>
+                
+                <div className="mb-10 grid grid-cols-2 gap-8 border-y border-border/40 py-6 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <div className="flex flex-col gap-2">
+                    <span className="opacity-40">{isAr ? "المساحة" : "Area"}</span>
+                    <span className="text-primary tracking-normal" dir="ltr">{land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Ruler className="h-4 w-4 text-primary" />
-                    <span className="font-medium" dir="ltr">{land.land_area_sqm?.toLocaleString()} {isAr ? "م²" : "sqm"}</span>
+                  <div className="flex flex-col gap-2">
+                    <span className="opacity-40">{isAr ? "الموقع" : "Location"}</span>
+                    <span className="text-primary">{isAr ? (cityNameAr[land.city] || land.city) : land.city}</span>
                   </div>
                 </div>
+
                 <button
                   onClick={() => navigate(`/opportunity/${land.id}`)}
-                  className="w-full rounded-md border border-border bg-transparent py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                  className="w-full h-14 border border-primary text-[10px] font-bold uppercase tracking-[0.3em] text-primary transition-all hover:bg-primary hover:text-white"
                 >
-                  {isAr ? "عرض التفاصيل" : "View Details"}
+                  {isAr ? "عرض الملف الاستثماري" : "View Investment Brief"}
                 </button>
               </div>
             </div>

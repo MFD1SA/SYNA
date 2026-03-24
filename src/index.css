@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500&family=Inter:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,101 +6,62 @@
 
 @layer base {
   :root {
-    /* SYNA Brand — Luxury Enterprise Real Estate */
-    /* Base Colors - Clean, high contrast */
-    --background: 0 0% 99%;
-    --foreground: 222 47% 11%;
+    /* SYNA Real Estate Investments — Luxury Institutional Identity */
+    /* Primary Canvas: Refined Ivory/Off-White */
+    --background: 45 15% 98%; 
+    --foreground: 220 35% 12%; /* Deep charcoal navy */
+
+    /* Brand Primary: Institutional Deep Navy */
+    --primary: 220 35% 12%; 
+    --primary-foreground: 45 15% 98%;
+
+    /* Brand Accent: Sophisticated Royal Gold / Desert Sand */
+    --accent: 38 45% 55%; 
+    --accent-foreground: 45 15% 98%;
+
+    /* Brand Secondary: Subtle Platinum */
+    --secondary: 220 15% 94%;
+    --secondary-foreground: 220 35% 12%;
+
+    /* Muted Canvas - Professional Gray */
+    --muted: 220 10% 92%;
+    --muted-foreground: 220 10% 40%;
 
     /* Surfaces */
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-
-    /* Brand Primary - Deep Navy Blue */
-    --primary: 222 47% 11%;
-    --primary-foreground: 210 40% 98%;
-
-    /* Secondary - Platinum / Light Gray */
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11%;
-
-    /* Muted - Subtle structure */
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    /* Accent - Elegant Gold / Bronze hint */
-    --accent: 38 45% 45%;
-    --accent-foreground: 0 0% 100%;
+    --card: 45 15% 100%;
+    --card-foreground: 220 35% 12%;
+    --popover: 45 15% 100%;
+    --popover-foreground: 220 35% 12%;
 
     /* Structural */
-    --destructive: 0 84.2% 60.2%;
+    --border: 220 15% 88%;
+    --input: 220 15% 88%;
+    --ring: 220 35% 12%;
+    --radius: 0.125rem; /* Sharp, institutional corners */
+
+    --destructive: 0 84.2% 40%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222 47% 11%;
-
-    --radius: 0.5rem;
-
-    /* SYNA extended structural tokens */
-    --surface: 210 40% 98%;
-    --surface-hover: 210 40% 94%;
-
-    /* Sidebar specifics */
-    --sidebar-background: 0 0% 99%;
-    --sidebar-foreground: 222 47% 18%;
-    --sidebar-primary: 222 47% 11%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 40% 96.1%;
-    --sidebar-accent-foreground: 222 47% 11%;
-    --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 222 47% 11%;
   }
 
   .dark {
-    /* Deep elegant dark mode */
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
+    --background: 220 35% 6%;
+    --foreground: 45 15% 98%;
 
-    --card: 222 47% 8%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 35% 8%;
+    --card-foreground: 45 15% 98%;
 
-    --popover: 222 47% 8%;
-    --popover-foreground: 210 40% 98%;
+    --primary: 45 15% 98%;
+    --primary-foreground: 220 35% 12%;
 
-    /* In dark mode, primary becomes a platinum/white */
-    --primary: 210 40% 98%;
-    --primary-foreground: 222 47% 11%;
+    --accent: 38 45% 60%;
+    --accent-foreground: 220 35% 12%;
 
-    --secondary: 217.2 32.6% 14%;
-    --secondary-foreground: 210 40% 98%;
+    --border: 220 35% 20%;
+    --input: 220 35% 20%;
+    --ring: 45 15% 98%;
 
-    --muted: 217.2 32.6% 14%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    /* Accent stays gold/bronze for that luxury feel */
-    --accent: 38 45% 55%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 62.8% 40.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 14%;
-    --input: 217.2 32.6% 14%;
-    --ring: 212.7 26.8% 83.9%;
-
-    --surface: 222 47% 10%;
-    --surface-hover: 222 47% 14%;
-
-    --sidebar-background: 222 47% 6%;
-    --sidebar-foreground: 210 40% 85%;
-    --sidebar-primary: 210 40% 98%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 217.2 32.6% 14%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217.2 32.6% 14%;
-    --sidebar-ring: 212.7 26.8% 83.9%;
+    --muted: 220 35% 12%;
+    --muted-foreground: 220 10% 65%;
   }
 }
 
@@ -110,61 +71,30 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
     font-weight: 400;
-    /* Enforce English numerals across the whole app even in RTL */
-    font-variant-numeric: tabular-nums;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-weight: 500;
-    letter-spacing: -0.02em;
-  }
-
-  [dir="rtl"] {
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
-  }
-
-  [dir="ltr"] {
-    font-family: 'Inter', sans-serif;
+    @apply font-medium tracking-tight text-primary uppercase;
+    line-height: 1.1;
   }
 }
 
 @layer utilities {
-  .syna-shadow {
-    box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.08);
+  .luxury-grid {
+    background-size: 40px 40px;
+    background-image: 
+      linear-gradient(to right, hsl(var(--border) / 0.2) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.2) 1px, transparent 1px);
   }
 
-  .syna-shadow-lg {
-    box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.12);
+  .text-balance {
+    text-wrap: balance;
   }
 
-  .syna-card {
-    @apply rounded-xl border border-border bg-card transition-all duration-300;
-  }
-
-  .syna-card:hover {
-    @apply syna-shadow;
-    border-color: hsl(var(--border) / 0.8);
-  }
-
-  /* Keep legacy classes without the glow to avoid breaking the UI but removing the neon effect */
-  .syna-gradient { @apply bg-primary; }
-  .syna-gradient-text { @apply text-primary; }
   .syna-glass {
-    background: hsl(var(--background) / 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid hsl(var(--border));
+    @apply bg-background/70 backdrop-blur-2xl border-b border-border/30;
   }
-
-  /* Legacy aliases */
-  .doma-gradient { @apply bg-primary; }
-  .doma-gradient-text { @apply text-primary; }
-  .doma-shadow { box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.08); }
-  .doma-shadow-lg { box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.12); }
-  .doma-card { @apply rounded-xl border border-border bg-card transition-all duration-300; }
-  .doma-card:hover { @apply syna-shadow; }
-  .doma-glass { background: hsl(var(--background) / 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 }

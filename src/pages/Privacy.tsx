@@ -33,13 +33,19 @@ const PrivacyPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <PageHeader icon={ShieldCheck} title={isAr ? "سياسة الخصوصية" : "Privacy Policy"} description={isAr ? "كيف نحمي بياناتك ونحافظ على خصوصيتك أثناء استخدام منصة سينا" : "How we protect your data and maintain your privacy while using the SYNA platform"} backgroundImage={headerPrivacyImg} />
-      <main className="container flex-1 py-16 md:py-24">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <PageHeader 
+        icon={ShieldCheck} 
+        title={isAr ? "سيادة البيانات" : "Data Sovereignty"} 
+        description={isAr ? "بروتوكولات حماية المعلومات والخصوصية التي نعتمدها لضمان سرية أصولكم وبياناتكم الاستثمارية." : "Information protection and privacy protocols we adopt to ensure the confidentiality of your investment assets and data."} 
+        backgroundImage={headerPrivacyImg} 
+      />
+      <main className="container flex-1 py-32 md:py-40">
+        <div className="max-w-4xl mx-auto space-y-px bg-border/40 border border-border/40">
           {sections.map((s, i) => (
-            <section key={i} className="rounded-xl border border-border bg-card p-8 shadow-sm transition-all hover:shadow-md">
-              <h2 className="mb-3 text-xl font-medium text-foreground">{s.title}</h2>
-              <p className="text-base font-light leading-relaxed text-muted-foreground">{s.text}</p>
+            <section key={i} className="bg-background p-12 transition-colors hover:bg-muted/30">
+              <span className="block text-[10px] font-bold text-accent uppercase tracking-widest mb-4">Protocol {i+1}</span>
+              <h2 className="mb-6 text-xl font-medium text-primary uppercase tracking-tight">{s.title}</h2>
+              <p className="text-base font-light leading-relaxed text-muted-foreground/80">{s.text}</p>
             </section>
           ))}
         </div>

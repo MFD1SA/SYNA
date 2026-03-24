@@ -11,94 +11,106 @@ interface HeroSectionProps {
   variant?: BrandVariant;
 }
 
+import riyadhImg from "@/assets/city-riyadh.jpg";
+
 const HeroSection: React.FC<HeroSectionProps> = ({ variant = "portfolio" }) => {
   const { lang } = useLanguage();
   const Arrow = lang === "ar" ? ArrowLeft : ArrowRight;
   const isAr = lang === "ar";
 
-  const features = [
-    { icon: Eye, label: isAr ? "خصوصية الملاك" : "Owner Privacy" },
-    { icon: ShieldCheck, label: isAr ? "مطورون مؤهلون" : "Verified Developers" },
-    { icon: Handshake, label: isAr ? "إدارة الصفقات" : "Deal Management" },
-    { icon: Network, label: isAr ? "شراكات مؤسسية" : "Institutional Partnerships" },
-  ];
-
   return (
-    <section className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden bg-background">
-      {/* Subtle luxury background elements - No neon/glow */}
-      <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_top,hsl(var(--muted)/0.4)_0%,transparent_60%)]" />
-      <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]" style={{ backgroundImage: `radial-gradient(hsl(var(--foreground)) 1px, transparent 1px)`, backgroundSize: "40px 40px" }} />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-background/90" />
+    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-primary">
+      {/* Cinematic Background */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src={riyadhImg} 
+          alt="Riyadh Skyline" 
+          className="h-full w-full object-cover opacity-40 mix-blend-luminosity grayscale" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/40 to-primary" />
+        <div className="luxury-grid absolute inset-0 opacity-10" />
+      </div>
 
       {/* Main Content */}
-      <div className="container relative z-10 px-6 py-24 md:py-32">
-        <div className="mx-auto max-w-4xl text-center">
+      <div className="container relative z-10 px-6 pt-32 pb-20">
+        <div className="flex flex-col items-start max-w-5xl">
           
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="mb-8 flex justify-center"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="mb-12 flex items-center gap-6"
           >
-            <div className="rounded-2xl border border-muted/50 bg-card/60 p-4 shadow-sm backdrop-blur-md">
-              <img src={logoImg} alt="SYNA Enterprise" className="h-16 w-auto object-contain md:h-20" />
-            </div>
+            <div className="h-px w-12 bg-accent/60" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-accent">
+              {isAr ? "سينا للاستثمارات العقارية" : "SYNA Real Estate Investments"}
+            </span>
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="mb-6 text-4xl font-semibold tracking-tight text-foreground md:text-6xl lg:text-7xl"
-          >
-            {isAr ? "منصة سينا العقارية" : "SYNA Real Estate"}
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
-            className="mb-8 text-lg font-light leading-relaxed text-muted-foreground md:text-2xl"
+            transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+            className="mb-10 text-5xl font-medium leading-[1.05] tracking-tight text-white md:text-[5.5rem] lg:text-[6.5rem] text-balance"
           >
             {isAr 
-              ? "منصة مؤسسية راقية لربط ملاك الأراضي بالمطورين العقاريين المؤهلين ضمن بيئة من الخصوصية وإدارة الصفقات المحترفة." 
-              : "An institutional platform connecting landowners with qualified developers in an environment of privacy and professional deal management."}
-          </motion.p>
+              ? "نصنع مستقبل الاستثمار العمراني" 
+              : "Shaping the Future of Urban Investment"}
+          </motion.h1>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-            className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6"
-          >
-            <Button size="lg" asChild className="group h-14 min-w-[200px] rounded-sm px-8 text-base shadow-md transition-all">
-              <Link to="/auth/login">
-                {isAr ? "تسجيل الدخول للنظام" : "Access Platform"}
-                <Arrow className="h-4 w-4 ms-2 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+          <div className="grid md:grid-cols-2 gap-12 items-end w-full">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
+              className="text-lg font-light leading-relaxed text-white/60 md:text-xl text-balance border-s border-accent/30 ps-8"
+            >
+              {isAr 
+                ? "كيان استثماري رائد يجمع بين عمق الخبرة العقارية وحداثة التنفيذ، لنخلق فرصاً استثنائية في قلب العاصمة الرياض وعواصم النمو." 
+                : "A premier investment entity merging profound real estate expertise with modern execution, creating exceptional opportunities in the heart of Riyadh and emerging growth hubs."}
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
+              className="flex flex-col sm:flex-row gap-6 justify-end"
+            >
+              <Link 
+                to="/auth/login" 
+                className="group flex h-16 items-center justify-center gap-4 bg-accent px-10 text-[11px] font-bold uppercase tracking-[0.2em] text-primary transition-all hover:bg-white"
+              >
+                {isAr ? "ولوج بوابة المستثمرين" : "Investor Access"}
+                <Arrow className="h-4 w-4 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
               </Link>
-            </Button>
-            <Button variant="outline" size="lg" asChild className="h-14 min-w-[200px] rounded-sm px-8 text-base bg-transparent border-foreground/20 text-foreground hover:bg-muted">
-              <a href="#how-it-works">{isAr ? "اكتشف آلية العمل" : "Discover Process"}</a>
-            </Button>
-          </motion.div>
+              <Link 
+                to="/about" 
+                className="group flex h-16 items-center justify-center gap-4 border border-white/20 px-10 text-[11px] font-bold uppercase tracking-[0.2em] text-white transition-all hover:bg-white/5 hover:border-white"
+              >
+                {isAr ? "من نحن" : "Our Entity"}
+              </Link>
+            </motion.div>
+          </div>
         </div>
 
-        {/* Value Propositions / Key Features */}
+        {/* Corporate Trust Indicators */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.7, ease: "easeOut" }}
-          className="mx-auto mt-24 grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-4 md:gap-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1 }}
+          className="mt-32 flex flex-wrap items-center gap-x-16 gap-y-8 opacity-40 border-t border-white/10 pt-12"
         >
-          {features.map(({ icon: Icon, label }, i) => (
-            <div
-              key={label}
-              className="flex flex-col items-center gap-4 rounded-xl border border-muted/40 bg-card/40 p-6 text-center shadow-sm backdrop-blur-md transition-all hover:bg-card/80 hover:shadow-md"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted/60 text-primary">
-                <Icon className="h-5 w-5" strokeWidth={1.5} />
-              </div>
-              <span className="text-sm font-medium text-foreground md:text-base">{label}</span>
+          {[
+            { label: isAr ? "حوكمة مؤسسية" : "Institutional Governance" },
+            { label: isAr ? "شركاء استراتيجيين" : "Strategic Partners" },
+            { label: isAr ? "فرص نوعية" : "Curated Opportunities" },
+            { label: isAr ? "شفافية مطلقة" : "Absolute Transparency" }
+          ].map((item) => (
+            <div key={item.label} className="flex items-center gap-3">
+              <div className="h-1 w-1 rounded-full bg-accent" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+                {item.label}
+              </span>
             </div>
           ))}
         </motion.div>

@@ -37,15 +37,27 @@ const TermsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <PageHeader icon={FileText} title={isAr ? "الشروط والأحكام" : "Terms & Conditions"} description={isAr ? "الشروط والأحكام التي تنظّم استخدام منصة سينا والعلاقة بين الأطراف" : "The terms and conditions governing the use of the SYNA platform and the relationship between parties"} backgroundImage={headerTermsImg} />
-      <main className="container flex-1 py-16 md:py-24">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <PageHeader 
+        icon={FileText} 
+        title={isAr ? "المتطلبات النظامية" : "Regulatory Requirements"} 
+        description={isAr ? "الأطر القانونية والحوكمة التي تنظم العمليات والتعاقدات عبر سينا للاستثمارات العقارية." : "The legal frameworks and governance governing operations and contracts via SYNA Real Estate Investments."} 
+        backgroundImage={headerTermsImg} 
+      />
+      <main className="container flex-1 py-24 md:py-40">
+        <div className="max-w-4xl mx-auto space-y-px bg-border/40 border border-border/40">
           {sections.map((s, i) => (
-            <section key={i} className="rounded-xl border border-border bg-card p-8 shadow-sm transition-all hover:shadow-md">
-              <h2 className="mb-3 text-xl font-medium text-foreground">{s.title}</h2>
-              <p className="text-base font-light leading-relaxed text-muted-foreground">{s.text}</p>
+            <section key={i} className="bg-background p-12 transition-colors hover:bg-muted/30">
+              <span className="block text-[10px] font-bold text-accent uppercase tracking-widest mb-4">Section 0{i+1}</span>
+              <h2 className="mb-6 text-xl font-medium text-primary uppercase tracking-tight">{s.title}</h2>
+              <p className="text-base font-light leading-relaxed text-muted-foreground/80">{s.text}</p>
             </section>
           ))}
+        </div>
+        
+        <div className="mt-20 text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary/40">
+                {isAr ? "آخر تحديث: مارس ٢٠٢٤" : "Last Updated: March 2024"}
+            </p>
         </div>
       </main>
       <Footer />

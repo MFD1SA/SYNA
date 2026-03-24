@@ -17,34 +17,42 @@ const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "border-b border-border/40 bg-background/80 backdrop-blur-xl shadow-sm" : "bg-transparent py-2"}`}>
-      <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <img src={logoImg} alt="SYNA Enterprise" className="h-12 w-12 object-contain transition-transform duration-300 group-hover:scale-105" />
-          <span className="text-xl font-medium tracking-tight text-foreground transition-colors group-hover:text-primary">SYNA</span>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "border-b border-border/20 bg-background/90 backdrop-blur-2xl py-3" : "bg-transparent py-6"}`}>
+      <div className="container flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-4 group">
+          <div className="relative">
+            <img src={logoImg} alt="SYNA" className="h-10 w-10 object-contain brightness-110" />
+            {!scrolled && <div className="absolute -inset-2 bg-primary/5 blur-xl rounded-full" />}
+          </div>
+          <div className="flex flex-col leading-tight">
+            <span className="text-xl font-semibold tracking-[0.1em] text-primary">SYNA</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-accent font-medium">
+              {isAr ? "للاستثمارات العقارية" : "Real Estate Investments"}
+            </span>
+          </div>
         </Link>
 
-        <div className="flex items-center gap-2 md:gap-4">
-          <Link to="/about" className="hidden rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground md:block">
-            {t.nav.about}
-          </Link>
-          <Link to="/contact" className="hidden rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground md:block">
-            {isAr ? "اتصل بنا" : "Contact Us"}
-          </Link>
-
-          <div className="mx-2 hidden h-5 w-px bg-border md:block" />
-
-          <Button variant="ghost" size="sm" onClick={toggleLang} className="gap-2 text-muted-foreground hover:bg-muted/50 hover:text-foreground rounded-md">
-            <Globe className="h-4 w-4" />
-            <span className="text-sm">{t.nav.language}</span>
-          </Button>
-
-          <Button size="sm" asChild className="gap-2 rounded-sm shadow-sm transition-all hover:-translate-y-0.5 ml-2 mr-2">
-            <Link to="/auth/login">
-              <LogIn className="h-4 w-4" />
-              {isAr ? "دخول النظام" : "Login"}
+        <div className="flex items-center gap-6">
+          <div className="hidden items-center gap-8 md:flex">
+            <Link to="/about" className="text-xs font-semibold uppercase tracking-widest text-primary/70 transition-colors hover:text-accent">
+              {t.nav.about}
             </Link>
-          </Button>
+            <Link to="/contact" className="text-xs font-semibold uppercase tracking-widest text-primary/70 transition-colors hover:text-accent">
+              {isAr ? "تواصل معنا" : "Contact"}
+            </Link>
+          </div>
+
+          <div className="h-4 w-px bg-border/40" />
+
+          <button onClick={toggleLang} className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary/80 transition-colors hover:text-accent">
+            <Globe className="h-3.5 w-3.5" />
+            {lang === "ar" ? "EN" : "AR"}
+          </button>
+
+          <Link to="/auth/login" className="group relative flex items-center gap-2 bg-primary px-6 py-2.5 text-[11px] font-bold uppercase tracking-[0.15em] text-primary-foreground transition-all hover:bg-primary/90">
+            {isAr ? "دخول المستثمرين" : "Investor Login"}
+            <LogIn className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+          </Link>
         </div>
       </div>
     </nav>

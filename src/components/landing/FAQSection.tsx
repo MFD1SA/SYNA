@@ -41,25 +41,25 @@ const FAQSection: React.FC = () => {
   const isAr = lang === "ar";
 
   return (
-    <section className="relative bg-background py-20 px-4 md:px-0">
+    <section className="relative bg-background py-32 px-4 md:px-0">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="mx-auto mb-16 max-w-2xl text-center"
+          transition={{ duration: 1 }}
+          className="mb-24 border-s-2 border-accent ps-8"
         >
-          <span className="mb-4 inline-block rounded-full bg-muted/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            {isAr ? "مركز المعرفة" : "Knowledge Base"}
+          <span className="mb-4 inline-block text-[10px] font-bold uppercase tracking-[0.3em] text-accent">
+            {isAr ? "مستودع المعرفة الإجرائية" : "The Knowledge Vault"}
           </span>
-          <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-            {isAr ? "الأسئلة الشائعة" : "Frequently Asked Questions"}
+          <h2 className="text-4xl font-medium tracking-tight text-primary md:text-5xl uppercase leading-tight">
+            {isAr ? "تساؤلات حول حوكمة الشراكة وآليات الاستثمار" : "Inquiries on Partnership Governance & Investment"}
           </h2>
         </motion.div>
 
-        <div className="mx-auto max-w-3xl">
-          <Accordion type="single" collapsible className="space-y-4">
+        <div className="mx-auto max-w-4xl">
+          <Accordion type="single" collapsible className="space-y-px bg-border/40 border-y border-border/40">
             {topFaq.map((item, idx) => (
               <motion.div
                 key={idx}
@@ -68,12 +68,14 @@ const FAQSection: React.FC = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: idx * 0.08 }}
               >
-                <AccordionItem value={`faq-${idx}`} className="rounded-xl border border-border/50 bg-card px-6 transition-colors hover:border-border">
-                  <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline py-6">
+                <AccordionItem value={`faq-${idx}`} className="border-none bg-background px-8 transition-all hover:bg-muted/30">
+                  <AccordionTrigger className="text-sm font-bold uppercase tracking-[0.1em] text-primary hover:no-underline py-8 text-start leading-relaxed">
                     {isAr ? item.qAr : item.qEn}
                   </AccordionTrigger>
-                  <AccordionContent className="text-sm font-light leading-relaxed text-muted-foreground pb-6">
-                    {isAr ? item.aAr : item.aEn}
+                  <AccordionContent className="text-sm font-light leading-relaxed text-muted-foreground pb-10 ps-0">
+                    <div className="max-w-3xl">
+                        {isAr ? item.aAr : item.aEn}
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
               </motion.div>
@@ -85,11 +87,10 @@ const FAQSection: React.FC = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
-            className="mt-10 text-center"
+            className="mt-16 text-center"
           >
-            <Link to="/faq" className="inline-flex items-center gap-2 text-sm font-medium text-primary transition-colors hover:text-primary/80">
-              {isAr ? "عرض جميع الأسئلة الشائعة" : "View all FAQ"}
-              <span className="rtl:-scale-x-100">→</span>
+            <Link to="/faq" className="inline-flex h-14 items-center px-10 border border-primary text-[10px] font-bold uppercase tracking-[0.3em] text-primary transition-all hover:bg-primary hover:text-white">
+              {isAr ? "عرض كامل فهرس الحوكمة" : "View Full Governance Index"}
             </Link>
           </motion.div>
         </div>

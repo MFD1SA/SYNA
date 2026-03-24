@@ -32,3 +32,5 @@ dist-ssr
 type .gitignore
 git check-ignore -v .env
 git status --ignored
+.vercel
+.env*.local

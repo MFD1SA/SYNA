@@ -11,74 +11,99 @@ import headerAboutImg from "@/assets/header-about.jpg";
 const AboutPage: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
-  usePageTitle(isAr ? "من نحن" : "About Us");
+  usePageTitle(isAr ? "سينا للاستثمارات العقارية | عن الشركة" : "SYNA Real Estate Investments | About");
 
   const values = [
-    { icon: Handshake, label: isAr ? "شراكات حقيقية" : "Real Partnerships", desc: isAr ? "تحويل الأراضي البيضاء إلى مشاريع منتجة عبر شراكات تطوير أو مساهمات عقارية مرخصة" : "Transforming white lands into productive projects through development partnerships or licensed real estate contributions" },
-    { icon: Target, label: isAr ? "شفافية كاملة" : "Full Transparency", desc: isAr ? "مراحل مُتابعة دقيقة ومنظمة من الطلب حتى الإغلاق" : "Precise and organized tracking stages from request to closure" },
-    { icon: Users, label: isAr ? "ربط ذكي" : "Smart Matching", desc: isAr ? "جمع ملاك الأراضي بالمطورين العقاريين المؤهلين والموثقين" : "Connecting landowners with qualified and verified real estate developers" },
-  ];
-
-  const whyItems = [
-    { icon: Landmark, text: isAr ? "مساعدة ملاك الأراضي على إيجاد فرص تطوير تقلل من أعباء رسوم الأراضي البيضاء" : "Help landowners find development opportunities to reduce white land fee burdens" },
-    { icon: ShieldCheck, text: isAr ? "تمكين المطورين من الوصول إلى فرص واضحة المعايير قبل الدخول في الاجتماعات" : "Enable developers to access opportunities with clear criteria before meetings" },
-    { icon: TrendingUp, text: isAr ? "تنظيم مراحل التواصل والاجتماعات لضمان وضوح الرؤية وتحديد الأهداف" : "Organize communication and meeting stages to ensure clarity and goal alignment" },
+    { 
+      labelAr: "الحوكمة المؤسسية", 
+      labelEn: "Institutional Governance", 
+      descAr: "نلتزم بأعلى معايير الحوكمة لضمان شفافية الصفقات وحماية مصالح كافة الأطراف في كل مرحلة استثمارية.", 
+      descEn: "We commit to the highest governance standards to ensure deal transparency and protect stakeholders’ interests at every investment stage."
+    },
+    { 
+      labelAr: "التميز العمراني", 
+      labelEn: "Urban Excellence", 
+      descAr: "نؤمن بتحويل الأصول العقارية إلى مشاريع نوعية تساهم في الارتقاء بالمشهد الحضري وتعظيم القيمة الاقتصادية.", 
+      descEn: "We believe in transforming real estate assets into quality projects that contribute to the urban scene and maximize economic value."
+    },
+    { 
+      labelAr: "الاتصال الاستراتيجي", 
+      labelEn: "Strategic Connectivity", 
+      descAr: "نبني جسور الثقة بين كبار ملاك الأراضي والمطورين الأكثر تأهيلاً لخلق شراكات تخدم رؤية المملكة.", 
+      descEn: "We build bridges of trust between major landowners and the most qualified developers to create partnerships that serve the Kingdom's vision."
+    },
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <PageHeader
-        icon={Info}
-        title={isAr ? "عن سينا" : "About SYNA"}
-        description={isAr ? "تعرّف على رؤية سينا ودورها في تنظيم شراكات التطوير العقاري والمساهمات العقارية بين ملاك الأراضي والمطورين" : "Learn about SYNA's vision and its role in organizing real estate development partnerships and contributions between landowners and developers"}
-        backgroundImage={headerAboutImg}
-      />
       
-      <main className="py-20">
+      <div className="relative pt-40 pb-24 overflow-hidden bg-primary">
+         <img src={headerAboutImg} alt="SYNA" className="absolute inset-0 w-full h-full object-cover opacity-20 grayscale" />
+         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/60 to-transparent" />
+         <div className="container relative z-10">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
+              <span className="inline-block text-[10px] font-bold uppercase tracking-[0.4em] text-accent mb-6">
+                {isAr ? "عن الكيان الاستثماري" : "Institutional Profile"}
+              </span>
+              <h1 className="text-5xl md:text-7xl font-medium tracking-tight text-white mb-8 border-s-4 border-accent ps-8">
+                {isAr ? "سينا للاستثمارات العقارية" : "SYNA Real Estate Investments"}
+              </h1>
+              <p className="max-w-2xl text-xl font-light text-white/60 leading-relaxed text-balance">
+                {isAr 
+                  ? "نعمل كمحرك استراتيجي لرفع جودة الاستثمار العقاري من خلال ربط الفرص النوعية بالكفاءات التطويرية." 
+                  : "We act as a strategic driver to elevate real estate investment quality by connecting curated opportunities with development expertise."}
+              </p>
+            </motion.div>
+         </div>
+      </div>
+      
+      <main className="py-32">
         <div className="container">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mx-auto max-w-3xl text-center">
-            <p className="text-lg font-light leading-relaxed text-muted-foreground">
-              {isAr ? "في ظل التغيرات التنظيمية ورسوم الأراضي البيضاء، أصبح كثير من ملاك الأراضي يبحثون عن حلول عملية لتحويل أصولهم إلى مشاريع منتجة دون الدخول في تعقيدات البيع أو تحمل تكاليف التطوير بمفردهم." : "With regulatory changes and white land fees, many landowners seek practical solutions to transform their assets into productive projects without the complexities of selling or bearing development costs alone."}
-            </p>
-            <p className="mt-6 text-lg font-light leading-relaxed text-muted-foreground">
-              {isAr ? "من هنا جاءت فكرة سينا… لتكون وجهة الشراكات التطويرية والمساهمات العقارية المرخصة التي تجمع بين مالك الأرض والمطور العقاري ضمن بيئة منظمة وواضحة من البداية." : "This is where SYNA comes in — the destination for development partnerships and licensed real estate contributions connecting landowners with developers in an organized and clear environment from the start."}
-            </p>
-          </motion.div>
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <h2 className="text-3xl font-medium tracking-tight text-primary mb-10 flex items-center gap-4">
+                <div className="h-px w-8 bg-accent" />
+                {isAr ? "فلسفتنا الاستثمارية" : "Our Investment Philosophy"}
+              </h2>
+              <div className="space-y-8 text-lg font-light leading-relaxed text-muted-foreground/80">
+                <p>
+                  {isAr 
+                    ? "في ظل التحول التاريخي الذي تشهده المملكة العربية السعودية، نؤمن في سينا بأن الاستثمار العقاري هو الركيزة الأساسية للتطور العمراني المستدام. نحن لا نسعى لمجرد ربط الأطراف، بل نعمل كشريك استراتيجي يرفع من جودة الفرصة الاستثمارية قبل طرحها." 
+                    : "Amid the historic transformation in Saudi Arabia, we at SYNA believe real estate investment is the core pillar of sustainable urban development. We don't just connect parties; we act as a strategic partner enhancing investment opportunities before they are presented."}
+                </p>
+                <p>
+                  {isAr 
+                    ? "من خلال نموذج عملنا القائم على الحوكمة والخصوصية، نمنح ملاك الأراضي والمطورين بيئة محترفة تتجاوز الأساليب التقليدية، لضمان تحويل الأراضي البيضاء إلى مشاريع وطنية منتجة." 
+                    : "Through our business model based on governance and privacy, we provide landowners and developers with a professional environment that transcends traditional methods, ensuring the transformation of white lands into productive national projects."}
+                </p>
+              </div>
+            </motion.div>
+            <div className="relative">
+              <div className="absolute -inset-4 bg-accent/5 -z-10 skew-y-3" />
+              <img src={headerAboutImg} alt="About SYNA" className="w-full grayscale border border-border/40" />
+            </div>
+          </div>
 
-          <div className="mx-auto mt-16 grid max-w-4xl gap-6 sm:grid-cols-3">
-            {values.map(({ icon: Icon, label, desc }, i) => (
-              <motion.div key={label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="rounded-xl border border-border bg-card p-8 text-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-muted text-primary">
-                  <Icon className="h-6 w-6" strokeWidth={1.5} />
-                </div>
-                <h3 className="mb-3 text-lg font-medium text-foreground">{label}</h3>
-                <p className="text-sm font-light leading-relaxed text-muted-foreground">{desc}</p>
+          <div className="mt-40 grid md:grid-cols-3 gap-px bg-border/40 border border-border/40">
+            {values.map((v, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                className="bg-background p-12 hover:bg-muted/30 transition-colors">
+                <span className="block text-[10px] font-bold text-accent uppercase tracking-widest mb-6">0{i+1}</span>
+                <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-primary mb-6">{isAr ? v.labelAr : v.labelEn}</h3>
+                <p className="text-sm font-light leading-relaxed text-muted-foreground">{isAr ? v.descAr : v.descEn}</p>
               </motion.div>
             ))}
           </div>
 
-          <div className="mx-auto mt-20 max-w-3xl">
-            <h2 className="mb-8 text-center text-3xl font-semibold tracking-tight text-foreground">{isAr ? "لماذا سينا؟" : "Why SYNA?"}</h2>
-            <div className="space-y-4">
-              {whyItems.map(({ icon: Icon, text }, i) => (
-                <motion.div key={i} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                  className="flex items-start gap-4 rounded-xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:shadow-md">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
-                    <Icon className="h-5 w-5" strokeWidth={1.5} />
-                  </div>
-                  <p className="text-base font-light leading-relaxed text-muted-foreground pt-3">{text}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="mx-auto mt-20 max-w-3xl rounded-xl border border-border bg-muted/30 p-10 text-center">
-            <h2 className="mb-4 text-2xl font-semibold text-foreground">{isAr ? "رؤيتنا" : "Our Vision"}</h2>
-            <p className="text-base font-light leading-relaxed text-muted-foreground">
-              {isAr ? "نؤمن بأن الأرض ليست مجرد مساحة خام، بل فرصة لبناء قيمة مستدامة. من خلال سينا نسعى إلى تحويل الأفكار إلى شراكات تطويرية ومساهمات العقارية حقيقية، وتحويل الأراضي إلى مشاريع منتجة تسهم في نمو المدن وتحفيز الاقتصاد العقاري بطريقة متوازنة واحترافية." : "We believe land is not just raw space — it's an opportunity to build sustainable value. Through SYNA, we aim to transform ideas into real development partnerships and real estate contributions, and lands into productive projects that contribute to urban growth and stimulate the real estate economy in a balanced and professional manner."}
+            className="mt-40 bg-primary p-20 text-center relative overflow-hidden">
+            <div className="luxury-grid absolute inset-0 opacity-10" />
+            <h2 className="text-3xl font-medium text-white mb-8 relative z-10 tracking-[0.2em] uppercase">{isAr ? "رؤية الريادة" : "A Vision of Leadership"}</h2>
+            <p className="max-w-3xl mx-auto text-lg font-light leading-relaxed text-white/50 relative z-10 text-balance">
+              {isAr 
+                ? "نسعى لأن نكون المرجع الأول للاستثمارات العقارية النوعية في المملكة، مساهمين في بناء مستقبل يتسم بالكفاءة والجمال والنمو الاقتصادي المستدام." 
+                : "We strive to be the premier reference for quality real estate investments in the Kingdom, contributing to a future characterized by efficiency, beauty, and sustainable economic growth."}
             </p>
           </motion.div>
         </div>

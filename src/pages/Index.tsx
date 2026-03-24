@@ -7,20 +7,39 @@ import HowItWorksSection from "@/components/landing/SubscriptionsSection";
 import LogosSection from "@/components/landing/LogosSection";
 import FAQSection from "@/components/landing/FAQSection";
 import Footer from "@/components/landing/Footer";
+import { useLanguage } from "@/i18n/LanguageContext";
 import OpportunitiesSection from "@/components/landing/OpportunitiesSection";
 
 const Index: React.FC = () => {
-  usePageTitle();
+  const { lang } = useLanguage();
+  const isAr = lang === "ar";
+  usePageTitle(isAr ? "سينا للاستثمارات العقارية | الرئيسية" : "SYNA Real Estate Investments | Home");
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <main>
         <HeroSection variant="portfolio" />
         <FeaturesSection />
         <OpportunitiesSection />
         <HowItWorksSection />
-        <LogosSection />
+        
+        {/* Governance & Trust Section */}
+        <section className="py-32 bg-primary relative overflow-hidden">
+          <div className="luxury-grid absolute inset-0 opacity-10" />
+          <div className="container relative z-10 text-center">
+            <h2 className="text-3xl font-medium text-white mb-12 uppercase tracking-[0.2em]">
+                {isAr ? "نصنع قيمة تتجاوز الأرقام" : "Creating Value Beyond Numbers"}
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 grayscale opacity-40">
+                <div className="flex items-center justify-center text-white font-bold text-2xl">REGA</div>
+                <div className="flex items-center justify-center text-white font-bold text-2xl">MOMRAH</div>
+                <div className="flex items-center justify-center text-white font-bold text-2xl">PIF</div>
+                <div className="flex items-center justify-center text-white font-bold text-2xl">VISION 2030</div>
+            </div>
+          </div>
+        </section>
+
         <FAQSection />
       </main>
       <Footer />

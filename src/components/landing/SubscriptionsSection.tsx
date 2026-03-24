@@ -4,69 +4,61 @@ import { UserCheck, Search, Send, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 
 const HowItWorksSection: React.FC = () => {
-  const { t, lang } = useLanguage();
+  const { lang } = useLanguage();
   const isAr = lang === "ar";
 
   const steps = [
-    { num: "01", icon: UserCheck, titleKey: "step1Title" as const, descKey: "step1Desc" as const },
-    { num: "02", icon: Search, titleKey: "step2Title" as const, descKey: "step2Desc" as const },
-    { num: "03", icon: Send, titleKey: "step3Title" as const, descKey: "step3Desc" as const },
-    { num: "04", icon: TrendingUp, titleKey: "step4Title" as const, descKey: "step4Desc" as const },
+    { num: "01", icon: UserCheck, titleAr: "تأهيل الشريك", titleEn: "Partner Qualification", descAr: "مراجعة السجلات والقدرات لضمان مواءمة الأهداف بين الأطراف.", descEn: "Reviewing records and capabilities to ensure alignment of goals between parties." },
+    { num: "02", icon: Search, titleAr: "تحليل الفرص", titleEn: "Opportunity Analysis", descAr: "دراسة معمقة للأصل العقاري وتحديد مسار التطوير المثالي.", descEn: "In-depth study of the real estate asset and determining the ideal development path." },
+    { num: "03", icon: Send, titleAr: "حوكمة الربط", titleEn: "Governance Matching", descAr: "تنسيق الاتصال بين المالك والمطور في بيئة آمنة ومحكمة.", descEn: "Coordinating communication between owner and developer in a secure environment." },
+    { num: "04", icon: TrendingUp, titleAr: "إغلاق الشراكة", titleEn: "Partnership Closure", descAr: "إتمام الاتفاق النهائي والبدء في مرحلة التنفيذ العقاري.", descEn: "Completing the final agreement and starting the real estate execution phase." },
   ];
 
   return (
-    <section id="how-it-works" className="relative bg-background py-20 px-4 md:px-0">
-      <div className="container relative">
+    <section id="how-it-works" className="relative bg-background py-32 px-4 md:px-0 overflow-hidden">
+      <div className="container relative py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="mx-auto mb-16 max-w-2xl text-center"
+          transition={{ duration: 1 }}
+          className="mb-24 border-s-2 border-accent ps-8"
         >
-          <span className="mb-4 inline-block rounded-full bg-muted/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            {isAr ? "آلية العمل" : "How It Works"}
+          <span className="mb-4 inline-block text-[10px] font-bold uppercase tracking-[0.3em] text-accent">
+            {isAr ? "إطار العمل المشترك" : "The Engagement Framework"}
           </span>
-          <h2 className="mb-6 text-3xl font-semibold tracking-tight text-foreground md:text-5xl">
-            {t.howItWorks.title}
+          <h2 className="text-4xl font-medium tracking-tight text-primary md:text-5xl uppercase leading-tight">
+            {isAr ? "مسار مؤسسي واضح من الفرصة حتى التنفيذ" : "A Clear Institutional Path from Asset to Execution"}
           </h2>
-          <p className="text-lg font-light leading-relaxed text-muted-foreground">
-            {t.howItWorks.subtitle}
-          </p>
         </motion.div>
 
-        <div className="mx-auto max-w-5xl">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {steps.map(({ num, icon: Icon, titleKey, descKey }, i) => (
-              <motion.div
-                key={num}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-border/50 bg-card p-8 shadow-sm transition-all duration-300 hover:border-border hover:shadow-lg hover:-translate-y-1"
-              >
-                {/* Number watermark */}
-                <div className="pointer-events-none absolute -bottom-6 -right-4 text-9xl font-bold text-muted/30 transition-colors duration-500 group-hover:text-primary/10">
-                  {num}
-                </div>
+        <div className="grid grid-cols-1 gap-px bg-border/40 border border-border/40 md:grid-cols-2 lg:grid-cols-4">
+          {steps.map((step, i) => (
+            <motion.div
+              key={step.num}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: i * 0.1 }}
+              className="group relative flex flex-col bg-background p-12 transition-colors hover:bg-muted/30"
+            >
+              <div className="mb-10 flex h-16 w-16 items-center justify-center border border-border bg-muted/20 text-primary transition-all duration-500 group-hover:border-accent group-hover:bg-accent group-hover:text-primary">
+                <step.icon className="h-6 w-6" strokeWidth={1} />
+              </div>
 
-                <div>
-                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-lg bg-muted text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
-                    <Icon className="h-6 w-6" strokeWidth={1.5} />
-                  </div>
-                  
-                  <h3 className="mb-3 text-lg font-medium text-foreground">
-                    {t.howItWorks[titleKey]}
-                  </h3>
-                  
-                  <p className="relative z-10 text-sm font-light leading-relaxed text-muted-foreground">
-                    {t.howItWorks[descKey]}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+              <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-primary transition-colors">
+                {isAr ? step.titleAr : step.titleEn}
+              </h3>
+
+              <p className="text-sm font-light leading-relaxed text-muted-foreground transition-colors max-w-[240px]">
+                {isAr ? step.descAr : step.descEn}
+              </p>
+
+              <div className="absolute top-12 right-12 text-sm font-bold text-accent/20 tracking-widest">
+                {step.num}
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

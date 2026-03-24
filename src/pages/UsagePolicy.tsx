@@ -31,13 +31,19 @@ const UsagePolicyPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <PageHeader icon={Scale} title={isAr ? "سياسة الاستخدام" : "Usage Policy"} description={isAr ? "القواعد والضوابط التي تحكم استخدام منصة سينا لضمان بيئة آمنة واحترافية" : "The rules and guidelines governing the use of the SYNA platform to ensure a safe and professional environment"} backgroundImage={headerUsagePolicyImg} />
-      <main className="container flex-1 py-16 md:py-24">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <PageHeader 
+        icon={Scale} 
+        title={isAr ? "دليل الامتثال" : "Compliance Guide"} 
+        description={isAr ? "المعايير والضوابط الأخلاقية والنظامية التي تحكم جودة التفاعل والتعاقد في بيئة سينا." : "The ethical and regulatory standards and controls governing the quality of interaction and contracting in the SYNA environment."} 
+        backgroundImage={headerUsagePolicyImg} 
+      />
+      <main className="container flex-1 py-32 md:py-40">
+        <div className="max-w-4xl mx-auto space-y-px bg-border/40 border border-border/40">
           {sections.map((s, i) => (
-            <section key={i} className="rounded-xl border border-border bg-card p-8 shadow-sm transition-all hover:shadow-md">
-              <h2 className="mb-3 text-xl font-medium text-foreground">{s.title}</h2>
-              <p className="text-base font-light leading-relaxed text-muted-foreground">{s.text}</p>
+            <section key={i} className="bg-background p-12 transition-colors hover:bg-muted/30">
+              <span className="block text-[10px] font-bold text-accent uppercase tracking-widest mb-4">Code 0{i+1}</span>
+              <h2 className="mb-6 text-xl font-medium text-primary uppercase tracking-tight">{s.title}</h2>
+              <p className="text-base font-light leading-relaxed text-muted-foreground/80">{s.text}</p>
             </section>
           ))}
         </div>
