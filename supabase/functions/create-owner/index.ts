@@ -1,31 +1,241 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+const publicSiteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://cidoma.com";
+const allowedRootDomain = (Deno.env.get("ALLOWED_ROOT_DOMAIN") ?? "cidoma.com").toLowerCase();
+
+const isAllowedOrigin = (origin: string | null) => {
+  if (!origin) return false;
+  try {
+    const url = new URL(origin);
+    const hostname = url.hostname.toLowerCase();
+    return hostname === allowedRootDomain || hostname.endsWith(`.${allowedRootDomain}`);
+  } catch {
+    return false;
+  }
+};
+
+const resolveSafeOrigin = (origin: string | null) => {
+  if (isAllowedOrigin(origin)) return origin!;
+  return publicSiteUrl;
+};
+
+const buildCorsHeaders = (origin: string | null) => ({
+  "Access-Control-Allow-Origin": resolveSafeOrigin(origin),
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  Vary: "Origin",
+});
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const isStrongPassword = (value: string) =>
+  value.length >= 10 && /[A-Z]/.test(value) && /[a-z]/.test(value) && /\d/.test(value) && /[^A-Za-z0-9]/.test(value);
+
+const findAuthUserByEmail = async (adminClient: ReturnType<typeof createClient>, email: string) => {
+  const normalized = email.trim().toLowerCase();
+  let page = 1;
+  const perPage = 200;
+
+  while (page <= 10) {
+    const { data, error } = await adminClient.auth.admin.listUsers({ page, perPage });
+    if (error) throw error;
+
+    const found = data.users.find((u) => (u.email || "").toLowerCase() === normalized);
+    if (found) return found;
+
+    if (data.users.length < perPage) break;
+    page += 1;
+  }
+
+  return null;
+};
+
+const ensureAdminRole = async (adminClient: ReturnType<typeof createClient>, userId: string, email: string, displayName: string) => {
+  const { data: existingRole } = await adminClient
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .eq("role", "admin")
+    .maybeSingle();
+
+  if (!existingRole) {
+    const { error: roleError } = await adminClient.from("user_roles").insert({ user_id: userId, role: "admin" });
+    if (roleError) throw roleError;
+  }
+
+  const { data: existingPerm } = await adminClient
+    .from("admin_permissions")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (!existingPerm) {
+    const { error: permError } = await adminClient.from("admin_permissions").insert({
+      user_id: userId,
+      user_email: email,
+      display_name: displayName,
+      is_super_admin: true,
+      perm_developers: true,
+      perm_lands: true,
+      perm_owners: true,
+      perm_deals: true,
+      perm_content: true,
+      perm_ai: true,
+      perm_audit_log: true,
+    });
+    if (permError) throw permError;
+  }
+};
+
+const getPrimaryAdminEmail = async (adminClient: ReturnType<typeof createClient>) => {
+  const { data } = await adminClient
+    .from("platform_content")
+    .select("id, body_en")
+    .eq("content_key", "primary_admin_config")
+    .maybeSingle();
+
+  if (!data?.body_en) return null;
+
+  try {
+    const parsed = JSON.parse(data.body_en);
+    const email = String(parsed?.primary_admin_email || "").trim().toLowerCase();
+    return emailRegex.test(email) ? email : null;
+  } catch {
+    return null;
+  }
+};
+
+const setPrimaryAdminEmail = async (adminClient: ReturnType<typeof createClient>, email: string, updatedBy: string) => {
+  const normalizedEmail = email.trim().toLowerCase();
+  const payload = {
+    content_key: "primary_admin_config",
+    content_type: "config",
+    title_en: "Primary Admin Config",
+    title_ar: "إعدادات المسؤول الرئيسي",
+    body_en: JSON.stringify({ primary_admin_email: normalizedEmail }),
+    body_ar: JSON.stringify({ primary_admin_email: normalizedEmail }),
+    updated_by: updatedBy,
+  };
+
+  const { data: existing } = await adminClient
+    .from("platform_content")
+    .select("id")
+    .eq("content_key", "primary_admin_config")
+    .maybeSingle();
+
+  if (existing?.id) {
+    const { error } = await adminClient.from("platform_content").update(payload).eq("id", existing.id);
+    if (error) throw error;
+  } else {
+    const { error } = await adminClient.from("platform_content").insert(payload);
+    if (error) throw error;
+  }
+};
+
+const writeAuditLog = async (
+  adminClient: ReturnType<typeof createClient>,
+  actorId: string,
+  actorEmail: string | null,
+  action: string,
+  entityType: string,
+  entityId: string,
+  details?: Record<string, unknown>,
+) => {
+  await adminClient.from("audit_logs").insert({
+    user_id: actorId,
+    user_email: actorEmail,
+    action,
+    entity_type: entityType,
+    entity_id: entityId,
+    details: details || {},
+  });
 };
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const corsHeaders = buildCorsHeaders(req.headers.get("origin"));
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders });
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   try {
+    const body = await req.json();
+    const { action } = body;
+
+    const adminClient = createClient(supabaseUrl, serviceKey);
+
+    if (action === "bootstrap_first_admin" || action === "bootstrap_admin_recovery") {
+      const bootstrapSecret = Deno.env.get("BOOTSTRAP_ADMIN_SECRET") || "";
+      const providedSecret = req.headers.get("x-bootstrap-secret") || body.bootstrap_secret || "";
+
+      if (!bootstrapSecret || providedSecret !== bootstrapSecret) {
+        throw new Error("Invalid bootstrap secret");
+      }
+
+      if (action === "bootstrap_first_admin") {
+        const { data: existingAdmin } = await adminClient
+          .from("user_roles")
+          .select("user_id")
+          .eq("role", "admin")
+          .limit(1)
+          .maybeSingle();
+
+        if (existingAdmin?.user_id) {
+          throw new Error("Bootstrap disabled: admin already exists");
+        }
+      }
+
+      const email = String(body.email || "").trim().toLowerCase();
+      const password = String(body.password || "");
+      const displayName = String(body.display_name || "Primary Admin").trim();
+
+      if (!emailRegex.test(email)) throw new Error("Valid email required");
+      if (!isStrongPassword(password)) throw new Error("Password must be at least 10 chars and include upper/lowercase letters, number, and symbol");
+
+      const existingUser = await findAuthUserByEmail(adminClient, email);
+      let userId = existingUser?.id;
+
+      if (existingUser) {
+        const { error: updateError } = await adminClient.auth.admin.updateUserById(existingUser.id, {
+          password,
+          email_confirm: true,
+          user_metadata: { ...(existingUser.user_metadata || {}), full_name: displayName },
+        });
+        if (updateError) throw updateError;
+      } else {
+        const { data: createdUser, error: createError } = await adminClient.auth.admin.createUser({
+          email,
+          password,
+          email_confirm: true,
+          user_metadata: { full_name: displayName },
+        });
+        if (createError || !createdUser.user) throw new Error(createError?.message ?? "Unable to bootstrap admin");
+        userId = createdUser.user.id;
+      }
+
+      if (!userId) throw new Error("Unable to resolve admin user");
+
+      await ensureAdminRole(adminClient, userId, email, displayName);
+
+      return new Response(JSON.stringify({ success: true, user_id: userId, email, mode: action }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("Missing auth");
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-
-    // Verify caller is admin
     const userClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
     const { data: { user: caller } } = await userClient.auth.getUser();
     if (!caller) throw new Error("Unauthorized");
 
-    const adminClient = createClient(supabaseUrl, serviceKey);
-
-    // Check admin role
     const { data: roleData } = await adminClient
       .from("user_roles")
       .select("role")
@@ -35,32 +245,111 @@ Deno.serve(async (req) => {
 
     if (!roleData) throw new Error("Not admin");
 
-    const body = await req.json();
-    const { action } = body;
+    const { data: permData } = await adminClient
+      .from("admin_permissions")
+      .select("is_super_admin")
+      .eq("user_id", caller.id)
+      .maybeSingle();
+    const isSuperAdmin = !!permData?.is_super_admin;
 
-    // UPDATE PASSWORD
+    if (action === "get_primary_admin_config") {
+      if (!isSuperAdmin) throw new Error("Super admin access required");
+      const configuredEmail = await getPrimaryAdminEmail(adminClient);
+      return new Response(JSON.stringify({ primary_admin_email: configuredEmail || null }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (action === "update_primary_admin_email") {
+      if (!isSuperAdmin) throw new Error("Super admin access required");
+      const newEmail = String(body.email || "").trim().toLowerCase();
+      if (!emailRegex.test(newEmail)) throw new Error("Valid email required");
+
+      const previousEmail = await getPrimaryAdminEmail(adminClient);
+      const existingPrimaryAdminUser = previousEmail
+        ? await findAuthUserByEmail(adminClient, previousEmail)
+        : await findAuthUserByEmail(adminClient, newEmail);
+
+      if (existingPrimaryAdminUser && (existingPrimaryAdminUser.email || "").toLowerCase() !== newEmail) {
+        const { error: updateAuthEmailError } = await adminClient.auth.admin.updateUserById(existingPrimaryAdminUser.id, {
+          email: newEmail,
+          email_confirm: true,
+        });
+        if (updateAuthEmailError) throw updateAuthEmailError;
+      }
+
+      await setPrimaryAdminEmail(adminClient, newEmail, caller.id);
+      await writeAuditLog(adminClient, caller.id, caller.email || null, "update_primary_admin_email", "primary_admin", "config", {
+        previous_email: previousEmail,
+        new_email: newEmail,
+        auth_user_updated: !!existingPrimaryAdminUser,
+      });
+
+      return new Response(JSON.stringify({ success: true, primary_admin_email: newEmail }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (action === "reset_primary_admin_password" || action === "trigger_primary_admin_recovery") {
+      if (!isSuperAdmin) throw new Error("Super admin access required");
+      const newPassword = String(body.new_password || "");
+      const displayName = String(body.display_name || "Primary Admin").trim();
+      if (!isStrongPassword(newPassword)) throw new Error("Password must be at least 10 chars and include upper/lowercase letters, number, and symbol");
+
+      const primaryAdminEmail = await getPrimaryAdminEmail(adminClient);
+      if (!primaryAdminEmail) throw new Error("Primary admin email is not configured");
+
+      const existingUser = await findAuthUserByEmail(adminClient, primaryAdminEmail);
+      let userId = existingUser?.id;
+
+      if (existingUser) {
+        const { error: updateError } = await adminClient.auth.admin.updateUserById(existingUser.id, {
+          password: newPassword,
+          email_confirm: true,
+          user_metadata: { ...(existingUser.user_metadata || {}), full_name: displayName },
+        });
+        if (updateError) throw updateError;
+      } else {
+        if (action !== "trigger_primary_admin_recovery") {
+          throw new Error("Primary admin user does not exist");
+        }
+        const { data: createdUser, error: createError } = await adminClient.auth.admin.createUser({
+          email: primaryAdminEmail,
+          password: newPassword,
+          email_confirm: true,
+          user_metadata: { full_name: displayName },
+        });
+        if (createError || !createdUser.user) throw new Error(createError?.message ?? "Unable to create primary admin");
+        userId = createdUser.user.id;
+      }
+
+      if (!userId) throw new Error("Unable to resolve primary admin user");
+      await ensureAdminRole(adminClient, userId, primaryAdminEmail, displayName);
+
+      const auditAction = action === "trigger_primary_admin_recovery" ? "trigger_primary_admin_recovery" : "reset_primary_admin_password";
+      await writeAuditLog(adminClient, caller.id, caller.email || null, auditAction, "primary_admin", userId, {
+        primary_admin_email: primaryAdminEmail,
+      });
+
+      return new Response(JSON.stringify({ success: true, user_id: userId, primary_admin_email: primaryAdminEmail }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     if (action === "update_password") {
       const { user_id, new_password } = body;
       if (!user_id || !new_password) throw new Error("user_id and new_password required");
-      if (new_password.length < 6) throw new Error("Password must be at least 6 characters");
+      if (!isStrongPassword(new_password)) throw new Error("Password must be at least 10 chars and include upper/lowercase letters, number, and symbol");
       if (user_id === caller.id) throw new Error("Cannot change your own password from this endpoint");
 
-      console.log(`[create-owner] Admin ${caller.email} changing password for user_id: ${user_id}`);
-
-      const { error } = await adminClient.auth.admin.updateUserById(user_id, {
-        password: new_password,
-      });
+      const { error } = await adminClient.auth.admin.updateUserById(user_id, { password: new_password });
       if (error) throw error;
 
-      console.log(`[create-owner] Password updated successfully for user_id: ${user_id}`);
-
-      return new Response(
-        JSON.stringify({ success: true, updated_user_id: user_id }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ success: true, updated_user_id: user_id }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    // DELETE USER
     if (action === "delete_user") {
       const { user_id } = body;
       if (!user_id) throw new Error("user_id required");
@@ -68,74 +357,89 @@ Deno.serve(async (req) => {
       const { error } = await adminClient.auth.admin.deleteUser(user_id);
       if (error) throw error;
 
-      return new Response(
-        JSON.stringify({ success: true }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    // CREATE SUPERVISOR
     if (action === "create_supervisor") {
-      const { email, password, display_name, permissions } = body;
-      if (!email || !password) throw new Error("Email and password required");
+      const email = String(body.email || "").trim().toLowerCase();
+      const password = String(body.password || "");
+      const display_name = String(body.display_name || "").trim();
+      const permissions = body.permissions || {};
 
-      // Create auth user
+      if (!emailRegex.test(email)) throw new Error("Valid email required");
+      if (!isStrongPassword(password)) throw new Error("Password must be at least 10 chars and include upper/lowercase letters, number, and symbol");
+
       const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
         email,
         password,
         email_confirm: true,
-        user_metadata: { full_name: display_name || "" },
+        user_metadata: { full_name: display_name },
       });
-      if (createError) throw createError;
+      if (createError || !newUser.user) throw new Error(createError?.message ?? "Unable to create supervisor");
 
-      // Assign admin role
-      await adminClient.from("user_roles").insert({ user_id: newUser.user.id, role: "admin" });
+      const userId = newUser.user.id;
 
-      // Create permissions record
-      await adminClient.from("admin_permissions").insert({
-        user_id: newUser.user.id,
+      const { error: roleError } = await adminClient.from("user_roles").insert({ user_id: userId, role: "admin" });
+      if (roleError) {
+        await adminClient.auth.admin.deleteUser(userId);
+        throw roleError;
+      }
+
+      const { error: permissionsError } = await adminClient.from("admin_permissions").insert({
+        user_id: userId,
         user_email: email,
-        display_name: display_name || "",
+        display_name,
         is_super_admin: false,
-        perm_developers: permissions?.perm_developers || false,
-        perm_lands: permissions?.perm_lands || false,
-        perm_owners: permissions?.perm_owners || false,
-        perm_deals: permissions?.perm_deals || false,
-        perm_content: permissions?.perm_content || false,
-        perm_ai: permissions?.perm_ai || false,
-        perm_audit_log: permissions?.perm_audit_log || false,
+        perm_developers: !!permissions.perm_developers,
+        perm_lands: !!permissions.perm_lands,
+        perm_owners: !!permissions.perm_owners,
+        perm_deals: !!permissions.perm_deals,
+        perm_content: !!permissions.perm_content,
+        perm_ai: !!permissions.perm_ai,
+        perm_audit_log: !!permissions.perm_audit_log,
       });
 
-      return new Response(
-        JSON.stringify({ success: true, user_id: newUser.user.id }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      if (permissionsError) {
+        await adminClient.from("user_roles").delete().eq("user_id", userId).eq("role", "admin");
+        await adminClient.auth.admin.deleteUser(userId);
+        throw permissionsError;
+      }
+
+      return new Response(JSON.stringify({ success: true, user_id: userId }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    // CREATE USER (default action)
-    const { email, password, full_name } = body;
-    if (!email || !password) throw new Error("Email and password required");
+    const email = String(body.email || "").trim().toLowerCase();
+    const password = String(body.password || "");
+    const full_name = String(body.full_name || "").trim();
+
+    if (!emailRegex.test(email)) throw new Error("Valid email required");
+    if (!isStrongPassword(password)) throw new Error("Password must be at least 10 chars and include upper/lowercase letters, number, and symbol");
 
     const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: { full_name: full_name || "" },
+      user_metadata: { full_name },
     });
+    if (createError || !newUser.user) throw new Error(createError?.message ?? "Unable to create owner");
 
-    if (createError) throw createError;
+    const { error: roleInsertError } = await adminClient.from("user_roles").insert({ user_id: newUser.user.id, role: "owner" });
+    if (roleInsertError) {
+      await adminClient.auth.admin.deleteUser(newUser.user.id);
+      throw roleInsertError;
+    }
 
-    // Assign 'owner' role so the user can be detected as owner
-    await adminClient.from("user_roles").insert({ user_id: newUser.user.id, role: "owner" });
-
-    return new Response(
-      JSON.stringify({ user_id: newUser.user.id, email: newUser.user.email }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ user_id: newUser.user.id, email: newUser.user.email }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (err: any) {
-    return new Response(
-      JSON.stringify({ error: err.message }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
