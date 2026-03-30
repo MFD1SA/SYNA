@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, User, Mail, KeyRound, Eye, EyeOff, Save, Loader2, ShieldCheck, Clock, Timer } from "lucide-react";
+import { Settings, User, Mail, KeyRound, Eye, EyeOff, Save, Loader2, ShieldCheck, Clock, Timer, ShieldAlert, RotateCcw } from "lucide-react";
 
 const DEFAULT_DEADLINES = {
   request_acceptance_days: 14,
@@ -38,6 +38,16 @@ const AdminSettings: React.FC = () => {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [primaryAdminEmail, setPrimaryAdminEmail] = useState("");
+  const [loadingPrimaryAdmin, setLoadingPrimaryAdmin] = useState(false);
+  const [savingPrimaryAdminEmail, setSavingPrimaryAdminEmail] = useState(false);
+  const [primaryAdminPassword, setPrimaryAdminPassword] = useState("");
+  const [confirmPrimaryAdminPassword, setConfirmPrimaryAdminPassword] = useState("");
+  const [showPrimaryAdminPassword, setShowPrimaryAdminPassword] = useState(false);
+  const [showPrimaryAdminConfirm, setShowPrimaryAdminConfirm] = useState(false);
+  const [resettingPrimaryAdminPassword, setResettingPrimaryAdminPassword] = useState(false);
+  const [triggeringPrimaryRecovery, setTriggeringPrimaryRecovery] = useState(false);
 
   // Deadline settings
   const [deadlines, setDeadlines] = useState(DEFAULT_DEADLINES);
@@ -59,6 +69,27 @@ const AdminSettings: React.FC = () => {
         } catch {}
       }
     });
+
+    supabase
+      .from("admin_permissions")
+      .select("is_super_admin")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        const superAdmin = !!data?.is_super_admin;
+        setIsSuperAdmin(superAdmin);
+        if (superAdmin) {
+          setLoadingPrimaryAdmin(true);
+          supabase.functions.invoke("create-owner", {
+            body: { action: "get_primary_admin_config" },
+          }).then(({ data, error }) => {
+            if (!error && data?.primary_admin_email) {
+              setPrimaryAdminEmail(data.primary_admin_email);
+            }
+            setLoadingPrimaryAdmin(false);
+          });
+        }
+      });
   }, [user]);
 
   const handleSaveProfile = async () => {
@@ -154,6 +185,52 @@ const AdminSettings: React.FC = () => {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
     }
     setSavingDeadlines(false);
+  };
+
+  const handleUpdatePrimaryAdminEmail = async () => {
+    if (!primaryAdminEmail.trim()) return;
+    setSavingPrimaryAdminEmail(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-owner", {
+        body: { action: "update_primary_admin_email", email: primaryAdminEmail.trim().toLowerCase() },
+      });
+      if (error || data?.error) throw new Error(data?.error || error?.message);
+      setPrimaryAdminEmail(data.primary_admin_email);
+      toast({ title: isAr ? "تم تحديث بريد المسؤول الرئيسي ✓" : "Primary admin email updated ✓" });
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    }
+    setSavingPrimaryAdminEmail(false);
+  };
+
+  const handleResetPrimaryAdminPassword = async (action: "reset_primary_admin_password" | "trigger_primary_admin_recovery") => {
+    if (!primaryAdminPassword || !confirmPrimaryAdminPassword) return;
+    if (primaryAdminPassword !== confirmPrimaryAdminPassword) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "كلمات المرور غير متطابقة" : "Passwords do not match" });
+      return;
+    }
+
+    if (action === "reset_primary_admin_password") setResettingPrimaryAdminPassword(true);
+    else setTriggeringPrimaryRecovery(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("create-owner", {
+        body: { action, new_password: primaryAdminPassword, display_name: "Primary Admin" },
+      });
+      if (error || data?.error) throw new Error(data?.error || error?.message);
+      toast({
+        title: action === "trigger_primary_admin_recovery"
+          ? (isAr ? "تم تنفيذ استعادة المسؤول الرئيسي ✓" : "Primary admin recovery triggered ✓")
+          : (isAr ? "تم تحديث كلمة مرور المسؤول الرئيسي ✓" : "Primary admin password reset ✓"),
+      });
+      setPrimaryAdminPassword("");
+      setConfirmPrimaryAdminPassword("");
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    }
+
+    if (action === "reset_primary_admin_password") setResettingPrimaryAdminPassword(false);
+    else setTriggeringPrimaryRecovery(false);
   };
 
   return (
@@ -296,6 +373,76 @@ const AdminSettings: React.FC = () => {
             {isAr ? "حفظ المدد الزمنية" : "Save Deadlines"}
           </Button>
         </div>
+
+        {isSuperAdmin && (
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-4">
+            <div className="flex items-center gap-2 mb-1">
+              <ShieldAlert className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-medium text-foreground">{isAr ? "إدارة بيانات المسؤول الرئيسي" : "Primary Admin Credentials"}</h3>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {isAr ? "إدارة البريد وكلمة المرور واستعادة حساب المسؤول الرئيسي بشكل آمن" : "Securely manage primary admin email, password, and recovery"}
+            </p>
+
+            <div className="space-y-2">
+              <Label className="text-xs">{isAr ? "البريد الإلكتروني للمسؤول الرئيسي" : "Primary Admin Email"}</Label>
+              <Input
+                type="email"
+                value={primaryAdminEmail}
+                onChange={(e) => setPrimaryAdminEmail(e.target.value)}
+                dir="ltr"
+                disabled={loadingPrimaryAdmin}
+              />
+              <Button onClick={handleUpdatePrimaryAdminEmail} disabled={savingPrimaryAdminEmail || loadingPrimaryAdmin} variant="outline" className="gap-2">
+                {savingPrimaryAdminEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {isAr ? "تحديث بريد المسؤول الرئيسي" : "Update Primary Admin Email"}
+              </Button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label className="text-xs">{isAr ? "كلمة المرور الجديدة للمسؤول الرئيسي" : "New Primary Admin Password"}</Label>
+                <div className="relative">
+                  <Input type={showPrimaryAdminPassword ? "text" : "password"} value={primaryAdminPassword} onChange={(e) => setPrimaryAdminPassword(e.target.value)} dir="ltr" className="pe-10" />
+                  <button type="button" onClick={() => setShowPrimaryAdminPassword(!showPrimaryAdminPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    {showPrimaryAdminPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">{isAr ? "تأكيد كلمة المرور الجديدة" : "Confirm New Password"}</Label>
+                <div className="relative">
+                  <Input type={showPrimaryAdminConfirm ? "text" : "password"} value={confirmPrimaryAdminPassword} onChange={(e) => setConfirmPrimaryAdminPassword(e.target.value)} dir="ltr" className="pe-10" />
+                  <button type="button" onClick={() => setShowPrimaryAdminConfirm(!showPrimaryAdminConfirm)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    {showPrimaryAdminConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  onClick={() => handleResetPrimaryAdminPassword("reset_primary_admin_password")}
+                  disabled={resettingPrimaryAdminPassword || !primaryAdminPassword || !confirmPrimaryAdminPassword}
+                  className="syna-gradient gap-2"
+                >
+                  {resettingPrimaryAdminPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
+                  {isAr ? "إعادة تعيين كلمة المرور" : "Reset Password"}
+                </Button>
+                <Button
+                  onClick={() => handleResetPrimaryAdminPassword("trigger_primary_admin_recovery")}
+                  disabled={triggeringPrimaryRecovery || !primaryAdminPassword || !confirmPrimaryAdminPassword}
+                  variant="outline"
+                  className="gap-2"
+                >
+                  {triggeringPrimaryRecovery ? <Loader2 className="h-4 w-4 animate-spin" /> : <RotateCcw className="h-4 w-4" />}
+                  {isAr ? "تشغيل استعادة المسؤول" : "Trigger Recovery"}
+                </Button>
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                {isAr ? "لن يتم عرض أو تخزين كلمة المرور الحالية كنص صريح." : "Current password is never displayed or stored in plaintext."}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );
