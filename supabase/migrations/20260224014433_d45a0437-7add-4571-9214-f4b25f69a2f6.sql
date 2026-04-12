@@ -1,0 +1,1 @@
+ALTER TABLE public.developers ADD COLUMN website text;

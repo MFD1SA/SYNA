@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hide scrollbar utility */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+@layer base {
+  :root {
+    /* ─── SINA Design System ─────────────────────────── */
+
+    /* Soft Background — #F7F9FB */
+    --background: 210 33% 97%;
+    /* Main Text — #1F2937 */
+    --foreground: 215 28% 17%;
+
+    /* Primary Blue — #2B4C66 */
+    --primary: 207 41% 28%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Section Background — #F1F5F9 */
+    --secondary: 214 32% 96%;
+    --secondary-foreground: 215 28% 17%;
+
+    /* Muted — #F1F5F9 / #7B8794 */
+    --muted: 214 32% 96%;
+    --muted-foreground: 209 9% 53%;
+
+    /* Accent Gold — #C2A86B (limited use) */
+    --accent: 42 39% 59%;
+    --accent-foreground: 0 0% 4%;
+
+    /* Cards — Pure White */
+    --card: 0 0% 100%;
+    --card-foreground: 215 28% 17%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 28% 17%;
+
+    /* Borders — #E5E7EB */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 207 41% 28%;
+    --radius: 0.5rem;
+
+    /* Surface (for admin/CRM panels) */
+    --surface: 0 0% 100%;
+    --surface-hover: 214 32% 96%;
+
+    /* Destructive */
+    --destructive: 0 72% 38%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Sidebar (admin panels) */
+    --sidebar-background: 207 43% 20%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 207 43% 20%;
+    --sidebar-accent: 42 39% 59%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 207 30% 25%;
+    --sidebar-ring: 42 39% 59%;
+  }
+
+  * {
+    @apply border-border outline-none;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  }
+
+  /* ── Arabic — IBM Plex Sans Arabic ── */
+  [dir="rtl"] body,
+  [lang="ar"] body {
+    font-family: 'IBM Plex Sans Arabic', 'Inter', system-ui, sans-serif;
+  }
+
+  [dir="rtl"],
+  :lang(ar) {
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    line-height: 1.7;
+    letter-spacing: 0;
+  }
+
+  /* ── Headings ── */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    color: #111315;
+  }
+
+  [dir="rtl"] h1,
+  [dir="rtl"] h2,
+  [dir="rtl"] h3,
+  [dir="rtl"] h4,
+  [dir="rtl"] h5,
+  [dir="rtl"] h6 {
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    letter-spacing: 0;
+    line-height: 1.4;
+  }
+
+  /* ── English headings — Inter ── */
+  [dir="ltr"] h1,
+  [dir="ltr"] h2,
+  [dir="ltr"] h3,
+  [dir="ltr"] h4 {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
