@@ -151,38 +151,42 @@ const CrmDashboard: React.FC = () => {
       )}
 
       {/* KPI Cards */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpiCards.map((card) => (
           <div
             key={card.label}
-            className="group relative bg-card rounded-xl border border-border/60 p-5 cursor-pointer transition-all hover:shadow-sm hover:border-border"
+            className="group relative bg-card rounded-xl border border-border/50 p-5 cursor-pointer transition-all duration-200 hover:shadow-[0_2px_12px_rgba(43,76,102,0.06)] hover:border-[#2B4C66]/15"
             onClick={() => navigate(card.href)}
           >
             <div className="flex items-center justify-between mb-3">
               <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.08em]">{card.label}</span>
-              <card.icon className="h-4 w-4 text-muted-foreground/50" strokeWidth={1.5} />
+              <div className="h-8 w-8 rounded-lg bg-[#2B4C66]/[0.06] flex items-center justify-center">
+                <card.icon className="h-4 w-4 text-[#2B4C66]/60" strokeWidth={1.5} />
+              </div>
             </div>
             <p className="text-[28px] font-bold text-foreground leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
               {loading ? <span className="inline-block h-7 w-14 animate-pulse rounded bg-muted" /> : card.value.toLocaleString("en-US")}
             </p>
-            <ArrowUpRight className="absolute end-3 bottom-3 h-3.5 w-3.5 text-border transition-colors group-hover:text-primary" />
+            <ArrowUpRight className="absolute end-3 bottom-3 h-3.5 w-3.5 text-border transition-colors duration-200 group-hover:text-[#2B4C66]" />
           </div>
         ))}
       </div>
 
       {/* Request Breakdown */}
-      <div className="mt-6 rounded-xl border border-border/60 bg-card p-6">
+      <div className="mt-6 rounded-xl border border-border/50 bg-card p-6 shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-sm font-semibold text-foreground">{isAr ? "تحليل مسار الطلبات" : "Requests Pipeline"}</h3>
-          <Button variant="ghost" size="sm" onClick={() => navigate("/crm/my-requests")} className="h-7 text-xs text-primary hover:bg-primary/5 px-2">
+          <Button variant="ghost" size="sm" onClick={() => navigate("/crm/my-requests")} className="h-7 text-xs text-[#2B4C66] hover:bg-[#2B4C66]/5 px-2">
             {isAr ? "عرض التفاصيل" : "View Details"}
             <ArrowRight className="h-3 w-3 ms-1" />
           </Button>
         </div>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-3">
           {requestBreakdown.map((item) => (
-            <div key={item.label} className="flex items-center gap-4 rounded-xl border border-border/40 bg-muted/5 p-4 transition-colors hover:bg-muted/15">
-              <item.icon className={`h-5 w-5 ${item.accent} shrink-0`} strokeWidth={1.5} />
+            <div key={item.label} className="flex items-center gap-4 rounded-xl border border-border/40 bg-muted/5 p-4 transition-all duration-200 hover:bg-muted/15 hover:shadow-sm">
+              <div className="h-10 w-10 rounded-lg bg-gray-50 flex items-center justify-center shrink-0">
+                <item.icon className={`h-5 w-5 ${item.accent}`} strokeWidth={1.5} />
+              </div>
               <div>
                 <p className="text-xl font-bold text-foreground tracking-tight" dir="ltr">{loading ? "—" : item.value}</p>
                 <p className="text-[11px] font-medium text-muted-foreground mt-0.5">{item.label}</p>
@@ -195,7 +199,7 @@ const CrmDashboard: React.FC = () => {
       {/* Bottom Section: Deal Flow + Quick Actions */}
       <div className="mt-6 grid lg:grid-cols-3 gap-5">
         {/* Deal Flow */}
-        <div className="lg:col-span-2 rounded-xl border border-border/60 bg-card p-6 flex flex-col">
+        <div className="lg:col-span-2 rounded-xl border border-border/50 bg-card p-6 flex flex-col shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
           <h3 className="text-sm font-semibold text-foreground mb-2">{isAr ? "مسار الصفقة" : "Deal Lifecycle"}</h3>
           <p className="text-[11px] text-muted-foreground mb-5 max-w-lg leading-relaxed">
             {isAr ? "رحلة الصفقة من الإدراج وحتى الإغلاق عبر منصة سينا" : "The journey of an opportunity from listing to closing on SYNA"}
@@ -231,7 +235,7 @@ const CrmDashboard: React.FC = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="rounded-xl border border-border/60 bg-card p-6">
+        <div className="rounded-xl border border-border/50 bg-card p-6 shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
           <h3 className="text-sm font-semibold text-foreground mb-4">{isAr ? "إجراءات سريعة" : "Quick Actions"}</h3>
           <div className="flex flex-col gap-2.5">
             <div onClick={() => navigate("/crm/browse")} className="group flex items-center gap-3 rounded-lg border border-border/40 p-3.5 transition-all hover:bg-primary/5 hover:border-primary/20 cursor-pointer">

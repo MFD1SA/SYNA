@@ -22,8 +22,8 @@ interface Props {
 const MeetingsList: React.FC<Props> = ({ meetings, isAr, showSupervisorInfo }) => {
   if (meetings.length === 0) {
     return (
-      <div className="text-center py-4">
-        <Video className="h-8 w-8 text-muted-foreground/20 mx-auto mb-2" />
+      <div className="text-center py-6 rounded-xl border border-dashed border-border/30 bg-muted/5">
+        <Video className="h-8 w-8 text-muted-foreground/20 mx-auto mb-2" strokeWidth={1} />
         <p className="text-xs text-muted-foreground">{isAr ? "لا توجد اجتماعات" : "No meetings yet"}</p>
       </div>
     );
@@ -42,7 +42,7 @@ const MeetingsList: React.FC<Props> = ({ meetings, isAr, showSupervisorInfo }) =
         const isToday = scheduledDate.toDateString() === now.toDateString();
 
         return (
-          <div key={m.id} className="rounded-lg border border-border/30 bg-card p-3 space-y-2">
+          <div key={m.id} className="rounded-xl border border-border/30 bg-card p-3.5 space-y-2 transition-shadow hover:shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CalendarClock className="h-3.5 w-3.5 text-violet-600" />
@@ -53,8 +53,8 @@ const MeetingsList: React.FC<Props> = ({ meetings, isAr, showSupervisorInfo }) =
                     day: "numeric",
                   })}
                 </span>
-                <span className="text-xs text-muted-foreground">
-                  {scheduledDate.toLocaleTimeString(isAr ? "ar-SA" : "en-US", {
+                <span className="text-xs text-muted-foreground tabular-nums" dir="ltr">
+                  {scheduledDate.toLocaleTimeString("en-US", {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
@@ -107,7 +107,7 @@ const MeetingsList: React.FC<Props> = ({ meetings, isAr, showSupervisorInfo }) =
             )}
             {m.duration_minutes && (
               <p className="text-[10px] text-muted-foreground">
-                {isAr ? "المدة:" : "Duration:"} {m.duration_minutes} {isAr ? "دقيقة" : "min"}
+                {isAr ? "المدة:" : "Duration:"} <span dir="ltr">{m.duration_minutes}</span> {isAr ? "دقيقة" : "min"}
               </p>
             )}
           </div>

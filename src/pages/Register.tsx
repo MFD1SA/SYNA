@@ -466,6 +466,9 @@ const Register: React.FC = () => {
         open={showAgreement}
         onAccept={handleAcceptAgreement}
         onDecline={handleDeclineAgreement}
+        companyName={form.company_name}
+        contactPersonName={form.contact_person_name}
+        phone={form.phone}
       />
     </div>
   );

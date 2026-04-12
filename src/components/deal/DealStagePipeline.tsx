@@ -13,11 +13,17 @@ const DealStagePipeline: React.FC<Props> = ({ currentStage, isAr, compact }) => 
 
   if (compact) {
     return (
-      <div className="flex items-center gap-0.5">
+      <div className="flex items-center gap-0.5" dir="ltr">
         {stageOrder.map((s, idx) => (
           <div
             key={s}
-            className={`h-1.5 flex-1 rounded-full transition-colors ${idx <= currentIdx ? "bg-primary" : "bg-border"}`}
+            className={`h-2 flex-1 rounded-full transition-colors ${
+              idx <= currentIdx
+                ? idx === currentIdx
+                  ? "bg-[#2B4C66] shadow-sm"
+                  : "bg-emerald-500"
+                : "bg-border/60"
+            }`}
             title={isAr ? stageConfig[s]?.ar : stageConfig[s]?.en}
           />
         ))}
@@ -26,7 +32,7 @@ const DealStagePipeline: React.FC<Props> = ({ currentStage, isAr, compact }) => 
   }
 
   return (
-    <div className="rounded-xl border border-border/40 bg-muted/10 p-4">
+    <div className="rounded-xl border border-[#2B4C66]/15 bg-gradient-to-b from-[#2B4C66]/[0.03] to-transparent p-4" dir="ltr">
       <div className="flex items-center gap-1">
         {stageOrder.map((s, idx) => {
           const sc = stageConfig[s];
@@ -35,25 +41,25 @@ const DealStagePipeline: React.FC<Props> = ({ currentStage, isAr, compact }) => 
           const isPast = idx < currentIdx;
 
           return (
-            <div key={s} className="flex-1 flex flex-col items-center gap-1">
+            <div key={s} className="flex-1 flex flex-col items-center gap-1.5">
               <div
-                className={`flex h-7 w-7 items-center justify-center rounded-full border-2 transition-all ${
+                className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all ${
                   isActive
-                    ? "border-primary bg-primary/10"
+                    ? "border-[#2B4C66] bg-[#2B4C66]/10 shadow-sm"
                     : isPast
                       ? "border-emerald-500 bg-emerald-500/10"
-                      : "border-border bg-muted/30"
+                      : "border-border/50 bg-muted/20"
                 }`}
               >
                 {isPast ? (
                   <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
                 ) : (
-                  <SIcon className={`h-3 w-3 ${isActive ? sc?.color : "text-muted-foreground/30"}`} />
+                  <SIcon className={`h-3.5 w-3.5 ${isActive ? "text-[#2B4C66]" : "text-muted-foreground/30"}`} />
                 )}
               </div>
               <span
-                className={`text-[8px] text-center leading-tight ${
-                  isActive ? "font-medium text-primary" : isPast ? "text-emerald-600" : "text-muted-foreground/40"
+                className={`text-[8px] text-center leading-tight max-w-[60px] ${
+                  isActive ? "font-semibold text-[#2B4C66]" : isPast ? "font-medium text-emerald-600" : "text-muted-foreground/40"
                 }`}
               >
                 {isAr ? sc?.ar : sc?.en}

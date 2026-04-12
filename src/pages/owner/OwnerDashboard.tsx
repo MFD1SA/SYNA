@@ -337,24 +337,30 @@ const OwnerDashboard: React.FC = () => {
       {/* Summary KPI Cards */}
       {!loading && lands.length > 0 && (
         <div className="grid md:grid-cols-3 gap-4 mb-8">
-          <div className="rounded-xl border border-border/60 bg-card p-5 transition-all hover:shadow-sm hover:border-border">
+          <div className="rounded-xl border border-border/50 bg-card p-5 transition-all duration-200 hover:shadow-[0_2px_12px_rgba(43,76,102,0.06)] hover:border-[#2B4C66]/15">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.08em]">{isAr ? "الأصول المدرجة" : "Listed Assets"}</span>
-              <Landmark className="h-4 w-4 text-muted-foreground/50" strokeWidth={1.5} />
+              <div className="h-8 w-8 rounded-lg bg-[#2B4C66]/[0.06] flex items-center justify-center">
+                <Landmark className="h-4 w-4 text-[#2B4C66]/60" strokeWidth={1.5} />
+              </div>
             </div>
             <p className="text-[32px] font-bold text-foreground leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>{lands.length}</p>
           </div>
-          <div className="rounded-xl border border-border/60 bg-card p-5 transition-all hover:shadow-sm hover:border-border">
+          <div className="rounded-xl border border-border/50 bg-card p-5 transition-all duration-200 hover:shadow-[0_2px_12px_rgba(43,76,102,0.06)] hover:border-[#2B4C66]/15">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.08em]">{isAr ? "الكيانات المهتمة" : "Interested Entities"}</span>
-              <Users className="h-4 w-4 text-muted-foreground/50" strokeWidth={1.5} />
+              <div className="h-8 w-8 rounded-lg bg-[#C2A86B]/10 flex items-center justify-center">
+                <Users className="h-4 w-4 text-[#C2A86B]" strokeWidth={1.5} />
+              </div>
             </div>
             <p className="text-[32px] font-bold text-foreground leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>{totalRequests}</p>
           </div>
-          <div className="rounded-xl border border-border/60 bg-card p-5 transition-all hover:shadow-sm hover:border-border">
+          <div className="rounded-xl border border-border/50 bg-card p-5 transition-all duration-200 hover:shadow-[0_2px_12px_rgba(43,76,102,0.06)] hover:border-[#2B4C66]/15">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.08em]">{isAr ? "صفقات معتمدة" : "Approved Deals"}</span>
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" strokeWidth={1.5} />
+              <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <CheckCircle2 className="h-4 w-4 text-emerald-500" strokeWidth={1.5} />
+              </div>
             </div>
             <p className="text-[32px] font-bold text-foreground leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>{lands.filter(l => l.owner_approved).length}</p>
           </div>
@@ -428,7 +434,7 @@ const OwnerDashboard: React.FC = () => {
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-5">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-primary" strokeWidth={2} />
+                        <MapPin className="h-4 w-4 text-primary" strokeWidth={1.5} />
                         <h3 className="text-xl font-medium text-foreground tracking-tight">{land.city}</h3>
                         {land.district && <span className="text-sm text-muted-foreground">| {land.district}</span>}
                       </div>
@@ -519,7 +525,7 @@ const OwnerDashboard: React.FC = () => {
                         {showCompare === land.id && landAnalyses.length > 1 && (
                           <div className="rounded-xl border border-border bg-background overflow-hidden shadow-sm">
                             <div className="overflow-x-auto">
-                              <table className="w-full text-sm text-left rtl:text-right">
+                              <table className="w-full text-sm text-start">
                                 <thead className="text-xs text-muted-foreground uppercase tracking-wider bg-muted/50 border-b border-border">
                                   <tr>
                                     <th className="px-4 py-3 font-medium">{isAr ? "الكيان التطويري" : "Entity"}</th>

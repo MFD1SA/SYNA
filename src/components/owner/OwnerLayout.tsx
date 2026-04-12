@@ -15,10 +15,10 @@ const OwnerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <OwnerSidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 flex h-[56px] items-center justify-end bg-white/80 backdrop-blur-md border-b border-gray-100 px-6">
+        <header className="sticky top-0 z-30 flex h-[60px] items-center justify-end bg-white/90 backdrop-blur-xl border-b border-gray-200/40 px-6 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-full bg-amber-500/10 flex items-center justify-center">
-              <span className="text-[11px] font-semibold text-amber-600">
+            <div className="h-8 w-8 rounded-full bg-[#C2A86B]/15 flex items-center justify-center transition-colors hover:bg-[#C2A86B]/25">
+              <span className="text-[11px] font-semibold text-[#C2A86B]">
                 {initial}
               </span>
             </div>

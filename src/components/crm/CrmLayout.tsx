@@ -16,18 +16,18 @@ const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <CrmSidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 flex h-[56px] items-center justify-between bg-white/80 backdrop-blur-md border-b border-gray-100 px-6">
+        <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between bg-white/90 backdrop-blur-xl border-b border-gray-200/40 px-6 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-3">
             <div className="relative hidden md:block">
               <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" strokeWidth={1.5} />
               <input
-                className="h-9 w-64 rounded-lg bg-gray-50/80 border border-gray-200/40 ps-10 text-[13px] text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-[#2B4C66]/30 focus:ring-1 focus:ring-[#2B4C66]/20 transition-all"
+                className="h-9 w-64 rounded-lg bg-gray-50/60 border border-gray-200/50 ps-10 text-[13px] text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-[#2B4C66]/30 focus:ring-1 focus:ring-[#2B4C66]/20 transition-all duration-200"
                 placeholder={isAr ? "بحث..." : "Search..."}
               />
             </div>
           </div>
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-full bg-[#2B4C66]/10 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-full bg-[#2B4C66]/10 flex items-center justify-center transition-colors hover:bg-[#2B4C66]/15">
               <span className="text-[11px] font-semibold text-[#2B4C66]">
                 {initial}
               </span>

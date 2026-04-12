@@ -55,7 +55,7 @@ const HowItWorksSection: React.FC = () => {
                 {isAr ? step.descAr : step.descEn}
               </p>
 
-              <div className="absolute top-16 right-16 text-[10px] font-bold text-accent/10 tracking-[0.5em] group-hover:text-accent/30 transition-colors">
+              <div className="absolute top-16 end-16 text-[10px] font-bold text-accent/10 tracking-[0.5em] group-hover:text-accent/30 transition-colors">
                 {step.num}
               </div>
             </motion.div>

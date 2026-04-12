@@ -267,7 +267,7 @@ const AdminTargets: React.FC = () => {
             <div
               key={c.id}
               className={`rounded-xl border border-border/60 bg-card relative overflow-hidden p-4 transition-all hover:border-primary/20 ${
-                c.is_registered ? "border-l-4 border-l-green-500" : ""
+                c.is_registered ? "border-s-4 border-s-green-500" : ""
               } ${c.lead_status === "prospect" ? "ring-2 ring-blue-500/30" : ""}`}
             >
               {/* Badges */}

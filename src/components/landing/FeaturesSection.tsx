@@ -42,7 +42,7 @@ const FeaturesSection: React.FC = () => {
   return (
     <section id="services" className="relative bg-background py-16 lg:py-20 px-4 md:px-0 overflow-hidden">
       {/* Background Element */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-secondary/30 -skew-x-12 translate-x-1/2 pointer-events-none" />
+      <div className="absolute top-0 end-0 w-1/2 h-full bg-secondary/30 -skew-x-12 translate-x-1/2 pointer-events-none" />
 
       <div className="container relative z-10">
         <motion.div
@@ -89,7 +89,7 @@ const FeaturesSection: React.FC = () => {
                 {isAr ? feature.descAr : feature.descEn}
               </p>
 
-              <div className="absolute bottom-8 right-8 h-8 w-8 opacity-0 transition-opacity group-hover:opacity-10 pointer-events-none">
+              <div className="absolute bottom-8 end-8 h-8 w-8 opacity-0 transition-opacity group-hover:opacity-10 pointer-events-none">
                 <feature.icon className="h-full w-full stroke-white" />
               </div>
             </motion.div>

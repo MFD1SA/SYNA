@@ -48,14 +48,14 @@ const CrmSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`sticky top-0 flex h-screen flex-col bg-white border-e border-gray-200/80 transition-all duration-200 ${
-        collapsed ? "w-[68px]" : "w-[250px]"
+      className={`sticky top-0 flex h-screen flex-col bg-[#FCFCFD] border-e border-gray-200/60 transition-all duration-300 ease-in-out ${
+        collapsed ? "w-[68px]" : "w-[260px]"
       }`}
     >
       {/* Header */}
-      <div className={`flex h-[60px] items-center border-b border-gray-100 ${collapsed ? "justify-center px-2" : "justify-between px-5"}`}>
-        <Link to="/crm/dashboard" className="flex items-center gap-2">
-          <img src={logoImg} alt="SINA" className={`${collapsed ? "h-5" : "h-6"} w-auto object-contain`} />
+      <div className={`flex h-[64px] items-center border-b border-gray-200/40 ${collapsed ? "justify-center px-2" : "justify-between px-6"}`}>
+        <Link to="/crm/dashboard" className="flex items-center gap-2.5">
+          <img src={logoImg} alt="SINA" className={`${collapsed ? "h-5" : "h-7"} w-auto object-contain`} />
           {!collapsed && tenantName && (
             <span className="truncate text-[10px] text-gray-400">
               {tenantName}
@@ -67,17 +67,17 @@ const CrmSidebar: React.FC = () => {
           {!collapsed && (
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="h-7 w-7 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+              className="h-7 w-7 flex items-center justify-center rounded-md text-gray-300 hover:text-[#2B4C66] hover:bg-[#2B4C66]/5 transition-all duration-200"
             >
-              <CollapseIcon className="h-3.5 w-3.5" />
+              <CollapseIcon className="h-3.5 w-3.5" strokeWidth={1.5} />
             </button>
           )}
           {collapsed && (
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="absolute -end-3 top-[22px] h-6 w-6 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm text-gray-400 hover:text-gray-600 transition-colors z-10"
+              className="absolute -end-3 top-[26px] h-6 w-6 flex items-center justify-center rounded-full bg-white border border-gray-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.06)] text-gray-400 hover:text-[#2B4C66] hover:border-[#2B4C66]/20 transition-all duration-200 z-10"
             >
-              <CollapseIcon className="h-3 w-3" />
+              <CollapseIcon className="h-3 w-3" strokeWidth={1.5} />
             </button>
           )}
         </div>
@@ -85,9 +85,9 @@ const CrmSidebar: React.FC = () => {
 
       {/* Role badge + User info */}
       {!collapsed && (
-        <div className="mx-3 mt-3 mb-2 flex items-center gap-3 rounded-lg bg-gray-50 px-3 py-2.5">
-          <div className="h-8 w-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-            <HardHat className="h-3.5 w-3.5 text-emerald-600" strokeWidth={1.5} />
+        <div className="mx-3 mt-3 mb-3 flex items-center gap-3 rounded-lg bg-gray-50 px-3 py-2.5">
+          <div className="h-8 w-8 rounded-full bg-[#2B4C66]/10 flex items-center justify-center shrink-0">
+            <HardHat className="h-3.5 w-3.5 text-[#2B4C66]" strokeWidth={1.5} />
           </div>
           <div className="min-w-0">
             <p className="text-[12px] font-medium text-gray-700 truncate">{fullName || "Developer"}</p>
@@ -97,7 +97,7 @@ const CrmSidebar: React.FC = () => {
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-3 mt-1">
+      <nav className="flex-1 overflow-y-auto px-3 scrollbar-hide" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
         <div className="space-y-0.5">
           {navItems.map((item) => {
             const isActive = location.pathname === item.href;
@@ -124,16 +124,19 @@ const CrmSidebar: React.FC = () => {
 
       {/* Admin back link */}
       {isAdminUser && !collapsed && (
-        <div className="border-t border-gray-100 mx-3 px-3 pt-2">
-          <Link to="/admincp/overview" className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[12px] font-medium text-[#2B4C66] transition-colors hover:bg-[#2B4C66]/5">
-            <ShieldCheck className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+        <div className="border-t border-gray-200/60 mx-3 px-3 pt-3 pb-1">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400">
+            {isAr ? "البوابات" : "PORTALS"}
+          </p>
+          <Link to="/admincp/overview" className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[12px] text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700">
+            <ShieldCheck className="h-4 w-4 shrink-0" strokeWidth={1.5} />
             <span>{isAr ? "العودة للإدارة" : "Back to Admin"}</span>
           </Link>
         </div>
       )}
 
       {/* Footer */}
-      <div className="space-y-0.5 border-t border-gray-100 p-3">
+      <div className="space-y-0.5 border-t border-gray-200/60 p-3">
         <button
           onClick={toggleLang}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700"

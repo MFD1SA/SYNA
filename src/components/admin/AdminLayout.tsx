@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -29,9 +29,25 @@ interface Notification {
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { lang } = useLanguage();
   const { user } = useAuth();
-  const { initial } = useUserProfile();
+  const { initial, fullName } = useUserProfile();
   const navigate = useNavigate();
+  const location = useLocation();
   const isAr = lang === "ar";
+
+  // Page title mapping for breadcrumb
+  const pageTitles: Record<string, { ar: string; en: string }> = {
+    "/admincp/overview": { ar: "نظرة عامة", en: "Overview" },
+    "/admincp/lands": { ar: "الأراضي", en: "Lands" },
+    "/admincp/owners": { ar: "الملاك", en: "Owners" },
+    "/admincp/developers": { ar: "المطورون", en: "Developers" },
+    "/admincp/deals": { ar: "الصفقات", en: "Deals" },
+    "/admincp/offers": { ar: "العروض العقارية", en: "Offers" },
+    "/admincp/content": { ar: "المحتوى", en: "Content" },
+    "/admincp/audit": { ar: "سجل العمليات", en: "Audit Log" },
+    "/admincp/team": { ar: "فريق الإدارة", en: "Team" },
+    "/admincp/settings": { ar: "الإعدادات", en: "Settings" },
+  };
+  const currentPage = pageTitles[location.pathname];
 
   // Search
   const [searchQuery, setSearchQuery] = useState("");
@@ -170,93 +186,104 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FB]" dir={isAr ? "rtl" : "ltr"}>
+    <div className="flex min-h-screen bg-[#F7F8FA]" dir={isAr ? "rtl" : "ltr"}>
       <AdminSidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 flex h-[56px] items-center justify-between bg-white/80 backdrop-blur-md border-b border-gray-100 px-6">
-          <div className="flex items-center gap-3">
+        <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between bg-white/90 backdrop-blur-xl border-b border-gray-100/80 px-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center gap-4">
+            {/* Page title / breadcrumb */}
+            {currentPage && (
+              <div className="hidden sm:flex items-center gap-2 me-2">
+                <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">{isAr ? "لوحة الإدارة" : "Admin"}</span>
+                <span className="text-gray-300 text-[10px]">/</span>
+                <span className="text-[13px] font-semibold text-[#1E374B]">{isAr ? currentPage.ar : currentPage.en}</span>
+              </div>
+            )}
+
             {/* Search */}
             <div className="relative hidden md:block" ref={searchRef}>
               <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" strokeWidth={1.5} />
               <Input
-                className="h-9 w-72 rounded-lg bg-gray-50/80 border-gray-200/40 ps-10 text-[13px] text-gray-700 placeholder:text-gray-400 focus-visible:ring-1 focus-visible:ring-[#2B4C66]/20 focus-visible:border-[#2B4C66]/30"
+                className="h-9 w-72 rounded-lg bg-gray-50/60 border-gray-200/30 ps-10 text-[13px] text-gray-700 placeholder:text-gray-400 focus-visible:ring-1 focus-visible:ring-[#2B4C66]/20 focus-visible:border-[#2B4C66]/20 transition-all duration-200"
                 placeholder={isAr ? "بحث سريع..." : "Quick search..."}
                 value={searchQuery}
                 onChange={e => { setSearchQuery(e.target.value); setShowSearch(true); }}
                 onFocus={() => searchQuery && setShowSearch(true)}
               />
               {searchQuery && (
-                <button onClick={() => { setSearchQuery(""); setShowSearch(false); }} className="absolute end-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                  <X className="h-3.5 w-3.5" />
+                <button onClick={() => { setSearchQuery(""); setShowSearch(false); }} className="absolute end-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                  <X className="h-3.5 w-3.5" strokeWidth={1.5} />
                 </button>
               )}
               {showSearch && searchQuery && (
-                <div className="absolute top-full mt-1.5 start-0 w-80 max-h-80 overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg z-50">
+                <div className="absolute top-full mt-2 start-0 w-[340px] max-h-80 overflow-auto rounded-xl border border-gray-200/60 bg-white shadow-[0_8px_30px_-8px_rgba(0,0,0,0.1)] z-50">
                   {searchLoading ? (
-                    <div className="flex items-center justify-center py-8"><Loader2 className="h-4 w-4 animate-spin text-gray-400" /></div>
+                    <div className="flex items-center justify-center py-10"><Loader2 className="h-4 w-4 animate-spin text-[#2B4C66]/40" strokeWidth={1.5} /></div>
                   ) : searchResults.length === 0 ? (
-                    <p className="py-8 text-center text-[13px] text-gray-400">{isAr ? "لا توجد نتائج" : "No results"}</p>
+                    <p className="py-10 text-center text-[13px] text-gray-400">{isAr ? "لا توجد نتائج" : "No results"}</p>
                   ) : (
-                    searchResults.map((r, i) => (
-                      <button
-                        key={i}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-start hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
-                        onClick={() => { navigate(r.href); setShowSearch(false); setSearchQuery(""); }}
-                      >
-                        <Badge variant="outline" className={`shrink-0 text-[9px] font-medium ${searchTypeLabels[r.type]?.color}`}>
-                          {isAr ? searchTypeLabels[r.type]?.ar : searchTypeLabels[r.type]?.en}
-                        </Badge>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[13px] font-medium text-gray-800 truncate">{r.label}</p>
-                          <p className="text-[11px] text-gray-400 truncate">{r.sub}</p>
-                        </div>
-                      </button>
-                    ))
+                    <div className="py-1">
+                      {searchResults.map((r, i) => (
+                        <button
+                          key={i}
+                          className="flex w-full items-center gap-3 px-4 py-3 text-start hover:bg-[#2B4C66]/[0.03] transition-all duration-150 border-b border-gray-100/60 last:border-0"
+                          onClick={() => { navigate(r.href); setShowSearch(false); setSearchQuery(""); }}
+                        >
+                          <Badge variant="outline" className={`shrink-0 text-[9px] font-semibold ${searchTypeLabels[r.type]?.color}`}>
+                            {isAr ? searchTypeLabels[r.type]?.ar : searchTypeLabels[r.type]?.en}
+                          </Badge>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[13px] font-medium text-gray-800 truncate">{r.label}</p>
+                            <p className="text-[11px] text-gray-400 truncate">{r.sub}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   )}
                 </div>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             {/* Notifications */}
             <div className="relative" ref={notifRef}>
               <button
-                className="h-9 w-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors relative"
+                className="h-9 w-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-[#2B4C66] hover:bg-[#2B4C66]/[0.04] transition-all duration-200 relative"
                 onClick={() => { setShowNotifs(!showNotifs); if (!showNotifs) fetchNotifs(); }}
               >
                 <Bell className="h-[18px] w-[18px]" strokeWidth={1.5} />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1 end-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white">
+                  <span className="absolute top-1 end-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#C2A86B] text-[8px] font-bold text-white shadow-sm">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
               </button>
               {showNotifs && (
-                <div className="absolute top-full mt-1.5 end-0 w-80 max-h-96 overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg z-50">
-                  <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-                    <span className="text-[13px] font-semibold text-gray-800">{isAr ? "الإشعارات" : "Notifications"}</span>
+                <div className="absolute top-full mt-2 end-0 w-[340px] max-h-[420px] overflow-auto rounded-xl border border-gray-200/60 bg-white shadow-[0_8px_30px_-8px_rgba(0,0,0,0.1)] z-50">
+                  <div className="flex items-center justify-between border-b border-gray-100/80 px-5 py-3.5">
+                    <span className="text-[13px] font-semibold text-[#1E374B]">{isAr ? "الإشعارات" : "Notifications"}</span>
                     {unreadCount > 0 && (
-                      <button onClick={markAllRead} className="text-[11px] text-[#2B4C66] hover:underline">
+                      <button onClick={markAllRead} className="text-[11px] font-medium text-[#C2A86B] hover:text-[#2B4C66] transition-colors">
                         {isAr ? "قراءة الكل" : "Mark all read"}
                       </button>
                     )}
                   </div>
                   {notifications.length === 0 ? (
-                    <p className="py-10 text-center text-[13px] text-gray-400">{isAr ? "لا توجد إشعارات" : "No notifications"}</p>
+                    <p className="py-12 text-center text-[13px] text-gray-400">{isAr ? "لا توجد إشعارات" : "No notifications"}</p>
                   ) : (
                     notifications.map(n => (
                       <button
                         key={n.id}
-                        className={`flex w-full items-start gap-3 px-4 py-3 text-start hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0 ${!n.is_read ? "bg-blue-50/30" : ""}`}
+                        className={`flex w-full items-start gap-3 px-5 py-3.5 text-start hover:bg-[#2B4C66]/[0.02] transition-all duration-150 border-b border-gray-50 last:border-0 ${!n.is_read ? "bg-[#2B4C66]/[0.02]" : ""}`}
                         onClick={() => markAsRead(n.id)}
                       >
                         <span className="text-sm mt-0.5">{typeLabels[n.type]?.icon || "📌"}</span>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
                             <p className="text-[13px] font-medium text-gray-800 truncate">{n.title}</p>
-                            {!n.is_read && <span className="h-1.5 w-1.5 rounded-full bg-[#2B4C66] shrink-0" />}
+                            {!n.is_read && <span className="h-1.5 w-1.5 rounded-full bg-[#C2A86B] shrink-0" />}
                           </div>
                           <p className="text-[11px] text-gray-500 line-clamp-2 mt-0.5">{n.message}</p>
                           <p className="text-[10px] text-gray-400 mt-1">
@@ -270,10 +297,13 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               )}
             </div>
 
+            {/* Separator */}
+            <div className="h-6 w-px bg-gray-200/60 mx-1.5" />
+
             {/* User avatar */}
-            <div className="flex items-center gap-2.5 ms-2">
-              <div className="h-8 w-8 rounded-full bg-[#2B4C66]/10 flex items-center justify-center">
-                <span className="text-[11px] font-semibold text-[#2B4C66]">
+            <div className="flex items-center gap-2.5 ms-0.5">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#2B4C66] to-[#1E374B] flex items-center justify-center shadow-sm">
+                <span className="text-[11px] font-semibold text-white">
                   {initial}
                 </span>
               </div>
@@ -283,7 +313,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
         {/* Main content */}
         <main className="flex-1 overflow-auto">
-          <div className="mx-auto max-w-[1400px] px-6 py-6">{children}</div>
+          <div className="mx-auto max-w-[1400px] px-6 py-7">{children}</div>
         </main>
       </div>
     </div>

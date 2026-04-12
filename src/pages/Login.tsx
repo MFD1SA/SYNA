@@ -74,35 +74,40 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center bg-[#F7F8FA]" dir={isAr ? "rtl" : "ltr"}>
-      {/* Subtle background elements */}
+    <div
+      className="min-h-screen relative flex items-center justify-center bg-[#F7F8FA]"
+      dir={isAr ? "rtl" : "ltr"}
+      style={{ fontFamily: isAr ? "'IBM Plex Sans Arabic', sans-serif" : "'Inter', sans-serif" }}
+    >
+      {/* Decorative background circles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 end-0 w-[600px] h-[600px] bg-[#2B4C66]/[0.015] rounded-full -translate-y-1/3 translate-x-1/4" />
-        <div className="absolute bottom-0 start-0 w-[500px] h-[500px] bg-[#C2A86B]/[0.01] rounded-full translate-y-1/3 -translate-x-1/4" />
+        <div className="absolute -top-32 end-[-10%] w-[700px] h-[700px] rounded-full bg-[#2B4C66]/[0.03]" />
+        <div className="absolute -bottom-40 start-[-8%] w-[600px] h-[600px] rounded-full bg-[#C2A86B]/[0.025]" />
+        <div className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-[#2B4C66]/[0.015]" />
       </div>
 
       {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-8 md:px-12 py-5 z-10">
-        <Link to="/" className="flex items-center gap-2 text-[13px] font-medium text-gray-400 hover:text-gray-600 transition-colors">
+      <div className="absolute top-0 start-0 end-0 flex items-center justify-between px-8 md:px-12 py-5 z-10">
+        <Link to="/" className="flex items-center gap-2 text-[13px] font-medium text-gray-400 hover:text-[#2B4C66] transition-colors">
           {isAr ? <ArrowRight className="w-4 h-4" strokeWidth={1.5} /> : <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />}
           {isAr ? "الرئيسية" : "Home"}
         </Link>
-        <button onClick={toggleLang} className="text-[13px] font-medium text-gray-400 hover:text-gray-600 transition-colors">
+        <button onClick={toggleLang} className="text-[13px] font-medium text-gray-400 hover:text-[#2B4C66] transition-colors tracking-wide">
           {isAr ? "English" : "العربية"}
         </button>
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 w-full max-w-[420px] px-6 py-20">
+      <div className="relative z-10 w-full max-w-[440px] px-6 py-20">
         {/* Logo */}
-        <div className="flex justify-center mb-10">
+        <div className="flex justify-center mb-8">
           <Link to="/">
-            <img src={logoImg} alt="SYNA" className="h-9 w-auto object-contain" />
+            <img src={logoImg} alt="SINA" className="h-10 w-auto object-contain" />
           </Link>
         </div>
 
         {/* Portal indicator */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-5">
           <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${
             isOwnerMode
               ? "border-[#C2A86B]/25 bg-[#C2A86B]/5 text-[#C2A86B]"
@@ -112,7 +117,7 @@ const LoginPage: React.FC = () => {
               ? <Landmark className="h-3.5 w-3.5" strokeWidth={1.5} />
               : <Building2 className="h-3.5 w-3.5" strokeWidth={1.5} />
             }
-            <span className="text-[12px] font-semibold">
+            <span className="text-[12px] font-semibold tracking-wide">
               {isOwnerMode
                 ? (isAr ? "بوابة المالك" : "Owner Portal")
                 : (isAr ? "بوابة المطور" : "Developer Portal")
@@ -123,16 +128,13 @@ const LoginPage: React.FC = () => {
 
         {/* Heading */}
         <div className="text-center mb-8">
-          <h1 className="text-[24px] font-bold text-gray-900 tracking-tight mb-2">
-            {isOwnerMode
-              ? (isAr ? "تسجيل دخول المالك" : "Owner Sign In")
-              : (isAr ? "تسجيل دخول المطور" : "Developer Sign In")
-            }
+          <h1 className="text-[26px] font-bold text-gray-900 tracking-tight mb-2.5">
+            {isAr ? "تسجيل الدخول" : "Sign In"}
           </h1>
-          <p className="text-[13px] text-gray-400 leading-relaxed">
+          <p className="text-[13.5px] text-gray-400 leading-relaxed max-w-[320px] mx-auto">
             {isOwnerMode
-              ? (isAr ? "حسابك تم إنشاؤه من قبل الإدارة" : "Your account was created by the admin team")
-              : (isAr ? "سجّل دخولك للوصول إلى لوحة التحكم" : "Sign in to access your dashboard")
+              ? (isAr ? "سجّل دخولك لإدارة عقاراتك ومتابعة استثماراتك" : "Sign in to manage your properties and track investments")
+              : (isAr ? "منصة متكاملة لإدارة المشاريع العقارية بكفاءة" : "An integrated platform for efficient real estate project management")
             }
           </p>
         </div>
@@ -150,10 +152,10 @@ const LoginPage: React.FC = () => {
         )}
 
         {/* Form card */}
-        <div className="bg-white rounded-2xl border border-gray-200/60 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.05)] p-8">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_24px_-4px_rgba(43,76,102,0.08)] p-8">
           <form onSubmit={handleLogin} noValidate className="space-y-5">
             <div>
-              <label className="block text-[11px] font-semibold text-gray-400 mb-2 uppercase tracking-[0.1em]">
+              <label className="block text-[11.5px] font-semibold text-gray-500 mb-2 uppercase tracking-[0.08em]">
                 {isAr ? "البريد الإلكتروني" : "Email"}
               </label>
               <div className="relative">
@@ -164,7 +166,7 @@ const LoginPage: React.FC = () => {
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors(prev => ({ ...prev, email: undefined })); }}
                   placeholder="example@email.com"
-                  className={`w-full h-[46px] ps-11 pe-4 bg-gray-50/80 border rounded-xl text-[14px] text-gray-800 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:bg-white transition-all ${
+                  className={`w-full h-12 ps-11 pe-4 bg-gray-50/80 border rounded-xl text-[14px] text-gray-800 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:bg-white transition-all ${
                     errors.email ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-gray-200/80 focus:border-[#2B4C66]/30 focus:ring-[#2B4C66]/10"
                   }`}
                 />
@@ -173,7 +175,7 @@ const LoginPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-gray-400 mb-2 uppercase tracking-[0.1em]">
+              <label className="block text-[11.5px] font-semibold text-gray-500 mb-2 uppercase tracking-[0.08em]">
                 {isAr ? "كلمة المرور" : "Password"}
               </label>
               <div className="relative">
@@ -183,7 +185,8 @@ const LoginPage: React.FC = () => {
                   dir="ltr"
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); if (errors.password) setErrors(prev => ({ ...prev, password: undefined })); }}
-                  className={`w-full h-[46px] ps-11 pe-12 bg-gray-50/80 border rounded-xl text-[14px] text-gray-800 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:bg-white transition-all ${
+                  placeholder="********"
+                  className={`w-full h-12 ps-11 pe-12 bg-gray-50/80 border rounded-xl text-[14px] text-gray-800 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:bg-white transition-all ${
                     errors.password ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-gray-200/80 focus:border-[#2B4C66]/30 focus:ring-[#2B4C66]/10"
                   }`}
                 />
@@ -201,11 +204,7 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full h-[46px] text-white text-[14px] font-semibold rounded-xl disabled:opacity-50 transition-all duration-200 flex items-center justify-center gap-2 mt-1 ${
-                isOwnerMode
-                  ? "bg-[#2B4C66] hover:bg-[#1E374B]"
-                  : "bg-[#2B4C66] hover:bg-[#1E374B]"
-              }`}
+              className="w-full h-12 bg-[#2B4C66] hover:bg-[#1E374B] text-white text-[14px] font-semibold rounded-xl disabled:opacity-50 transition-all duration-200 flex items-center justify-center gap-2 mt-2 shadow-[0_2px_8px_-2px_rgba(43,76,102,0.3)]"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
                 <>
@@ -243,10 +242,10 @@ const LoginPage: React.FC = () => {
         </div>
 
         {/* Trust line */}
-        <div className="flex items-center justify-center gap-2 mt-8">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+        <div className="flex items-center justify-center gap-2 mt-10">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />
           <span className="text-[11px] text-gray-300 tracking-wide">
-            {isAr ? "اتصال آمن ومشفر" : "Secure & encrypted"}
+            {isAr ? "بياناتك محمية ومشفرة" : "Your data is protected and encrypted"}
           </span>
         </div>
       </div>

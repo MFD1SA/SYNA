@@ -27,9 +27,11 @@ const CommissionBreakdown: React.FC<Props> = ({
   const totalPlatformShare = effectiveTotal * PLATFORM_TOTAL_RATE;
 
   return (
-    <div className="rounded-lg border border-border/60 bg-card p-4 space-y-3">
+    <div className="rounded-xl border border-[#2B4C66]/15 bg-card p-4 space-y-3">
       <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-        <DollarSign className="h-4 w-4 text-primary" />
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2B4C66]/10">
+          <DollarSign className="h-4 w-4 text-[#2B4C66]" />
+        </div>
         {isAr ? "تفاصيل العمولة والرسوم" : "Commission & Fee Details"}
       </div>
 
@@ -39,12 +41,12 @@ const CommissionBreakdown: React.FC<Props> = ({
           {estimatedPricePerSqm > 0 && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">{isAr ? "السعر التقديري للمتر" : "Est. Price per sqm"}</span>
-              <span className="font-medium">{fmtSAR(estimatedPricePerSqm)}</span>
+              <span className="font-medium tabular-nums" dir="ltr">{fmtSAR(estimatedPricePerSqm)}</span>
             </div>
           )}
           <div className="flex justify-between">
             <span className="text-muted-foreground">{isAr ? "القيمة التقديرية الإجمالية" : "Est. Total Value"}</span>
-            <span className="font-medium">{fmtSAR(effectiveTotal)}</span>
+            <span className="font-medium tabular-nums" dir="ltr">{fmtSAR(effectiveTotal)}</span>
           </div>
           <Separator />
         </div>
@@ -54,16 +56,16 @@ const CommissionBreakdown: React.FC<Props> = ({
       <div className="space-y-1.5 text-xs">
         <div className="flex justify-between">
           <span className="text-muted-foreground">{isAr ? "عمولة الوساطة العقارية" : "Real Estate Brokerage"}</span>
-          <span className="font-medium">2.50%{effectiveTotal > 0 ? ` (${fmtSAR(brokerageAmount)})` : ""}</span>
+          <span className="font-medium tabular-nums" dir="ltr">2.50%{effectiveTotal > 0 ? ` (${fmtSAR(brokerageAmount)})` : ""}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground">{isAr ? "الرسوم التشغيلية" : "Operational Fee"}</span>
-          <span className="font-medium">0.50%{effectiveTotal > 0 ? ` (${fmtSAR(operationalAmount)})` : ""}</span>
+          <span className="font-medium tabular-nums" dir="ltr">0.50%{effectiveTotal > 0 ? ` (${fmtSAR(operationalAmount)})` : ""}</span>
         </div>
         <Separator />
         <div className="flex justify-between font-semibold">
           <span>{isAr ? "إجمالي حصة المنصة" : "Total Platform Share"}</span>
-          <span className="text-primary">3.00%{effectiveTotal > 0 ? ` (${fmtSAR(totalPlatformShare)})` : ""}</span>
+          <span className="text-[#2B4C66] tabular-nums" dir="ltr">3.00%{effectiveTotal > 0 ? ` (${fmtSAR(totalPlatformShare)})` : ""}</span>
         </div>
       </div>
 

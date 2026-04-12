@@ -108,9 +108,14 @@ const CrmMyRequests: React.FC = () => {
 
   return (
     <CrmLayout>
-      <div className="mb-5">
-        <h1 className="text-2xl font-medium text-foreground">{isAr ? "طلباتي" : "My Requests"}</h1>
-        <p className="mt-1 text-sm font-light text-muted-foreground">
+      <div className="mb-6">
+        <div className="flex items-center gap-2.5 mb-1">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2B4C66]/10">
+            <Send className="h-5 w-5 text-[#2B4C66]" strokeWidth={1.5} />
+          </div>
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight">{isAr ? "طلباتي" : "My Requests"}</h1>
+        </div>
+        <p className="ps-12 text-sm font-light text-muted-foreground">
           {isAr ? "متابعة حالة طلبات الشراكة المقدمة" : "Track the status of your submitted partnership requests"}
         </p>
       </div>
@@ -154,7 +159,7 @@ const CrmMyRequests: React.FC = () => {
                         </span>
                         {r.lands?.land_area_sqm && (
                           <span className="text-xs text-muted-foreground">
-                            {Number(r.lands.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}
+                            <span dir="ltr" className="tabular-nums">{Number(r.lands.land_area_sqm).toLocaleString()}</span> {isAr ? "م²" : "sqm"}
                           </span>
                         )}
                       </div>
@@ -184,7 +189,7 @@ const CrmMyRequests: React.FC = () => {
                       </p>
                     </div>
                     {/* Phase badge */}
-                    <Badge variant="outline" className={`gap-1.5 px-2.5 py-1 text-[11px] font-medium shrink-0 ${pc}`}>
+                    <Badge variant="outline" className={`gap-1.5 px-3 py-1.5 text-[11px] font-medium shrink-0 shadow-sm ${pc}`}>
                       <StatusIcon className="h-3.5 w-3.5" />
                       {isAr ? pl.ar : pl.en}
                     </Badge>

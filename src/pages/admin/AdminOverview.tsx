@@ -134,9 +134,9 @@ const AdminOverview: React.FC = () => {
     <AdminLayout>
       <div dir={isAr ? "rtl" : "ltr"}>
         {/* Greeting */}
-        <div className="mb-7">
-          <h1 className="text-[22px] font-semibold text-gray-900 tracking-tight">{greeting}</h1>
-          <p className="mt-1 text-[13px] text-gray-400">
+        <div className="mb-8">
+          <h1 className="text-[24px] font-bold text-[#1E374B] tracking-tight">{greeting}</h1>
+          <p className="mt-1.5 text-[13px] text-gray-400 font-medium">
             {isAr ? "نظرة شاملة على المنصة والأداء" : "Platform overview and performance metrics"}
           </p>
         </div>
@@ -144,7 +144,7 @@ const AdminOverview: React.FC = () => {
         {loading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div key={i} className="h-[100px] animate-pulse rounded-xl bg-gray-100/60" />
+              <div key={i} className="h-[110px] animate-pulse rounded-2xl bg-gray-100/40" />
             ))}
           </div>
         ) : (
@@ -153,21 +153,21 @@ const AdminOverview: React.FC = () => {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {priorityKPIs.map((kpi) => {
                 const content = (
-                  <div className="group relative bg-white rounded-xl border border-gray-200/60 p-5 transition-all duration-200 hover:shadow-[0_4px_24px_-8px_rgba(0,0,0,0.08)] hover:border-gray-200">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-[0.08em]">{kpi.label}</span>
-                      <div className={`h-8 w-8 rounded-lg ${kpi.bg} flex items-center justify-center`}>
-                        <kpi.icon className={`h-4 w-4 ${kpi.accent}`} strokeWidth={1.5} />
+                  <div className="group relative bg-white rounded-2xl border border-gray-200/40 p-5 transition-all duration-300 hover:shadow-[0_8px_30px_-12px_rgba(43,76,102,0.12)] hover:border-[#2B4C66]/10">
+                    <div className="flex items-center justify-between mb-3.5">
+                      <span className="text-[10.5px] font-semibold text-gray-400/90 uppercase tracking-[0.1em]">{kpi.label}</span>
+                      <div className={`h-9 w-9 rounded-xl ${kpi.bg} flex items-center justify-center`}>
+                        <kpi.icon className={`h-[18px] w-[18px] ${kpi.accent}`} strokeWidth={1.5} />
                       </div>
                     </div>
-                    <p className="text-[28px] font-bold text-gray-900 leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
+                    <p className="text-[30px] font-bold text-[#1E374B] leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
                       {kpi.value.toLocaleString("en-US")}
                     </p>
                     {kpi.subtitle && (
-                      <p className="mt-2 text-[11px] text-gray-400">{kpi.subtitle}</p>
+                      <p className="mt-2.5 text-[11px] text-gray-400 font-medium">{kpi.subtitle}</p>
                     )}
                     {kpi.href && (
-                      <ArrowUpRight className="absolute end-3 bottom-3 h-3.5 w-3.5 text-gray-200 transition-colors group-hover:text-[#2B4C66]" />
+                      <ArrowUpRight className="absolute end-3.5 bottom-3.5 h-3.5 w-3.5 text-gray-200 transition-all duration-300 group-hover:text-[#C2A86B]" strokeWidth={1.5} />
                     )}
                   </div>
                 );
@@ -179,16 +179,16 @@ const AdminOverview: React.FC = () => {
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {secondaryKPIs.map((kpi) => {
                 const content = (
-                  <div className="group flex items-center gap-4 bg-white rounded-xl border border-gray-200/60 px-5 py-3.5 transition-all hover:shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] hover:border-gray-200">
+                  <div className="group flex items-center gap-4 bg-white rounded-2xl border border-gray-200/40 px-5 py-4 transition-all duration-300 hover:shadow-[0_4px_16px_-6px_rgba(43,76,102,0.08)] hover:border-[#2B4C66]/10">
                     <div>
-                      <p className="text-[20px] font-bold text-gray-900 leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
+                      <p className="text-[22px] font-bold text-[#1E374B] leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
                         {kpi.value.toLocaleString("en-US")}
                       </p>
-                      <p className="mt-1 text-[11px] text-gray-400 font-medium">{kpi.label}</p>
+                      <p className="mt-1.5 text-[11px] text-gray-400 font-medium">{kpi.label}</p>
                     </div>
                     <div className="ms-auto text-end">
-                      <kpi.icon className="h-4 w-4 text-gray-300 mb-1 ms-auto" strokeWidth={1.5} />
-                      {kpi.subtitle && <p className="text-[10px] text-gray-400">{kpi.subtitle}</p>}
+                      <kpi.icon className="h-4 w-4 text-gray-300/80 mb-1 ms-auto" strokeWidth={1.5} />
+                      {kpi.subtitle && <p className="text-[10px] text-[#C2A86B] font-medium">{kpi.subtitle}</p>}
                     </div>
                   </div>
                 );
@@ -200,10 +200,10 @@ const AdminOverview: React.FC = () => {
             <div className="grid gap-5 lg:grid-cols-3">
               {/* Charts — 2 cols */}
               <div className="lg:col-span-2">
-                <div className="bg-white rounded-xl border border-gray-200/60 p-6">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Activity className="h-4 w-4 text-gray-400" strokeWidth={1.5} />
-                    <h2 className="text-[14px] font-semibold text-gray-800">{isAr ? "تحليل الأداء" : "Performance Analytics"}</h2>
+                <div className="bg-white rounded-2xl border border-gray-200/40 p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+                  <div className="flex items-center gap-2.5 mb-1">
+                    <Activity className="h-4 w-4 text-[#C2A86B]" strokeWidth={1.5} />
+                    <h2 className="text-[14px] font-semibold text-[#1E374B]">{isAr ? "تحليل الأداء" : "Performance Analytics"}</h2>
                   </div>
                   <AdminAnalyticsCharts />
                 </div>
@@ -212,22 +212,22 @@ const AdminOverview: React.FC = () => {
               {/* Right column */}
               <div className="space-y-5">
                 {/* Recent Users */}
-                <div className="bg-white rounded-xl border border-gray-200/60">
-                  <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
-                    <h3 className="text-[13px] font-semibold text-gray-800 flex items-center gap-2">
-                      <Users className="h-4 w-4 text-gray-400" strokeWidth={1.5} />
+                <div className="bg-white rounded-2xl border border-gray-200/40 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+                  <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100/60">
+                    <h3 className="text-[13px] font-semibold text-[#1E374B] flex items-center gap-2.5">
+                      <Users className="h-4 w-4 text-[#2B4C66]/40" strokeWidth={1.5} />
                       {isAr ? "آخر المسجلين" : "Recent Users"}
                     </h3>
-                    <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{isAr ? "آخر 5" : "Last 5"}</span>
+                    <span className="text-[10px] text-[#C2A86B] font-medium bg-[#C2A86B]/[0.08] px-2.5 py-0.5 rounded-full">{isAr ? "آخر 5" : "Last 5"}</span>
                   </div>
                   <div className="p-2">
                     {data.recentUsers.map((p: any) => (
-                      <div key={p.id} className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-gray-50/80 transition-colors">
+                      <div key={p.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-[#2B4C66]/[0.02] transition-all duration-200">
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-medium text-gray-700">{p.full_name || p.email}</p>
+                          <p className="truncate text-[13px] font-medium text-[#1E374B]">{p.full_name || p.email}</p>
                           <p className="truncate text-[11px] text-gray-400">{new Date(p.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { month: "short", day: "numeric" })}</p>
                         </div>
-                        <span className="ms-3 shrink-0 text-[10px] font-medium text-gray-500 bg-gray-100/80 px-2 py-0.5 rounded-full">
+                        <span className="ms-3 shrink-0 text-[10px] font-semibold text-[#2B4C66]/60 bg-[#2B4C66]/[0.06] px-2.5 py-0.5 rounded-full">
                           {p.subscription_type === "property_management" ? (isAr ? "مالك" : "Owner") : (isAr ? "مطور" : "Dev")}
                         </span>
                       </div>
@@ -239,21 +239,21 @@ const AdminOverview: React.FC = () => {
                 </div>
 
                 {/* Recent Deals */}
-                <div className="bg-white rounded-xl border border-gray-200/60">
-                  <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
-                    <h3 className="text-[13px] font-semibold text-gray-800 flex items-center gap-2">
-                      <Handshake className="h-4 w-4 text-gray-400" strokeWidth={1.5} />
+                <div className="bg-white rounded-2xl border border-gray-200/40 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+                  <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100/60">
+                    <h3 className="text-[13px] font-semibold text-[#1E374B] flex items-center gap-2.5">
+                      <Handshake className="h-4 w-4 text-[#2B4C66]/40" strokeWidth={1.5} />
                       {isAr ? "آخر الصفقات" : "Recent Deals"}
                     </h3>
-                    <Link to="/admincp/deals" className="text-[11px] text-[#2B4C66] hover:underline font-medium">
+                    <Link to="/admincp/deals" className="text-[11px] text-[#C2A86B] hover:text-[#2B4C66] font-semibold transition-colors">
                       {isAr ? "عرض الكل" : "View All"}
                     </Link>
                   </div>
                   <div className="p-2">
                     {data.recentDeals.map((d: any) => (
-                      <div key={d.id} className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-gray-50/80 transition-colors">
+                      <div key={d.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-[#2B4C66]/[0.02] transition-all duration-200">
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-medium text-gray-700">
+                          <p className="truncate text-[13px] font-medium text-[#1E374B]">
                             {(d.developers as any)?.marketing_brand_name || (d.developers as any)?.company_name || "—"}
                           </p>
                           <p className="truncate text-[11px] text-gray-400">
@@ -262,7 +262,7 @@ const AdminOverview: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-2 ms-3 shrink-0">
                           <div className={`h-1.5 w-1.5 rounded-full ${healthDot(d.health)}`} />
-                          <span className="text-[10px] font-medium text-gray-500 bg-gray-100/80 px-2 py-0.5 rounded-full">
+                          <span className="text-[10px] font-semibold text-[#2B4C66]/60 bg-[#2B4C66]/[0.06] px-2.5 py-0.5 rounded-full">
                             {d.current_stage?.replace(/_/g, " ")}
                           </span>
                         </div>
@@ -275,10 +275,10 @@ const AdminOverview: React.FC = () => {
                 </div>
 
                 {/* Quick Navigation */}
-                <div className="bg-white rounded-xl border border-gray-200/60">
-                  <div className="flex items-center gap-2 px-5 py-3.5 border-b border-gray-100">
-                    <BookOpen className="h-4 w-4 text-gray-400" strokeWidth={1.5} />
-                    <h3 className="text-[13px] font-semibold text-gray-800">{isAr ? "تنقل سريع" : "Quick Navigation"}</h3>
+                <div className="bg-white rounded-2xl border border-gray-200/40 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+                  <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100/60">
+                    <BookOpen className="h-4 w-4 text-[#C2A86B]" strokeWidth={1.5} />
+                    <h3 className="text-[13px] font-semibold text-[#1E374B]">{isAr ? "تنقل سريع" : "Quick Navigation"}</h3>
                   </div>
                   <div className="p-2 space-y-0.5">
                     {[
@@ -287,15 +287,15 @@ const AdminOverview: React.FC = () => {
                       { icon: Handshake, label: isAr ? "الصفقات" : "Deals", desc: isAr ? "متابعة المراحل" : "Track stages", href: "/admincp/deals" },
                       { icon: FileText, label: isAr ? "المحتوى" : "Content", desc: isAr ? "تعديل محتوى الموقع" : "Edit site content", href: "/admincp/content" },
                     ].map((item) => (
-                      <Link key={item.href} to={item.href} className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50">
-                        <div className="h-8 w-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-[#2B4C66]/10 transition-colors">
-                          <item.icon className="h-4 w-4 shrink-0 text-gray-400 group-hover:text-[#2B4C66] transition-colors" strokeWidth={1.5} />
+                      <Link key={item.href} to={item.href} className="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-[#2B4C66]/[0.03]">
+                        <div className="h-9 w-9 rounded-xl bg-[#2B4C66]/[0.04] flex items-center justify-center group-hover:bg-[#2B4C66]/[0.08] transition-all duration-200">
+                          <item.icon className="h-4 w-4 shrink-0 text-[#2B4C66]/40 group-hover:text-[#2B4C66] transition-colors duration-200" strokeWidth={1.5} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-[13px] font-medium text-gray-700">{item.label}</p>
+                          <p className="text-[13px] font-medium text-[#1E374B]">{item.label}</p>
                           <p className="text-[10px] text-gray-400">{item.desc}</p>
                         </div>
-                        <ArrowRight className="h-3 w-3 text-gray-200 group-hover:text-gray-400 transition-colors" />
+                        <ArrowRight className="h-3 w-3 text-gray-200 group-hover:text-[#C2A86B] transition-colors duration-200" strokeWidth={1.5} />
                       </Link>
                     ))}
                   </div>

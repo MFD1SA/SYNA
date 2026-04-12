@@ -20,8 +20,8 @@ import LegalDocPrintView from "@/components/land/LegalDocPrintView";
 import { defaultLandForm, LandFormData } from "@/components/land/LandFormConstants";
 import {
   Search, FileText, Handshake, Clock, CheckCircle2, XCircle, AlertCircle, Eye, Ruler, MapPin, Globe,
-  TrendingUp, Video, CalendarClock, Loader2, ArrowRight, Shield, MessageSquare, Link2, ClipboardList,
-  ChevronDown, ChevronUp, BarChart3, Building2,
+  TrendingUp, Video, CalendarClock, Loader2, MoveRight, Shield, MessageSquare, Link2, ClipboardList,
+  ChevronDown, ChevronUp, BarChart3, Building2, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import DealStagePipeline from "@/components/deal/DealStagePipeline";
 import MeetingsList from "@/components/deal/MeetingsList";
@@ -357,21 +357,21 @@ const AdminDeals: React.FC = () => {
       />
 
       {/* Summary KPIs */}
-      <div className="grid grid-cols-4 gap-3 mb-5">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         {[
-          { label: isAr ? "طلبات معلقة" : "Pending", value: pendingCount, icon: Clock, color: "text-amber-600", bg: "bg-amber-500/10" },
-          { label: isAr ? "صفقات نشطة" : "Active Deals", value: activeDealsCount, icon: TrendingUp, color: "text-primary", bg: "bg-primary/10" },
-          { label: isAr ? "مُنجزة" : "Closed", value: deals.filter(d => d.current_stage === "deal_closed").length, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-500/10" },
-          { label: isAr ? "ملغاة" : "Cancelled", value: deals.filter(d => d.current_stage === "deal_cancelled").length, icon: XCircle, color: "text-destructive", bg: "bg-destructive/10" },
+          { label: isAr ? "طلبات معلقة" : "Pending", value: pendingCount, icon: Clock, color: "text-amber-600", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+          { label: isAr ? "صفقات نشطة" : "Active Deals", value: activeDealsCount, icon: TrendingUp, color: "text-[#2B4C66]", bg: "bg-[#2B4C66]/10", border: "border-[#2B4C66]/20" },
+          { label: isAr ? "مُنجزة" : "Closed", value: deals.filter(d => d.current_stage === "deal_closed").length, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+          { label: isAr ? "ملغاة" : "Cancelled", value: deals.filter(d => d.current_stage === "deal_cancelled").length, icon: XCircle, color: "text-destructive", bg: "bg-destructive/10", border: "border-destructive/20" },
         ].map(kpi => (
-          <div key={kpi.label} className="rounded-xl border border-border/60 bg-card p-3">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70">{kpi.label}</span>
-              <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${kpi.bg}`}>
-                <kpi.icon className={`h-3.5 w-3.5 ${kpi.color}`} strokeWidth={1.5} />
+          <div key={kpi.label} className={`rounded-xl border bg-card p-4 ${kpi.border} transition-shadow hover:shadow-sm`}>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">{kpi.label}</span>
+              <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${kpi.bg}`}>
+                <kpi.icon className={`h-4 w-4 ${kpi.color}`} strokeWidth={1.5} />
               </div>
             </div>
-            <p className="text-xl font-medium text-foreground" dir="ltr">{kpi.value}</p>
+            <p className="text-2xl font-semibold text-foreground tabular-nums" dir="ltr">{kpi.value}</p>
           </div>
         ))}
       </div>
@@ -395,7 +395,7 @@ const AdminDeals: React.FC = () => {
             <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-start">
-                  <thead className="bg-muted/40 text-muted-foreground border-b border-border/60">
+                  <thead className="bg-[#2B4C66]/[0.04] text-muted-foreground border-b border-[#2B4C66]/10">
                     <tr>
                       <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "المطور والموقع" : "Developer & Location"}</th>
                       <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "المقترح المساحة" : "Proposal & Area"}</th>
@@ -420,7 +420,7 @@ const AdminDeals: React.FC = () => {
                         <td className="px-5 py-4 min-w-[200px]">
                           <p className="text-sm text-foreground font-medium">{req.proposed_project_type}</p>
                           <p className="text-xs text-muted-foreground mt-0.5">
-                            {Number(req.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"} • {new Date(req.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { month: "short", day: "numeric" })}
+                            <span dir="ltr" className="tabular-nums">{Number(req.lands?.land_area_sqm).toLocaleString()}</span> {isAr ? "م²" : "sqm"} • {new Date(req.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { month: "short", day: "numeric" })}
                           </p>
                         </td>
                         <td className="px-5 py-4">
@@ -463,7 +463,7 @@ const AdminDeals: React.FC = () => {
             <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-start">
-                  <thead className="bg-muted/40 text-muted-foreground border-b border-border/60">
+                  <thead className="bg-[#2B4C66]/[0.04] text-muted-foreground border-b border-[#2B4C66]/10">
                     <tr>
                       <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "معلومات الصفقة" : "Deal Info"}</th>
                       <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide min-w-[300px]">{isAr ? "مسار الصفقة (Pipeline)" : "Pipeline Progress"}</th>
@@ -547,7 +547,7 @@ const AdminDeals: React.FC = () => {
                 <p className="text-sm font-medium text-foreground">{viewReq.developers?.company_name}</p>
                 {viewReq.developers?.marketing_brand_name && <p className="text-xs text-muted-foreground">{viewReq.developers.marketing_brand_name}</p>}
                 <p className="text-xs text-muted-foreground">
-                  {isAr ? "سجل:" : "CR:"} {viewReq.developers?.cr_number} • {viewReq.developers?.email || "—"} • {viewReq.developers?.phone || "—"}
+                  {isAr ? "سجل:" : "CR:"} <span dir="ltr">{viewReq.developers?.cr_number}</span> • {viewReq.developers?.email || "—"} • <span dir="ltr">{viewReq.developers?.phone || "—"}</span>
                 </p>
               </div>
               <div className="rounded-lg border border-border/40 bg-muted/30 p-3 space-y-1">
@@ -556,7 +556,7 @@ const AdminDeals: React.FC = () => {
                   <p className="text-xs font-medium text-muted-foreground">{isAr ? "الأرض" : "Land"}</p>
                 </div>
                 <p className="text-sm font-medium text-foreground">{viewReq.lands?.city}{viewReq.lands?.district ? ` - ${viewReq.lands.district}` : ""}</p>
-                <p className="text-xs text-muted-foreground flex items-center gap-1"><Ruler className="h-3 w-3" /> {Number(viewReq.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</p>
+                <p className="text-xs text-muted-foreground flex items-center gap-1"><Ruler className="h-3 w-3" /> <span dir="ltr" className="tabular-nums">{Number(viewReq.lands?.land_area_sqm).toLocaleString()}</span> {isAr ? "م²" : "sqm"}</p>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">{isAr ? "نوع المشروع" : "Project Type"}</Label>
@@ -724,7 +724,7 @@ const AdminDeals: React.FC = () => {
                     </p>
                     <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
                       <MapPin className="h-3 w-3" />
-                      {viewDeal.lands?.city}{viewDeal.lands?.district ? ` - ${viewDeal.lands.district}` : ""} • {Number(viewDeal.lands?.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}
+                      {viewDeal.lands?.city}{viewDeal.lands?.district ? ` - ${viewDeal.lands.district}` : ""} • <span dir="ltr" className="tabular-nums">{Number(viewDeal.lands?.land_area_sqm).toLocaleString()}</span> {isAr ? "م²" : "sqm"}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -847,8 +847,8 @@ const AdminDeals: React.FC = () => {
                 {/* Actions */}
                 <div className="flex items-center gap-2 border-t border-border/40 pt-4">
                   {nextStage && (
-                    <Button className="flex-1 gap-1.5 bg-primary hover:bg-primary/90" onClick={() => setStageDialog({ dealId: viewDeal.id, currentStage: viewDeal.current_stage, nextStage, devName: viewDeal.developers?.company_name, landCity: viewDeal.lands?.city, landDistrict: viewDeal.lands?.district })}>
-                      <ArrowRight className="h-3.5 w-3.5" />
+                    <Button className="flex-1 gap-1.5 bg-[#2B4C66] hover:bg-[#2B4C66]/90" onClick={() => setStageDialog({ dealId: viewDeal.id, currentStage: viewDeal.current_stage, nextStage, devName: viewDeal.developers?.company_name, landCity: viewDeal.lands?.city, landDistrict: viewDeal.lands?.district })}>
+                      {isAr ? <ChevronLeft className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
                       {isAr ? `الانتقال إلى: ${stageConfig[nextStage]?.ar}` : `Advance to: ${stageConfig[nextStage]?.en}`}
                     </Button>
                   )}
@@ -928,7 +928,7 @@ const AdminDeals: React.FC = () => {
         <DialogContent className="max-w-md" dir={isAr ? "rtl" : "ltr"}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <ArrowRight className="h-5 w-5 text-primary" />
+              {isAr ? <ChevronLeft className="h-5 w-5 text-[#2B4C66]" /> : <ChevronRight className="h-5 w-5 text-[#2B4C66]" />}
               {isAr ? "تقديم مرحلة الصفقة" : "Advance Deal Stage"}
             </DialogTitle>
           </DialogHeader>
@@ -936,7 +936,7 @@ const AdminDeals: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-3 rounded-lg border border-border/40 p-3">
                 <Badge variant="outline" className="text-xs">{isAr ? stageConfig[stageDialog.currentStage]?.ar : stageConfig[stageDialog.currentStage]?.en}</Badge>
-                <ArrowRight className="h-4 w-4 text-primary" />
+                <MoveRight className="h-4 w-4 text-[#2B4C66]" />
                 <Badge className="text-xs bg-primary">{isAr ? stageConfig[stageDialog.nextStage]?.ar : stageConfig[stageDialog.nextStage]?.en}</Badge>
               </div>
               <div className="space-y-1.5">

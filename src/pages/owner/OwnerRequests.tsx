@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
   FileText, Clock, CheckCircle2, XCircle, AlertCircle, Eye, Building2,
-  MapPin, Shield, Lock, Loader2, ShieldCheck, ArrowRight, BookOpen, Ban, Calendar, ChevronDown, ChevronUp,
+  MapPin, Shield, Lock, Loader2, ShieldCheck, BookOpen, Ban, Calendar, ChevronDown, ChevronUp,
   MessageSquare, Trophy,
 } from "lucide-react";
 import StudyPanel from "@/components/study/StudyPanel";
@@ -196,12 +196,14 @@ const OwnerRequests: React.FC = () => {
       {/* Page Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2.5 mb-1">
-          <FileText className="h-5 w-5 text-primary" strokeWidth={1.5} />
-          <h1 className="text-2xl font-medium text-foreground tracking-tight">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2B4C66]/10">
+            <FileText className="h-5 w-5 text-[#2B4C66]" strokeWidth={1.5} />
+          </div>
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight">
             {isAr ? "طلبات الشراكة" : "Partnership Requests"}
           </h1>
         </div>
-        <p className="text-sm font-light text-muted-foreground">
+        <p className="text-sm font-light text-muted-foreground ps-12">
           {isAr ? "متابعة طلبات المطورين على أراضيك واتخاذ الإجراءات المناسبة" : "Track developer requests on your lands and take appropriate actions"}
         </p>
       </div>
@@ -285,7 +287,7 @@ const OwnerRequests: React.FC = () => {
                         {req.lands?.land_area_sqm && (
                           <>
                             <span className="h-3 w-px bg-border" />
-                            <span>{Number(req.lands.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</span>
+                            <span><span dir="ltr" className="tabular-nums">{Number(req.lands.land_area_sqm).toLocaleString()}</span> {isAr ? "م²" : "sqm"}</span>
                           </>
                         )}
                       </div>
@@ -318,21 +320,21 @@ const OwnerRequests: React.FC = () => {
                       </p>
                     </div>
 
-                    {/* Right: Phase badge */}
+                    {/* Phase badge + NDA */}
                     <div className="shrink-0 flex flex-col items-end gap-2">
-                      <Badge variant="outline" className={`gap-1.5 px-2.5 py-1 text-[11px] font-medium ${pc}`}>
+                      <Badge variant="outline" className={`gap-1.5 px-3 py-1.5 text-[11px] font-medium shadow-sm ${pc}`}>
                         <StatusIcon className="h-3.5 w-3.5" />
                         {isAr ? pl.ar : pl.en}
                       </Badge>
                       {/* NDA status indicators */}
-                      <div className="flex flex-col items-end gap-1">
+                      <div className="flex flex-col items-end gap-1 rounded-lg border border-border/30 bg-muted/20 px-2.5 py-1.5">
                         <span className={`text-[10px] flex items-center gap-1 ${req.developer_nda_status === "accepted" ? "text-emerald-600" : "text-muted-foreground/50"}`}>
                           {req.developer_nda_status === "accepted" ? <CheckCircle2 className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                          {isAr ? "NDA المطور" : "Dev NDA"}
+                          <span dir="ltr">NDA</span> {isAr ? "المطور" : "Dev"}
                         </span>
                         <span className={`text-[10px] flex items-center gap-1 ${req.owner_nda_status === "accepted" ? "text-emerald-600" : "text-muted-foreground/50"}`}>
                           {req.owner_nda_status === "accepted" ? <CheckCircle2 className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                          {isAr ? "NDA المالك" : "Owner NDA"}
+                          <span dir="ltr">NDA</span> {isAr ? "المالك" : "Owner"}
                         </span>
                       </div>
                     </div>
@@ -352,7 +354,7 @@ const OwnerRequests: React.FC = () => {
                       {actions.includes("approve") && (
                         <Button
                           size="sm"
-                          className="h-9 gap-2 text-xs font-medium shadow-sm"
+                          className="h-9 gap-2 text-xs font-medium shadow-sm bg-[#2B4C66] hover:bg-[#2B4C66]/90"
                           disabled={isLoading}
                           onClick={() => handleTransition(req.id, "under_review")}
                         >
