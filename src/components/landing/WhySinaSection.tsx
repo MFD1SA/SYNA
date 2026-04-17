@@ -1,26 +1,46 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { ScanEye, ShieldCheck, LockKeyhole, Bolt } from "lucide-react";
+import { ScanEye, ShieldCheck, LockKeyhole, Bolt, Sparkles } from "lucide-react";
 
 const WhySinaSection: React.FC = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
 
   const cards = [
-    { icon: ScanEye, title: t.whySina.card1Title, desc: t.whySina.card1Desc },
-    { icon: ShieldCheck, title: t.whySina.card2Title, desc: t.whySina.card2Desc },
-    { icon: LockKeyhole, title: t.whySina.card3Title, desc: t.whySina.card3Desc },
-    { icon: Bolt, title: t.whySina.card4Title, desc: t.whySina.card4Desc },
+    { icon: ScanEye, title: t.whySina.card1Title, desc: t.whySina.card1Desc, accent: "from-[#2B4C66]/10 to-[#2B4C66]/0" },
+    { icon: ShieldCheck, title: t.whySina.card2Title, desc: t.whySina.card2Desc, accent: "from-[#C2A86B]/15 to-[#C2A86B]/0" },
+    { icon: LockKeyhole, title: t.whySina.card3Title, desc: t.whySina.card3Desc, accent: "from-emerald-500/10 to-emerald-500/0" },
+    { icon: Bolt, title: t.whySina.card4Title, desc: t.whySina.card4Desc, accent: "from-[#2B4C66]/10 to-[#2B4C66]/0" },
   ];
 
   return (
-    <section className="py-14 lg:py-16 bg-white" dir={isAr ? "rtl" : "ltr"}>
-      <div className="container">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4 tracking-tight">
+    <section
+      className="relative py-20 lg:py-24 bg-gradient-to-b from-white via-[#FAFBFC] to-white overflow-hidden"
+      dir={isAr ? "rtl" : "ltr"}
+    >
+      {/* Decorative grid */}
+      <div
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage: "linear-gradient(to right, #2B4C66 1px, transparent 1px), linear-gradient(to bottom, #2B4C66 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
+          maskImage: "radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 70%)",
+        }}
+      />
+
+      <div className="container relative">
+        <div className="text-center mb-16 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 mb-5 px-3.5 py-1.5 rounded-full border border-[#2B4C66]/15 bg-[#2B4C66]/[0.04]">
+            <Sparkles className="w-3 h-3 text-[#C2A86B]" strokeWidth={2.5} />
+            <span className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#2B4C66]">
+              {isAr ? "لماذا سينا" : "Why SINA"}
+            </span>
+          </div>
+          <h2 className="text-[34px] md:text-[44px] font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
             {t.whySina.title}
           </h2>
-          <p className="text-[15px] text-gray-500 max-w-2xl mx-auto leading-relaxed">
+          <div className="mx-auto mb-6 h-0.5 w-16 rounded-full bg-gradient-to-r from-transparent via-[#C2A86B] to-transparent" />
+          <p className="text-[16px] text-gray-600 leading-[1.8] max-w-2xl mx-auto">
             {t.whySina.subtitle}
           </p>
         </div>
@@ -29,13 +49,25 @@ const WhySinaSection: React.FC = () => {
           {cards.map((card, i) => (
             <div
               key={i}
-              className="bg-white rounded-xl p-7 border border-gray-100 hover:shadow-lg hover:shadow-gray-100/80 hover:border-gray-200 transition-all duration-300 group"
+              className="group relative bg-white rounded-2xl p-7 border border-gray-100 hover:border-[#2B4C66]/20 hover:shadow-[0_20px_40px_-20px_rgba(43,76,102,0.15)] hover:-translate-y-1 transition-all duration-500 overflow-hidden"
             >
-              <card.icon className="w-6 h-6 text-[#2B4C66] mb-5" strokeWidth={1.5} />
-              <h3 className="text-[16px] font-semibold text-[#1E374B] mb-3">
+              {/* Hover gradient glow */}
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${card.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`}
+              />
+
+              {/* Icon container */}
+              <div className="relative mb-5">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] flex items-center justify-center shadow-[0_6px_16px_-6px_rgba(43,76,102,0.5)] group-hover:scale-110 transition-transform duration-500">
+                  <card.icon className="w-5 h-5 text-white" strokeWidth={1.7} />
+                </div>
+                <div className="absolute -top-1 -end-1 w-4 h-4 rounded-full bg-[#C2A86B] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </div>
+
+              <h3 className="relative text-[17px] font-bold text-[#1E374B] mb-3 tracking-tight">
                 {card.title}
               </h3>
-              <p className="text-[13px] text-gray-500 leading-relaxed">
+              <p className="relative text-[13.5px] text-gray-600 leading-[1.85]">
                 {card.desc}
               </p>
             </div>

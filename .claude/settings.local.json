@@ -38,7 +38,8 @@
       "Bash(curl -s https://cidoma.com)",
       "Bash(grep -rn \"InnerHero\\\\|PageHeader\" src/pages/*.tsx)",
       "Bash(grep -rn \"header.*Img\\\\|import.*from.*@/assets\" src/pages/*.tsx)",
-      "Bash(ls -lah src/assets/header-*.jpg)"
+      "Bash(ls -lah src/assets/header-*.jpg)",
+      "Bash(ls src/pages/Partnership*)"
     ]
   }
 }

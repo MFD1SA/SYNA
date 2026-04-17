@@ -1,37 +1,87 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Landmark, Building2 } from "lucide-react";
+import {
+  ArrowLeft, ArrowRight, Landmark, Building2, Sparkles, ShieldCheck,
+} from "lucide-react";
 
 const CTASection: React.FC = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
   const navigate = useNavigate();
+  const Arrow = isAr ? ArrowLeft : ArrowRight;
 
   return (
-    <section className="relative py-14 lg:py-20 overflow-hidden bg-white border-t border-gray-100" dir={isAr ? "rtl" : "ltr"}>
-      <div className="container relative z-10 text-center">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight">
-          {t.ctaFinal.title}
-        </h2>
-        <p className="text-[16px] text-gray-500 max-w-xl mx-auto mb-12 leading-relaxed">
-          {t.ctaFinal.subtitle}
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <button
-            onClick={() => navigate("/auth/login?type=owner")}
-            className="inline-flex items-center gap-2.5 h-14 px-10 bg-[#1E374B] text-white text-[15px] font-semibold rounded-xl shadow-lg shadow-black/15 hover:shadow-xl hover:shadow-black/20 hover:bg-[#2B4C66] transition-all duration-300"
-          >
-            <Landmark className="w-5 h-5" strokeWidth={1.5} />
-            {isAr ? "دخول الملاك" : "Owner Login"}
-          </button>
-          <button
-            onClick={() => navigate("/auth/login")}
-            className="inline-flex items-center gap-2.5 h-14 px-10 bg-emerald-600 text-white text-[15px] font-semibold rounded-xl shadow-lg shadow-emerald-600/15 hover:shadow-xl hover:bg-emerald-700 transition-all duration-300"
-          >
-            <Building2 className="w-5 h-5" strokeWidth={1.5} />
-            {isAr ? "دخول المطورين" : "Developer Login"}
-          </button>
+    <section
+      className="relative py-20 lg:py-28 overflow-hidden"
+      dir={isAr ? "rtl" : "ltr"}
+    >
+      {/* Gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0F1F2E] via-[#1E374B] to-[#0F1F2E]" />
+
+      {/* Decorative pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+          backgroundSize: "40px 40px",
+        }}
+      />
+
+      {/* Glow blobs */}
+      <div className="absolute -top-32 start-1/3 w-[600px] h-[400px] bg-[#C2A86B]/20 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute -bottom-20 end-1/4 w-[500px] h-[400px] bg-[#2B4C66]/30 blur-[100px] rounded-full pointer-events-none" />
+
+      <div className="container relative z-10">
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Eyebrow */}
+          <div className="inline-flex items-center gap-2 mb-7 px-4 py-2 rounded-full border border-white/15 bg-white/5 backdrop-blur-md">
+            <div className="flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-[#C2A86B] to-[#A88A4A]">
+              <Sparkles className="w-2.5 h-2.5 text-white" strokeWidth={2.5} />
+            </div>
+            <span className="text-[11px] font-bold tracking-[0.14em] uppercase text-white/85">
+              {isAr ? "ابدأ الآن" : "Get Started"}
+            </span>
+          </div>
+
+          <h2 className="text-[36px] md:text-[52px] lg:text-[60px] font-bold text-white mb-6 tracking-tight leading-[1.05]">
+            {t.ctaFinal.title}
+          </h2>
+
+          <div className="mx-auto mb-8 h-1 w-24 rounded-full bg-gradient-to-r from-transparent via-[#C2A86B] to-transparent" />
+
+          <p className="text-[17px] md:text-[19px] text-white/70 max-w-2xl mx-auto mb-12 leading-[1.7]">
+            {t.ctaFinal.subtitle}
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-3">
+            <button
+              onClick={() => navigate("/auth/login?type=owner")}
+              className="group inline-flex items-center gap-3 h-[58px] px-9 bg-white text-[#1E374B] text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(255,255,255,0.3)] hover:shadow-[0_14px_44px_-10px_rgba(255,255,255,0.45)] hover:-translate-y-0.5 transition-all duration-300"
+            >
+              <Landmark className="w-5 h-5 text-[#2B4C66] group-hover:text-[#A88A4A] transition-colors" strokeWidth={1.6} />
+              {isAr ? "دخول الملاك" : "Owner Login"}
+              <Arrow className="w-4 h-4 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
+            </button>
+            <button
+              onClick={() => navigate("/auth/login")}
+              className="group inline-flex items-center gap-3 h-[58px] px-9 bg-gradient-to-r from-[#C2A86B] to-[#A88A4A] text-white text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(194,168,107,0.5)] hover:shadow-[0_14px_44px_-10px_rgba(194,168,107,0.65)] hover:-translate-y-0.5 transition-all duration-300"
+            >
+              <Building2 className="w-5 h-5" strokeWidth={1.6} />
+              {isAr ? "دخول المطورين" : "Developer Login"}
+              <Arrow className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
+            </button>
+          </div>
+
+          {/* Trust indicator */}
+          <div className="mt-10 flex items-center justify-center gap-2 text-[12px] text-white/55">
+            <ShieldCheck className="w-4 h-4 text-[#D7C084]" strokeWidth={1.5} />
+            <span>
+              {isAr
+                ? "تفعيل فوري • بدون رسوم اشتراك • بياناتك محمية ومشفرة"
+                : "Instant activation • No subscription fees • Your data is protected"}
+            </span>
+          </div>
         </div>
       </div>
     </section>
