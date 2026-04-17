@@ -20,7 +20,13 @@
       "Bash(grep -l \"CrmDashboard\\\\|DeveloperRoute\\\\|sidebar\" src/components/crm/*.tsx)",
       "Bash(wc -l src/components/owner/*.tsx src/components/crm/*.tsx src/pages/owner/*.tsx src/pages/crm/*.tsx)",
       "Bash(npx tsc:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(node -e \"const fs=require\\('fs'\\); const s=fs.readFileSync\\('supabase/functions/register-developer/index.ts','utf8'\\); fs.writeFileSync\\('/tmp/deploy-payload.json', JSON.stringify\\([{name:'index.ts',content:s}]\\)\\);\")",
+      "Read(//tmp/**)",
+      "Bash(command -v npx)",
+      "mcp__72b51d88-3a69-48ff-8707-2878f2053817__list_deployments",
+      "mcp__72b51d88-3a69-48ff-8707-2878f2053817__deploy_to_vercel",
+      "Bash(command -v vercel)"
     ]
   }
 }

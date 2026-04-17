@@ -19,7 +19,8 @@ export const DashboardShell: React.FC<Props> = ({ children, isAr, className, acc
     <div
       dir={isAr ? "rtl" : "ltr"}
       className={cn(
-        "relative min-h-full pb-12",
+        "relative -mx-4 md:-mx-6 -my-6",
+        "rounded-none overflow-hidden",
         "bg-[radial-gradient(80%_60%_at_50%_0%,rgba(43,76,102,0.06)_0%,transparent_65%),radial-gradient(60%_50%_at_100%_100%,rgba(194,168,107,0.08)_0%,transparent_70%)]",
         "dark:bg-[radial-gradient(80%_60%_at_50%_0%,rgba(43,76,102,0.25)_0%,transparent_65%),radial-gradient(60%_50%_at_100%_100%,rgba(194,168,107,0.12)_0%,transparent_70%)]",
         className,
@@ -40,7 +41,7 @@ export const DashboardShell: React.FC<Props> = ({ children, isAr, className, acc
           )}
         />
       </div>
-      <div className="relative z-[1] px-4 md:px-6 lg:px-8 py-6 md:py-8 max-w-[1600px] mx-auto">
+      <div className="relative z-[1] px-4 md:px-6 py-6 md:py-8">
         {children}
       </div>
     </div>

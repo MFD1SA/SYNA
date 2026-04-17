@@ -58,12 +58,12 @@ const OwnerSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`sticky top-0 flex h-screen flex-col bg-[#FCFCFD] border-e border-gray-200/60 transition-all duration-300 ease-in-out ${
+      className={`sticky top-0 flex h-screen flex-col bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border-e border-white/70 dark:border-white/5 transition-all duration-300 ease-in-out ${
         collapsed ? "w-[68px]" : "w-[260px]"
       }`}
     >
       {/* Header */}
-      <div className={`flex h-[64px] items-center border-b border-gray-200/40 ${collapsed ? "justify-center px-2" : "justify-between px-6"}`}>
+      <div className={`flex h-[62px] items-center border-b border-white/60 dark:border-white/5 ${collapsed ? "justify-center px-2" : "justify-between px-6"}`}>
         <Link to="/owner/dashboard" className="flex items-center gap-2.5">
           <img src={logoImg} alt="SINA" className={`${collapsed ? "h-5" : "h-7"} w-auto object-contain`} />
         </Link>
@@ -90,13 +90,13 @@ const OwnerSidebar: React.FC = () => {
 
       {/* User info + Role badge */}
       {!collapsed && (
-        <div className="mx-3 mt-3 mb-3 flex items-center gap-3 rounded-lg bg-gray-50 px-3 py-2.5">
-          <div className="h-8 w-8 rounded-full bg-[#C2A86B]/15 flex items-center justify-center shrink-0">
-            <Landmark className="h-3.5 w-3.5 text-[#C2A86B]" strokeWidth={1.5} />
+        <div className="mx-3 mt-3 mb-3 flex items-center gap-3 rounded-xl bg-gradient-to-br from-[#C2A86B]/[0.12] to-[#C2A86B]/[0.04] dark:from-[#C2A86B]/25 dark:to-[#C2A86B]/10 border border-[#C2A86B]/20 dark:border-[#C2A86B]/20 px-3 py-2.5">
+          <div className="h-9 w-9 rounded-xl bg-[#C2A86B]/20 dark:bg-[#C2A86B]/30 flex items-center justify-center shrink-0">
+            <Landmark className="h-4 w-4 text-[#A88A4A] dark:text-[#D7C084]" strokeWidth={1.5} />
           </div>
           <div className="min-w-0">
-            <p className="text-[12px] font-medium text-gray-700 truncate">{fullName || "Owner"}</p>
-            <p className="text-[10px] text-gray-400">{isAr ? "مالك أرض" : "Land Owner"}</p>
+            <p className="text-[12px] font-semibold text-[#1E374B] dark:text-white truncate">{fullName || "Owner"}</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400">{isAr ? "مالك أرض" : "Land Owner"}</p>
           </div>
         </div>
       )}
@@ -111,13 +111,16 @@ const OwnerSidebar: React.FC = () => {
                 key={item.href}
                 to={item.href}
                 title={collapsed ? (isAr ? item.label.ar : item.label.en) : undefined}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-all ${
+                className={`relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] transition-all ${
                   isActive
-                    ? "bg-[#2B4C66]/[0.08] text-[#2B4C66] font-medium"
-                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-800"
+                    ? "bg-gradient-to-r from-[#C2A86B]/[0.18] to-[#C2A86B]/[0.05] text-[#A88A4A] dark:text-[#D7C084] dark:from-[#C2A86B]/30 dark:to-[#C2A86B]/10 font-semibold shadow-[0_2px_8px_-4px_rgba(194,168,107,0.25)]"
+                    : "text-slate-500 dark:text-slate-400 hover:bg-white/60 dark:hover:bg-white/5 hover:text-[#1E374B] dark:hover:text-white"
                 } ${collapsed ? "justify-center" : ""}`}
               >
-                <item.icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-[#2B4C66]" : ""}`} strokeWidth={1.5} />
+                {isActive && !collapsed && (
+                  <span className="absolute start-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-[#C2A86B]" />
+                )}
+                <item.icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-[#A88A4A] dark:text-[#D7C084]" : ""}`} strokeWidth={1.5} />
                 {!collapsed && (
                   <span className="truncate">{isAr ? item.label.ar : item.label.en}</span>
                 )}
@@ -160,17 +163,17 @@ const OwnerSidebar: React.FC = () => {
       )}
 
       {/* Footer */}
-      <div className="space-y-0.5 border-t border-gray-200/60 p-3">
+      <div className="space-y-0.5 border-t border-white/60 dark:border-white/5 p-3">
         <button
           onClick={toggleLang}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-slate-500 dark:text-slate-400 transition-colors hover:bg-white/60 dark:hover:bg-white/5 hover:text-[#1E374B] dark:hover:text-white"
         >
           <Globe className="h-4 w-4 shrink-0" strokeWidth={1.5} />
           {!collapsed && (isAr ? "English" : "العربية")}
         </button>
         <button
           onClick={handleSignOut}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] text-red-500/70 transition-colors hover:bg-red-50 hover:text-red-600"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-rose-500/80 transition-colors hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-600"
           title={isImpersonating ? (isAr ? "إغلاق التبويب" : "Close tab") : undefined}
         >
           {isImpersonating ? <X className="h-4 w-4 shrink-0" strokeWidth={1.5} /> : <LogOut className="h-4 w-4 shrink-0" strokeWidth={1.5} />}

@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { useUserType } from "@/hooks/useUserType";
 import { isImpersonationSession } from "@/integrations/supabase/impersonateClient";
@@ -147,6 +148,7 @@ const App: React.FC = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
+        <ThemeProvider>
         <AuthProvider>
           <TooltipProvider>
             <Toaster />
@@ -228,6 +230,7 @@ const App: React.FC = () => (
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
+        </ThemeProvider>
       </LanguageProvider>
     </QueryClientProvider>
   </ErrorBoundary>

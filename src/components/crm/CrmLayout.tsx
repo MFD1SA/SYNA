@@ -5,6 +5,7 @@ import { Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 import NotificationDropdown from "./NotificationDropdown";
 import UserAvatarMenu from "@/components/shared/UserAvatarMenu";
+import ThemeToggle from "@/components/dashboard/ThemeToggle";
 
 const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { lang } = useLanguage();
@@ -21,6 +22,7 @@ const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <header className="sticky top-0 z-30 flex h-[62px] items-center justify-between bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border-b border-white/60 dark:border-white/10 px-6">
           <div className="flex items-center gap-3" />
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link
               to="/crm/settings"
               className="h-9 w-9 rounded-full flex items-center justify-center text-slate-400 hover:text-[#2B4C66] hover:bg-[#2B4C66]/10 dark:hover:bg-white/5 transition-colors"
@@ -34,7 +36,9 @@ const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </header>
 
         {/* Main content */}
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main className="flex-1 overflow-auto">
+          <div className="mx-auto max-w-[1400px] px-4 md:px-6 py-6">{children}</div>
+        </main>
       </div>
     </div>
   );
