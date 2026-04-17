@@ -3,7 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Link, useLocation } from "react-router-dom";
 import {
   Menu, X, Globe, KeyRound, ArrowUpRight,
-  Home, Info, Handshake, Newspaper, MessageSquare, Landmark, Building2,
+  Home, Info, Handshake, Newspaper, MessageSquare, Crown, HardHat,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 
@@ -95,7 +95,7 @@ const Navbar: React.FC = () => {
               to="/auth/login?type=owner"
               className="group inline-flex items-center gap-1.5 text-[13px] font-semibold text-gray-600 hover:text-[#A88A4A] h-9 px-3.5 rounded-xl hover:bg-[#C2A86B]/5 transition-all"
             >
-              <Landmark className="w-3.5 h-3.5 text-[#C2A86B]" strokeWidth={1.8} />
+              <Crown className="w-3.5 h-3.5 text-[#C2A86B]" strokeWidth={1.8} />
               {isAr ? "دخول الملاك" : "Owner Login"}
             </Link>
 
@@ -103,7 +103,7 @@ const Navbar: React.FC = () => {
               to="/auth/login"
               className="group inline-flex items-center gap-2 h-10 px-5 bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[13px] font-bold rounded-xl hover:shadow-[0_8px_24px_-8px_rgba(43,76,102,0.55)] hover:-translate-y-0.5 transition-all duration-300"
             >
-              <Building2 className="w-3.5 h-3.5" strokeWidth={1.8} />
+              <HardHat className="w-3.5 h-3.5" strokeWidth={1.8} />
               {isAr ? "دخول المطورين" : "Developer Login"}
               <ArrowUpRight className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" strokeWidth={2} />
             </Link>
@@ -191,7 +191,7 @@ const Navbar: React.FC = () => {
                 className="flex items-center gap-3 w-full h-[52px] px-4 rounded-2xl border border-[#C2A86B]/25 bg-gradient-to-br from-[#C2A86B]/[0.06] to-[#C2A86B]/[0.02] hover:from-[#C2A86B]/10 hover:to-[#C2A86B]/5 transition-all"
               >
                 <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#C2A86B] to-[#A88A4A] shadow-[0_4px_12px_-4px_rgba(194,168,107,0.5)]">
-                  <Landmark className="w-4 h-4 text-white" strokeWidth={1.8} />
+                  <Crown className="w-4 h-4 text-white" strokeWidth={1.8} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#A88A4A]">
@@ -209,7 +209,7 @@ const Navbar: React.FC = () => {
                 className="flex items-center gap-3 w-full h-[52px] px-4 rounded-2xl bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white shadow-[0_8px_24px_-8px_rgba(43,76,102,0.55)]"
               >
                 <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm">
-                  <Building2 className="w-4 h-4 text-white" strokeWidth={1.8} />
+                  <HardHat className="w-4 h-4 text-white" strokeWidth={1.8} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[10px] font-bold tracking-[0.14em] uppercase text-white/70">

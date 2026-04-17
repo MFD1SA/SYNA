@@ -6,7 +6,7 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { getActiveOffers, getOfferBySlug, usageTypeLabels, offerTypeLabels, type RealEstateOffer } from "@/data/offers";
 import {
-  MapPin, Ruler, CheckCircle2, ArrowRight, ArrowLeft, Building2, ArrowUpRight,
+  MapPin, Ruler, CheckCircle2, ArrowRight, ArrowLeft, Building2, HardHat, ArrowUpRight,
   ShieldCheck, Sparkles, TrendingUp, Users, Clock, Gauge, Scale,
   FileCheck2, Handshake, Eye, Lock, Percent, Target, Gem, ChevronRight, ChevronLeft,
   Calendar, BadgeCheck, BarChart3, Award,
@@ -306,7 +306,7 @@ const OfferDetailPage: React.FC = () => {
               {/* Mobile CTA */}
               <div className="lg:hidden">
                 <Link to="/auth/login" className="flex w-full items-center justify-center gap-3 h-[56px] bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[15px] font-bold rounded-2xl hover:shadow-[0_14px_40px_-12px_rgba(43,76,102,0.45)] transition-all shadow-[0_8px_24px_-8px_rgba(43,76,102,0.35)]">
-                  <Building2 className="h-5 w-5" strokeWidth={1.5} />
+                  <HardHat className="h-5 w-5" strokeWidth={1.5} />
                   {isAr ? "سجّل دخول كمطور للتقديم" : "Developer Login to Apply"}
                   <ArrowUpRight className="h-4 w-4 opacity-70" strokeWidth={2} />
                 </Link>
@@ -361,7 +361,7 @@ const OfferDetailPage: React.FC = () => {
 
                   <div className="px-6 pb-6">
                     <Link to="/auth/login" className="group flex w-full items-center justify-center gap-2.5 h-[52px] bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[14px] font-bold rounded-xl hover:shadow-[0_12px_30px_-8px_rgba(43,76,102,0.5)] hover:-translate-y-0.5 transition-all shadow-[0_6px_16px_-4px_rgba(43,76,102,0.35)]">
-                      <Building2 className="h-4 w-4" strokeWidth={1.8} />
+                      <HardHat className="h-4 w-4" strokeWidth={1.8} />
                       {isAr ? "دخول المطورين للتقديم" : "Developer Login to Apply"}
                       <ArrowUpRight className="h-3.5 w-3.5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
                     </Link>

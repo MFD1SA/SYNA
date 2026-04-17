@@ -7,7 +7,7 @@ import { useAdminRole } from "@/hooks/useAdminRole";
 import { isImpersonationSession } from "@/integrations/supabase/impersonateClient";
 import {
   Gauge, MapPinned, Inbox, HandCoins, SlidersHorizontal,
-  Globe, LogOut, ChevronLeft, ChevronRight, ShieldCheck, X, Gem,
+  Globe, LogOut, ChevronLeft, ChevronRight, ShieldCheck, X, Crown,
 } from "lucide-react";
 import NotificationDropdown from "@/components/crm/NotificationDropdown";
 import logoImg from "@/assets/logo.png";
@@ -92,7 +92,7 @@ const OwnerSidebar: React.FC = () => {
       {!collapsed && (
         <div className="mx-3 mt-3 mb-3 flex items-center gap-3 rounded-xl bg-gradient-to-br from-[#C2A86B]/[0.12] to-[#C2A86B]/[0.04] dark:from-[#C2A86B]/25 dark:to-[#C2A86B]/10 border border-[#C2A86B]/20 dark:border-[#C2A86B]/20 px-3 py-2.5">
           <div className="h-9 w-9 rounded-xl bg-[#C2A86B]/20 dark:bg-[#C2A86B]/30 flex items-center justify-center shrink-0">
-            <Gem className="h-4 w-4 text-[#A88A4A] dark:text-[#D7C084]" strokeWidth={1.7} />
+            <Crown className="h-4 w-4 text-[#A88A4A] dark:text-[#D7C084]" strokeWidth={1.7} />
           </div>
           <div className="min-w-0">
             <p className="text-[12px] font-semibold text-[#1E374B] dark:text-white truncate">{fullName || "Owner"}</p>

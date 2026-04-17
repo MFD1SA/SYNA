@@ -8,7 +8,7 @@ import { useAdminRole } from "@/hooks/useAdminRole";
 import { isImpersonationSession } from "@/integrations/supabase/impersonateClient";
 import {
   Gauge, Compass, Send, HandCoins,
-  SlidersHorizontal, Globe, LogOut, ChevronLeft, ChevronRight, Briefcase, ShieldCheck, X,
+  SlidersHorizontal, Globe, LogOut, ChevronLeft, ChevronRight, HardHat, ShieldCheck, X,
 } from "lucide-react";
 import NotificationDropdown from "./NotificationDropdown";
 import logoImg from "@/assets/logo.png";
@@ -99,7 +99,7 @@ const CrmSidebar: React.FC = () => {
       {!collapsed && (
         <div className="mx-3 mt-3 mb-3 flex items-center gap-3 rounded-xl bg-gradient-to-br from-[#2B4C66]/[0.06] to-[#2B4C66]/[0.02] dark:from-[#2B4C66]/20 dark:to-[#2B4C66]/5 border border-[#2B4C66]/10 dark:border-white/5 px-3 py-2.5">
           <div className="h-9 w-9 rounded-xl bg-[#2B4C66]/[0.12] dark:bg-[#2B4C66]/30 flex items-center justify-center shrink-0">
-            <Briefcase className="h-4 w-4 text-[#2B4C66] dark:text-[#7FA7C4]" strokeWidth={1.7} />
+            <HardHat className="h-4 w-4 text-[#2B4C66] dark:text-[#7FA7C4]" strokeWidth={1.7} />
           </div>
           <div className="min-w-0">
             <p className="text-[12px] font-semibold text-[#1E374B] dark:text-white truncate">{fullName || "Developer"}</p>

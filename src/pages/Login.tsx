@@ -3,7 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useSearchParams } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, Building2, Landmark, ShieldCheck, MapPin, FileCheck, BarChart3, MessageCircle } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, HardHat, Crown, ShieldCheck, MapPin, FileCheck, BarChart3, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { notifyLocalAuthChange } from "@/contexts/AuthContext";
 import logoImg from "@/assets/logo.png";
@@ -171,8 +171,8 @@ const LoginPage: React.FC = () => {
           <div className="flex justify-center mb-7">
             <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full font-bold text-[12px] tracking-wide text-[#2B4C66]">
               {isOwnerMode
-                ? <Landmark className="h-4.5 w-4.5" strokeWidth={1.5} />
-                : <Building2 className="h-4.5 w-4.5" strokeWidth={1.5} />
+                ? <Crown className="h-4.5 w-4.5" strokeWidth={1.5} />
+                : <HardHat className="h-4.5 w-4.5" strokeWidth={1.5} />
               }
               <span>
                 {isOwnerMode
@@ -301,7 +301,7 @@ const LoginPage: React.FC = () => {
                 to="/auth/login?type=owner"
                 className="inline-flex items-center gap-2 text-[12px] font-semibold text-red-500 hover:text-red-600 transition-colors"
               >
-                <Landmark className="w-3.5 h-3.5" /> {isAr ? "الدخول كمالك" : "Sign in as Owner"}
+                <Crown className="w-3.5 h-3.5" /> {isAr ? "الدخول كمالك" : "Sign in as Owner"}
               </Link>
             </div>
           )}

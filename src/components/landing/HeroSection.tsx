@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, ArrowRight, Landmark, Building2, ShieldCheck,
+  ArrowLeft, ArrowRight, Crown, HardHat, ShieldCheck,
   CheckCircle2, TrendingUp, Users,
 } from "lucide-react";
 import cityRiyadhImg from "@/assets/city-riyadh.jpg";
@@ -107,7 +107,7 @@ const HeroSection: React.FC = () => {
               onClick={() => navigate("/auth/login?type=owner")}
               className="group relative inline-flex items-center justify-center gap-3 h-[54px] md:h-[56px] px-6 md:px-8 bg-white text-[#1E374B] text-[13.5px] md:text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(255,255,255,0.25)] hover:shadow-[0_14px_44px_-10px_rgba(255,255,255,0.4)] hover:-translate-y-0.5 transition-all duration-300"
             >
-              <Landmark className="w-5 h-5 text-[#2B4C66] group-hover:text-[#A88A4A] transition-colors" strokeWidth={1.7} />
+              <Crown className="w-5 h-5 text-[#2B4C66] group-hover:text-[#A88A4A] transition-colors" strokeWidth={1.7} />
               {isAr ? "دخول الملاك" : "Owner Login"}
               <Arrow className="w-4 h-4 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
             </button>
@@ -115,7 +115,7 @@ const HeroSection: React.FC = () => {
               onClick={() => navigate("/auth/login")}
               className="group inline-flex items-center justify-center gap-3 h-[54px] md:h-[56px] px-6 md:px-8 bg-white/[0.08] border border-white/20 backdrop-blur-md text-white text-[13.5px] md:text-[14px] font-bold rounded-2xl hover:bg-white/[0.14] hover:border-white/40 hover:-translate-y-0.5 transition-all duration-300"
             >
-              <Building2 className="w-5 h-5 text-[#D7C084]" strokeWidth={1.7} />
+              <HardHat className="w-5 h-5 text-[#D7C084]" strokeWidth={1.7} />
               {isAr ? "دخول المطورين" : "Developer Login"}
               <Arrow className="w-4 h-4 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
             </button>
