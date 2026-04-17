@@ -42,7 +42,25 @@ const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
 /* ── Helper: Generate agreement PDF in new tab ─────────────────── */
 function generateAgreementPdf(agreement: DeveloperAgreement, isAr: boolean) {
-  const text = isAr ? agreement.agreement_text_ar : agreement.agreement_text_en;
+  // Current canonical commission structure (v2.0)
+  const CURRENT_BROKERAGE = 2.50;
+  const CURRENT_OPERATIONAL = 1.50;
+  const CURRENT_TOTAL = 4.00;
+  const CURRENT_VERSION = "v2.0";
+
+  // Always display the current applicable commission structure on printouts,
+  // upgrading legacy v1.0 records so users see the correct fees they owe.
+  const displayBrokerage = CURRENT_BROKERAGE;
+  const displayOperational = CURRENT_OPERATIONAL;
+  const displayTotal = CURRENT_TOTAL;
+  const displayVersion = CURRENT_VERSION;
+
+  // Patch legacy text where old rates are baked in (v1.0 used 0.50% / 3.00%)
+  const storedText = (isAr ? agreement.agreement_text_ar : agreement.agreement_text_en) || "";
+  const text = storedText
+    .replace(/0\.50%/g, `${CURRENT_OPERATIONAL.toFixed(2)}%`)
+    .replace(/3\.00%/g, `${CURRENT_TOTAL.toFixed(2)}%`);
+
   const title = isAr ? "اتفاقية الخدمات والأتعاب المهنية" : "Professional Services & Fees Agreement";
   const acceptedDate = agreement.accepted_at
     ? new Date(agreement.accepted_at).toLocaleDateString(isAr ? "ar-SA-u-nu-latn" : "en-US", {
@@ -86,10 +104,10 @@ function generateAgreementPdf(agreement: DeveloperAgreement, isAr: boolean) {
   <div class="meta">
     <div><strong>${isAr ? "الحالة:" : "Status:"}</strong> <span class="status">${isAr ? "تم القبول" : "Accepted"}</span></div>
     <div><strong>${isAr ? "تاريخ القبول:" : "Accepted At:"}</strong> ${acceptedDate}</div>
-    <div><strong>${isAr ? "الإصدار:" : "Version:"}</strong> ${agreement.agreement_version}</div>
-    <div><strong>${isAr ? "عمولة الوساطة:" : "Brokerage:"}</strong> ${agreement.commission_brokerage}%</div>
-    <div><strong>${isAr ? "الأتعاب التشغيلية:" : "Operational Fee:"}</strong> ${agreement.commission_operational}%</div>
-    <div><strong>${isAr ? "الإجمالي:" : "Total:"}</strong> ${agreement.commission_total}%</div>
+    <div><strong>${isAr ? "الإصدار:" : "Version:"}</strong> ${displayVersion}</div>
+    <div><strong>${isAr ? "عمولة السعي العقاري:" : "Brokerage:"}</strong> ${displayBrokerage.toFixed(2)}%</div>
+    <div><strong>${isAr ? "أتعاب المنصة:" : "Platform Fee:"}</strong> ${displayOperational.toFixed(2)}%</div>
+    <div><strong>${isAr ? "إجمالي الأتعاب المهنية:" : "Total Professional Fees:"}</strong> ${displayTotal.toFixed(2)}%</div>
   </div>
   <script>window.onload = () => window.print();</script>
 </body>

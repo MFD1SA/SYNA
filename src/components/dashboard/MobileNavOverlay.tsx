@@ -18,6 +18,7 @@ interface Props {
   accent?: "blue" | "gold";
   userLabel?: string;
   roleLabel?: string;
+  avatarUrl?: string | null;
   onSignOut?: () => void;
   onBackToAdmin?: () => void;
   showAdminBack?: boolean;
@@ -34,6 +35,7 @@ export const MobileNavOverlay: React.FC<Props> = ({
   accent = "blue",
   userLabel,
   roleLabel,
+  avatarUrl,
   onSignOut,
   onBackToAdmin,
   showAdminBack,
@@ -43,6 +45,15 @@ export const MobileNavOverlay: React.FC<Props> = ({
   const location = useLocation();
   const isAr = lang === "ar";
   const isGold = accent === "gold";
+  const [imgLoaded, setImgLoaded] = React.useState(false);
+  const [imgFailed, setImgFailed] = React.useState(false);
+
+  React.useEffect(() => {
+    setImgLoaded(false);
+    setImgFailed(false);
+  }, [avatarUrl]);
+
+  const showInitial = !avatarUrl || imgFailed;
 
   // Body scroll lock
   useEffect(() => {
@@ -103,8 +114,21 @@ export const MobileNavOverlay: React.FC<Props> = ({
 
           {/* User */}
           <div className="relative flex items-center gap-3 mt-1">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/25 flex items-center justify-center text-white text-[18px] font-bold">
-              {userLabel?.slice(0, 1).toUpperCase() || "U"}
+            <div className="relative w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/25 flex items-center justify-center overflow-hidden">
+              {avatarUrl && !imgFailed && (
+                <img
+                  src={avatarUrl}
+                  alt={userLabel || "User"}
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+                  onLoad={() => setImgLoaded(true)}
+                  onError={() => setImgFailed(true)}
+                />
+              )}
+              {showInitial && (
+                <span className="text-white text-[18px] font-bold">
+                  {userLabel?.slice(0, 1).toUpperCase() || "U"}
+                </span>
+              )}
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-[14px] font-bold text-white truncate">

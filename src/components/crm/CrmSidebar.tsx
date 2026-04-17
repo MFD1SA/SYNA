@@ -67,7 +67,7 @@ const CrmSidebar: React.FC = () => {
       {/* Header */}
       <div className={`flex h-[62px] items-center border-b border-white/60 dark:border-white/5 ${collapsed ? "justify-center px-2" : "justify-between px-6"}`}>
         <Link to="/crm/dashboard" className="flex items-center gap-2.5">
-          <img src={logoImg} alt="SINA" className={`${collapsed ? "h-5" : "h-7"} w-auto object-contain`} />
+          <img src={logoImg} alt="SINA" className={`${collapsed ? "h-5" : "h-7"} w-auto object-contain dark:brightness-0 dark:invert`} />
           {!collapsed && tenantName && (
             <span className="truncate text-[10px] text-gray-400">
               {tenantName}

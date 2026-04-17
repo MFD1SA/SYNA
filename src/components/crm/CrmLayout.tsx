@@ -19,7 +19,7 @@ import logoImg from "@/assets/logo.png";
 const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { lang } = useLanguage();
   const { signOut } = useAuth();
-  const { fullName } = useUserProfile();
+  const { fullName, avatarUrl } = useUserProfile();
   const { isAdmin: isAdminUser } = useAdminRole();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const isAr = lang === "ar";
@@ -49,6 +49,7 @@ const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         accent="blue"
         userLabel={fullName || "Developer"}
         roleLabel={isAr ? "مطور عقاري" : "Developer"}
+        avatarUrl={avatarUrl}
         onSignOut={signOut}
         onBackToAdmin={isImpersonating ? () => window.close() : undefined}
         showAdminBack={isImpersonating}
@@ -68,7 +69,7 @@ const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </button>
             {/* Mobile logo */}
             <Link to="/crm/dashboard" className="lg:hidden flex items-center gap-2">
-              <img src={logoImg} alt="SINA" className="h-7 w-auto object-contain" />
+              <img src={logoImg} alt="SINA" className="h-7 w-auto object-contain dark:brightness-0 dark:invert" />
             </Link>
           </div>
           <div className="flex items-center gap-1.5 lg:gap-2">

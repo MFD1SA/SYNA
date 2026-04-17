@@ -18,7 +18,7 @@ import logoImg from "@/assets/logo.png";
 const OwnerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { lang } = useLanguage();
   const { signOut } = useAuth();
-  const { fullName } = useUserProfile();
+  const { fullName, avatarUrl } = useUserProfile();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const isAr = lang === "ar";
   const isImpersonating = isImpersonationSession();
@@ -47,6 +47,7 @@ const OwnerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         accent="gold"
         userLabel={fullName || "Owner"}
         roleLabel={isAr ? "مالك أرض" : "Land Owner"}
+        avatarUrl={avatarUrl}
         onSignOut={signOut}
         onBackToAdmin={isImpersonating ? () => window.close() : undefined}
         showAdminBack={isImpersonating}
@@ -64,7 +65,7 @@ const OwnerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <Menu className="h-4 w-4" strokeWidth={2} />
             </button>
             <Link to="/owner/dashboard" className="lg:hidden flex items-center gap-2">
-              <img src={logoImg} alt="SINA" className="h-7 w-auto object-contain" />
+              <img src={logoImg} alt="SINA" className="h-7 w-auto object-contain dark:brightness-0 dark:invert" />
             </Link>
           </div>
           <div className="flex items-center gap-1.5 lg:gap-2.5">
