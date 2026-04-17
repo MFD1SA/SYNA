@@ -1,7 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Landmark, HardHat } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, Hammer } from "lucide-react";
 
 const CategoriesSection: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -10,28 +10,28 @@ const CategoriesSection: React.FC = () => {
 
   const categories = [
     {
-      icon: Landmark,
+      icon: Building2,
       title: t.categories.owners.title,
       desc: t.categories.owners.desc,
       cta: t.categories.owners.cta,
       to: "/for-owners",
-      accent: "bg-blue-50 text-blue-600",
+      borderColor: "border-t-[#2B4C66]",
     },
     {
-      icon: HardHat,
+      icon: Hammer,
       title: t.categories.developers.title,
       desc: t.categories.developers.desc,
       cta: t.categories.developers.cta,
       to: "/for-developers",
-      accent: "bg-emerald-50 text-emerald-600",
+      borderColor: "border-t-emerald-500",
     },
   ];
 
   return (
-    <section className="py-16 lg:py-20 bg-[#F7F9FB]" dir={isAr ? "rtl" : "ltr"}>
+    <section className="py-14 lg:py-16 bg-white" dir={isAr ? "rtl" : "ltr"}>
       <div className="container">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-sina-charcoal mb-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4 tracking-tight">
             {t.categories.title}
           </h2>
           <p className="text-[15px] text-gray-500 max-w-2xl mx-auto leading-relaxed">
@@ -43,20 +43,18 @@ const CategoriesSection: React.FC = () => {
           {categories.map((cat, i) => (
             <div
               key={i}
-              className="bg-white rounded-xl p-8 border border-gray-100 hover:border-sina-blue/20 hover:shadow-lg transition-all duration-300 flex flex-col"
+              className={`bg-white rounded-xl p-10 border border-gray-100 border-t-2 ${cat.borderColor} hover:shadow-xl hover:shadow-gray-100/60 transition-all duration-300 flex flex-col h-full group`}
             >
-              <div className={`w-12 h-12 rounded-lg ${cat.accent} flex items-center justify-center mb-6`}>
-                <cat.icon className="w-6 h-6" strokeWidth={1.5} />
-              </div>
-              <h3 className="text-xl font-bold text-sina-charcoal mb-3">
+              <cat.icon className="w-7 h-7 text-[#2B4C66] mb-7" strokeWidth={1.5} />
+              <h3 className="text-xl font-bold text-[#1E374B] mb-3">
                 {cat.title}
               </h3>
-              <p className="text-[14px] text-gray-500 leading-relaxed mb-8 flex-1">
+              <p className="text-[14px] text-gray-500 leading-relaxed mb-10 flex-1">
                 {cat.desc}
               </p>
               <Link
                 to={cat.to}
-                className="inline-flex items-center gap-2 text-[13px] font-semibold text-sina-blue hover:gap-3 transition-all"
+                className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#2B4C66] hover:gap-3.5 transition-all duration-300"
               >
                 {cat.cta}
                 <Arrow className="w-4 h-4" />

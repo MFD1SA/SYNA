@@ -434,14 +434,24 @@ serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims?.sub) {
+    const { data: { user } } = await userClient.auth.getUser();
+    if (!user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
+
+    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
+
+    // ── Role-based authorization ──
+    const { data: adminRole } = await supabaseAdmin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    const isAdmin = !!adminRole;
 
     const payload: NotificationPayload = await req.json();
 
@@ -450,6 +460,19 @@ serve(async (req) => {
         status: 400,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
+    }
+
+    // ── Authorization: non-admin users must be a party to the deal ──
+    if (!isAdmin) {
+      const callerIsParty =
+        (payload.developer_user_id && payload.developer_user_id === user.id) ||
+        (payload.owner_user_id && payload.owner_user_id === user.id);
+      if (!callerIsParty) {
+        return new Response(JSON.stringify({ error: "Forbidden: you are not a party to this deal" }), {
+          status: 403,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        });
+      }
     }
 
     // Sanitize all string fields
@@ -470,8 +493,6 @@ serve(async (req) => {
       to_stage: payload.to_stage,
       meeting_link: payload.meeting_link,
     };
-
-    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
     // Get admin user IDs for in-app notifications
     const { data: adminRoles } = await supabaseAdmin

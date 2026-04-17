@@ -32,6 +32,12 @@ const REPORT_AVAILABLE_PHASES = [
   "negotiation_active", "final_approval", "closed_won",
 ];
 
+const safeUrl = (url: string): string => {
+  if (/^https?:\/\//i.test(url)) return url;
+  if (/^javascript:/i.test(url)) return "#";
+  return `https://${url}`;
+};
+
 const DeveloperReportPanel: React.FC<DeveloperReportPanelProps> = ({
   requestId, developerId, currentPhase, viewerRole, isAr,
 }) => {
@@ -167,7 +173,7 @@ const DeveloperReportPanel: React.FC<DeveloperReportPanelProps> = ({
                 {data.website && (
                   <span className="text-[11px] text-muted-foreground flex items-center gap-1">
                     <Globe className="h-3 w-3" />
-                    <a href={data.website.startsWith("http") ? data.website : `https://${data.website}`} target="_blank" rel="noopener noreferrer" className="underline truncate max-w-[140px]">{data.website}</a>
+                    <a href={safeUrl(data.website)} target="_blank" rel="noopener noreferrer" className="underline truncate max-w-[140px]">{data.website}</a>
                     <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${data.website_status === "active" ? "bg-emerald-500" : data.website_status === "inactive" ? "bg-red-500" : "bg-gray-400"}`} />
                   </span>
                 )}

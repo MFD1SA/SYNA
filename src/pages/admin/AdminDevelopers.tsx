@@ -12,11 +12,17 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil, KeyRound, Eye, EyeOff, Download, Globe, FileText, LogIn, Loader2, DollarSign } from "lucide-react";
+import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil, KeyRound, Eye, EyeOff, Download, Globe, FileText, LogIn, Loader2, Banknote } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 import { getAgreementByUserId, type DeveloperAgreement } from "@/services/agreements.service";
 
 type Developer = Database["public"]["Tables"]["developers"]["Row"];
+
+const safeUrl = (url: string): string => {
+  if (/^https?:\/\//i.test(url)) return url;
+  if (/^javascript:/i.test(url)) return "#";
+  return `https://${url}`;
+};
 
 const AdminDevelopers: React.FC = () => {
   const { user } = useAuth();
@@ -60,9 +66,14 @@ const AdminDevelopers: React.FC = () => {
         body: { target_user_id: userId },
       });
       if (error || data?.error) throw new Error(data?.error || error?.message);
-      if (data?.verify_url) {
-        // Open in new tab
-        window.open(data.verify_url, "_blank");
+      if (data?.access_token && data?.refresh_token) {
+        // Store tokens temporarily in localStorage (shared across tabs).
+        // ImpersonateCallback reads & deletes them immediately.
+        localStorage.setItem("syna_impersonate_tokens", JSON.stringify({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+        }));
+        window.open("/impersonate-callback", "_blank");
         toast({ title: isAr ? `تم فتح جلسة ${name} في تبويب جديد` : `Opened ${name}'s session in new tab` });
       }
     } catch (err: any) {
@@ -207,11 +218,9 @@ const AdminDevelopers: React.FC = () => {
     try {
       const devName = passwordDialog.name;
       const devUserId = passwordDialog.user_id;
-      console.log(`[Admin] Changing password for developer: ${devName} (user_id: ${devUserId})`);
       const res = await supabase.functions.invoke("create-owner", {
         body: { action: "update_password", user_id: devUserId, new_password: newPassword },
       });
-      console.log("[Admin] Password update response:", JSON.stringify(res.data), "error:", res.error?.message);
       if (res.error) throw new Error(res.error.message || "Function call failed");
       if (res.data?.error) throw new Error(res.data.error);
       if (!res.data?.success) throw new Error(isAr ? "لم يتم تحديث كلمة المرور" : "Password was not updated");
@@ -268,6 +277,12 @@ const AdminDevelopers: React.FC = () => {
         titleEn="Manage Developers"
         descAr="تفعيل وإدارة حسابات المطورين"
         descEn="Activate and manage developer accounts"
+        actions={
+          <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 rounded-lg px-3 py-1.5">
+            <LogIn className="h-3.5 w-3.5" />
+            {isAr ? "للدخول كمطور، اضغط \"دخول\" بجانب اسمه" : "To enter as developer, click \"Login\" next to their name"}
+          </div>
+        }
       />
 
       <div className="mb-4 relative max-w-sm">
@@ -338,7 +353,7 @@ const AdminDevelopers: React.FC = () => {
                       <td className="px-5 py-4">
                         {agreementMap[dev.user_id] ? (
                           <Badge variant="default" className="gap-1 text-[10px] whitespace-nowrap bg-emerald-600 hover:bg-emerald-700">
-                            <DollarSign className="h-3 w-3" />
+                            <Banknote className="h-3 w-3" />
                             {isAr ? `${agreementMap[dev.user_id].commission_total}%` : `${agreementMap[dev.user_id].commission_total}%`}
                           </Badge>
                         ) : (
@@ -441,7 +456,7 @@ const AdminDevelopers: React.FC = () => {
                       <p className="text-[11px] text-muted-foreground truncate max-w-[200px]" dir="ltr">{editDev.website}</p>
                     </div>
                   </div>
-                  <a href={editDev.website.startsWith("http") ? editDev.website : `https://${editDev.website}`} target="_blank" rel="noopener noreferrer">
+                  <a href={safeUrl(editDev.website)} target="_blank" rel="noopener noreferrer">
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
                       <Globe className="h-4 w-4" />
                     </Button>

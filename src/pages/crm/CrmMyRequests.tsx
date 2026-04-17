@@ -93,15 +93,20 @@ const CrmMyRequests: React.FC = () => {
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const { data: dev } = await supabase.from("developers").select("id").eq("user_id", user.id).maybeSingle();
-      if (!dev) { setLoading(false); return; }
-      const { data } = await supabase
-        .from("deal_requests")
-        .select("*, lands(city, district, land_area_sqm)")
-        .eq("developer_id", dev.id)
-        .order("created_at", { ascending: false }) as any;
-      setRequests(data || []);
-      setLoading(false);
+      try {
+        const { data: dev } = await supabase.from("developers").select("id").eq("user_id", user.id).maybeSingle();
+        if (!dev) return;
+        const { data } = await supabase
+          .from("deal_requests")
+          .select("*, lands(city, district, land_area_sqm)")
+          .eq("developer_id", dev.id)
+          .order("created_at", { ascending: false }) as any;
+        setRequests(data || []);
+      } catch (err) {
+        console.error("Failed to fetch requests:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, [user]);

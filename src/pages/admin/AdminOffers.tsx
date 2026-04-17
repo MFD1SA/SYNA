@@ -15,9 +15,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import {
   Gift, Plus, Pencil, Trash2, Eye, EyeOff, MapPin, Ruler,
-  ArrowUp, ArrowDown, Loader2, ExternalLink,
+  ArrowUp, ArrowDown, Loader2, ExternalLink, Upload, Image as ImageIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useRef } from "react";
 
 interface Offer {
   id: string;
@@ -74,6 +75,8 @@ const AdminOffers: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [featuresArText, setFeaturesArText] = useState("");
   const [featuresEnText, setFeaturesEnText] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const fetchOffers = async () => {
     // Admin can see all offers via RLS policy
@@ -178,6 +181,28 @@ const AdminOffers: React.FC = () => {
       supabase.from("platform_offers").update({ sort_order: offer.sort_order }).eq("id", other.id),
     ]);
     fetchOffers();
+  };
+
+  const handleImageUpload = async (file: File) => {
+    if (!file || file.size > 5 * 1024 * 1024) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "الحد الأقصى 5 ميغابايت" : "Max file size 5MB" });
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `offers/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage.from("site-assets").upload(path, file, { upsert: true });
+    if (error) {
+      toast({ variant: "destructive", title: "Error", description: error.message });
+      setUploading(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("site-assets").getPublicUrl(path);
+    if (dialog) {
+      setDialog({ ...dialog, offer: { ...dialog.offer, image_url: urlData.publicUrl } });
+    }
+    setUploading(false);
+    toast({ title: isAr ? "تم رفع الصورة" : "Image uploaded" });
   };
 
   const usageLabel = (t: string) => usageOptions.find(o => o.value === t)?.[isAr ? "ar" : "en"] || t;
@@ -342,8 +367,26 @@ const AdminOffers: React.FC = () => {
                     <Input type="number" value={dialog.offer.area_sqm || ""} onChange={e => setDialog({ ...dialog, offer: { ...dialog.offer, area_sqm: Number(e.target.value) } })} className="h-9 text-xs" dir="ltr" />
                   </div>
                   <div>
-                    <Label className="text-[11px]">{isAr ? "رابط الصورة" : "Image URL"}</Label>
-                    <Input value={dialog.offer.image_url || ""} onChange={e => setDialog({ ...dialog, offer: { ...dialog.offer, image_url: e.target.value } })} className="h-9 text-xs" dir="ltr" />
+                    <Label className="text-[11px]">{isAr ? "صورة العرض" : "Offer Image"}</Label>
+                    <input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={e => { if (e.target.files?.[0]) handleImageUpload(e.target.files[0]); }} />
+                    {dialog.offer.image_url ? (
+                      <div className="relative mt-1 rounded-lg overflow-hidden border border-gray-200 h-24">
+                        <img src={dialog.offer.image_url} alt="" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <button type="button" onClick={() => imageInputRef.current?.click()} className="h-8 w-8 rounded-full bg-white/90 flex items-center justify-center text-gray-700 hover:bg-white">
+                            <Upload className="h-3.5 w-3.5" />
+                          </button>
+                          <button type="button" onClick={() => setDialog({ ...dialog, offer: { ...dialog.offer, image_url: "" } })} className="h-8 w-8 rounded-full bg-white/90 flex items-center justify-center text-red-500 hover:bg-white">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button type="button" onClick={() => imageInputRef.current?.click()} disabled={uploading} className="mt-1 w-full h-24 rounded-lg border-2 border-dashed border-gray-200 hover:border-[#2B4C66]/30 transition-colors flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:text-[#2B4C66]">
+                        {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <ImageIcon className="h-5 w-5" />}
+                        <span className="text-[10px]">{uploading ? (isAr ? "جارٍ الرفع..." : "Uploading...") : (isAr ? "اضغط لرفع صورة" : "Click to upload image")}</span>
+                      </button>
+                    )}
                   </div>
                 </div>
 

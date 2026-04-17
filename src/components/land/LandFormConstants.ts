@@ -91,9 +91,9 @@ export const contributionModelLabels: Record<string, { ar: string; en: string; d
 
 export const exitPercentages = [10, 20, 30, 40, 50];
 
-export const PLATFORM_BROKERAGE_RATE = 0.025; // 2.50%
-export const PLATFORM_OPERATIONAL_RATE = 0.005; // 0.50%
-export const PLATFORM_TOTAL_RATE = 0.03; // 3.00%
+export const PLATFORM_BROKERAGE_RATE = 0.025; // 2.50% عمولة السعي
+export const PLATFORM_OPERATIONAL_RATE = 0.015; // 1.50% أتعاب المنصة
+export const PLATFORM_TOTAL_RATE = 0.04; // 4.00% إجمالي من قيمة الأرض
 
 export interface LandFormData {
   // Location

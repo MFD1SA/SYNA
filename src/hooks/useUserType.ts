@@ -13,39 +13,64 @@ interface UserTypeResult {
   developerId: string | null;
 }
 
+// ── Module-level cache ──────────────────────────────────────────────
+// Prevents re-querying on every route change (e.g. DeveloperRoute remount).
+// This eliminates the "flicker" when navigating between CRM pages.
+let _cachedUserId: string | null = null;
+let _cachedUserType: UserType = "loading";
+let _cachedDeveloperId: string | null = null;
+let _cacheReady = false;
+
 export const useUserType = (): UserTypeResult => {
   const { user, loading: authLoading } = useAuth();
-  const [userType, setUserType] = useState<UserType>("loading");
-  const [developerId, setDeveloperId] = useState<string | null>(null);
-  const [typeChecked, setTypeChecked] = useState(false);
-  const checkedUserId = useRef<string | null>(null);
+  const [userType, setUserType] = useState<UserType>(
+    _cacheReady && _cachedUserId === (user?.id ?? null) ? _cachedUserType : "loading",
+  );
+  const [developerId, setDeveloperId] = useState<string | null>(
+    _cacheReady && _cachedUserId === (user?.id ?? null) ? _cachedDeveloperId : null,
+  );
+  const [typeChecked, setTypeChecked] = useState(
+    _cacheReady && _cachedUserId === (user?.id ?? null),
+  );
+  const fetchingRef = useRef(false);
 
-  const loading = authLoading || !typeChecked;
+  // Detect user change before effect runs — keeps `loading` true
+  const needsRecheck = !!user?.id && _cachedUserId !== user.id && !_cacheReady;
+  const loading = authLoading || !typeChecked || needsRecheck;
 
   useEffect(() => {
-    // Wait until auth is done loading before making any decisions
     if (authLoading) return;
 
     const userId = user?.id ?? null;
 
     if (!userId) {
+      _cachedUserId = null;
+      _cachedUserType = "none";
+      _cachedDeveloperId = null;
+      _cacheReady = true;
       setUserType("none");
       setDeveloperId(null);
       setTypeChecked(true);
-      checkedUserId.current = null;
       return;
     }
 
-    // Skip re-check if we already verified this user
-    if (checkedUserId.current === userId) return;
+    // Use cache if available for this user
+    if (_cacheReady && _cachedUserId === userId) {
+      setUserType(_cachedUserType);
+      setDeveloperId(_cachedDeveloperId);
+      setTypeChecked(true);
+      return;
+    }
 
-    // Reset when user changes to prevent premature redirect
+    // Prevent duplicate fetches
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
+
     setTypeChecked(false);
     setUserType("loading");
 
     const checkUserType = async () => {
       try {
-        // Check all three in parallel for speed
         const [rolesRes, devRes] = await Promise.all([
           supabase
             .from("user_roles")
@@ -58,31 +83,36 @@ export const useUserType = (): UserTypeResult => {
             .maybeSingle(),
         ]);
 
-        checkedUserId.current = userId;
-
         const roles = (rolesRes.data || []).map((r: any) => r.role);
         const isAdmin = roles.includes("admin");
         const isOwnerRole = roles.includes("owner");
 
-        // Priority: admin > developer > owner > none
+        let resolvedType: UserType = "none";
+        let resolvedDevId: string | null = null;
+
         if (isAdmin) {
-          setUserType("admin");
-          setDeveloperId(null);
+          resolvedType = "admin";
         } else if (devRes.data) {
-          setUserType("developer");
-          setDeveloperId(devRes.data.id);
+          resolvedType = "developer";
+          resolvedDevId = devRes.data.id;
         } else if (isOwnerRole) {
-          setUserType("owner");
-          setDeveloperId(null);
-        } else {
-          setUserType("none");
-          setDeveloperId(null);
+          resolvedType = "owner";
         }
+
+        // Write to module cache
+        _cachedUserId = userId;
+        _cachedUserType = resolvedType;
+        _cachedDeveloperId = resolvedDevId;
+        _cacheReady = true;
+
+        setUserType(resolvedType);
+        setDeveloperId(resolvedDevId);
       } catch (err) {
         console.error("useUserType error:", err);
         setUserType("none");
       } finally {
         setTypeChecked(true);
+        fetchingRef.current = false;
       }
     };
 
@@ -97,4 +127,12 @@ export const useUserType = (): UserTypeResult => {
     isAdmin: userType === "admin",
     developerId,
   };
+};
+
+// Call this on sign-out to clear the cache
+export const clearUserTypeCache = () => {
+  _cachedUserId = null;
+  _cachedUserType = "loading";
+  _cachedDeveloperId = null;
+  _cacheReady = false;
 };

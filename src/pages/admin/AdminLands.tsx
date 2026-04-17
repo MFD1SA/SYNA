@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, Ruler, Building2, Image as ImageIcon, Landmark, FileText, Shield, Upload, Download, DollarSign, Loader2 } from "lucide-react";
+import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, Ruler, Building2, Image as ImageIcon, Landmark, FileText, Shield, Upload, Download, Banknote, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -458,7 +458,7 @@ const AdminLands: React.FC = () => {
                         </td>
                         <td className="px-5 py-4">
                           <p className="text-xs font-medium text-foreground truncate max-w-[140px]">{land.owner_name || "—"}</p>
-                          <p className="text-xs text-primary mt-1 font-medium" dir="ltr">{land.estimated_total_value ? `${fmtValue(Number(land.estimated_total_value))} SAR` : "—"}</p>
+                          <p className="text-xs text-primary mt-1 font-medium" dir="ltr">{land.estimated_total_value ? `${fmtValue(Number(land.estimated_total_value))} ${isAr ? "ريال" : "SAR"}` : "—"}</p>
                         </td>
                         <td className="px-5 py-4">
                           <div className="flex flex-wrap gap-1.5">
@@ -602,7 +602,7 @@ const AdminLands: React.FC = () => {
               {/* Contract Section */}
               <div>
                 <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
-                  <DollarSign className="h-4 w-4 text-violet-600" />
+                  <Banknote className="h-4 w-4 text-violet-600" />
                   {isAr ? "عقد الوساطة" : "Brokerage Contract"}
                   {brokerageContract && (
                     <Badge variant="outline" className="text-[10px]">

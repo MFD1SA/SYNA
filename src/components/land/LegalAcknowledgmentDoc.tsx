@@ -2,6 +2,7 @@ import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Separator } from "@/components/ui/separator";
 import { Shield, FileText } from "lucide-react";
+import logoImg from "@/assets/logo.png";
 import {
   LandFormData,
   usageLabels,
@@ -22,7 +23,7 @@ interface Props {
 }
 
 const fmt = (n: number) => n.toLocaleString("en-US");
-const fmtSAR = (n: number) => `${fmt(n)} SAR`;
+const fmtSAR = (n: number, isAr?: boolean) => isAr ? `${fmt(n)} ريال` : `${fmt(n)} SAR`;
 
 const LegalAcknowledgmentDoc: React.FC<Props> = ({ form, referenceNumber, ownerName, companyName, date }) => {
   const { lang } = useLanguage();
@@ -41,7 +42,7 @@ const LegalAcknowledgmentDoc: React.FC<Props> = ({ form, referenceNumber, ownerN
     <div className="max-w-2xl mx-auto bg-white text-foreground p-8 rounded-xl border border-border print:border-0 print:shadow-none" dir={isAr ? "rtl" : "ltr"}>
       {/* Header */}
       <div className="text-center mb-6">
-        <img src="/favicon.png" alt="SINA" className="mx-auto h-12 w-12 mb-3" />
+        <img src={logoImg} alt="SINA" className="mx-auto h-10 w-auto object-contain mb-3" />
         <h1 className="text-lg font-semibold">
           {isAr ? "وثيقة الإقرار القانوني" : "Legal Acknowledgment Document"}
         </h1>
@@ -102,10 +103,10 @@ const LegalAcknowledgmentDoc: React.FC<Props> = ({ form, referenceNumber, ownerN
         <div className="mb-4 rounded-lg border border-border/60 p-3">
           <h2 className="text-sm font-semibold mb-2">{isAr ? "رسوم المنصة" : "Platform Fees"}</h2>
           <div className="space-y-1 text-xs">
-            <div className="flex justify-between"><span>{isAr ? "عمولة الوساطة العقارية (2.50%)" : "Real Estate Brokerage (2.50%)"}</span><span className="font-medium">{fmtSAR(brokerageCommission)}</span></div>
-            <div className="flex justify-between"><span>{isAr ? "الرسوم التشغيلية (0.50%)" : "Operational Fee (0.50%)"}</span><span className="font-medium">{fmtSAR(operationalFee)}</span></div>
+            <div className="flex justify-between"><span>{isAr ? "عمولة السعي العقاري (2.50%)" : "Real Estate Brokerage (2.50%)"}</span><span className="font-medium">{fmtSAR(brokerageCommission)}</span></div>
+            <div className="flex justify-between"><span>{isAr ? "أتعاب المنصة (1.50%)" : "Platform Fee (1.50%)"}</span><span className="font-medium">{fmtSAR(operationalFee)}</span></div>
             <Separator className="my-1" />
-            <div className="flex justify-between font-semibold"><span>{isAr ? "إجمالي حصة المنصة (3.00%)" : "Total Platform Share (3.00%)"}</span><span className="text-primary">{fmtSAR(totalPlatformShare)}</span></div>
+            <div className="flex justify-between font-semibold"><span>{isAr ? "إجمالي حصة المنصة (4.00%)" : "Total Platform Share (4.00%)"}</span><span className="text-primary">{fmtSAR(totalPlatformShare)}</span></div>
           </div>
         </div>
       )}
@@ -118,7 +119,7 @@ const LegalAcknowledgmentDoc: React.FC<Props> = ({ form, referenceNumber, ownerN
         <div className="space-y-2 text-[11px] leading-relaxed text-muted-foreground">
           <p>1. {isAr ? "السعر التقديري مقدم من مالك الأرض ولا يمثل تقييماً من المنصة." : "The estimated price was provided by the land owner and does not represent a platform valuation."}</p>
           <p>2. {isAr ? "المنصة لا تقدم تقييماً عقارياً رسمياً." : "The platform does not provide official property valuation."}</p>
-          <p>3. {isAr ? "حصة المنصة (3%) معلومة ومقرة من الأطراف." : "The platform share (3%) is acknowledged by the parties."}</p>
+          <p>3. {isAr ? "حصة المنصة (4%) تُحتسب من قيمة الأرض فقط ومقرة من الأطراف." : "The platform share (4%) is calculated on land value only and acknowledged by the parties."}</p>
           <p>4. {isAr ? "السعر التقديري غير ملزم وقابل للتعديل بالاتفاق." : "The estimated price is not binding and may be modified by agreement."}</p>
           <p>5. {isAr ? "أي سعر نهائي متفق عليه سيوثق في ملحق منفصل." : "Any final agreed price will be documented in a separate addendum."}</p>
           <p>6. {isAr ? "المنصة لا تقدم توصيات استثمارية أو تمويلية." : "The platform does not provide investment or financing recommendations."}</p>

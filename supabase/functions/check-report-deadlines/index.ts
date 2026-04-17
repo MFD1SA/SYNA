@@ -21,16 +21,45 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Optional: verify cron secret for security
+  // Mandatory auth: verify cron secret or admin JWT
+  const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
   const cronSecret = Deno.env.get("CRON_SECRET");
-  if (cronSecret) {
-    const authHeader = req.headers.get("authorization");
-    if (authHeader !== `Bearer ${cronSecret}`) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
+
+  let authorized = false;
+
+  // Option 1: Cron secret (for scheduled invocations)
+  if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
+    authorized = true;
+  }
+
+  // Option 2: Admin JWT (for manual triggers)
+  if (!authorized && authHeader) {
+    try {
+      const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+      const userClient = createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: authHeader } },
       });
+      const { data: { user } } = await userClient.auth.getUser();
+      if (user) {
+        const roleCheckClient = createClient(supabaseUrl, serviceKey);
+        const { data: roleData } = await roleCheckClient
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .eq("role", "admin")
+          .maybeSingle();
+        if (roleData) authorized = true;
+      }
+    } catch {
+      // Auth check failed, authorized stays false
     }
+  }
+
+  if (!authorized) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const admin = createClient(supabaseUrl, serviceKey);
@@ -166,7 +195,7 @@ Deno.serve(async (req) => {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("[check-report-deadlines] Fatal error:", message);
-    return new Response(JSON.stringify({ error: message }), {
+    return new Response(JSON.stringify({ error: "Deadline check failed" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

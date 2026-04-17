@@ -2,6 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 const publicSiteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://cidoma.com";
 const allowedRootDomain = (Deno.env.get("ALLOWED_ROOT_DOMAIN") ?? "cidoma.com").toLowerCase();
 
@@ -11,7 +12,7 @@ const isAllowedOrigin = (origin: string | null) => {
   try {
     const url = new URL(origin);
     const h = url.hostname.toLowerCase();
-    return h === allowedRootDomain || h.endsWith(`.${allowedRootDomain}`) || h === "localhost";
+    return h === allowedRootDomain || h.endsWith(`.${allowedRootDomain}`);
   } catch { return false; }
 };
 const resolveSafeOrigin = (o: string | null) => isAllowedOrigin(o) ? o! : publicSiteUrl;
@@ -214,7 +215,7 @@ Deno.serve(async (req) => {
     if (!authHeader) throw new Error("Unauthorized");
 
     const adminClient = createClient(supabaseUrl, serviceKey);
-    const userClient = createClient(supabaseUrl, serviceKey, {
+    const userClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
 

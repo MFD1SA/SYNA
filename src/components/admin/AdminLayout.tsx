@@ -5,7 +5,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { supabase } from "@/integrations/supabase/client";
-import { Bell, Search, X, Check, Loader2 } from "lucide-react";
+import { Bell, Search, X, Check, Loader2, Settings, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -28,8 +28,8 @@ interface Notification {
 
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { lang } = useLanguage();
-  const { user } = useAuth();
-  const { initial, fullName } = useUserProfile();
+  const { user, signOut } = useAuth();
+  const { initial, fullName, avatarUrl } = useUserProfile();
   const navigate = useNavigate();
   const location = useLocation();
   const isAr = lang === "ar";
@@ -62,11 +62,16 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const notifRef = useRef<HTMLDivElement>(null);
 
+  // User menu
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
   // Click outside handlers
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) setShowSearch(false);
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) setShowNotifs(false);
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) setShowUserMenu(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -77,7 +82,9 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (!searchQuery.trim()) { setSearchResults([]); return; }
     const timeout = setTimeout(async () => {
       setSearchLoading(true);
-      const q = searchQuery.toLowerCase();
+      const raw = searchQuery.toLowerCase();
+      /** Escape characters that could break PostgREST .or()/.ilike() filter syntax */
+      const q = raw.replace(/[%_(),.\\]/g, (ch) => `\\${ch}`);
       const results: SearchResult[] = [];
 
       const [landsRes, devsRes, dealsRes, profilesRes] = await Promise.all([
@@ -168,6 +175,12 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (!user) return;
     await supabase.from("notifications").update({ is_read: true }).eq("user_id", user.id).eq("is_read", false);
     fetchNotifs();
+  };
+
+  const handleSignOut = async () => {
+    setShowUserMenu(false);
+    await signOut();
+    navigate("/");
   };
 
   const typeLabels: Record<string, { icon: string; color: string }> = {
@@ -298,15 +311,49 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </div>
 
             {/* Separator */}
-            <div className="h-6 w-px bg-gray-200/60 mx-1.5" />
+            <div className="h-6 w-px bg-gray-200/60 mx-1" />
 
-            {/* User avatar */}
-            <div className="flex items-center gap-2.5 ms-0.5">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#2B4C66] to-[#1E374B] flex items-center justify-center shadow-sm">
-                <span className="text-[11px] font-semibold text-white">
-                  {initial}
-                </span>
-              </div>
+            {/* User avatar with dropdown */}
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="h-9 w-9 rounded-full overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-[#2B4C66]/20 transition-all duration-200"
+              >
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-full w-full bg-gradient-to-br from-[#2B4C66] to-[#1E374B] flex items-center justify-center">
+                    <span className="text-[11px] font-semibold text-white">{initial}</span>
+                  </div>
+                )}
+              </button>
+
+              {showUserMenu && (
+                <div className="absolute top-full mt-2 end-0 w-52 rounded-xl border border-gray-200/60 bg-white shadow-[0_8px_30px_-8px_rgba(0,0,0,0.12)] z-50 overflow-hidden">
+                  {/* User info */}
+                  <div className="px-4 py-3 border-b border-gray-100/80">
+                    <p className="text-[13px] font-semibold text-[#1E374B] truncate">{fullName}</p>
+                    <p className="text-[11px] text-gray-400 truncate">{user?.email}</p>
+                  </div>
+                  {/* Menu items */}
+                  <div className="py-1">
+                    <button
+                      onClick={() => { setShowUserMenu(false); navigate("/admincp/settings"); }}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-[13px] text-gray-600 hover:bg-[#2B4C66]/[0.04] hover:text-[#1E374B] transition-all"
+                    >
+                      <Settings className="h-4 w-4" strokeWidth={1.5} />
+                      {isAr ? "الإعدادات" : "Settings"}
+                    </button>
+                    <button
+                      onClick={handleSignOut}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-[13px] text-red-500 hover:bg-red-50/60 transition-all"
+                    >
+                      <LogOut className="h-4 w-4" strokeWidth={1.5} />
+                      {isAr ? "تسجيل الخروج" : "Logout"}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </header>

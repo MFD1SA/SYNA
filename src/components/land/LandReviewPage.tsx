@@ -2,9 +2,10 @@ import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import logoImg from "@/assets/logo.png";
 import {
   MapPin, Ruler, FileText, Building2, Landmark, AlertTriangle,
-  DollarSign, Shield, CheckCircle2,
+  Banknote, Shield, CheckCircle2,
 } from "lucide-react";
 import {
   LandFormData,
@@ -25,7 +26,7 @@ interface Props {
 }
 
 const fmt = (n: number) => n.toLocaleString("en-US");
-const fmtSAR = (n: number) => `${fmt(n)} SAR`;
+const fmtSAR = (n: number, isAr?: boolean) => isAr ? `${fmt(n)} ريال` : `${fmt(n)} SAR`;
 
 const LandReviewPage: React.FC<Props> = ({ form, onAcceptLegal, onAcceptFees }) => {
   const { lang } = useLanguage();
@@ -46,7 +47,7 @@ const LandReviewPage: React.FC<Props> = ({ form, onAcceptLegal, onAcceptFees }) 
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
-        <img src="/favicon.png" alt="SINA" className="mx-auto h-10 w-10 mb-2" />
+        <img src={logoImg} alt="SINA" className="mx-auto h-8 w-auto object-contain mb-2" />
         <h2 className="text-lg font-semibold text-foreground">
           {isAr ? "ملخص الطلب والمراجعة النهائية" : "Submission Summary & Final Review"}
         </h2>
@@ -102,7 +103,7 @@ const LandReviewPage: React.FC<Props> = ({ form, onAcceptLegal, onAcceptFees }) 
       {/* Pricing */}
       <div className="rounded-lg border border-border/60 p-4 space-y-3">
         <div className="flex items-center gap-2 text-sm font-medium">
-          <DollarSign className="h-4 w-4 text-primary" />
+          <Banknote className="h-4 w-4 text-primary" />
           {isAr ? "التقييم التقديري" : "Estimated Pricing"}
         </div>
         <div className="grid grid-cols-2 gap-3 text-xs">
@@ -132,16 +133,16 @@ const LandReviewPage: React.FC<Props> = ({ form, onAcceptLegal, onAcceptFees }) 
           </div>
           <div className="space-y-2 text-xs">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">{isAr ? "عمولة الوساطة العقارية (2.50%)" : "Real Estate Brokerage (2.50%)"}</span>
+              <span className="text-muted-foreground">{isAr ? "عمولة السعي العقاري (2.50%)" : "Real Estate Brokerage (2.50%)"}</span>
               <span className="font-medium">{fmtSAR(brokerageCommission)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">{isAr ? "الرسوم التشغيلية (0.50%)" : "Operational Fee (0.50%)"}</span>
+              <span className="text-muted-foreground">{isAr ? "أتعاب المنصة (1.50%)" : "Platform Fee (1.50%)"}</span>
               <span className="font-medium">{fmtSAR(operationalFee)}</span>
             </div>
             <Separator />
             <div className="flex justify-between font-semibold">
-              <span>{isAr ? "إجمالي حصة المنصة (3.00%)" : "Total Platform Share (3.00%)"}</span>
+              <span>{isAr ? "إجمالي حصة المنصة (4.00%)" : "Total Platform Share (4.00%)"}</span>
               <span className="text-primary">{fmtSAR(totalPlatformShare)}</span>
             </div>
           </div>
@@ -150,8 +151,8 @@ const LandReviewPage: React.FC<Props> = ({ form, onAcceptLegal, onAcceptFees }) 
           <div className="rounded-md border border-blue-500/20 bg-blue-500/5 p-3">
             <p className="text-[11px] leading-relaxed text-blue-800">
               {isAr
-                ? "حصة المنصة تُحصّل عادةً من المطور. ومع ذلك، يمكن للمالك والمطور الاتفاق على تقسيم حصة المنصة بينهما إذا رغبا في ذلك."
-                : "The platform share is typically collected from the developer. However, the owner and developer may agree to split the platform share between them if they wish."}
+                ? "تُحتسب حصة المنصة من قيمة الأرض فقط. الاتفاق على آلية الدفع يكون مباشرة بين المالك والمطور."
+                : "Platform fees are calculated on the land value only. Payment arrangement is directly between the owner and developer."}
             </p>
           </div>
         </div>
@@ -183,7 +184,7 @@ const LandReviewPage: React.FC<Props> = ({ form, onAcceptLegal, onAcceptFees }) 
         <div className="space-y-2 text-[11px] leading-relaxed text-muted-foreground">
           <p>• {isAr ? "السعر التقديري مقدم من مالك الأرض ولا يمثل تقييماً من المنصة." : "The estimated price was provided by the land owner and does not represent a platform valuation."}</p>
           <p>• {isAr ? "المنصة لا تقدم تقييماً عقارياً رسمياً." : "The platform does not provide official property valuation."}</p>
-          <p>• {isAr ? "حصة المنصة (3%) معلومة ومقرة من الأطراف." : "The platform share (3%) is acknowledged by the parties."}</p>
+          <p>• {isAr ? "حصة المنصة (4%) تُحتسب من قيمة الأرض فقط ومقرة من الأطراف." : "The platform share (4%) is calculated on land value only and acknowledged by the parties."}</p>
           <p>• {isAr ? "السعر التقديري غير ملزم وقابل للتعديل بالاتفاق." : "The estimated price is not binding and may be modified by agreement."}</p>
           <p>• {isAr ? "أي سعر نهائي متفق عليه سيوثق في ملحق منفصل." : "Any final agreed price will be documented in a separate addendum."}</p>
         </div>
@@ -212,8 +213,8 @@ const LandReviewPage: React.FC<Props> = ({ form, onAcceptLegal, onAcceptFees }) 
             />
             <span className="text-xs text-foreground">
               {isAr
-                ? "أقر بعلمي بهيكل رسوم المنصة (عمولة وساطة 2.50% + رسوم تشغيلية 0.50% = 3.00%)."
-                : "I acknowledge the platform fee structure (Brokerage 2.50% + Operational 0.50% = 3.00%)."}
+                ? "أقر بعلمي بهيكل رسوم المنصة (عمولة سعي 2.50% + أتعاب المنصة 1.50% = 4.00% من قيمة الأرض)."
+                : "I acknowledge the platform fee structure (Brokerage 2.50% + Platform Fee 1.50% = 4.00% of land value)."}
             </span>
           </label>
         </div>

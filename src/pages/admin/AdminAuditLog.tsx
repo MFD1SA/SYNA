@@ -40,6 +40,10 @@ const entityLabels: Record<string, { ar: string; en: string }> = {
 
 const PAGE_SIZE = 20;
 
+/** Escape characters that could break PostgREST .or()/.ilike() filter syntax */
+const sanitizeFilterInput = (input: string): string =>
+  input.replace(/[%_(),.\\]/g, (ch) => `\\${ch}`);
+
 const AdminAuditLog: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
@@ -63,7 +67,10 @@ const AdminAuditLog: React.FC = () => {
 
     if (entityFilter !== "all") query = query.eq("entity_type", entityFilter);
     if (actionFilter !== "all") query = query.eq("action", actionFilter);
-    if (search) query = query.or(`user_email.ilike.%${search}%,entity_id.ilike.%${search}%`);
+    if (search) {
+      const safe = sanitizeFilterInput(search);
+      query = query.or(`user_email.ilike.%${safe}%,entity_id.ilike.%${safe}%`);
+    }
 
     const { data } = await query;
     setLogs(data || []);

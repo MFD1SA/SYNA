@@ -40,6 +40,12 @@ type DealNews = {
   date: string;
 };
 
+const safeUrl = (url: string): string => {
+  if (/^https?:\/\//i.test(url)) return url;
+  if (/^javascript:/i.test(url)) return "#";
+  return `https://${url}`;
+};
+
 const AdminTargets: React.FC = () => {
   const { lang } = useLanguage();
   const { user } = useAuth();
@@ -296,7 +302,7 @@ const AdminTargets: React.FC = () => {
                 <div className="min-w-0">
                   <h3 className="font-medium text-foreground truncate text-sm">{c.company_name}</h3>
                   {c.website && (
-                    <a href={c.website.startsWith("http") ? c.website : `https://${c.website}`} target="_blank" rel="noopener" className="flex items-center gap-1 text-[11px] text-primary hover:underline truncate">
+                    <a href={safeUrl(c.website)} target="_blank" rel="noopener" className="flex items-center gap-1 text-[11px] text-primary hover:underline truncate">
                       <Globe className="h-3 w-3 shrink-0" /><span className="truncate">{c.website}</span>
                     </a>
                   )}

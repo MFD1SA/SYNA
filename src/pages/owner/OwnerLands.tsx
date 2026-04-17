@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast";
 import {
   Plus, Landmark, MapPin, Ruler, Building2, Pencil, CheckCircle2,
-  Clock, Eye, Image as ImageIcon, FileText, Shield, Download, DollarSign,
+  Clock, Eye, Image as ImageIcon, FileText, Shield, Download, Banknote,
 } from "lucide-react";
 import { getContractByLandId, getContractFileUrl, type BrokerageContract } from "@/services/brokerage.service";
 
@@ -40,28 +40,33 @@ const OwnerLands: React.FC = () => {
 
   const fetchLands = useCallback(async () => {
     if (!user) return;
-    const { data } = await supabase.from("lands").select("*").eq("owner_id", user.id).order("created_at", { ascending: false });
-    setLands(data || []);
-    setLoading(false);
+    try {
+      const { data } = await supabase.from("lands").select("*").eq("owner_id", user.id).order("created_at", { ascending: false });
+      setLands(data || []);
 
-    // Fetch contracts for all lands
-    if (data && data.length > 0) {
-      const cMap: Record<string, BrokerageContract> = {};
-      const urlMap: Record<string, string> = {};
-      await Promise.all(
-        data.map(async (land) => {
-          const contract = await getContractByLandId(land.id);
-          if (contract) {
-            cMap[land.id] = contract;
-            if (contract.contract_file_url) {
-              const url = await getContractFileUrl(contract.contract_file_url);
-              if (url) urlMap[land.id] = url;
+      // Fetch contracts for all lands
+      if (data && data.length > 0) {
+        const cMap: Record<string, BrokerageContract> = {};
+        const urlMap: Record<string, string> = {};
+        await Promise.all(
+          data.map(async (land) => {
+            const contract = await getContractByLandId(land.id);
+            if (contract) {
+              cMap[land.id] = contract;
+              if (contract.contract_file_url) {
+                const url = await getContractFileUrl(contract.contract_file_url);
+                if (url) urlMap[land.id] = url;
+              }
             }
-          }
-        })
-      );
-      setContractsMap(cMap);
-      setContractUrls(urlMap);
+          })
+        );
+        setContractsMap(cMap);
+        setContractUrls(urlMap);
+      }
+    } catch (err) {
+      console.error("Failed to fetch lands:", err);
+    } finally {
+      setLoading(false);
     }
   }, [user]);
 
@@ -259,7 +264,7 @@ const OwnerLands: React.FC = () => {
                   <div className="mt-2 grid grid-cols-2 gap-1.5 text-xs font-light text-muted-foreground">
                     <span className="flex items-center gap-1"><Ruler className="h-3 w-3" />{Number(land.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</span>
                     <span className="flex items-center gap-1"><Building2 className="h-3 w-3" />{isAr ? goalLabels[land.partnership_goal]?.ar : goalLabels[land.partnership_goal]?.en}</span>
-                    {land.estimated_total_value && <span className="text-primary font-medium">{fmtValue(Number(land.estimated_total_value))} SAR</span>}
+                    {land.estimated_total_value && <span className="text-primary font-medium">{fmtValue(Number(land.estimated_total_value))} {isAr ? "ريال" : "SAR"}</span>}
                     {land.project_model && <span className="flex items-center gap-1"><FileText className="h-3 w-3" />{isAr ? projectModelLabels[land.project_model]?.ar : projectModelLabels[land.project_model]?.en}</span>}
                   </div>
 
@@ -277,7 +282,7 @@ const OwnerLands: React.FC = () => {
                       )}
                       {contractsMap[land.id] && (
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                          <DollarSign className="h-3 w-3" />
+                          <Banknote className="h-3 w-3" />
                           <span>{isAr ? "عقد:" : "Contract:"} {contractsMap[land.id].contract_number}</span>
                           {contractUrls[land.id] && (
                             <a href={contractUrls[land.id]} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">

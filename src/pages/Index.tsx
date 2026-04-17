@@ -19,7 +19,7 @@ import { MapPin, Ruler, ArrowUpRight, ArrowLeft, ArrowRight as ArrowRightIcon, H
 const OffersPreview: React.FC<{ isAr: boolean }> = ({ isAr }) => {
   const [offers, setOffers] = useState<any[]>([]);
   useEffect(() => {
-    getActiveOffers().then((data) => setOffers(data.slice(0, 3)));
+    getActiveOffers().then((data) => setOffers(data.slice(0, 3))).catch(console.error);
   }, []);
   return (
     <section className="py-16 bg-gray-50/50">

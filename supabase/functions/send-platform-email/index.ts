@@ -2,6 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 const publicSiteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://cidoma.com";
 const allowedRootDomain = (Deno.env.get("ALLOWED_ROOT_DOMAIN") ?? "cidoma.com").toLowerCase();
 const RESEND_API_KEY = (Deno.env.get("RESEND_API_KEY") || "").replace(/[^\x20-\x7E]/g, "").trim();
@@ -12,7 +13,7 @@ const isAllowedOrigin = (o: string | null) => {
   if (!o) return false;
   try {
     const h = new URL(o).hostname.toLowerCase();
-    return h === allowedRootDomain || h.endsWith(`.${allowedRootDomain}`) || h === "localhost";
+    return h === allowedRootDomain || h.endsWith(`.${allowedRootDomain}`);
   } catch { return false; }
 };
 const buildCorsHeaders = (o: string | null) => ({
@@ -458,7 +459,36 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // ── Admin-only auth check ──
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Missing authorization" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user: caller } } = await userClient.auth.getUser();
+    if (!caller) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const adminClient = createClient(supabaseUrl, serviceKey);
+    const { data: roleData } = await adminClient
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", caller.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!roleData) {
+      return new Response(JSON.stringify({ error: "Admin access required" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    // ── End auth check ──
+
     const payload = await req.json();
     const eventType = String(payload.event_type || "").trim();
 
@@ -492,9 +522,9 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Email send failed";
+    const message = err instanceof Error ? err.message : "Unknown error";
     console.error("[send-platform-email] Error:", message);
-    return new Response(JSON.stringify({ error: message }), {
+    return new Response(JSON.stringify({ error: "Email operation failed" }), {
       status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

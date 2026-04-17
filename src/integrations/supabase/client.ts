@@ -5,12 +5,34 @@ import type { Database } from './types';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+// ── Impersonation tab detection (runs at module load time) ────────
+// Admin tabs use localStorage (normal Supabase behaviour).
+// Impersonation tabs use sessionStorage so the developer/owner session
+// is tab-isolated and NEVER overwrites the admin's session in localStorage.
+const IMPERSONATION_FLAG = "syna_impersonation_active";
+
+const isImpersonationTab = (() => {
+  if (typeof window === "undefined") return false;
+  // Already marked (from a prior page in this tab)
+  if (sessionStorage.getItem(IMPERSONATION_FLAG) === "true") return true;
+  // First landing on /impersonate-callback with tokens waiting → mark now
+  if (
+    window.location.pathname === "/impersonate-callback" &&
+    localStorage.getItem("syna_impersonate_tokens")
+  ) {
+    sessionStorage.setItem(IMPERSONATION_FLAG, "true");
+    return true;
+  }
+  return false;
+})();
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: localStorage,
+    storage: isImpersonationTab ? sessionStorage : localStorage,
+    storageKey: isImpersonationTab ? "syna-impersonate-session" : undefined,
     persistSession: true,
     autoRefreshToken: true,
   }

@@ -11,7 +11,7 @@ const isAllowedOrigin = (origin: string | null) => {
   try {
     const url = new URL(origin);
     const h = url.hostname.toLowerCase();
-    return h === allowedRootDomain || h.endsWith(`.${allowedRootDomain}`) || h === "localhost";
+    return h === allowedRootDomain || h.endsWith(`.${allowedRootDomain}`);
   } catch { return false; }
 };
 const resolveSafeOrigin = (o: string | null) => isAllowedOrigin(o) ? o! : publicSiteUrl;
@@ -136,7 +136,7 @@ Deno.serve(async (req) => {
 
     // Determine viewer role
     const [adminCheck, ownerCheck, devCheck] = await Promise.all([
-      sb.from("admin_roles").select("id").eq("user_id", user.id).maybeSingle(),
+      sb.from("user_roles").select("id").eq("user_id", user.id).eq("role", "admin").maybeSingle(),
       sb.from("lands").select("id").eq("owner_id", user.id).limit(1),
       sb.from("developers").select("id").eq("user_id", user.id).maybeSingle(),
     ]);
@@ -248,7 +248,8 @@ Deno.serve(async (req) => {
       headers: { ...cors, "Content-Type": "application/json" },
     });
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message || "Internal error" }), {
+    console.error("[resolve-party-identity] Error:", err.message || err);
+    return new Response(JSON.stringify({ error: "Identity resolution failed" }), {
       status: 500,
       headers: { ...cors, "Content-Type": "application/json" },
     });

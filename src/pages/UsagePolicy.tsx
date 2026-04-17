@@ -26,7 +26,7 @@ const UsagePolicyPage: React.FC = () => {
 
   return (
     <PageShell>
-      <InnerHero title={isAr ? "سياسة الاستخدام" : "Usage Policy"} subtitle={isAr ? "قواعد ومعايير استخدام المنصة" : "Platform usage rules and standards"} isAr={isAr} image={headerUsageImg} />
+      <InnerHero pageSlug="usage-policy" title={isAr ? "سياسة الاستخدام" : "Usage Policy"} subtitle={isAr ? "قواعد ومعايير استخدام المنصة" : "Platform usage rules and standards"} isAr={isAr} image={headerUsageImg} />
       <section className="py-20 lg:py-28 bg-white" dir={isAr ? "rtl" : "ltr"}>
         <div className="container max-w-3xl space-y-10">
           {sections.map((s, i) => (

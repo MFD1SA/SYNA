@@ -49,8 +49,12 @@ const AdminOwners: React.FC = () => {
         body: { target_user_id: userId },
       });
       if (error || data?.error) throw new Error(data?.error || error?.message);
-      if (data?.verify_url) {
-        window.open(data.verify_url, "_blank");
+      if (data?.access_token && data?.refresh_token) {
+        localStorage.setItem("syna_impersonate_tokens", JSON.stringify({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+        }));
+        window.open("/impersonate-callback", "_blank");
         toast({ title: isAr ? `تم فتح جلسة ${name} في تبويب جديد` : `Opened ${name}'s session in new tab` });
       }
     } catch (err: any) {
@@ -178,9 +182,15 @@ const AdminOwners: React.FC = () => {
           descAr="إنشاء حسابات الملاك وإدارة بياناتهم"
           descEn="Create owner accounts and manage their data"
           actions={
-            <Button className="gap-2 bg-primary hover:bg-primary/90" onClick={() => setShowAdd(true)}>
-              <Plus className="h-4 w-4" />{isAr ? "إضافة مالك" : "Add Owner"}
-            </Button>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 rounded-lg px-3 py-1.5">
+                <LogIn className="h-3.5 w-3.5" />
+                {isAr ? "للدخول كمالك، اضغط أيقونة الدخول بجانب اسمه" : "To enter as owner, click login icon next to their name"}
+              </div>
+              <Button className="gap-2 bg-primary hover:bg-primary/90" onClick={() => setShowAdd(true)}>
+                <Plus className="h-4 w-4" />{isAr ? "إضافة مالك" : "Add Owner"}
+              </Button>
+            </div>
           }
         />
 

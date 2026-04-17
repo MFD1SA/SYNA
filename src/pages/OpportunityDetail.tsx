@@ -67,7 +67,8 @@ const OpportunityDetail: React.FC = () => {
       .then(({ data }) => {
         setLand(data);
         setLoading(false);
-      });
+      })
+      .catch(console.error);
   }, [id]);
 
   if (loading) {
@@ -278,17 +279,17 @@ const OpportunityDetail: React.FC = () => {
 
                 <div className="mt-6 space-y-3">
                   <Link
-                    to="/auth/register"
+                    to="/auth/login"
                     className="flex items-center justify-center gap-2 w-full h-12 bg-sina-blue text-white text-[13px] font-semibold rounded-lg hover:bg-sina-dark-blue transition-colors"
                   >
                     <Handshake className="w-4 h-4" />
-                    {isAr ? "سجل كمطور" : "Register as Developer"}
+                    {isAr ? "دخول المطورين" : "Developer Login"}
                   </Link>
                   <Link
-                    to="/auth/login"
+                    to="/auth/login?type=owner"
                     className="flex items-center justify-center w-full h-12 bg-white text-sina-charcoal text-[13px] font-semibold rounded-lg border border-gray-200 hover:border-sina-blue/30 hover:bg-gray-50 transition-colors"
                   >
-                    {isAr ? "تسجيل الدخول" : "Sign In"}
+                    {isAr ? "دخول الملاك" : "Owner Login"}
                   </Link>
                 </div>
 

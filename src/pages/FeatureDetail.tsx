@@ -22,21 +22,21 @@ const featureData: Record<string, FeatureContent> = {
       title: "خصوصية كاملة",
       intro: "تضع سينا خصوصية مالك الأرض في صدارة أولوياتها. نظام الحماية المتدرج يضمن أن بياناتك الحساسة لا تُكشف إلا وفق إرادتك الكاملة.",
       sections: [
-        { heading: "ما البيانات المحمية؟", text: "رقم الصك، الموقع الدقيق على الخريطة، هوية المالك الشخصية، ومعلومات الاتصال المباشرة — جميعها تبقى مخفية تماماً عن المطورين حتى تقرر أنت مشاركتها." },
-        { heading: "ماذا يرى المطور؟", text: "يظهر للمطور فقط المعلومات العامة مثل المدينة، المساحة التقريبية، نوع الاستخدام، وهدف الشراكة المطلوب — وهي كافية لتقييم الفرصة دون كشف أي بيانات حساسة." },
+        { heading: "ما البيانات المحمية؟", text: "رقم الصك، الموقع الدقيق على الخريطة، هوية المالك الشخصية، ومعلومات الاتصال المباشرة، جميعها تبقى مخفية تماماً عن المطورين حتى تقرر أنت مشاركتها." },
+        { heading: "ماذا يرى المطور؟", text: "يظهر للمطور فقط المعلومات العامة مثل المدينة، المساحة التقريبية، نوع الاستخدام، وهدف الشراكة المطلوب، وهي كافية لتقييم الفرصة دون كشف أي بيانات حساسة." },
         { heading: "متى تُكشف التفاصيل؟", text: "فقط بعد مراجعتك لطلب المطور والموافقة عليه صراحةً. لا يوجد أي مسار آخر للوصول إلى بياناتك الكاملة." },
       ],
-      points: ["إخفاء تلقائي لجميع البيانات الحساسة عند إدراج الأرض", "نظام موافقة صريح — لا كشف تلقائي أبداً", "تسجيل كل عملية وصول في سجل آمن للمراجعة والمساءلة", "حماية متعددة الطبقات تمنع أي محاولة تجاوز", "التحكم الكامل يبقى بيد مالك الأرض في جميع المراحل"],
+      points: ["إخفاء تلقائي لجميع البيانات الحساسة عند إدراج الأرض", "نظام موافقة صريح، لا كشف تلقائي أبداً", "تسجيل كل عملية وصول في سجل آمن للمراجعة والمساءلة", "حماية متعددة الطبقات تمنع أي محاولة تجاوز", "التحكم الكامل يبقى بيد مالك الأرض في جميع المراحل"],
     },
     en: {
       title: "Full Privacy",
       intro: "SINA places landowner privacy at the forefront. Our tiered protection system ensures your sensitive data is only revealed according to your explicit consent.",
       sections: [
-        { heading: "What data is protected?", text: "Deed number, exact map location, owner's personal identity, and direct contact information — all remain completely hidden from developers until you decide to share them." },
-        { heading: "What does the developer see?", text: "Developers only see general information such as city, approximate area, usage type, and desired partnership goal — enough to evaluate the opportunity without exposing any sensitive data." },
+        { heading: "What data is protected?", text: "Deed number, exact map location, owner's personal identity, and direct contact information, all remain completely hidden from developers until you decide to share them." },
+        { heading: "What does the developer see?", text: "Developers only see general information such as city, approximate area, usage type, and desired partnership goal, enough to evaluate the opportunity without exposing any sensitive data." },
         { heading: "When are details revealed?", text: "Only after you review the developer's request and explicitly approve it. There is no other pathway to access your complete data." },
       ],
-      points: ["Automatic concealment of all sensitive data when listing land", "Explicit consent system — never automatic disclosure", "Every access operation logged in a secure record for review and accountability", "Multi-layered protection prevents any bypass attempts", "Full control remains with the landowner at all stages"],
+      points: ["Automatic concealment of all sensitive data when listing land", "Explicit consent system, never automatic disclosure", "Every access operation logged in a secure record for review and accountability", "Multi-layered protection prevents any bypass attempts", "Full control remains with the landowner at all stages"],
     },
   },
   "structured-access": {

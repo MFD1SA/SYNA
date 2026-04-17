@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { User, Lock, Eye, EyeOff, Shield } from "lucide-react";
+import AvatarUpload from "@/components/shared/AvatarUpload";
 
 const OwnerSettings: React.FC = () => {
   const { user } = useAuth();
@@ -20,6 +21,7 @@ const OwnerSettings: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -28,13 +30,19 @@ const OwnerSettings: React.FC = () => {
   useEffect(() => {
     if (!user) return;
     const fetch = async () => {
-      const { data } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
-      if (data) {
-        setProfile(data);
-        setFullName(data.full_name || "");
-        setPhone(data.phone || "");
+      try {
+        const { data } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
+        if (data) {
+          setProfile(data);
+          setFullName(data.full_name || "");
+          setPhone(data.phone || "");
+          setAvatarUrl((data as any).avatar_url || null);
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetch();
   }, [user]);
@@ -42,7 +50,7 @@ const OwnerSettings: React.FC = () => {
   const handleSaveProfile = async () => {
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase.from("profiles").update({ full_name: fullName, phone }).eq("user_id", user.id);
+    const { error } = await supabase.from("profiles").update({ full_name: fullName, phone, avatar_url: avatarUrl } as any).eq("user_id", user.id);
     if (error) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
     } else {
@@ -97,6 +105,17 @@ const OwnerSettings: React.FC = () => {
             <h2 className="text-sm font-medium text-foreground">{isAr ? "البيانات الشخصية" : "Personal Information"}</h2>
           </div>
           <div className="space-y-4">
+            {/* Avatar */}
+            <AvatarUpload
+              currentUrl={avatarUrl}
+              displayName={fullName}
+              label={isAr ? "الصورة الشخصية" : "Profile Photo"}
+              isAr={isAr}
+              folder="avatars"
+              onUpload={(url) => setAvatarUrl(url)}
+              onRemove={() => setAvatarUrl(null)}
+            />
+
             <div>
               <Label className="text-xs text-muted-foreground">{isAr ? "البريد الإلكتروني" : "Email"}</Label>
               <Input value={user?.email || ""} disabled className="mt-1 bg-muted/50" dir="ltr" />

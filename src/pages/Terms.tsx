@@ -14,27 +14,25 @@ const TermsPage: React.FC = () => {
     { title: "1. مقدمة", text: "مرحباً بك في SINA، المنصة المتخصصة في تسهيل شراكات التطوير العقاري بين ملاك الأراضي والمطورين في المملكة العربية السعودية. باستخدامك لهذه المنصة فإنك توافق على الالتزام بهذه الشروط والأحكام." },
     { title: "2. التعريفات", text: "\"المنصة\" تشير إلى SINA وجميع الخدمات المرتبطة بها. \"مالك الأرض\" يشير إلى من يسجل أرضه للبحث عن شريك تطوير. \"المطور\" يشير إلى الشركة المسجلة تجارياً والتي تبحث عن فرص تطوير. \"الصفقة\" تشمل دورة الشراكة من الطلب حتى الإغلاق." },
     { title: "3. شروط الاستخدام", text: "يجب أن يكون عمر المستخدم 18 عاماً على الأقل. يلتزم المطور بتقديم سجل تجاري ساري المفعول. يلتزم مالك الأرض بتقديم بيانات صحيحة عن أرضه. يتحمل كل طرف مسؤولية الحفاظ على سرية بيانات حسابه." },
-    { title: "4. العمولة والرسوم", text: "تفرض المنصة عمولة بنسبة 2.50% تُدفع من المطور عند إتمام الصفقة بنجاح. لا توجد رسوم تسجيل أو اشتراك شهري. العمولة مستحقة فقط عند إغلاق الاتفاق بين الطرفين." },
-    { title: "5. الخصوصية والسرية", text: "بيانات مالك الأرض الحساسة (رقم الصك، الموقع الدقيق، هوية المالك) لا تُعرض للمطور إلا بعد موافقة المالك صراحةً. أي محاولة للتحايل على نظام الخصوصية تعرض الحساب للإيقاف الفوري." },
-    { title: "6. الملكية الفكرية", text: "جميع المحتويات والتصاميم والعلامات التجارية المتعلقة بالمنصة هي ملك لـ SINA. لا يجوز نسخ أو تعديل أو توزيع أي محتوى من المنصة دون إذن كتابي مسبق." },
-    { title: "7. حدود المسؤولية", text: "المنصة وسيط تقني فقط ولا تتحمل مسؤولية نتائج الشراكات أو الاتفاقات بين الأطراف. لا تضمن الشركة دقة البيانات المقدمة من المستخدمين." },
-    { title: "8. إنهاء الحساب", text: "يحق للشركة تعليق أو إنهاء حساب المستخدم في حالة مخالفة هذه الشروط. يمكن للمستخدم إلغاء حسابه في أي وقت." },
-    { title: "9. القانون الواجب التطبيق", text: "تخضع هذه الشروط لأنظمة المملكة العربية السعودية. للتواصل يرجى استخدام نموذج \"اتصل بنا\"." },
+    { title: "4. الخصوصية والسرية", text: "بيانات مالك الأرض الحساسة (رقم الصك، الموقع الدقيق، هوية المالك) لا تُعرض للمطور إلا بعد موافقة المالك صراحةً. أي محاولة للتحايل على نظام الخصوصية تعرض الحساب للإيقاف الفوري." },
+    { title: "5. الملكية الفكرية", text: "جميع المحتويات والتصاميم والعلامات التجارية المتعلقة بالمنصة هي ملك لـ SINA. لا يجوز نسخ أو تعديل أو توزيع أي محتوى من المنصة دون إذن كتابي مسبق." },
+    { title: "6. حدود المسؤولية", text: "المنصة وسيط تقني فقط ولا تتحمل مسؤولية نتائج الشراكات أو الاتفاقات بين الأطراف. لا تضمن الشركة دقة البيانات المقدمة من المستخدمين." },
+    { title: "7. إنهاء الحساب", text: "يحق للشركة تعليق أو إنهاء حساب المستخدم في حالة مخالفة هذه الشروط. يمكن للمستخدم إلغاء حسابه في أي وقت." },
+    { title: "8. القانون الواجب التطبيق", text: "تخضع هذه الشروط لأنظمة المملكة العربية السعودية. للتواصل يرجى استخدام نموذج \"اتصل بنا\"." },
   ] : [
     { title: "1. Introduction", text: "Welcome to SINA, a platform specializing in facilitating real estate development partnerships between landowners and developers in Saudi Arabia. By using this platform, you agree to comply with these Terms and Conditions." },
     { title: "2. Definitions", text: "\"Platform\" refers to SINA and all associated services. \"Landowner\" refers to those who list their land seeking a development partner. \"Developer\" refers to a commercially registered company seeking development opportunities. \"Deal\" encompasses the partnership cycle from request to closure." },
     { title: "3. Terms of Use", text: "Users must be at least 18 years old. Developers must provide a valid commercial register. Landowners must provide accurate land data. Each party is responsible for maintaining account confidentiality." },
-    { title: "4. Commission & Fees", text: "The platform charges a 2.50% commission paid by the developer upon successful deal closure. There are no registration or monthly subscription fees. Commission is due only upon agreement closure between both parties." },
-    { title: "5. Privacy & Confidentiality", text: "Sensitive landowner data (deed number, exact location, owner identity) is not shown to developers until explicit owner approval. Any attempt to circumvent the privacy system results in immediate account suspension." },
-    { title: "6. Intellectual Property", text: "All content, designs, and trademarks related to the platform are the property of SINA." },
-    { title: "7. Limitation of Liability", text: "The platform is a technical intermediary only and bears no responsibility for partnership outcomes or agreements between parties." },
-    { title: "8. Account Termination", text: "The company reserves the right to suspend or terminate accounts for violations. Users can cancel their account at any time." },
-    { title: "9. Governing Law", text: "These terms are governed by the laws of the Kingdom of Saudi Arabia. Please use our Contact Us form." },
+    { title: "4. Privacy & Confidentiality", text: "Sensitive landowner data (deed number, exact location, owner identity) is not shown to developers until explicit owner approval. Any attempt to circumvent the privacy system results in immediate account suspension." },
+    { title: "5. Intellectual Property", text: "All content, designs, and trademarks related to the platform are the property of SINA." },
+    { title: "6. Limitation of Liability", text: "The platform is a technical intermediary only and bears no responsibility for partnership outcomes or agreements between parties." },
+    { title: "7. Account Termination", text: "The company reserves the right to suspend or terminate accounts for violations. Users can cancel their account at any time." },
+    { title: "8. Governing Law", text: "These terms are governed by the laws of the Kingdom of Saudi Arabia. Please use our Contact Us form." },
   ];
 
   return (
     <PageShell>
-      <InnerHero title={isAr ? "الشروط والأحكام" : "Terms & Conditions"} subtitle={isAr ? "الأطر القانونية التي تنظم استخدام المنصة" : "Legal frameworks governing platform usage"} isAr={isAr} image={headerTermsImg} />
+      <InnerHero pageSlug="terms" title={isAr ? "الشروط والأحكام" : "Terms & Conditions"} subtitle={isAr ? "الأطر القانونية التي تنظم استخدام المنصة" : "Legal frameworks governing platform usage"} isAr={isAr} image={headerTermsImg} />
       <section className="py-20 lg:py-28 bg-white" dir={isAr ? "rtl" : "ltr"}>
         <div className="container max-w-3xl space-y-10">
           {sections.map((s, i) => (

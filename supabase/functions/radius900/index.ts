@@ -213,7 +213,7 @@ serve(async (req) => {
 
     if (insertError) {
       console.error("Insert error:", insertError);
-      return new Response(JSON.stringify({ error: insertError.message }), {
+      return new Response(JSON.stringify({ error: "Operation failed" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -224,7 +224,7 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("radius900 error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "Search operation failed" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

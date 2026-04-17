@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { useUserType } from "@/hooks/useUserType";
+import { isImpersonationSession } from "@/integrations/supabase/impersonateClient";
 
 // Immediate loading for entry points to prevent layout shift / delays on landing
 import Index from "./pages/Index";
@@ -31,6 +32,8 @@ const OffersPage = lazy(() => import("./pages/OffersPage"));
 const OfferDetailPage = lazy(() => import("./pages/OfferDetailPage"));
 const Contact = lazy(() => import("./pages/Contact"));
 const RegisterPage = lazy(() => import("./pages/Register"));
+
+const ImpersonateCallback = lazy(() => import("./pages/ImpersonateCallback"));
 
 const CrmDashboard = lazy(() => import("./pages/crm/CrmDashboard"));
 const CrmDeals = lazy(() => import("./pages/crm/CrmDeals"));
@@ -88,26 +91,34 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
-// Developer-only route: must have a record in `developers` table — admin NOT allowed
+// Developer-only route: only actual developers allowed
+// Admins must use impersonate (Login button) to access developer dashboards
+// Impersonation tabs (sessionStorage-based) are allowed through
 const DeveloperRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading: authLoading } = useAuth();
   const { userType, loading: typeLoading } = useUserType();
+  // Impersonation tabs bypass normal route guards — the session is already
+  // validated by ImpersonateCallback and stored in sessionStorage
+  if (isImpersonationSession()) return <>{children}</>;
   if (authLoading || typeLoading) return <RouteLoader />;
   if (!user) return <Navigate to="/auth/login" replace />;
   if (userType === "developer") return <>{children}</>;
-  if (userType === "admin") return <Navigate to="/admincp/overview" replace />;
+  if (userType === "admin") return <Navigate to="/admincp/developers" replace />;
   if (userType === "owner") return <Navigate to="/owner/dashboard" replace />;
   return <Navigate to="/no-access" replace />;
 };
 
-// Owner-only route — admin NOT allowed
+// Owner-only route: only actual owners allowed
+// Admins must use impersonate (Login button) to access owner dashboards
 const OwnerRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading: authLoading } = useAuth();
   const { userType, loading: typeLoading } = useUserType();
+  // Impersonation tabs bypass normal route guards
+  if (isImpersonationSession()) return <>{children}</>;
   if (authLoading || typeLoading) return <RouteLoader />;
   if (!user) return <Navigate to="/auth/login" replace />;
   if (userType === "owner") return <>{children}</>;
-  if (userType === "admin") return <Navigate to="/admincp/overview" replace />;
+  if (userType === "admin") return <Navigate to="/admincp/owners" replace />;
   if (userType === "developer") return <Navigate to="/crm/dashboard" replace />;
   return <Navigate to="/no-access" replace />;
 };
@@ -160,13 +171,14 @@ const App: React.FC = () => (
                   <Route path="/privacy" element={<PrivacyPage />} />
                   <Route path="/usage-policy" element={<UsagePolicyPage />} />
                   <Route path="/no-access" element={<NoAccess />} />
+                  <Route path="/impersonate-callback" element={<ImpersonateCallback />} />
                   {/* Legacy redirects */}
                   <Route path="/subscriptions" element={<Navigate to="/how-it-works" replace />} />
                   <Route path="/features/:slug" element={<Navigate to="/about" replace />} />
 
                   {/* Auth */}
                   <Route path="/auth/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
-                  <Route path="/auth/register" element={<RegisterPage />} />
+                  <Route path="/auth/register" element={<PublicOnlyRoute><RegisterPage /></PublicOnlyRoute>} />
                   <Route path="/login" element={<Navigate to="/auth/login" replace />} />
                   <Route path="/register" element={<Navigate to="/auth/register" replace />} />
 

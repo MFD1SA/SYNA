@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link, Navigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, ShieldCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth, notifyLocalAuthChange } from "@/contexts/AuthContext";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import logoImg from "@/assets/logo.png";
 
@@ -23,6 +23,7 @@ const AdminLogin: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
   if (!authLoading && !roleLoading && user && isAdmin) {
     return <Navigate to="/admincp/overview" replace />;
@@ -32,6 +33,29 @@ const AdminLogin: React.FC = () => {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-[#0F1419]">
         <div className="h-7 w-7 animate-spin rounded-full border-r-2 border-t-2 border-[#C2A86B]/40"></div>
+      </div>
+    );
+  }
+
+  if (loginSuccess) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center bg-[#0F1419]">
+        <div className="text-center space-y-4 animate-in fade-in zoom-in duration-300">
+          <div className="flex justify-center">
+            <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+              <ShieldCheck className="w-8 h-8 text-emerald-400" strokeWidth={1.5} />
+            </div>
+          </div>
+          <h2 className="text-xl font-bold text-white/90">
+            {isAr ? "تم الدخول بنجاح" : "Login Successful"}
+          </h2>
+          <p className="text-sm text-white/40">
+            {isAr ? "جاري التحويل للوحة الإدارة..." : "Redirecting to admin panel..."}
+          </p>
+          <div className="pt-2">
+            <div className="h-5 w-5 mx-auto animate-spin rounded-full border-r-2 border-t-2 border-[#C2A86B]/40"></div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -54,6 +78,10 @@ const AdminLogin: React.FC = () => {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
+    // Tell AuthContext that we're initiating a local auth change — this
+    // prevents the cross-tab protection from blocking the new session
+    // if localStorage has a stale session from a different user.
+    notifyLocalAuthChange();
     const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     if (error) {
       toast({ variant: "destructive", title: isAr ? "فشل التحقق" : "Auth Failure", description: isAr ? "البريد الإلكتروني أو كلمة المرور غير صحيحة" : "Incorrect email or password" });
@@ -68,8 +96,10 @@ const AdminLogin: React.FC = () => {
         setLoading(false);
         return;
       }
-      toast({ title: isAr ? "تم التحقق" : "Verified" });
-      navigate("/admincp/overview");
+      setLoginSuccess(true);
+      setTimeout(() => {
+        navigate("/admincp/overview");
+      }, 3000);
     }
     setLoading(false);
   };

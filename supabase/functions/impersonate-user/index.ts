@@ -80,6 +80,7 @@ Deno.serve(async (req) => {
       throw new Error("Admin impersonation is not allowed");
     }
 
+    // Generate magic link
     const { data: magicLink, error: mlError } = await adminClient.auth.admin.generateLink({
       type: "magiclink",
       email: targetUser.user.email,
@@ -88,8 +89,46 @@ Deno.serve(async (req) => {
 
     if (mlError || !magicLink.properties?.hashed_token) throw new Error(mlError?.message ?? "Failed to generate magic link");
 
-    const token = magicLink.properties.hashed_token;
-    const verifyUrl = `${supabaseUrl}/auth/v1/verify?token=${encodeURIComponent(token)}&type=magiclink`;
+    const tokenHash = magicLink.properties.hashed_token;
+
+    // Verify the token SERVER-SIDE via POST to get session tokens directly
+    // This avoids relying on Supabase's redirect (which goes to the Site URL = localhost)
+    const verifyRes = await fetch(`${supabaseUrl}/auth/v1/verify`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": anonKey,
+      },
+      body: JSON.stringify({
+        token_hash: tokenHash,
+        type: "magiclink",
+      }),
+    });
+
+    if (!verifyRes.ok) {
+      const errBody = await verifyRes.text();
+      console.error("Verify failed:", verifyRes.status, errBody);
+      throw new Error("Failed to verify magic link token");
+    }
+
+    const session = await verifyRes.json();
+
+    if (!session.access_token || !session.refresh_token) {
+      throw new Error("Session tokens not returned from verification");
+    }
+
+    // Build the redirect URL pointing to the PRODUCTION site with session tokens in hash
+    // Supabase JS client auto-detects tokens in the URL hash and establishes the session
+    const hashParams = new URLSearchParams({
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
+      expires_in: String(session.expires_in || 3600),
+      expires_at: String(session.expires_at || Math.floor(Date.now() / 1000) + 3600),
+      token_type: "bearer",
+      type: "magiclink",
+    });
+
+    const redirectUrl = `${publicSiteUrl}/impersonate-callback#${hashParams.toString()}`;
 
     // Audit log: record impersonation action server-side (mandatory — fail if not recorded)
     const { error: auditError } = await adminClient.from("audit_logs").insert({
@@ -110,7 +149,9 @@ Deno.serve(async (req) => {
 
     return new Response(JSON.stringify({
       success: true,
-      verify_url: verifyUrl,
+      verify_url: redirectUrl,
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
       email: targetUser.user.email,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -122,6 +163,7 @@ Deno.serve(async (req) => {
       "target_user_id required", "User not found",
       "Cannot impersonate your own account", "Admin impersonation is not allowed",
       "Impersonation blocked: audit log failed",
+      "Failed to verify magic link token", "Session tokens not returned",
     ];
     const message = safeMessages.some(m => err.message?.includes(m)) ? err.message : "Operation failed";
     return new Response(JSON.stringify({ error: message }), {

@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Settings, User, Mail, KeyRound, Eye, EyeOff, Save, Loader2, ShieldCheck, Clock, Timer, ShieldAlert, RotateCcw } from "lucide-react";
+import AvatarUpload from "@/components/shared/AvatarUpload";
 
 const DEFAULT_DEADLINES = {
   request_acceptance_days: 14,
@@ -28,6 +29,7 @@ const AdminSettings: React.FC = () => {
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingEmail, setSavingEmail] = useState(false);
 
@@ -57,9 +59,10 @@ const AdminSettings: React.FC = () => {
     if (!user) return;
     setEmail(user.email || "");
     setFullName(user.user_metadata?.full_name || "");
-    supabase.from("profiles").select("full_name").eq("user_id", user.id).maybeSingle().then(({ data }) => {
+    supabase.from("profiles").select("full_name, avatar_url").eq("user_id", user.id).maybeSingle().then(({ data }) => {
       if (data?.full_name) setFullName(data.full_name);
-    });
+      if ((data as any)?.avatar_url) setAvatarUrl((data as any).avatar_url);
+    }).catch(console.error);
     // Load deadline settings from platform_content
     supabase.from("platform_content").select("*").eq("content_key", "opportunity_deadlines").maybeSingle().then(({ data }) => {
       if (data?.body_en) {
@@ -68,7 +71,7 @@ const AdminSettings: React.FC = () => {
           setDeadlines({ ...DEFAULT_DEADLINES, ...parsed });
         } catch {}
       }
-    });
+    }).catch(console.error);
 
     supabase
       .from("admin_permissions")
@@ -87,9 +90,10 @@ const AdminSettings: React.FC = () => {
               setPrimaryAdminEmail(data.primary_admin_email);
             }
             setLoadingPrimaryAdmin(false);
-          });
+          }).catch(console.error);
         }
-      });
+      })
+      .catch(console.error);
   }, [user]);
 
   const handleSaveProfile = async () => {
@@ -98,7 +102,7 @@ const AdminSettings: React.FC = () => {
     try {
       const { error: authErr } = await supabase.auth.updateUser({ data: { full_name: fullName } });
       if (authErr) throw authErr;
-      await supabase.from("profiles").update({ full_name: fullName }).eq("user_id", user.id);
+      await supabase.from("profiles").update({ full_name: fullName, avatar_url: avatarUrl } as any).eq("user_id", user.id);
       await logAudit(user.id, user.email, "update", "admin_profile", user.id, { full_name: fullName });
       toast({ title: isAr ? "تم تحديث الاسم بنجاح ✓" : "Name updated successfully ✓" });
     } catch (err: any) {
@@ -253,12 +257,22 @@ const AdminSettings: React.FC = () => {
           </div>
         </div>
 
-        {/* Profile Name */}
+        {/* Profile Name & Avatar */}
         <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
           <div className="flex items-center gap-2 mb-1">
             <User className="h-4 w-4 text-primary" />
-            <h3 className="text-sm font-medium text-foreground">{isAr ? "الاسم الشخصي" : "Display Name"}</h3>
+            <h3 className="text-sm font-medium text-foreground">{isAr ? "الملف الشخصي" : "Profile"}</h3>
           </div>
+          {/* Avatar */}
+          <AvatarUpload
+            currentUrl={avatarUrl}
+            displayName={fullName}
+            label={isAr ? "الصورة الشخصية" : "Profile Photo"}
+            isAr={isAr}
+            folder="avatars"
+            onUpload={(url) => setAvatarUrl(url)}
+            onRemove={() => setAvatarUrl(null)}
+          />
           <div className="space-y-2">
             <Label className="text-xs">{isAr ? "الاسم الكامل" : "Full Name"}</Label>
             <Input value={fullName} onChange={e => setFullName(e.target.value)} placeholder={isAr ? "أدخل الاسم" : "Enter name"} />

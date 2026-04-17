@@ -4,7 +4,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import {
   HardHat, Loader2, User, Mail, Lock, ArrowRight, ArrowLeft,
-  Building2, Phone, MapPin, Globe, FileText, CheckCircle2,
+  Building2, Phone, MapPin, Globe, FileText, CheckCircle2, Upload, X as XIcon,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +21,7 @@ interface RegForm {
   city: string;
   website: string;
   company_description: string;
+  logo_url: string;
 }
 
 const emptyForm: RegForm = {
@@ -33,6 +34,7 @@ const emptyForm: RegForm = {
   city: "",
   website: "",
   company_description: "",
+  logo_url: "",
 };
 
 const Register: React.FC = () => {
@@ -47,6 +49,57 @@ const Register: React.FC = () => {
   const [showAgreement, setShowAgreement] = useState(false);
   const [registered, setRegistered] = useState(false);
   const [agreedTerms, setAgreedTerms] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
+  const handleLogoUpload = async (file: File) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({
+        variant: "destructive",
+        title: isAr ? "صيغة غير مدعومة" : "Unsupported format",
+        description: isAr ? "يرجى رفع صورة بصيغة PNG / JPG" : "Please upload PNG / JPG image",
+      });
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        variant: "destructive",
+        title: isAr ? "حجم كبير" : "File too large",
+        description: isAr ? "الحد الأقصى 2 ميجابايت" : "Max size is 2MB",
+      });
+      return;
+    }
+    setUploadingLogo(true);
+    try {
+      const ext = file.name.split(".").pop() || "png";
+      const path = `pending-registrations/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage.from("developer-logos").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+      if (error) {
+        // Fallback: some projects may not have the bucket; use developer-docs
+        const alt = await supabase.storage.from("developer-docs").upload(path, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+        if (alt.error) throw alt.error;
+        const { data: pub } = supabase.storage.from("developer-docs").getPublicUrl(path);
+        set("logo_url", pub.publicUrl);
+      } else {
+        const { data: pub } = supabase.storage.from("developer-logos").getPublicUrl(path);
+        set("logo_url", pub.publicUrl);
+      }
+      toast({ title: isAr ? "تم رفع الشعار" : "Logo uploaded" });
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: isAr ? "فشل الرفع" : "Upload failed",
+        description: err.message || "",
+      });
+    }
+    setUploadingLogo(false);
+  };
 
   const set = (key: keyof RegForm, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -66,6 +119,24 @@ const Register: React.FC = () => {
       e.email = isAr ? "البريد الإلكتروني مطلوب" : "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
       e.email = isAr ? "البريد الإلكتروني غير صالح" : "Invalid email format";
+    } else {
+      // Require a corporate/business email — reject free personal webmail domains
+      const freeDomains = [
+        "gmail.com", "googlemail.com",
+        "yahoo.com", "yahoo.co.uk", "ymail.com",
+        "hotmail.com", "hotmail.co.uk", "outlook.com", "outlook.sa", "live.com", "msn.com",
+        "icloud.com", "me.com", "mac.com",
+        "aol.com", "protonmail.com", "proton.me", "mail.com",
+        "gmx.com", "zoho.com", "yandex.com", "yandex.ru",
+        "qq.com", "163.com", "126.com",
+        "rediffmail.com", "inbox.com", "tutanota.com",
+      ];
+      const domain = form.email.trim().toLowerCase().split("@")[1] || "";
+      if (freeDomains.includes(domain)) {
+        e.email = isAr
+          ? "يجب استخدام بريد إلكتروني رسمي للشركة (example@yourcompany.com) — لا يُقبل البريد الشخصي"
+          : "A corporate email is required (example@yourcompany.com) — personal email not accepted";
+      }
     }
 
     if (!form.password) {
@@ -114,17 +185,40 @@ const Register: React.FC = () => {
           city: form.city.trim(),
           website: form.website.trim(),
           company_description: form.company_description.trim(),
+          logo_url: form.logo_url || null,
           commission_accepted: true,
         },
       });
 
-      if (error) throw new Error(error.message || (isAr ? "فشل التسجيل" : "Registration failed"));
+      // Handle Edge Function errors — extract the actual message from the response
+      if (error) {
+        let errMsg = isAr ? "فشل التسجيل" : "Registration failed";
+        try {
+          // supabase-js wraps non-2xx as FunctionsHttpError; the real body is in error.context
+          const ctx = (error as any).context;
+          if (ctx && typeof ctx.json === "function") {
+            const body = await ctx.json();
+            if (body?.error) errMsg = body.error;
+          }
+        } catch { /* ignore parsing errors */ }
+
+        // Translate known server messages to Arabic
+        if (isAr) {
+          if (errMsg.includes("already registered")) errMsg = "هذا البريد الإلكتروني مسجّل مسبقاً";
+          else if (errMsg.includes("Missing or invalid")) errMsg = "يرجى تعبئة جميع الحقول المطلوبة";
+          else if (errMsg.includes("Password must be")) errMsg = "كلمة المرور يجب أن تكون 10 أحرف على الأقل وتحتوي على حرف كبير وصغير ورقم ورمز";
+          else if (errMsg.includes("corporate email") || errMsg.includes("personal email")) errMsg = "يجب استخدام بريد إلكتروني رسمي للشركة — البريد الشخصي غير مقبول";
+          else if (errMsg.includes("Commission agreement")) errMsg = "يجب الموافقة على اتفاقية الأتعاب المهنية";
+          else if (errMsg.includes("Failed to create")) errMsg = "فشل إنشاء الحساب — يرجى المحاولة لاحقاً";
+        }
+        throw new Error(errMsg);
+      }
       if (data?.error) throw new Error(data.error);
 
       setRegistered(true);
       toast({
-        title: isAr ? "تم إنشاء الحساب بنجاح" : "Account created successfully",
-        description: isAr ? "تحقق من بريدك الإلكتروني لتفعيل الحساب" : "Check your email to verify your account",
+        title: isAr ? "تم التسجيل بنجاح" : "Registration successful",
+        description: isAr ? "يمكنك الآن تسجيل الدخول" : "You can now sign in",
       });
     } catch (err: any) {
       toast({
@@ -162,14 +256,14 @@ const Register: React.FC = () => {
             </h2>
             <p className="text-[14px] text-gray-600 leading-relaxed mb-6">
               {isAr
-                ? "تم إرسال رابط التفعيل إلى بريدك الإلكتروني. يرجى التحقق من صندوق الوارد لإكمال التسجيل."
-                : "A verification link has been sent to your email. Please check your inbox to complete registration."}
+                ? "تم إنشاء حسابك بنجاح. يمكنك الآن تسجيل الدخول والبدء في استخدام المنصة."
+                : "Your account has been created successfully. You can now sign in and start using the platform."}
             </p>
             <Link
               to="/auth/login"
               className="inline-flex items-center justify-center w-full h-[48px] bg-[#2B4C66] text-white text-[14px] font-semibold rounded-xl hover:bg-[#1E374B] transition-all"
             >
-              {isAr ? "العودة لتسجيل الدخول" : "Back to Login"}
+              {isAr ? "تسجيل الدخول الآن" : "Sign in now"}
             </Link>
           </div>
         </div>
@@ -179,19 +273,13 @@ const Register: React.FC = () => {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center bg-[#F7F8FA]" dir={isAr ? "rtl" : "ltr"}>
-      {/* Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 start-0 w-[600px] h-[600px] bg-[#2B4C66]/[0.02] rounded-full -translate-y-1/2 -translate-x-1/4" />
-        <div className="absolute bottom-0 end-0 w-[500px] h-[500px] bg-[#C2A86B]/[0.02] rounded-full translate-y-1/3 translate-x-1/4" />
-      </div>
-
       {/* Top bar */}
-      <div className="absolute top-0 start-0 end-0 flex items-center justify-between px-8 md:px-12 py-5 z-10">
-        <Link to="/" className="flex items-center gap-2 text-[13px] font-medium text-gray-500 hover:text-gray-800 transition-colors">
+      <div className="fixed top-0 start-0 end-0 flex items-center justify-between px-6 md:px-12 py-4 z-30 bg-[#F7F8FA]/95 backdrop-blur-sm border-b border-gray-100">
+        <Link to="/" className="flex items-center gap-2 text-[13px] font-medium text-gray-500 hover:text-gray-800 transition-colors py-2 px-1">
           {isAr ? <ArrowRight className="w-4 h-4" strokeWidth={1.5} /> : <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />}
           {isAr ? "الرئيسية" : "Home"}
         </Link>
-        <button onClick={toggleLang} className="text-[13px] font-medium text-gray-500 hover:text-gray-800 transition-colors">
+        <button onClick={toggleLang} className="text-[13px] font-medium text-gray-500 hover:text-gray-800 transition-colors py-2 px-1">
           {isAr ? "English" : "العربية"}
         </button>
       </div>
@@ -205,22 +293,9 @@ const Register: React.FC = () => {
 
         {/* Heading */}
         <div className="text-center mb-6">
-          <h1 className="text-[26px] font-bold text-gray-900 tracking-tight mb-2">
+          <h1 className="text-[26px] font-bold text-gray-900 tracking-tight">
             {isAr ? "تسجيل مطور عقاري" : "Developer Registration"}
           </h1>
-          <p className="text-[14px] text-gray-600 leading-relaxed">
-            {isAr ? "أنشئ حسابك للوصول إلى فرص التطوير العقاري" : "Create your account to access real estate development opportunities"}
-          </p>
-        </div>
-
-        {/* Developer badge */}
-        <div className="flex justify-center mb-5">
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#2B4C66]/15 bg-[#2B4C66]/5">
-            <HardHat className="h-4 w-4 text-[#2B4C66]" strokeWidth={1.5} />
-            <span className="text-[12px] font-semibold text-[#2B4C66] tracking-wide">
-              {isAr ? "حساب مطور عقاري" : "Real Estate Developer Account"}
-            </span>
-          </div>
         </div>
 
         {/* Welcome notice */}
@@ -253,6 +328,67 @@ const Register: React.FC = () => {
               {errors.company_name && <p className="text-[11px] text-red-500 mt-1.5 font-medium">{errors.company_name}</p>}
             </div>
 
+            {/* Company Logo Upload */}
+            <div>
+              <label className="block text-[12px] font-bold text-gray-700 mb-2 tracking-wide">
+                {isAr ? "شعار الشركة" : "Company Logo"} <span className="text-gray-400 font-normal">({isAr ? "اختياري" : "optional"})</span>
+              </label>
+              {form.logo_url ? (
+                <div className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-gray-50/50">
+                  <div className="w-14 h-14 rounded-lg bg-white border border-gray-200 overflow-hidden flex items-center justify-center shrink-0">
+                    <img src={form.logo_url} alt="logo" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-medium text-gray-700">
+                      {isAr ? "تم رفع الشعار بنجاح" : "Logo uploaded successfully"}
+                    </p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">
+                      {isAr ? "سيظهر في اتفاقياتك ومستنداتك الرسمية" : "Will appear on your agreements and official documents"}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => set("logo_url", "")}
+                    className="w-8 h-8 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors flex items-center justify-center shrink-0"
+                    title={isAr ? "إزالة" : "Remove"}
+                  >
+                    <XIcon className="w-4 h-4" strokeWidth={1.5} />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex items-center justify-center gap-2.5 h-[80px] rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 hover:bg-white hover:border-[#2B4C66]/30 transition-all cursor-pointer">
+                  {uploadingLogo ? (
+                    <>
+                      <Loader2 className="w-4 h-4 text-[#2B4C66] animate-spin" />
+                      <span className="text-[13px] text-gray-500">{isAr ? "جاري الرفع..." : "Uploading..."}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 text-gray-400" strokeWidth={1.5} />
+                      <div className="text-center">
+                        <p className="text-[13px] text-gray-600 font-medium">
+                          {isAr ? "رفع شعار الشركة" : "Upload company logo"}
+                        </p>
+                        <p className="text-[11px] text-gray-400 mt-0.5">
+                          PNG / JPG • {isAr ? "الحد الأقصى 2MB" : "Max 2MB"}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg"
+                    className="hidden"
+                    disabled={uploadingLogo}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleLogoUpload(f);
+                    }}
+                  />
+                </label>
+              )}
+            </div>
+
             {/* Contact Person */}
             <div>
               <label className="block text-[12px] font-bold text-gray-700 mb-2 tracking-wide">
@@ -274,7 +410,7 @@ const Register: React.FC = () => {
             {/* Email */}
             <div>
               <label className="block text-[12px] font-bold text-gray-700 mb-2 tracking-wide">
-                {isAr ? "البريد الإلكتروني" : "Email"} <span className="text-red-500">*</span>
+                {isAr ? "البريد الإلكتروني المهني" : "Corporate Email"} <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <Mail className="absolute start-4 top-1/2 -translate-y-1/2 w-[17px] h-[17px] text-gray-400" strokeWidth={1.5} />
@@ -283,11 +419,19 @@ const Register: React.FC = () => {
                   dir="ltr"
                   value={form.email}
                   onChange={(e) => set("email", e.target.value)}
-                  placeholder="name@company.com"
+                  placeholder="name@yourcompany.com"
                   className={`${inputClass} ${errors.email ? "!border-red-400 focus:!ring-red-100" : ""}`}
                 />
               </div>
-              {errors.email && <p className="text-[11px] text-red-500 mt-1.5 font-medium">{errors.email}</p>}
+              {errors.email ? (
+                <p className="text-[11px] text-red-500 mt-1.5 font-medium">{errors.email}</p>
+              ) : (
+                <p className="text-[11px] text-gray-500 mt-1.5 leading-relaxed">
+                  {isAr
+                    ? "يُشترط استخدام بريد مهني مرتبط بنطاق شركتك (example@yourcompany.com). لا يُقبل Gmail / Yahoo / Hotmail وغيرها."
+                    : "A corporate email on your company's domain is required (example@yourcompany.com). Free providers (Gmail / Yahoo / Hotmail / etc.) are not accepted."}
+                </p>
+              )}
             </div>
 
             {/* Phone + City row */}
@@ -416,13 +560,26 @@ const Register: React.FC = () => {
                 />
                 <span className="text-[13px] text-gray-600 leading-relaxed">
                   {isAr ? "بإنشاء حسابك أنت توافق على " : "By creating your account you agree to the "}
-                  <Link to="/terms" className="font-semibold text-[#2B4C66] hover:underline">
+                  {/* Open in a new tab so the registration form data is preserved */}
+                  <a
+                    href="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="font-semibold text-[#2B4C66] hover:underline"
+                  >
                     {isAr ? "الشروط والأحكام" : "Terms & Conditions"}
-                  </Link>
+                  </a>
                   {isAr ? " و " : " and "}
-                  <Link to="/privacy" className="font-semibold text-[#2B4C66] hover:underline">
+                  <a
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="font-semibold text-[#2B4C66] hover:underline"
+                  >
                     {isAr ? "سياسة الخصوصية" : "Privacy Policy"}
-                  </Link>
+                  </a>
                 </span>
               </label>
               {errors.terms && <p className="text-[11px] text-red-500 mt-1.5 font-medium ms-7">{errors.terms}</p>}
@@ -469,6 +626,7 @@ const Register: React.FC = () => {
         companyName={form.company_name}
         contactPersonName={form.contact_person_name}
         phone={form.phone}
+        developerLogoUrl={form.logo_url}
       />
     </div>
   );

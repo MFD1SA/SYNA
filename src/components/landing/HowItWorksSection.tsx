@@ -14,10 +14,10 @@ const HowItWorksSection: React.FC = () => {
   ];
 
   return (
-    <section className="py-16 lg:py-20 bg-white" dir={isAr ? "rtl" : "ltr"}>
+    <section className="py-14 lg:py-16 bg-white" dir={isAr ? "rtl" : "ltr"}>
       <div className="container">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-sina-charcoal mb-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4 tracking-tight">
             {t.howItWorks.title}
           </h2>
           <p className="text-[15px] text-gray-500 max-w-2xl mx-auto leading-relaxed">
@@ -25,24 +25,23 @@ const HowItWorksSection: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+          {/* Connector line across all steps */}
+          <div className="hidden lg:block absolute top-7 inset-x-0 z-0 px-16">
+            <div className="h-[2px] w-full bg-gradient-to-r from-[#2B4C66]/20 via-[#2B4C66]/10 to-[#2B4C66]/20 rounded-full" />
+          </div>
+
           {steps.map((step, i) => (
-            <div key={i} className="relative">
-              {/* Connector line */}
-              {i < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-8 start-full w-full h-px bg-gray-200 -z-0" style={{ width: "calc(100% - 44px)", marginInlineStart: "22px" }} />
-              )}
-              <div className="relative z-10">
-                <div className="w-14 h-14 rounded-full bg-sina-blue/10 flex items-center justify-center mb-6">
-                  <span className="text-[14px] font-bold text-sina-blue">{step.num}</span>
-                </div>
-                <h3 className="text-[16px] font-semibold text-sina-charcoal mb-3">
-                  {step.title}
-                </h3>
-                <p className="text-[13px] text-gray-500 leading-relaxed">
-                  {step.desc}
-                </p>
+            <div key={i} className="relative z-10">
+              <div className="w-14 h-14 rounded-full bg-[#2B4C66] flex items-center justify-center mb-6 shadow-lg shadow-[#2B4C66]/20">
+                <span className="text-[14px] font-bold text-white">{step.num}</span>
               </div>
+              <h3 className="text-[16px] font-semibold text-[#1E374B] mb-3">
+                {step.title}
+              </h3>
+              <p className="text-[14px] text-gray-500 leading-relaxed">
+                {step.desc}
+              </p>
             </div>
           ))}
         </div>

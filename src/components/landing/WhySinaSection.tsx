@@ -1,23 +1,23 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Eye, ShieldCheck, Lock, Zap } from "lucide-react";
+import { ScanEye, ShieldCheck, LockKeyhole, Bolt } from "lucide-react";
 
 const WhySinaSection: React.FC = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
 
   const cards = [
-    { icon: Eye, title: t.whySina.card1Title, desc: t.whySina.card1Desc },
+    { icon: ScanEye, title: t.whySina.card1Title, desc: t.whySina.card1Desc },
     { icon: ShieldCheck, title: t.whySina.card2Title, desc: t.whySina.card2Desc },
-    { icon: Lock, title: t.whySina.card3Title, desc: t.whySina.card3Desc },
-    { icon: Zap, title: t.whySina.card4Title, desc: t.whySina.card4Desc },
+    { icon: LockKeyhole, title: t.whySina.card3Title, desc: t.whySina.card3Desc },
+    { icon: Bolt, title: t.whySina.card4Title, desc: t.whySina.card4Desc },
   ];
 
   return (
-    <section className="py-16 lg:py-20 bg-white" dir={isAr ? "rtl" : "ltr"}>
+    <section className="py-14 lg:py-16 bg-white" dir={isAr ? "rtl" : "ltr"}>
       <div className="container">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-sina-charcoal mb-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4 tracking-tight">
             {t.whySina.title}
           </h2>
           <p className="text-[15px] text-gray-500 max-w-2xl mx-auto leading-relaxed">
@@ -25,16 +25,14 @@ const WhySinaSection: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
           {cards.map((card, i) => (
             <div
               key={i}
-              className="bg-[#F7F9FB] rounded-xl p-7 border border-gray-100 hover:border-sina-blue/20 hover:shadow-md transition-all duration-300"
+              className="bg-white rounded-xl p-7 border border-gray-100 hover:shadow-lg hover:shadow-gray-100/80 hover:border-gray-200 transition-all duration-300 group"
             >
-              <div className="w-11 h-11 rounded-lg bg-sina-blue/10 flex items-center justify-center mb-5">
-                <card.icon className="w-5 h-5 text-sina-blue" strokeWidth={1.5} />
-              </div>
-              <h3 className="text-[16px] font-semibold text-sina-charcoal mb-3">
+              <card.icon className="w-6 h-6 text-[#2B4C66] mb-5" strokeWidth={1.5} />
+              <h3 className="text-[16px] font-semibold text-[#1E374B] mb-3">
                 {card.title}
               </h3>
               <p className="text-[13px] text-gray-500 leading-relaxed">

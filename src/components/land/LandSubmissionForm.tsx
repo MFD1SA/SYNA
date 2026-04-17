@@ -427,8 +427,8 @@ const LandSubmissionForm: React.FC<Props> = ({ initialData, ownerProfiles, isAdm
             {(parseFloat(form.estimated_total_value) > 0 || parseFloat(form.estimated_price_per_sqm) > 0) && (
               <div className="rounded-lg border border-border/60 bg-muted/30 p-3 text-xs space-y-1">
                 <div className="flex justify-between"><span className="text-muted-foreground">{isAr ? "المساحة" : "Area"}</span><span>{parseFloat(form.land_area_sqm || "0").toLocaleString()} {isAr ? "م²" : "sqm"}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">{isAr ? "سعر المتر" : "Price/sqm"}</span><span>{parseFloat(form.estimated_price_per_sqm || "0").toLocaleString()} SAR</span></div>
-                <div className="flex justify-between font-medium"><span>{isAr ? "القيمة الإجمالية" : "Total"}</span><span>{parseFloat(form.estimated_total_value || "0").toLocaleString()} SAR</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{isAr ? "سعر المتر" : "Price/sqm"}</span><span>{parseFloat(form.estimated_price_per_sqm || "0").toLocaleString()} {isAr ? "ريال" : "SAR"}</span></div>
+                <div className="flex justify-between font-medium"><span>{isAr ? "القيمة الإجمالية" : "Total"}</span><span>{parseFloat(form.estimated_total_value || "0").toLocaleString()} {isAr ? "ريال" : "SAR"}</span></div>
               </div>
             )}
           </div>

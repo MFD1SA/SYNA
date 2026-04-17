@@ -41,40 +41,45 @@ const AdminOverview: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [
-        profilesRes, profilesCount, devsRes, verifiedDevsRes, pendingDevsRes,
-        landsRes, activeLandsRes, dealsRes, activeDealsRes, closedDealsRes,
-        pendingReqRes, recentDealsRes,
-      ] = await Promise.all([
-        supabase.from("profiles").select("id, full_name, email, subscription_type, created_at").order("created_at", { ascending: false }).limit(5),
-        supabase.from("profiles").select("id", { count: "exact", head: true }),
-        supabase.from("developers").select("id", { count: "exact", head: true }),
-        supabase.from("developers").select("id", { count: "exact", head: true }).eq("verification_status", "verified"),
-        supabase.from("developers").select("id", { count: "exact", head: true }).eq("verification_status", "pending_review"),
-        supabase.from("lands").select("id", { count: "exact", head: true }),
-        supabase.from("lands").select("id", { count: "exact", head: true }).eq("is_active", true),
-        supabase.from("deals").select("id", { count: "exact", head: true }),
-        supabase.from("deals").select("id", { count: "exact", head: true }).neq("current_stage", "deal_closed").neq("current_stage", "deal_cancelled"),
-        supabase.from("deals").select("id", { count: "exact", head: true }).eq("current_stage", "deal_closed"),
-        supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("deals").select("id, current_stage, health, created_at, developers(company_name, marketing_brand_name), lands(city, district)").order("created_at", { ascending: false }).limit(5),
-      ]);
+      try {
+        const [
+          profilesRes, profilesCount, devsRes, verifiedDevsRes, pendingDevsRes,
+          landsRes, activeLandsRes, dealsRes, activeDealsRes, closedDealsRes,
+          pendingReqRes, recentDealsRes,
+        ] = await Promise.all([
+          supabase.from("profiles").select("id, full_name, email, subscription_type, created_at").order("created_at", { ascending: false }).limit(5),
+          supabase.from("profiles").select("id", { count: "exact", head: true }),
+          supabase.from("developers").select("id", { count: "exact", head: true }),
+          supabase.from("developers").select("id", { count: "exact", head: true }).eq("verification_status", "verified"),
+          supabase.from("developers").select("id", { count: "exact", head: true }).eq("verification_status", "pending_review"),
+          supabase.from("lands").select("id", { count: "exact", head: true }),
+          supabase.from("lands").select("id", { count: "exact", head: true }).eq("is_active", true),
+          supabase.from("deals").select("id", { count: "exact", head: true }),
+          supabase.from("deals").select("id", { count: "exact", head: true }).neq("current_stage", "deal_closed").neq("current_stage", "deal_cancelled"),
+          supabase.from("deals").select("id", { count: "exact", head: true }).eq("current_stage", "deal_closed"),
+          supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
+          supabase.from("deals").select("id, current_stage, health, created_at, developers(company_name, marketing_brand_name), lands(city, district)").order("created_at", { ascending: false }).limit(5),
+        ]);
 
-      setData({
-        totalUsers: profilesCount.count ?? 0,
-        totalDevelopers: devsRes.count ?? 0,
-        verifiedDevelopers: verifiedDevsRes.count ?? 0,
-        pendingVerification: pendingDevsRes.count ?? 0,
-        totalLands: landsRes.count ?? 0,
-        activeLands: activeLandsRes.count ?? 0,
-        totalDeals: dealsRes.count ?? 0,
-        activeDeals: activeDealsRes.count ?? 0,
-        closedDeals: closedDealsRes.count ?? 0,
-        pendingRequests: pendingReqRes.count ?? 0,
-        recentUsers: profilesRes.data || [],
-        recentDeals: recentDealsRes.data || [],
-      });
-      setLoading(false);
+        setData({
+          totalUsers: profilesCount.count ?? 0,
+          totalDevelopers: devsRes.count ?? 0,
+          verifiedDevelopers: verifiedDevsRes.count ?? 0,
+          pendingVerification: pendingDevsRes.count ?? 0,
+          totalLands: landsRes.count ?? 0,
+          activeLands: activeLandsRes.count ?? 0,
+          totalDeals: dealsRes.count ?? 0,
+          activeDeals: activeDealsRes.count ?? 0,
+          closedDeals: closedDealsRes.count ?? 0,
+          pendingRequests: pendingReqRes.count ?? 0,
+          recentUsers: profilesRes.data || [],
+          recentDeals: recentDealsRes.data || [],
+        });
+      } catch (err) {
+        console.error("AdminOverview fetchData error:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);

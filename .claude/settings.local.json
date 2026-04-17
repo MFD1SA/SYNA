@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__10c2a5e4-638e-4496-953e-945a69e6be1e__execute_sql",
+      "mcp__10c2a5e4-638e-4496-953e-945a69e6be1e__apply_migration",
+      "Bash(npx vite:*)",
+      "Bash(npx vercel:*)",
+      "mcp__10c2a5e4-638e-4496-953e-945a69e6be1e__deploy_edge_function",
+      "Bash(node -e \"const fs = require\\('fs'\\); const content = fs.readFileSync\\('C:/Users/User/OneDrive/سطح المكتب/SYNANEW/supabase/functions/send-deal-notification/index.ts', 'utf8'\\); const json = JSON.stringify\\(content\\); fs.writeFileSync\\('/tmp/sdn_content.json', json\\);\")",
+      "Bash(node -e ':*)",
+      "Bash(npx supabase:*)",
+      "mcp__10c2a5e4-638e-4496-953e-945a69e6be1e__get_logs",
+      "Bash(npx supabase@2.91.2 functions deploy impersonate-user --project-ref nqbobxtlwzvtzxqcdfdo --no-verify-jwt)",
+      "Bash(ls \"C:\\\\Users\\\\User\\\\OneDrive\\\\سطح المكتب\\\\SYNANEW\\\\src\\\\assets\\\\logo\"* \"C:\\\\Users\\\\User\\\\OneDrive\\\\سطح المكتب\\\\SYNANEW\\\\public\\\\favicon\"*)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "WebFetch(domain:cidoma.com)",
+      "mcp__Claude_Preview__preview_start",
+      "mcp__10c2a5e4-638e-4496-953e-945a69e6be1e__list_tables",
+      "Bash(wait)",
+      "Bash(grep -l \"CrmDashboard\\\\|DeveloperRoute\\\\|sidebar\" src/components/crm/*.tsx)",
+      "Bash(wc -l src/components/owner/*.tsx src/components/crm/*.tsx src/pages/owner/*.tsx src/pages/crm/*.tsx)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)"
+    ]
+  }
+}

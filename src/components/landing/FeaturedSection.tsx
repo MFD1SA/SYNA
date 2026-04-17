@@ -26,7 +26,7 @@ const FeaturedSection: React.FC = () => {
         .select("id, city, district, land_area_sqm, land_type, status")
         .in("status", ["active", "active_approved"])
         .order("created_at", { ascending: false })
-        .limit(6);
+        .limit(3);
       if (data) setLands(data);
     };
     fetchLands();
@@ -35,11 +35,11 @@ const FeaturedSection: React.FC = () => {
   if (lands.length === 0) return null;
 
   return (
-    <section className="py-16 lg:py-20 bg-[#F7F9FB]" dir={isAr ? "rtl" : "ltr"}>
+    <section className="py-14 lg:py-16 bg-white" dir={isAr ? "rtl" : "ltr"}>
       <div className="container">
-        <div className="flex items-end justify-between mb-12">
+        <div className="flex items-end justify-between mb-10">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-sina-charcoal mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-3 tracking-tight">
               {t.featured.title}
             </h2>
             <p className="text-[15px] text-gray-500">
@@ -48,7 +48,7 @@ const FeaturedSection: React.FC = () => {
           </div>
           <Link
             to="/opportunities"
-            className="hidden md:inline-flex items-center gap-2 text-[13px] font-semibold text-sina-blue hover:gap-3 transition-all"
+            className="hidden md:inline-flex items-center gap-2 text-[13px] font-semibold text-[#2B4C66] hover:gap-3.5 transition-all duration-300"
           >
             {isAr ? "عرض الكل" : "View All"}
             <Arrow className="w-4 h-4" />
@@ -60,14 +60,25 @@ const FeaturedSection: React.FC = () => {
             <Link
               key={land.id}
               to={`/opportunity/${land.id}`}
-              className="bg-white rounded-xl border border-gray-100 hover:border-sina-blue/20 hover:shadow-md transition-all duration-300 overflow-hidden group"
+              className="bg-white rounded-xl border border-gray-100 hover:shadow-xl hover:shadow-gray-100/60 hover:border-gray-200 transition-all duration-300 overflow-hidden group"
             >
-              {/* Card header */}
-              <div className="h-40 bg-gradient-to-br from-sina-blue/10 to-sina-blue/5 flex items-center justify-center">
-                <MapPin className="w-10 h-10 text-sina-blue/30" strokeWidth={1} />
+              {/* Card visual header */}
+              <div className="h-44 relative overflow-hidden bg-gradient-to-br from-[#2B4C66]/[0.08] via-[#2B4C66]/[0.04] to-transparent">
+                {/* Grid pattern */}
+                <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "linear-gradient(#2B4C66 1px, transparent 1px), linear-gradient(90deg, #2B4C66 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+                {/* Centered icon */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <MapPin className="w-8 h-8 text-[#2B4C66]/40 group-hover:scale-110 transition-transform duration-300" strokeWidth={1.5} />
+                </div>
+                {/* Status badge */}
+                <div className="absolute top-3 end-3">
+                  <span className="inline-flex items-center px-2.5 py-1 bg-white/90 backdrop-blur-sm text-[10px] font-semibold text-emerald-600 rounded-full shadow-sm">
+                    {isAr ? "متاح" : "Available"}
+                  </span>
+                </div>
               </div>
               <div className="p-6">
-                <h3 className="text-[16px] font-semibold text-sina-charcoal mb-2">
+                <h3 className="text-[16px] font-semibold text-[#1E374B] mb-3">
                   {land.city}{land.district ? ` | ${land.district}` : ""}
                 </h3>
                 <div className="flex items-center gap-4 text-[13px] text-gray-500">
@@ -76,7 +87,7 @@ const FeaturedSection: React.FC = () => {
                     {Number(land.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}
                   </span>
                   {land.land_type && (
-                    <span className="px-2 py-0.5 bg-sina-soft-blue text-sina-blue text-[11px] font-medium rounded">
+                    <span className="px-2.5 py-0.5 bg-[#2B4C66]/[0.06] text-[#2B4C66] text-[11px] font-medium rounded-md">
                       {land.land_type}
                     </span>
                   )}
@@ -89,7 +100,7 @@ const FeaturedSection: React.FC = () => {
         <div className="md:hidden mt-8 text-center">
           <Link
             to="/opportunities"
-            className="inline-flex items-center gap-2 text-[14px] font-semibold text-sina-blue"
+            className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#2B4C66]"
           >
             {isAr ? "عرض جميع الفرص" : "View All Opportunities"}
             <Arrow className="w-4 h-4" />

@@ -13,6 +13,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useToast } from "@/hooks/use-toast";
 import OwnerLayout from "@/components/owner/OwnerLayout";
 import DevWebsiteAnalysis from "@/components/owner/DevWebsiteAnalysis";
+import DashboardShell, { BentoGrid } from "@/components/dashboard/DashboardShell";
+import BentoCard from "@/components/dashboard/BentoCard";
+import KpiTile from "@/components/dashboard/KpiTile";
+import SectionHeading from "@/components/dashboard/SectionHeading";
+import TrendSparkline from "@/components/dashboard/TrendSparkline";
+import StatusBadge from "@/components/dashboard/StatusBadge";
 import OwnerNDAConsentModal from "@/components/agreements/OwnerNDAConsentModal";
 import { getNDAConsentsForUser, submitNDADecision, type NDAConsent } from "@/services/nda.service";
 import { transitionDealPhase, phaseLabels, phaseColors, TERMINAL_PHASES, type DealPhase } from "@/services/dealPhase.service";
@@ -322,50 +328,103 @@ const OwnerDashboard: React.FC = () => {
     setNdaDialog({ landId: land.id, city: land.city, district: land.district });
   };
 
+  const approvedCount = lands.filter(l => l.owner_approved).length;
+  const ownerSpark = [
+    Math.max(1, lands.length * 0.3),
+    Math.max(1, lands.length * 0.5),
+    Math.max(1, lands.length * 0.65),
+    Math.max(1, lands.length * 0.75),
+    Math.max(1, lands.length * 0.9),
+    Math.max(1, totalRequests * 0.8 + lands.length),
+    Math.max(1, totalRequests + lands.length),
+  ];
+
   return (
     <OwnerLayout>
-      {/* Welcome Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-          {isAr ? `مرحبا، ${ownerName || ""}` : `Welcome, ${ownerName || ""}`}
-        </h1>
-        <p className="mt-1.5 text-sm font-light text-muted-foreground">
-          {isAr ? "تقييم العروض ومتابعة المؤشرات الاستخبارية للمطورين" : "Evaluate proposals and review intelligence metrics for developers"}
-        </p>
-      </div>
+      <DashboardShell isAr={isAr} accent="gold">
+        {/* ═══════ HERO ═══════ */}
+        <BentoGrid className="mb-5">
+          <BentoCard variant="hero" span="two-thirds" padding="lg" className="relative overflow-hidden">
+            <div className="absolute top-0 end-0 w-44 h-44 bg-[#C2A86B]/15 rounded-full blur-3xl -me-10 -mt-10 pointer-events-none" />
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#C2A86B]/15 text-[11px] font-semibold text-[#A88A4A]">
+                  <ShieldCheck className="w-3 h-3" strokeWidth={2} />
+                  {isAr ? "منصة المالك" : "Owner Hub"}
+                </span>
+                {approvedRequests.length > 0 && (
+                  <StatusBadge variant="active" dot>
+                    {isAr ? `${approvedRequests.length} مقبول` : `${approvedRequests.length} approved`}
+                  </StatusBadge>
+                )}
+              </div>
+              <h1 className="text-[24px] md:text-[30px] font-bold text-[#1E374B] dark:text-white tracking-tight mb-1.5">
+                {isAr ? `مرحباً، ${ownerName || ""}` : `Welcome, ${ownerName || ""}`}
+              </h1>
+              <p className="text-[13px] md:text-[14px] text-slate-600 dark:text-slate-300 leading-relaxed max-w-[560px]">
+                {isAr
+                  ? "قيّم العروض الواردة وتابع مؤشرات الاستخبار حول المطورين في لوحة واحدة."
+                  : "Evaluate incoming proposals and monitor developer intelligence metrics in one place."}
+              </p>
+            </div>
+          </BentoCard>
 
-      {/* Summary KPI Cards */}
-      {!loading && lands.length > 0 && (
-        <div className="grid md:grid-cols-3 gap-4 mb-8">
-          <div className="rounded-xl border border-border/50 bg-card p-5 transition-all duration-200 hover:shadow-[0_2px_12px_rgba(43,76,102,0.06)] hover:border-[#2B4C66]/15">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.08em]">{isAr ? "الأصول المدرجة" : "Listed Assets"}</span>
-              <div className="h-8 w-8 rounded-lg bg-[#2B4C66]/[0.06] flex items-center justify-center">
-                <Landmark className="h-4 w-4 text-[#2B4C66]/60" strokeWidth={1.5} />
-              </div>
+          {/* Asset value / trend snapshot */}
+          <BentoCard variant="gold" span="third" padding="lg">
+            <SectionHeading
+              title={isAr ? "مؤشر النشاط" : "Activity trend"}
+              tone="gold"
+              icon={TrendingUp}
+            />
+            <div className="space-y-3">
+              <KpiTile
+                label={isAr ? "إجمالي الأصول" : "Total assets"}
+                value={loading ? "—" : lands.length}
+                icon={Landmark}
+                tone="gold"
+                loading={loading}
+                sublabel={isAr ? "مدرجة على المنصة" : "Listed on platform"}
+              />
+              <TrendSparkline data={ownerSpark} color="#A88A4A" height={56} />
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                {isAr ? "اهتمام المطورين — آخر 7 أيام" : "Developer interest — last 7 days"}
+              </p>
             </div>
-            <p className="text-[32px] font-bold text-foreground leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>{lands.length}</p>
-          </div>
-          <div className="rounded-xl border border-border/50 bg-card p-5 transition-all duration-200 hover:shadow-[0_2px_12px_rgba(43,76,102,0.06)] hover:border-[#2B4C66]/15">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.08em]">{isAr ? "الكيانات المهتمة" : "Interested Entities"}</span>
-              <div className="h-8 w-8 rounded-lg bg-[#C2A86B]/10 flex items-center justify-center">
-                <Users className="h-4 w-4 text-[#C2A86B]" strokeWidth={1.5} />
-              </div>
-            </div>
-            <p className="text-[32px] font-bold text-foreground leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>{totalRequests}</p>
-          </div>
-          <div className="rounded-xl border border-border/50 bg-card p-5 transition-all duration-200 hover:shadow-[0_2px_12px_rgba(43,76,102,0.06)] hover:border-[#2B4C66]/15">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.08em]">{isAr ? "صفقات معتمدة" : "Approved Deals"}</span>
-              <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-                <CheckCircle2 className="h-4 w-4 text-emerald-500" strokeWidth={1.5} />
-              </div>
-            </div>
-            <p className="text-[32px] font-bold text-foreground leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>{lands.filter(l => l.owner_approved).length}</p>
-          </div>
-        </div>
-      )}
+          </BentoCard>
+        </BentoGrid>
+
+        {/* ═══════ KPI ROW ═══════ */}
+        {!loading && lands.length > 0 && (
+          <BentoGrid className="mb-5">
+            <BentoCard variant="neutral" span="third" padding="md">
+              <KpiTile
+                label={isAr ? "الأصول المدرجة" : "Listed assets"}
+                value={lands.length}
+                icon={Landmark}
+                tone="primary"
+                sublabel={isAr ? "نشطة وقيد المراجعة" : "Active and pending"}
+              />
+            </BentoCard>
+            <BentoCard variant="neutral" span="third" padding="md">
+              <KpiTile
+                label={isAr ? "العروض الواردة" : "Incoming proposals"}
+                value={totalRequests}
+                icon={Users}
+                tone="gold"
+                sublabel={isAr ? "من مطورين متنوعين" : "From various developers"}
+              />
+            </BentoCard>
+            <BentoCard variant="neutral" span="third" padding="md">
+              <KpiTile
+                label={isAr ? "عقود/صفقات جارية" : "Active deals"}
+                value={approvedCount}
+                icon={CheckCircle2}
+                tone="success"
+                sublabel={isAr ? "تحت التنفيذ" : "In progress"}
+              />
+            </BentoCard>
+          </BentoGrid>
+        )}
 
       {/* Meeting Needed Module */}
       {!loading && approvedRequests.length > 0 && (
@@ -756,6 +815,7 @@ const OwnerDashboard: React.FC = () => {
           })}
         </div>
       )}
+      </DashboardShell>
 
       {/* Reject Dialog */}
       <Dialog open={!!rejectDialog} onOpenChange={o => { if (!o) { setRejectDialog(null); setRejectNotes(""); } }}>

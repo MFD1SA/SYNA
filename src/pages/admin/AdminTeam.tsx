@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import {
   Users, Plus, Pencil, Trash2, ShieldCheck, Shield, Eye, EyeOff,
   Loader2, User, Mail, KeyRound, HardHat, Landmark, Handshake,
-  FileText, Bot, ClipboardList, Building2
+  FileText, Bot, ClipboardList, Building2, UserPlus, Lock, CheckCircle2
 } from "lucide-react";
 
 interface AdminPerm {
@@ -192,9 +192,17 @@ const AdminTeam: React.FC = () => {
         {loading ? (
           <div className="space-y-3">{[1, 2].map(i => <div key={i} className="h-24 animate-pulse rounded-xl bg-muted" />)}</div>
         ) : members.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16">
-            <Users className="h-12 w-12 text-muted-foreground/30 mb-4" />
-            <p className="text-sm text-muted-foreground">{isAr ? "لم تتم إضافة مشرفين بعد" : "No supervisors added yet"}</p>
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/5 mb-5">
+              <UserPlus className="h-7 w-7 text-primary/40" strokeWidth={1.5} />
+            </div>
+            <p className="text-[15px] font-medium text-foreground/80 mb-1.5">{isAr ? "لم تتم إضافة مشرفين بعد" : "No supervisors added yet"}</p>
+            <p className="text-[12px] text-muted-foreground max-w-[280px] leading-relaxed mb-5">
+              {isAr ? "أضف مشرفين للمساعدة في إدارة المنصة وتعيين صلاحيات مخصصة لكل منهم" : "Add supervisors to help manage the platform and assign custom permissions to each"}
+            </p>
+            <Button onClick={() => setAddOpen(true)} className="gap-2 bg-primary hover:bg-primary/90" size="sm">
+              <Plus className="h-3.5 w-3.5" />{isAr ? "إضافة أول مشرف" : "Add First Supervisor"}
+            </Button>
           </div>
         ) : (
           <div className="space-y-3">
@@ -258,70 +266,109 @@ const AdminTeam: React.FC = () => {
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="sm:max-w-xl" dir={isAr ? "rtl" : "ltr"}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-primary" />
-              {isAr ? "إضافة مشرف جديد" : "Add New Supervisor"}
+            <DialogTitle className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
+                <UserPlus className="h-4.5 w-4.5 text-primary" strokeWidth={1.5} />
+              </div>
+              <div>
+                <span className="block text-[15px]">{isAr ? "إضافة مشرف جديد" : "Add New Supervisor"}</span>
+                <span className="block text-[11px] font-normal text-muted-foreground mt-0.5">
+                  {isAr ? "أنشئ حساباً وحدد صلاحياته" : "Create an account and define permissions"}
+                </span>
+              </div>
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-2">
-            {/* Personal Info - Horizontal */}
-            <div className="grid grid-cols-3 gap-3">
+          <div className="space-y-5 py-2">
+            {/* Account Info Section */}
+            <div className="rounded-xl border border-border/50 bg-muted/20 p-4 space-y-3.5">
+              <div className="flex items-center gap-2 mb-1">
+                <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+                  {isAr ? "بيانات الحساب" : "Account Details"}
+                </span>
+              </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">{isAr ? "الاسم الكامل" : "Full Name"} <span className="text-destructive">*</span></Label>
                 <div className="relative">
-                  <User className="absolute start-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                  <Input className="ps-9" value={addForm.display_name} onChange={e => setAddForm(p => ({ ...p, display_name: e.target.value }))} />
+                  <User className="absolute start-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" strokeWidth={1.5} />
+                  <Input className="ps-10 h-10 bg-background" placeholder={isAr ? "الاسم الكامل للمشرف" : "Supervisor full name"} value={addForm.display_name} onChange={e => setAddForm(p => ({ ...p, display_name: e.target.value }))} />
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">{isAr ? "البريد" : "Email"} <span className="text-destructive">*</span></Label>
-                <div className="relative">
-                  <Mail className="absolute start-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                  <Input className="ps-9" type="email" dir="ltr" value={addForm.email} onChange={e => setAddForm(p => ({ ...p, email: e.target.value }))} />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">{isAr ? "البريد الإلكتروني" : "Email Address"} <span className="text-destructive">*</span></Label>
+                  <div className="relative">
+                    <Mail className="absolute start-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" strokeWidth={1.5} />
+                    <Input className="ps-10 h-10 bg-background" type="email" dir="ltr" placeholder="supervisor@example.com" value={addForm.email} onChange={e => setAddForm(p => ({ ...p, email: e.target.value }))} />
+                  </div>
                 </div>
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">{isAr ? "كلمة المرور" : "Password"} <span className="text-destructive">*</span></Label>
-                <div className="relative">
-                  <KeyRound className="absolute start-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                  <Input className="ps-9 pe-10" type={showAddPassword ? "text" : "password"} dir="ltr" value={addForm.password} onChange={e => setAddForm(p => ({ ...p, password: e.target.value }))} />
-                  <button type="button" onClick={() => setShowAddPassword(!showAddPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                    {showAddPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                  </button>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">{isAr ? "كلمة المرور" : "Password"} <span className="text-destructive">*</span></Label>
+                  <div className="relative">
+                    <KeyRound className="absolute start-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" strokeWidth={1.5} />
+                    <Input className="ps-10 pe-10 h-10 bg-background" type={showAddPassword ? "text" : "password"} dir="ltr" placeholder="••••••••" value={addForm.password} onChange={e => setAddForm(p => ({ ...p, password: e.target.value }))} />
+                    <button type="button" onClick={() => setShowAddPassword(!showAddPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                      {showAddPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Permissions Grid - Horizontal */}
-            <div className="border-t border-border/40 pt-4">
-              <div className="flex items-center justify-between mb-3">
-                <Label className="text-sm font-medium">{isAr ? "الصلاحيات" : "Permissions"}</Label>
-                <button type="button" className="text-xs text-primary hover:underline" onClick={() => {
+            {/* Permissions Section */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Shield className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+                    {isAr ? "الصلاحيات" : "Permissions"}
+                  </span>
+                  <Badge variant="outline" className="text-[10px] h-5 px-1.5">
+                    {PERM_KEYS.filter(k => addForm[k]).length}/{PERM_KEYS.length}
+                  </Badge>
+                </div>
+                <button type="button" className="text-[11px] font-medium text-primary hover:text-primary/80 transition-colors" onClick={() => {
                   const allTrue = PERM_KEYS.every(k => addForm[k]);
                   setAddForm(p => { const next = { ...p }; PERM_KEYS.forEach(k => { next[k] = !allTrue; }); return next; });
                 }}>
-                  {isAr ? "تحديد / إلغاء الكل" : "Toggle All"}
+                  {PERM_KEYS.every(k => addForm[k]) ? (isAr ? "إلغاء الكل" : "Deselect All") : (isAr ? "تحديد الكل" : "Select All")}
                 </button>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {PERM_KEYS.map(k => {
                   const pc = permConfig[k];
                   const PermIcon = pc.icon;
+                  const active = addForm[k];
                   return (
-                    <label key={k} className={`flex items-center gap-2.5 rounded-xl border p-3 cursor-pointer transition-all ${addForm[k] ? "border-primary/30 bg-primary/5" : "border-border/40 hover:bg-muted/30"}`}>
-                      <Switch checked={addForm[k]} onCheckedChange={c => setAddForm(p => ({ ...p, [k]: c }))} className="scale-75" />
-                      <PermIcon className={`h-4 w-4 ${addForm[k] ? pc.color : "text-muted-foreground/50"}`} />
-                      <span className={`text-xs ${addForm[k] ? "font-medium text-foreground" : "text-muted-foreground"}`}>{isAr ? pc.ar : pc.en}</span>
-                    </label>
+                    <button
+                      key={k}
+                      type="button"
+                      onClick={() => setAddForm(p => ({ ...p, [k]: !p[k] }))}
+                      className={`relative flex flex-col items-center gap-2 rounded-xl border p-3.5 transition-all duration-200 ${
+                        active
+                          ? "border-primary/30 bg-primary/5 shadow-sm shadow-primary/5"
+                          : "border-border/40 hover:border-border hover:bg-muted/30"
+                      }`}
+                    >
+                      {active && <CheckCircle2 className="h-3.5 w-3.5 text-primary absolute top-2 end-2" />}
+                      <div className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${
+                        active ? "bg-primary/10" : "bg-muted/60"
+                      }`}>
+                        <PermIcon className={`h-4 w-4 transition-colors ${active ? pc.color : "text-muted-foreground/40"}`} strokeWidth={1.5} />
+                      </div>
+                      <span className={`text-[11px] leading-tight text-center transition-colors ${active ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
+                        {isAr ? pc.ar : pc.en}
+                      </span>
+                    </button>
                   );
                 })}
               </div>
             </div>
           </div>
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 border-t border-border/40 pt-4">
             <Button variant="outline" onClick={() => setAddOpen(false)}>{isAr ? "إلغاء" : "Cancel"}</Button>
-            <Button onClick={handleAdd} disabled={saving || !addForm.email || !addForm.password || !addForm.display_name} className="gap-1.5 bg-primary hover:bg-primary/90">
-              {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+            <Button onClick={handleAdd} disabled={saving || !addForm.email || !addForm.password || !addForm.display_name} className="gap-2 bg-primary hover:bg-primary/90 min-w-[140px]">
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
               {saving ? (isAr ? "جارٍ الإضافة..." : "Adding...") : (isAr ? "إضافة المشرف" : "Add Supervisor")}
             </Button>
           </DialogFooter>

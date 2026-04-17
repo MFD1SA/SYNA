@@ -5,9 +5,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useTenant } from "@/hooks/useTenant";
 import { useAdminRole } from "@/hooks/useAdminRole";
+import { isImpersonationSession } from "@/integrations/supabase/impersonateClient";
 import {
   LayoutDashboard, Search, FileText, Handshake,
-  Settings, Globe, LogOut, ChevronLeft, ChevronRight, HardHat, ShieldCheck,
+  Settings, Globe, LogOut, ChevronLeft, ChevronRight, HardHat, ShieldCheck, X,
 } from "lucide-react";
 import NotificationDropdown from "./NotificationDropdown";
 import logoImg from "@/assets/logo.png";
@@ -28,10 +29,21 @@ const CrmSidebar: React.FC = () => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const isAr = lang === "ar";
+  const isImpersonating = isImpersonationSession();
 
   const handleSignOut = async () => {
+    if (isImpersonating) {
+      // Impersonation tab: just close it — admin is still logged in on the original tab
+      window.close();
+      return;
+    }
     await signOut();
     navigate("/");
+  };
+
+  const handleBackToAdmin = () => {
+    // Close this impersonation tab — admin session is preserved in the original tab
+    window.close();
   };
 
   const CollapseIcon = isAr
@@ -122,8 +134,27 @@ const CrmSidebar: React.FC = () => {
         </div>
       </nav>
 
-      {/* Admin back link */}
-      {isAdminUser && !collapsed && (
+      {/* Impersonation banner + Back to Admin button */}
+      {isImpersonating && !collapsed && (
+        <div className="border-t border-amber-200/60 mx-3 px-3 pt-3 pb-2 bg-amber-50/40 mt-2 rounded-lg">
+          <div className="flex items-center gap-1.5 mb-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-amber-700">
+              {isAr ? "جلسة مراقبة" : "IMPERSONATION"}
+            </p>
+          </div>
+          <button
+            onClick={handleBackToAdmin}
+            className="w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-[12px] text-[#2B4C66] font-medium bg-white border border-[#2B4C66]/20 transition-colors hover:bg-[#2B4C66]/5"
+          >
+            <ShieldCheck className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+            <span>{isAr ? "العودة للوحة الأدمن" : "Back to Admin Panel"}</span>
+          </button>
+        </div>
+      )}
+
+      {/* Admin back link (for actual admins browsing CRM pages directly) */}
+      {isAdminUser && !isImpersonating && !collapsed && (
         <div className="border-t border-gray-200/60 mx-3 px-3 pt-3 pb-1">
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400">
             {isAr ? "البوابات" : "PORTALS"}
@@ -147,9 +178,12 @@ const CrmSidebar: React.FC = () => {
         <button
           onClick={handleSignOut}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] text-red-500/70 transition-colors hover:bg-red-50 hover:text-red-600"
+          title={isImpersonating ? (isAr ? "إغلاق التبويب" : "Close tab") : undefined}
         >
-          <LogOut className="h-4 w-4 shrink-0" strokeWidth={1.5} />
-          {!collapsed && (isAr ? "خروج" : "Logout")}
+          {isImpersonating ? <X className="h-4 w-4 shrink-0" strokeWidth={1.5} /> : <LogOut className="h-4 w-4 shrink-0" strokeWidth={1.5} />}
+          {!collapsed && (isImpersonating
+            ? (isAr ? "إغلاق التبويب" : "Close Tab")
+            : (isAr ? "خروج" : "Logout"))}
         </button>
       </div>
     </aside>

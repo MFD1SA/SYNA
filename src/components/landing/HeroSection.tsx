@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Landmark, Building2 } from "lucide-react";
 import cityRiyadhImg from "@/assets/city-riyadh.jpg";
 import { getHeroImage } from "@/services/siteSettings.service";
+import { useHeroImage } from "@/hooks/useHeroImage";
 
 const HeroSection: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -12,65 +13,71 @@ const HeroSection: React.FC = () => {
   const Arrow = isAr ? ArrowLeft : ArrowRight;
   const [bgImage, setBgImage] = useState<string>(cityRiyadhImg);
 
+  // New visual content system (takes priority)
+  const { heroImage: dynamicHero } = useHeroImage("home");
+
+  // Legacy hero image support (old system from AdminContent)
+  const [legacyLoaded, setLegacyLoaded] = useState(false);
+
   useEffect(() => {
     getHeroImage().then((img) => {
       if (img?.url) setBgImage(img.url);
+      setLegacyLoaded(true);
     });
   }, []);
 
+  // Priority: new system → legacy system → static fallback
+  const resolvedBg = dynamicHero?.desktop || bgImage;
+
   return (
-    <div className="relative min-h-[85vh] flex items-center overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+    <div className="relative min-h-[90vh] flex items-center overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
       {/* Background */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-sina-charcoal/80 via-sina-charcoal/70 to-sina-charcoal/90" />
-        <img
-          src={bgImage}
-          alt=""
-          className="w-full h-full object-cover"
-          style={{ filter: "brightness(0.6) saturate(0.8)" }}
-        />
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#0F1F2E]/90 via-[#0F1F2E]/75 to-[#0F1F2E]/60" />
+        <picture>
+          {dynamicHero?.mobile && (
+            <source media="(max-width: 768px)" srcSet={dynamicHero.mobile} />
+          )}
+          <img
+            src={resolvedBg}
+            alt={isAr ? (dynamicHero?.alt_ar || "") : (dynamicHero?.alt_en || "")}
+            className="w-full h-full object-cover scale-105"
+            style={{ filter: "brightness(0.55) saturate(0.85)" }}
+          />
+        </picture>
       </div>
 
+      {/* Subtle decorative elements */}
+      <div className="absolute inset-0 z-10 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "48px 48px" }} />
+
       {/* Content */}
-      <div className="container relative z-20 py-32 lg:py-40">
-        <div className="max-w-2xl">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+      <div className="container relative z-20 py-28 lg:py-36">
+        <div className="max-w-3xl">
+          <h1 className="text-5xl md:text-6xl lg:text-[72px] font-bold text-white leading-[1.08] tracking-tight mb-7">
             {t.hero.title}
           </h1>
-          <p className="text-base md:text-lg text-white/70 leading-relaxed mb-10 max-w-xl">
+          <p className="text-lg text-white/80 leading-relaxed mb-12 max-w-xl">
             {t.hero.subtitle}
           </p>
 
           <div className="flex flex-wrap gap-4">
             <button
-              onClick={() => navigate("/auth/register")}
-              className="inline-flex items-center gap-2.5 h-12 px-8 bg-white text-sina-charcoal text-[14px] font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+              onClick={() => navigate("/auth/login?type=owner")}
+              className="inline-flex items-center gap-3 h-14 px-10 bg-white text-[#1E374B] text-[15px] font-semibold rounded-xl hover:bg-gray-50 hover:shadow-lg hover:shadow-white/10 transition-all duration-300"
             >
-              {t.hero.cta}
-              <Arrow className="w-4 h-4" />
+              <Landmark className="w-5 h-5" strokeWidth={1.5} />
+              {isAr ? "دخول الملاك" : "Owner Login"}
             </button>
             <button
-              onClick={() => navigate("/how-it-works")}
-              className="inline-flex items-center gap-2.5 h-12 px-8 border border-white/30 text-white text-[14px] font-medium rounded-lg hover:bg-white/10 transition-colors"
+              onClick={() => navigate("/auth/login")}
+              className="inline-flex items-center gap-3 h-14 px-10 border border-white/25 text-white text-[15px] font-semibold rounded-xl hover:bg-white/10 hover:border-white/40 transition-all duration-300"
             >
-              {t.hero.secondary}
+              <Building2 className="w-5 h-5" strokeWidth={1.5} />
+              {isAr ? "دخول المطورين" : "Developer Login"}
             </button>
           </div>
-
-          {/* Stats */}
-          <div className="flex gap-10 mt-16 pt-10 border-t border-white/10">
-            {[
-              { value: "120+", label: t.hero.stat1 },
-              { value: "350+", label: t.hero.stat2 },
-              { value: "85+", label: t.hero.stat3 },
-            ].map((stat, i) => (
-              <div key={i}>
-                <div className="text-2xl md:text-3xl font-bold text-white">{stat.value}</div>
-                <div className="text-[12px] text-white/50 mt-1">{stat.label}</div>
-              </div>
-            ))}
-          </div>
         </div>
+
       </div>
     </div>
   );

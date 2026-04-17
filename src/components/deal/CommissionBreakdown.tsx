@@ -1,6 +1,6 @@
 import React from "react";
 import { Separator } from "@/components/ui/separator";
-import { Shield, AlertTriangle, DollarSign } from "lucide-react";
+import { Shield, AlertTriangle, Banknote } from "lucide-react";
 import { PLATFORM_BROKERAGE_RATE, PLATFORM_OPERATIONAL_RATE, PLATFORM_TOTAL_RATE } from "@/components/land/LandFormConstants";
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const fmt = (n: number) => n.toLocaleString("en-US");
-const fmtSAR = (n: number) => `${fmt(n)} SAR`;
+const fmtSAR = (n: number, isAr?: boolean) => isAr ? `${fmt(n)} ريال` : `${fmt(n)} SAR`;
 
 const CommissionBreakdown: React.FC<Props> = ({
   isAr,
@@ -30,7 +30,7 @@ const CommissionBreakdown: React.FC<Props> = ({
     <div className="rounded-xl border border-[#2B4C66]/15 bg-card p-4 space-y-3">
       <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2B4C66]/10">
-          <DollarSign className="h-4 w-4 text-[#2B4C66]" />
+          <Banknote className="h-4 w-4 text-[#2B4C66]" />
         </div>
         {isAr ? "تفاصيل العمولة والرسوم" : "Commission & Fee Details"}
       </div>
@@ -41,12 +41,12 @@ const CommissionBreakdown: React.FC<Props> = ({
           {estimatedPricePerSqm > 0 && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">{isAr ? "السعر التقديري للمتر" : "Est. Price per sqm"}</span>
-              <span className="font-medium tabular-nums" dir="ltr">{fmtSAR(estimatedPricePerSqm)}</span>
+              <span className="font-medium tabular-nums" dir="ltr">{fmtSAR(estimatedPricePerSqm, isAr)}</span>
             </div>
           )}
           <div className="flex justify-between">
-            <span className="text-muted-foreground">{isAr ? "القيمة التقديرية الإجمالية" : "Est. Total Value"}</span>
-            <span className="font-medium tabular-nums" dir="ltr">{fmtSAR(effectiveTotal)}</span>
+            <span className="text-muted-foreground">{isAr ? "القيمة التقديرية للأرض" : "Est. Land Value"}</span>
+            <span className="font-medium tabular-nums" dir="ltr">{fmtSAR(effectiveTotal, isAr)}</span>
           </div>
           <Separator />
         </div>
@@ -55,17 +55,17 @@ const CommissionBreakdown: React.FC<Props> = ({
       {/* Fee breakdown */}
       <div className="space-y-1.5 text-xs">
         <div className="flex justify-between">
-          <span className="text-muted-foreground">{isAr ? "عمولة الوساطة العقارية" : "Real Estate Brokerage"}</span>
-          <span className="font-medium tabular-nums" dir="ltr">2.50%{effectiveTotal > 0 ? ` (${fmtSAR(brokerageAmount)})` : ""}</span>
+          <span className="text-muted-foreground">{isAr ? "عمولة السعي العقاري" : "Real Estate Brokerage"}</span>
+          <span className="font-medium tabular-nums" dir="ltr">2.50%{effectiveTotal > 0 ? ` (${fmtSAR(brokerageAmount, isAr)})` : ""}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted-foreground">{isAr ? "الرسوم التشغيلية" : "Operational Fee"}</span>
-          <span className="font-medium tabular-nums" dir="ltr">0.50%{effectiveTotal > 0 ? ` (${fmtSAR(operationalAmount)})` : ""}</span>
+          <span className="text-muted-foreground">{isAr ? "أتعاب المنصة" : "Platform Fee"}</span>
+          <span className="font-medium tabular-nums" dir="ltr">1.50%{effectiveTotal > 0 ? ` (${fmtSAR(operationalAmount, isAr)})` : ""}</span>
         </div>
         <Separator />
         <div className="flex justify-between font-semibold">
           <span>{isAr ? "إجمالي حصة المنصة" : "Total Platform Share"}</span>
-          <span className="text-[#2B4C66] tabular-nums" dir="ltr">3.00%{effectiveTotal > 0 ? ` (${fmtSAR(totalPlatformShare)})` : ""}</span>
+          <span className="text-[#2B4C66] tabular-nums" dir="ltr">4.00%{effectiveTotal > 0 ? ` (${fmtSAR(totalPlatformShare, isAr)})` : ""}</span>
         </div>
       </div>
 
@@ -82,10 +82,12 @@ const CommissionBreakdown: React.FC<Props> = ({
               </p>
             </div>
           </div>
-          <div className="rounded-md border border-emerald-500/20 bg-emerald-500/5 p-2.5 flex items-center gap-2">
-            <Shield className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-            <p className="text-[10px] text-emerald-700">
-              {isAr ? "حقوق المنصة محفوظة — حصة المنصة (3%) معلومة ومقرة من جميع الأطراف" : "Platform rights protected — 3% share acknowledged by all parties"}
+          <div className="rounded-md border border-blue-500/20 bg-blue-500/5 p-2.5 flex items-start gap-2">
+            <Shield className="h-3.5 w-3.5 text-blue-600 shrink-0 mt-0.5" />
+            <p className="text-[10px] text-blue-700">
+              {isAr
+                ? "تُحتسب العمولة من قيمة الأرض فقط — الدفع مباشرة بين المالك والمطور"
+                : "Commission calculated on land value only — payment directly between owner and developer"}
             </p>
           </div>
         </>

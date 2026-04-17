@@ -10,7 +10,7 @@ const isAllowedOrigin = (o: string | null) => {
   if (!o) return false;
   try {
     const h = new URL(o).hostname.toLowerCase();
-    return h === allowedRootDomain || h.endsWith(`.${allowedRootDomain}`) || h === "localhost";
+    return h === allowedRootDomain || h.endsWith(`.${allowedRootDomain}`);
   } catch { return false; }
 };
 const buildCorsHeaders = (o: string | null) => ({
@@ -118,16 +118,38 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader) throw new Error("Unauthorized");
+    // ── Admin-only auth check ──
+    const authHeader = req.headers.get("Authorization") || req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Missing authorization" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
-    const adminClient = createClient(supabaseUrl, serviceKey);
-    const userClient = createClient(supabaseUrl, serviceKey, {
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const userClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-
     const { data: { user }, error: authError } = await userClient.auth.getUser();
-    if (authError || !user) throw new Error("Unauthorized");
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const adminClient = createClient(supabaseUrl, serviceKey);
+    const { data: roleData } = await adminClient
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!roleData) {
+      return new Response(JSON.stringify({ error: "Admin access required" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    // ── End auth check ──
 
     const payload = await req.json();
     const developerId = String(payload.developer_id || "").trim();
@@ -288,9 +310,9 @@ Deno.serve(async (req) => {
       throw new Error(errMsg);
     }
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Developer report generation failed";
+    const message = err instanceof Error ? err.message : "Unknown error";
     console.error("[generate-developer-report] Error:", message);
-    return new Response(JSON.stringify({ error: message }), {
+    return new Response(JSON.stringify({ error: "Report generation failed" }), {
       status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

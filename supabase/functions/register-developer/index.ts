@@ -10,7 +10,7 @@ const isAllowedOrigin = (origin: string | null) => {
   try {
     const url = new URL(origin);
     const hostname = url.hostname.toLowerCase();
-    return hostname === allowedRootDomain || hostname.endsWith(`.${allowedRootDomain}`) || hostname === "localhost";
+    return hostname === allowedRootDomain || hostname.endsWith(`.${allowedRootDomain}`);
   } catch {
     return false;
   }
@@ -30,72 +30,146 @@ const buildCorsHeaders = (origin: string | null) => ({
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Commission agreement text (v1.0)
-const AGREEMENT_TEXT_AR = `اتفاقية عمولة منصة سينا للتطوير العقاري
+// Commission agreement text (v2.0 — 13 articles, 2.50% + 1.50% = 4.00%)
+const AGREEMENT_TEXT_AR = `اتفاقية الخدمات والأتعاب المهنية — سينا للتطوير العقاري (v2.0)
+
+التمهيد
+بناءً على رغبة الطرفين في تنظيم علاقتهما المهنية، وتحديد حقوقهما والتزاماتهما بما لا يتعارض مع الأنظمة المعمول بها في المملكة العربية السعودية، ولا سيّما نظام الوساطة العقارية ولوائحه التنفيذية الصادرة عن الهيئة العامة للعقار (REGA)، وأنظمة حماية المعلومات والخصوصية ونظام مكافحة التستّر التجاري ونظام مكافحة غسل الأموال، فقد تم إبرام هذه الاتفاقية بإرادة الطرفين وكامل أهليتهما المعتبرة شرعاً ونظاماً.
 
 المادة الأولى: أطراف الاتفاقية
-هذه الاتفاقية مبرمة بين منصة سينا للتطوير العقاري (المشغّل) والمطور العقاري (الطرف الثاني) المسجّل في المنصة
+أُبرمت هذه الاتفاقية بين:
+الطرف الأول: سينا للتطوير العقاري — مقدّم الخدمات ومشغّل المنصة.
+الطرف الثاني: المطور العقاري المسجّل في المنصة.
 
-المادة الثانية: نطاق الاتفاقية
-تسري هذه الاتفاقية على جميع الصفقات والشراكات العقارية التي تتم عبر المنصة وتشمل صفقات الأراضي والتطوير العقاري بجميع أنواعها
+المادة الثانية: التعريفات
+«المنصة»: منصة سينا الرقمية وما يتبعها من خدمات وساطة عقارية وتسهيل للشراكات والصفقات.
+«الصفقة»: أي اتفاق أو عقد ينشأ بين الطرف الثاني وأيّ طرف ثالث (مالك أرض أو مستثمر) بناءً على خدمة قدّمتها المنصة أو معلومة أُتيحت من خلالها.
+«قيمة الأرض»: السعر الإجمالي المتفق عليه للأرض في الصفقة، ولا يشمل قيمة التطوير أو البناء.
+«المعلومات السرية»: كل بيان أو مستند أو معلومة يُطّلع عليها الطرف الثاني من خلال المنصة.
 
-المادة الثالثة: هيكل العمولة
-1. عمولة الوساطة العقارية: 2.50% من القيمة الإجمالية للصفقة
-2. أتعاب المنصة التشغيلية: 0.50% من القيمة الإجمالية للصفقة
-3. إجمالي حصة المنصة: 3.00% من القيمة الإجمالية للصفقة
+المادة الثالثة: نطاق الاتفاقية
+تسري هذه الاتفاقية على كل صفقة أو شراكة أو تعامل ينشأ بين الطرف الثاني وأيّ مالك أرض أو طرف ثالث تعرّف إليه أو حصل على بياناته — بشكل مباشر أو غير مباشر — من خلال المنصة، وتستمر سارية طوال فترة استخدام المنصة وبعد ذلك لمدة (24) شهراً من آخر تفاعل.
 
-المادة الرابعة: نطاق العمولة
-تشمل العمولة المذكورة أعلاه كامل قيمة الصفقة بما في ذلك قيمة الأرض وقيمة التطوير العقاري
+المادة الرابعة: هيكل الأتعاب المهنية
+1. عمولة السعي العقاري: 2.50% من قيمة الأرض، مستحقة للوسيط العقاري وفقاً لنظام الوساطة العقارية.
+2. أتعاب المنصة: 1.50% من قيمة الأرض، مقابل الخدمات التشغيلية والتقنية والاستشارية التي تقدمها المنصة.
+3. إجمالي الأتعاب المهنية: 4.00% من قيمة الأرض.
+تُحتسب النسب المذكورة على قيمة الأرض فقط ولا تشمل قيمة التطوير أو التشييد.
 
-المادة الخامسة: التزامات المطور
-1. يلتزم المطور بسداد كامل حصة المنصة عند إتمام الصفقة
-2. يلتزم المطور بعدم التواصل المباشر مع مالك الأرض خارج المنصة بهدف تجاوز العمولة
-3. يلتزم المطور بالحفاظ على سرية المعلومات المتاحة عبر المنصة
-4. يلتزم المطور بعدم استخدام المعلومات المقدمة عبر المنصة لأي غرض خارج نطاق الصفقة
+المادة الخامسة: آلية الدفع واستحقاق الأتعاب
+1. تستحق الأتعاب فور اكتمال التعاقد النهائي بين المطور ومالك الأرض (سواء كان عقد بيع، أو شراكة، أو تطوير، أو أي صيغة تعاقدية مماثلة).
+2. يتم الاتفاق على آلية السداد الفعلية مباشرة بين المالك والمطوّر، على أن تُسدَّد حصة المنصة (4.00%) إلى سينا للتطوير العقاري خلال مدة أقصاها (30) يوماً من تاريخ توقيع العقد النهائي.
+3. يُعتبر التأخر في السداد خرقاً لهذه الاتفاقية ويترتب عليه فوائد تأخير بحدّ أقصى لا يُخالف الأنظمة السارية، فضلاً عن حق المنصة في اتخاذ الإجراءات القانونية.
 
-المادة السادسة: السرية وحفظ الحقوق
-1. جميع المعلومات المتبادلة عبر المنصة سرية ومحمية
-2. يحق للمنصة اتخاذ الإجراءات القانونية في حال مخالفة شروط السرية أو تجاوز المنصة
-3. تحتفظ المنصة بحق تعليق أو إلغاء حساب المطور في حال المخالفة
+المادة السادسة: التزامات الطرف الثاني (المطور)
+1. حسن النية والشفافية: يلتزم المطوّر بالتصرّف بحسن نية وإفصاح كامل في جميع تعاملاته عبر المنصة.
+2. حظر التحايل: يُحظر على المطوّر إبرام أي صفقة — بشكل مباشر أو عبر طرف ثالث مرتبط به — مع أيّ مالك أو طرف تعرّف إليه من خلال المنصة دون إشعار سينا وسداد الأتعاب المستحقة. ويُعدّ أي تحايل على هذا الالتزام إخلالاً جسيماً يستوجب التعويض الكامل.
+3. السرية: يلتزم المطوّر بالحفاظ على سرية جميع المعلومات التي اطّلع عليها عبر المنصة، وعدم إفشائها أو استخدامها لأيّ غرض خارج نطاق الصفقة.
+4. عدم المنافسة غير المشروعة: يُحظر على المطور استخدام بيانات الملاك أو المعلومات السرية لأيّ نشاط موازٍ أو منافس خلال مدة الاتفاقية وبعد انتهائها لمدة (24) شهراً.
+5. دقة البيانات: يتحمّل المطوّر كامل المسؤولية عن صحة وكمال البيانات التي يقدمها عند التسجيل واستخدام المنصة.
 
-المادة السابعة: مدة الاتفاقية
-تسري هذه الاتفاقية من تاريخ الموافقة عليها وتظل سارية طوال فترة استخدام المطور للمنصة
+المادة السابعة: ضمانات المنصة وحدود المسؤولية
+1. تقدّم المنصة خدماتها ببذل العناية المهنية المعتادة، ولا تضمن نتيجة أيّ صفقة أو جدوى أيّ استثمار.
+2. لا تُعدّ المعلومات المعروضة على المنصة تقييمات عقارية رسمية ولا مشورة استثمارية.
+3. يتم التعامل مع المعلومات الشخصية وفقاً لنظام حماية البيانات الشخصية في المملكة العربية السعودية.
 
-المادة الثامنة: القبول والموافقة
-بالموافقة على هذه الاتفاقية يقر المطور بأنه قرأ وفهم جميع البنود المذكورة أعلاه ويوافق عليها بالكامل وبإرادته الحرة`;
+المادة الثامنة: السرية وحماية البيانات
+1. تُعدّ جميع المعلومات المتبادلة بين الطرفين سرية تامة ومحمية بموجب هذه الاتفاقية والأنظمة المعمول بها.
+2. يلتزم الطرف الثاني بعدم نسخ أو تصوير أو مشاركة أي مستند أو معلومة مع أيّ طرف ثالث دون موافقة كتابية من سينا.
+3. يستمر التزام السرية لمدة (5) خمس سنوات من تاريخ انتهاء هذه الاتفاقية.
 
-const AGREEMENT_TEXT_EN = `SINA Real Estate Development Platform Commission Agreement
+المادة التاسعة: الإخلال والجزاءات
+1. يُعدّ كل مما يلي إخلالاً جوهرياً بالاتفاقية: التحايل على الأتعاب، إفشاء المعلومات السرية، تقديم بيانات كاذبة، أو التواصل المباشر مع المالك لتجاوز المنصة.
+2. في حال الإخلال، يحق للمنصة: (أ) المطالبة بكامل الأتعاب المستحقة مضاعفةً كتعويض اتفاقي، (ب) تعليق أو إلغاء حساب المطور، (ج) اتخاذ جميع الإجراءات القانونية والنظامية المتاحة.
+3. لا تُخلّ الجزاءات المذكورة بحق المنصة في المطالبة بالأضرار الفعلية والتبعية الإضافية.
+
+المادة العاشرة: المدة والإنهاء
+1. تسري هذه الاتفاقية من تاريخ الموافقة عليها إلكترونياً وتظل سارية طوال فترة استخدام المنصة.
+2. يحق لأيّ طرف إنهاء الاتفاقية بإشعار كتابي مسبق مدته (30) يوماً، مع بقاء الالتزامات المتعلقة بالسرية والأتعاب المستحقة سارية المفعول بعد الإنهاء.
+3. لا يترتب على الإنهاء إسقاط أيّ حقوق نشأت قبله.
+
+المادة الحادية عشرة: القانون الواجب التطبيق وتسوية النزاعات
+1. تخضع هذه الاتفاقية لأنظمة المملكة العربية السعودية وتُفسَّر وفقاً لها.
+2. يسعى الطرفان لتسوية أيّ نزاع ودياً، وفي حال تعذّر ذلك يُحال النزاع إلى الجهة القضائية المختصة في مدينة الرياض.
+
+المادة الثانية عشرة: أحكام عامة
+1. الإشعارات: تُرسل عبر البريد الإلكتروني المسجّل لكلا الطرفين وتُعدّ نافذة من تاريخ الإرسال.
+2. الموافقة الإلكترونية: توقيع الطرف الثاني إلكترونياً على هذه الاتفاقية له ذات الأثر القانوني للتوقيع الكتابي، وفقاً لنظام التعاملات الإلكترونية السعودي.
+3. استقلالية البنود: بطلان أيّ بند لا يؤثر على باقي البنود.
+4. الاتفاقية الكاملة: تمثّل هذه الاتفاقية مع ملاحقها كامل التفاهم بين الطرفين، وتلغي ما قبلها من اتفاقيات شفهية أو كتابية.
+
+المادة الثالثة عشرة: الإقرار والقبول
+بالموافقة الإلكترونية على هذه الاتفاقية، يُقرّ الطرف الثاني بأنه قرأ جميع بنود هذه الاتفاقية وفهم محتواها، وأنه يوافق عليها بالكامل وبإرادته الحرة والمنفردة، دون إكراه أو تضليل، وأنه مخوَّل نظاماً بتوقيعها نيابة عن الطرف الثاني.`;
+
+const AGREEMENT_TEXT_EN = `Professional Services & Fees Agreement — SINA Real Estate Development (v2.0)
+
+Preamble
+Based on the mutual desire of both parties to regulate their professional relationship and define their rights and obligations in accordance with the applicable laws of the Kingdom of Saudi Arabia — including the Real Estate Brokerage Law and its Implementing Regulations issued by the General Real Estate Authority (REGA), the Personal Data Protection Law, the Anti-Concealment Law, and the Anti-Money Laundering Law — this Agreement is entered into by the free and legally valid consent of both parties.
 
 Article 1: Parties
-This agreement is entered into between SINA Real Estate Development Platform (the Operator) and the Real Estate Developer (Second Party) registered on the platform
+This Agreement is executed between:
+First Party: SINA Real Estate Development — the Service Provider and platform operator.
+Second Party: The Real Estate Developer registered on the platform.
 
-Article 2: Scope
-This agreement applies to all real estate transactions and partnerships conducted through the platform including land deals and real estate development of all types
+Article 2: Definitions
+"Platform": The SINA digital platform and all related brokerage and partnership-facilitation services.
+"Transaction": Any agreement or contract entered into between the Second Party and any third party (landowner or investor) based on a service or information made available through the Platform.
+"Land Value": The total agreed price of the land, excluding development or construction value.
+"Confidential Information": Any data, document, or information accessed by the Second Party through the Platform.
 
-Article 3: Commission Structure
-1. Real Estate Brokerage Commission: 2.50% of the total transaction value
-2. Platform Operational Fee: 0.50% of the total transaction value
-3. Total Platform Share: 3.00% of the total transaction value
+Article 3: Scope
+This Agreement applies to every transaction, partnership, or dealing arising between the Second Party and any landowner or third party identified — directly or indirectly — through the Platform, and remains effective throughout the use of the Platform and for twenty-four (24) months following the last interaction.
 
-Article 4: Commission Coverage
-The above commission covers the entire transaction value including land value and real estate development value
+Article 4: Professional Fees Structure
+1. Real Estate Brokerage Fee: 2.50% of the Land Value, due under the Real Estate Brokerage Law.
+2. Platform Services Fee: 1.50% of the Land Value, for operational, technical, and advisory services.
+3. Total Professional Fees: 4.00% of the Land Value.
+All percentages are calculated on the Land Value only and exclude development or construction value.
 
-Article 5: Developer Obligations
-1. The developer commits to paying the full platform share upon deal completion
-2. The developer shall not contact the land owner directly outside the platform to bypass the commission
-3. The developer shall maintain confidentiality of information available through the platform
-4. The developer shall not use information provided through the platform for any purpose outside the scope of the transaction
+Article 5: Payment Mechanism & Accrual
+1. Fees become due upon the conclusion of the final contract between the Developer and the landowner (whether sale, partnership, development, or equivalent arrangement).
+2. The actual payment mechanism is agreed directly between the owner and the Developer, provided the Platform's share (4.00%) is remitted to SINA Real Estate Development within a maximum of thirty (30) days from signature of the final contract.
+3. Late payment constitutes a breach and may incur late-payment interest up to the legally permitted maximum, without prejudice to the Platform's right to take legal action.
 
-Article 6: Confidentiality and Rights Protection
-1. All information exchanged through the platform is confidential and protected
-2. The platform reserves the right to take legal action in case of breach of confidentiality or platform bypass
-3. The platform reserves the right to suspend or cancel the developer account in case of violation
+Article 6: Developer's Obligations
+1. Good Faith & Transparency: The Developer shall act in good faith and with full disclosure in all Platform dealings.
+2. Circumvention Prohibited: The Developer is prohibited from concluding any transaction — directly or through any related third party — with any owner or party identified through the Platform without notifying SINA and paying the due fees. Any circumvention is a material breach requiring full indemnification.
+3. Confidentiality: The Developer shall maintain the confidentiality of all Platform-sourced information and not disclose or use it outside the scope of the transaction.
+4. Non-Compete: The Developer shall not use owner data or Confidential Information in any parallel or competing activity during the Agreement and for twenty-four (24) months thereafter.
+5. Data Accuracy: The Developer bears full responsibility for the accuracy and completeness of all data provided.
 
-Article 7: Duration
-This agreement is effective from the date of acceptance and remains in force throughout the developer use of the platform
+Article 7: Platform Warranties & Liability Limits
+1. The Platform provides services with customary professional care and does not warrant the outcome of any transaction or the feasibility of any investment.
+2. Information presented on the Platform does not constitute official property valuations or investment advice.
+3. Personal data is handled in accordance with the Saudi Personal Data Protection Law.
 
-Article 8: Acceptance
-By accepting this agreement the developer acknowledges having read and understood all the above terms and agrees to them fully and voluntarily`;
+Article 8: Confidentiality & Data Protection
+1. All information exchanged is strictly confidential and protected under this Agreement and applicable law.
+2. The Second Party shall not copy, photograph, or share any document or information with any third party without SINA's written consent.
+3. Confidentiality obligations survive for five (5) years after the termination of this Agreement.
+
+Article 9: Breach & Remedies
+1. Any of the following constitutes a material breach: circumventing fees, disclosing confidential information, providing false data, or directly contacting the owner to bypass the Platform.
+2. In case of breach, the Platform is entitled to: (a) claim the full due fees doubled as agreed-upon liquidated damages; (b) suspend or terminate the Developer's account; (c) pursue all available legal remedies.
+3. The foregoing remedies are without prejudice to the Platform's right to claim additional actual and consequential damages.
+
+Article 10: Term & Termination
+1. This Agreement takes effect upon electronic acceptance and remains effective throughout the use of the Platform.
+2. Either party may terminate the Agreement by thirty (30) days' prior written notice, provided that confidentiality and due-fee obligations survive such termination.
+3. Termination does not waive any rights accrued prior thereto.
+
+Article 11: Governing Law & Dispute Resolution
+1. This Agreement is governed by and construed in accordance with the laws of the Kingdom of Saudi Arabia.
+2. The parties shall seek to settle any dispute amicably; failing which the dispute shall be referred to the competent judicial authority in the city of Riyadh.
+
+Article 12: General Provisions
+1. Notices: Sent via the parties' registered email and deemed effective as of the date of dispatch.
+2. Electronic Consent: The Second Party's electronic signature has the same legal effect as a handwritten signature, pursuant to the Saudi Electronic Transactions Law.
+3. Severability: Invalidity of any clause does not affect the remaining clauses.
+4. Entire Agreement: This Agreement, together with its annexes, constitutes the entire understanding of the parties and supersedes all prior oral or written agreements.
+
+Article 13: Acknowledgment & Acceptance
+By electronically accepting this Agreement, the Second Party acknowledges having read and understood all terms, and accepts them in full voluntarily, without coercion or misrepresentation, being legally authorized to execute this Agreement on behalf of the Second Party.`;
 
 Deno.serve(async (req) => {
   const corsHeaders = buildCorsHeaders(req.headers.get("origin"));
@@ -125,6 +199,7 @@ Deno.serve(async (req) => {
     const city = String(payload.city || "").trim();
     const website = String(payload.website || "").trim();
     const company_description = String(payload.company_description || "").trim();
+    const logo_url = typeof payload.logo_url === "string" ? payload.logo_url.trim() : "";
     const commission_accepted = payload.commission_accepted === true;
 
     // Validation
@@ -136,17 +211,49 @@ Deno.serve(async (req) => {
       throw new Error("Password must be at least 10 chars and include uppercase, lowercase, number, and symbol");
     }
 
+    // Require corporate email — reject free personal webmail domains (all known variants)
+    const FREE_EMAIL_DOMAINS = new Set([
+      // Google
+      "gmail.com", "googlemail.com",
+      // Yahoo
+      "yahoo.com", "yahoo.co.uk", "yahoo.fr", "yahoo.de", "yahoo.es", "yahoo.it",
+      "yahoo.ca", "yahoo.com.au", "yahoo.in", "yahoo.co.jp", "ymail.com", "rocketmail.com",
+      // Microsoft
+      "hotmail.com", "hotmail.co.uk", "hotmail.fr", "hotmail.de", "hotmail.es", "hotmail.it",
+      "outlook.com", "outlook.sa", "outlook.fr", "outlook.de", "outlook.es", "outlook.it",
+      "outlook.co.uk", "outlook.com.au",
+      "live.com", "live.co.uk", "live.fr", "live.de", "live.ca", "live.com.au",
+      "msn.com",
+      // Apple
+      "icloud.com", "me.com", "mac.com",
+      // Other free providers
+      "aol.com", "aim.com",
+      "protonmail.com", "proton.me", "pm.me",
+      "mail.com", "email.com",
+      "gmx.com", "gmx.net", "gmx.de", "gmx.at", "gmx.ch",
+      "zoho.com", "zohomail.com",
+      "yandex.com", "yandex.ru",
+      "qq.com", "163.com", "126.com",
+      "rediffmail.com", "inbox.com", "tutanota.com", "tuta.io",
+      "fastmail.com", "fastmail.fm",
+      "hey.com",
+    ]);
+    const emailDomain = email.split("@")[1] || "";
+    if (FREE_EMAIL_DOMAINS.has(emailDomain)) {
+      throw new Error("A corporate email is required — personal email domains are not accepted");
+    }
+
     if (!commission_accepted) {
       throw new Error("Commission agreement must be accepted");
     }
 
     const adminClient = createClient(supabaseUrl, serviceKey);
 
-    // Step 1: Create auth user
+    // Step 1: Create auth user (email already confirmed — no verification email needed)
     const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
       email,
       password,
-      email_confirm: false,
+      email_confirm: true,
       user_metadata: {
         full_name: contact_person_name || company_name,
         subscription_type: "individual",
@@ -172,6 +279,7 @@ Deno.serve(async (req) => {
       phone: phone || null,
       city: city || null,
       website: website || null,
+      logo_url: logo_url || null,
     }).select("id").single();
 
     if (devError) {
@@ -179,17 +287,17 @@ Deno.serve(async (req) => {
       throw new Error("Failed to create developer profile");
     }
 
-    // Step 3: Save commission agreement (server-side IP — reliable)
+    // Step 3: Save commission agreement v2.0 (server-side IP — reliable)
     const { error: agreementError } = await adminClient.from("developer_agreements").insert({
       user_id: userId,
       developer_id: devData.id,
       agreement_type: "commission_agreement",
-      agreement_version: "v1.0",
+      agreement_version: "v2.0",
       agreement_text_ar: AGREEMENT_TEXT_AR,
       agreement_text_en: AGREEMENT_TEXT_EN,
       commission_brokerage: 2.50,
-      commission_operational: 0.50,
-      commission_total: 3.00,
+      commission_operational: 1.50,
+      commission_total: 4.00,
       accepted: true,
       accepted_at: new Date().toISOString(),
       ip_address: clientIp,
@@ -216,28 +324,17 @@ Deno.serve(async (req) => {
       { user_id: userId, policy_type: "terms", policy_version: "1.0.0" },
       { user_id: userId, policy_type: "privacy", policy_version: "1.0.0" },
       { user_id: userId, policy_type: "usage", policy_version: "1.0.0" },
-      { user_id: userId, policy_type: "commission_agreement", policy_version: "v1.0" },
+      { user_id: userId, policy_type: "commission_agreement", policy_version: "v2.0" },
     ]);
 
-    // Step 6: Send verification email
-    const { error: emailError } = await adminClient.auth.admin.generateLink({
-      type: "signup",
-      email,
-      options: { redirectTo: resolveSafeOrigin(req.headers.get("origin")) },
-    });
-
-    if (emailError) {
-      console.error("[register-developer] Email link error:", emailError);
-    }
-
-    // Step 7: Notify admin
+    // Step 6: Notify admin (email already confirmed — no verification link needed)
     await adminClient.from("notifications").insert({
       user_id: userId,
       type: "new_developer_registered",
       title_ar: `مطور جديد: ${company_name}`,
       title_en: `New Developer: ${company_name}`,
-      message_ar: `تم تسجيل المطور ${contact_person_name} من شركة ${company_name} ووافق على اتفاقية العمولة (3%)`,
-      message_en: `Developer ${contact_person_name} from ${company_name} registered and accepted the commission agreement (3%)`,
+      message_ar: `تم تسجيل المطور ${contact_person_name} من شركة ${company_name} ووافق على اتفاقية العمولة (4%)`,
+      message_en: `Developer ${contact_person_name} from ${company_name} registered and accepted the commission agreement (4%)`,
       entity_type: "developer",
       entity_id: devData.id,
     }).then(() => {}).catch(() => {});
@@ -254,6 +351,7 @@ Deno.serve(async (req) => {
       "This email is already registered",
       "Failed to create developer profile",
       "Failed to save commission agreement",
+      "A corporate email is required",
     ];
     const message = safeMessages.some(m => err.message?.includes(m)) ? err.message : "Registration failed";
     return new Response(JSON.stringify({ error: message }), {

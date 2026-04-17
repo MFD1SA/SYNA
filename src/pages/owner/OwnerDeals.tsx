@@ -31,21 +31,30 @@ const OwnerDeals: React.FC = () => {
   useEffect(() => {
     if (!user) return;
     const fetch = async () => {
-      const { data } = await supabase
-        .from("deals")
-        .select("*, developers(company_name, marketing_brand_name), lands(city, district, land_area_sqm, estimated_price_per_sqm, estimated_total_value, owner_name, usage_type, partnership_goal, project_model, deed_number, plan_number)")
-        .eq("owner_id", user.id)
-        .order("created_at", { ascending: false });
-      setDeals(data || []);
-      setLoading(false);
+      try {
+        const { data } = await supabase
+          .from("deals")
+          .select("*, developers(company_name, marketing_brand_name), lands(city, district, land_area_sqm, estimated_price_per_sqm, estimated_total_value, owner_name, usage_type, partnership_goal, project_model, deed_number, plan_number)")
+          .eq("owner_id", user.id)
+          .order("created_at", { ascending: false });
+        setDeals(data || []);
+      } catch (err) {
+        console.error("Failed to fetch deals:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetch();
   }, [user]);
 
   const openDealDetail = async (deal: any) => {
     setViewDeal(deal);
-    const { data } = await supabase.from("deal_meetings").select("*").eq("deal_id", deal.id).order("scheduled_at", { ascending: false });
-    setMeetings(data || []);
+    try {
+      const { data } = await supabase.from("deal_meetings").select("*").eq("deal_id", deal.id).order("scheduled_at", { ascending: false });
+      setMeetings(data || []);
+    } catch (err) {
+      console.error("Failed to fetch deal meetings:", err);
+    }
   };
 
   const buildLandForm = (land: any): LandFormData => ({

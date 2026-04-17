@@ -48,12 +48,17 @@ const CrmDeals: React.FC = () => {
   const fetchDeals = useCallback(async () => {
     if (!user) return;
     const { data: devProfile } = await supabase.from("developers").select("id").eq("user_id", user.id).maybeSingle();
-    let query = supabase
+    if (!devProfile) {
+      // No developer profile found — do not fetch deals without a filter
+      setDeals([]);
+      setLoading(false);
+      return;
+    }
+    const { data } = await supabase
       .from("deals")
       .select("*, lands(city, district, land_area_sqm, estimated_price_per_sqm, estimated_total_value, usage_type, partnership_goal, project_model, deed_number, plan_number), developers(company_name, marketing_brand_name)")
+      .eq("developer_id", devProfile.id)
       .order("created_at", { ascending: false });
-    if (devProfile) query = query.eq("developer_id", devProfile.id);
-    const { data } = await query;
     setDeals(data || []);
     setLoading(false);
   }, [user]);
