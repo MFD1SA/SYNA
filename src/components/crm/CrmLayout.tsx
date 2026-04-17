@@ -6,9 +6,12 @@ import { Link } from "react-router-dom";
 import NotificationDropdown from "./NotificationDropdown";
 import UserAvatarMenu from "@/components/shared/UserAvatarMenu";
 import ThemeToggle from "@/components/dashboard/ThemeToggle";
+import CommandPalette from "@/components/dashboard/CommandPalette";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { lang } = useLanguage();
+  const { signOut } = useAuth();
   const isAr = lang === "ar";
 
   return (
@@ -16,6 +19,7 @@ const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       className="flex min-h-screen bg-[#F7F8FA] dark:bg-[#0B1623] text-slate-900 dark:text-slate-100"
       dir={isAr ? "rtl" : "ltr"}
     >
+      <CommandPalette role="developer" onSignOut={signOut} />
       <CrmSidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top bar — glass */}

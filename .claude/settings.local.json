@@ -26,7 +26,9 @@
       "Bash(command -v npx)",
       "mcp__72b51d88-3a69-48ff-8707-2878f2053817__list_deployments",
       "mcp__72b51d88-3a69-48ff-8707-2878f2053817__deploy_to_vercel",
-      "Bash(command -v vercel)"
+      "Bash(command -v vercel)",
+      "mcp__72b51d88-3a69-48ff-8707-2878f2053817__get_project",
+      "Bash(ls src/components/ui/command*)"
     ]
   }
 }

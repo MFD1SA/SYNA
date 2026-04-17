@@ -22,6 +22,9 @@ import {
 import DeveloperFeeAcknowledgment from "@/components/crm/DeveloperFeeAcknowledgment";
 import LandAIInsights from "@/components/crm/LandAIInsights";
 import NDAConsentModal from "@/components/agreements/NDAConsentModal";
+import DashboardShell from "@/components/dashboard/DashboardShell";
+import BentoCard from "@/components/dashboard/BentoCard";
+import StatusBadge from "@/components/dashboard/StatusBadge";
 import { getNDAConsentsForUser, submitNDADecision, type NDAConsent } from "@/services/nda.service";
 import { phaseLabels, phaseColors, type DealPhase } from "@/services/dealPhase.service";
 
@@ -257,72 +260,127 @@ const CrmBrowseLands: React.FC = () => {
 
   return (
     <CrmLayout>
-      <div className="mb-5">
-        <h1 className="text-2xl font-medium text-foreground">{isAr ? "استعراض الفرص" : "Browse Opportunities"}</h1>
-        <p className="mt-1 text-sm font-light text-muted-foreground">
-          {isAr ? "استعرض الأراضي المتاحة وقدم طلب شراكة" : "Browse available lands and submit partnership requests"}
-        </p>
-      </div>
+      <DashboardShell isAr={isAr} accent="blue">
+        {/* ═══ HERO ═══ */}
+        <BentoCard variant="hero" span="full" padding="lg" className="relative overflow-hidden mb-5">
+          <div className="absolute top-0 end-0 w-60 h-60 bg-[#2B4C66]/10 rounded-full blur-3xl -me-20 -mt-20 pointer-events-none" />
+          <div className="relative flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2B4C66]/10 text-[11px] font-semibold text-[#2B4C66]">
+                  <Search className="w-3 h-3" strokeWidth={2} />
+                  {isAr ? "استعراض الفرص" : "Browse"}
+                </span>
+                {isVerified && <StatusBadge variant="success" dot>{isAr ? "موثّق" : "Verified"}</StatusBadge>}
+              </div>
+              <h1 className="text-[24px] md:text-[28px] font-bold text-[#1E374B] dark:text-white tracking-tight">
+                {isAr ? "استعرض الفرص العقارية" : "Browse Opportunities"}
+              </h1>
+              <p className="mt-1 text-[13px] text-slate-600 dark:text-slate-300">
+                {isAr ? "استعرض الأراضي المتاحة وقدم طلب شراكة" : "Browse available lands and submit partnership requests"}
+              </p>
+            </div>
+            {!loading && (
+              <div className="px-4 py-2.5 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-white/60 dark:border-white/10">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">{isAr ? "النتائج" : "Results"}</p>
+                <p className="text-[22px] font-bold text-[#1E374B] dark:text-white tracking-tight leading-none mt-1" dir="ltr">
+                  {filtered.length}
+                </p>
+              </div>
+            )}
+          </div>
+        </BentoCard>
 
-      {!isVerified && developerId && (
-        <div className="mb-4 rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4 text-sm font-light text-yellow-700 dark:text-yellow-400">
-          {isAr ? "حسابك قيد التحقق — يمكنك الاستعراض لكن لا يمكنك تقديم طلبات حتى يتم التحقق من سجلك التجاري" : "Your account is pending verification — you can browse but cannot submit requests until verified"}
-        </div>
-      )}
-
-      {/* Search & Filters */}
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input className="ps-9 h-9" placeholder={isAr ? "بحث بالمدينة، الحي، أو الوصف..." : "Search city, district, or description..."} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-        </div>
-        <Select value={usageFilter} onValueChange={setUsageFilter}>
-          <SelectTrigger className="w-[160px] h-9">
-            <Filter className="h-3.5 w-3.5 me-1.5 text-muted-foreground" />
-            <SelectValue placeholder={isAr ? "نوع الاستخدام" : "Usage Type"} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{isAr ? "الكل" : "All"}</SelectItem>
-            {Object.entries(usageLabels).map(([key, val]) => (
-              <SelectItem key={key} value={key}>{isAr ? val.ar : val.en}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={areaFilter} onValueChange={setAreaFilter}>
-          <SelectTrigger className="w-[180px] h-9">
-            <Ruler className="h-3.5 w-3.5 me-1.5 text-muted-foreground" />
-            <SelectValue placeholder={isAr ? "المساحة" : "Area"} />
-          </SelectTrigger>
-          <SelectContent>
-            {areaRanges.map(r => (
-              <SelectItem key={r.value} value={r.value}>{isAr ? r.ar : r.en}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
-          <SelectTrigger className="w-[140px] h-9">
-            <ArrowUpDown className="h-3.5 w-3.5 me-1.5 text-muted-foreground" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="newest">{isAr ? "الأحدث" : "Newest"}</SelectItem>
-            <SelectItem value="largest">{isAr ? "الأكبر" : "Largest"}</SelectItem>
-            <SelectItem value="smallest">{isAr ? "الأصغر" : "Smallest"}</SelectItem>
-          </SelectContent>
-        </Select>
-        {(searchQuery || usageFilter !== "all" || areaFilter !== "all") && (
-          <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={() => { setSearchQuery(""); setUsageFilter("all"); setAreaFilter("all"); }}>
-            {isAr ? "إعادة ضبط" : "Reset"}
-          </Button>
+        {!isVerified && developerId && (
+          <BentoCard variant="neutral" span="full" padding="md" className="mb-5 !bg-amber-50/70 !border-amber-200/60 dark:!bg-amber-500/10 dark:!border-amber-500/20">
+            <p className="text-[13px] font-medium text-amber-800 dark:text-amber-200">
+              {isAr ? "حسابك قيد التحقق — يمكنك الاستعراض لكن لا يمكنك تقديم طلبات حتى يتم التحقق من سجلك التجاري" : "Your account is pending verification — you can browse but cannot submit requests until verified"}
+            </p>
+          </BentoCard>
         )}
-      </div>
 
-      {/* Results count */}
-      {!loading && (
-        <p className="mb-3 text-xs font-light text-muted-foreground">
-          {isAr ? `${filtered.length} فرصة` : `${filtered.length} opportunities`}
-        </p>
-      )}
+        {/* ═══ FILTER RAIL (chip-style) ═══ */}
+        <BentoCard variant="neutral" span="full" padding="md" className="mb-5">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 min-w-[200px] max-w-sm">
+              <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                className="ps-9 h-10 bg-white/70 dark:bg-slate-800/50 border-slate-200/60 dark:border-white/10 rounded-xl"
+                placeholder={isAr ? "بحث بالمدينة، الحي، أو الوصف..." : "Search city, district, or description..."}
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <Select value={usageFilter} onValueChange={setUsageFilter}>
+              <SelectTrigger className="w-[160px] h-10 bg-white/70 dark:bg-slate-800/50 border-slate-200/60 dark:border-white/10 rounded-xl">
+                <Filter className="h-3.5 w-3.5 me-1.5 text-slate-400" />
+                <SelectValue placeholder={isAr ? "نوع الاستخدام" : "Usage Type"} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{isAr ? "الكل" : "All"}</SelectItem>
+                {Object.entries(usageLabels).map(([key, val]) => (
+                  <SelectItem key={key} value={key}>{isAr ? val.ar : val.en}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={areaFilter} onValueChange={setAreaFilter}>
+              <SelectTrigger className="w-[180px] h-10 bg-white/70 dark:bg-slate-800/50 border-slate-200/60 dark:border-white/10 rounded-xl">
+                <Ruler className="h-3.5 w-3.5 me-1.5 text-slate-400" />
+                <SelectValue placeholder={isAr ? "المساحة" : "Area"} />
+              </SelectTrigger>
+              <SelectContent>
+                {areaRanges.map(r => (
+                  <SelectItem key={r.value} value={r.value}>{isAr ? r.ar : r.en}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+              <SelectTrigger className="w-[140px] h-10 bg-white/70 dark:bg-slate-800/50 border-slate-200/60 dark:border-white/10 rounded-xl">
+                <ArrowUpDown className="h-3.5 w-3.5 me-1.5 text-slate-400" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">{isAr ? "الأحدث" : "Newest"}</SelectItem>
+                <SelectItem value="largest">{isAr ? "الأكبر" : "Largest"}</SelectItem>
+                <SelectItem value="smallest">{isAr ? "الأصغر" : "Smallest"}</SelectItem>
+              </SelectContent>
+            </Select>
+            {(searchQuery || usageFilter !== "all" || areaFilter !== "all") && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-[12px] text-slate-500 hover:text-[#2B4C66] h-10"
+                onClick={() => { setSearchQuery(""); setUsageFilter("all"); setAreaFilter("all"); }}
+              >
+                {isAr ? "إعادة ضبط" : "Reset"}
+              </Button>
+            )}
+          </div>
+
+          {/* Active filter chips */}
+          {(usageFilter !== "all" || areaFilter !== "all" || searchQuery) && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {searchQuery && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#2B4C66]/10 text-[11px] font-semibold text-[#2B4C66]">
+                  <Search className="w-3 h-3" />{searchQuery}
+                  <button onClick={() => setSearchQuery("")} className="hover:text-[#1E374B]"><XCircle className="w-3 h-3" /></button>
+                </span>
+              )}
+              {usageFilter !== "all" && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#C2A86B]/15 text-[11px] font-semibold text-[#A88A4A]">
+                  {isAr ? usageLabels[usageFilter]?.ar : usageLabels[usageFilter]?.en}
+                  <button onClick={() => setUsageFilter("all")} className="hover:text-[#866C3A]"><XCircle className="w-3 h-3" /></button>
+                </span>
+              )}
+              {areaFilter !== "all" && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-[11px] font-semibold text-emerald-700">
+                  {isAr ? areaRanges.find(r => r.value === areaFilter)?.ar : areaRanges.find(r => r.value === areaFilter)?.en}
+                  <button onClick={() => setAreaFilter("all")} className="hover:text-emerald-900"><XCircle className="w-3 h-3" /></button>
+                </span>
+              )}
+            </div>
+          )}
+        </BentoCard>
 
       {loading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -408,6 +466,7 @@ const CrmBrowseLands: React.FC = () => {
           })}
         </div>
       )}
+      </DashboardShell>
 
       {/* Detail Dialog */}
       <Dialog open={!!detailDialog} onOpenChange={o => { if (!o) setDetailDialog(null); }}>

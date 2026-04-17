@@ -5,6 +5,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import OwnerLayout from "@/components/owner/OwnerLayout";
 import LandSubmissionForm from "@/components/land/LandSubmissionForm";
+import DashboardShell from "@/components/dashboard/DashboardShell";
+import BentoCard from "@/components/dashboard/BentoCard";
 import { LandFormData, usageLabels, goalLabels, projectModelLabels } from "@/components/land/LandFormConstants";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -174,18 +176,30 @@ const OwnerLands: React.FC = () => {
 
   return (
     <OwnerLayout>
-      <div className="mb-5 flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Landmark className="h-5 w-5 text-primary" strokeWidth={1.5} />
-            <h1 className="text-2xl font-medium text-foreground">{isAr ? "أراضيي" : "My Lands"}</h1>
+      <DashboardShell isAr={isAr} accent="gold">
+        <BentoCard variant="hero" span="full" padding="lg" className="relative overflow-hidden mb-5">
+          <div className="absolute top-0 end-0 w-60 h-60 bg-[#C2A86B]/15 rounded-full blur-3xl -me-20 -mt-20 pointer-events-none" />
+          <div className="relative flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#C2A86B]/15 text-[11px] font-semibold text-[#A88A4A] mb-2">
+                <Landmark className="w-3 h-3" strokeWidth={2} />
+                {isAr ? "أراضيي" : "My Lands"}
+              </span>
+              <h1 className="text-[24px] md:text-[28px] font-bold text-[#1E374B] dark:text-white tracking-tight">
+                {isAr ? "محفظة الأراضي" : "Lands Portfolio"}
+              </h1>
+              <p className="mt-1 text-[13px] text-slate-600 dark:text-slate-300">
+                {isAr ? "إدارة أراضيك وإدراج فرص جديدة" : "Manage your lands and submit new opportunities"}
+              </p>
+            </div>
+            <Button
+              className="gap-2 h-10 bg-gradient-to-r from-[#2B4C66] to-[#1E374B] hover:from-[#1E374B] hover:to-[#2B4C66] text-white rounded-xl font-semibold shadow-[0_4px_14px_-4px_rgba(43,76,102,0.4)]"
+              onClick={() => setShowForm(true)}
+            >
+              <Plus className="h-4 w-4" />{isAr ? "إدراج أرض" : "Add Land"}
+            </Button>
           </div>
-          <p className="text-sm font-light text-muted-foreground">{isAr ? "إدارة أراضيك وإدراج فرص جديدة" : "Manage your lands and submit new opportunities"}</p>
-        </div>
-        <Button className="gap-2 syna-gradient" onClick={() => setShowForm(true)}>
-          <Plus className="h-4 w-4" />{isAr ? "إدراج أرض" : "Add Land"}
-        </Button>
-      </div>
+        </BentoCard>
 
       {/* Draft notice */}
       {!loading && lands.some(l => l.submission_status === "draft") && (
@@ -305,6 +319,7 @@ const OwnerLands: React.FC = () => {
           })}
         </div>
       )}
+      </DashboardShell>
     </OwnerLayout>
   );
 };
