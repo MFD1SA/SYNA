@@ -44,12 +44,6 @@ const CategoriesSection: React.FC = () => {
 
       <div className="container relative">
         <div className="text-center mb-10 md:mb-14 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 mb-4 md:mb-5 px-3 md:px-3.5 py-1 md:py-1.5 rounded-full border border-[#2B4C66]/15 bg-white">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#C2A86B]" />
-            <span className="text-[10px] font-bold tracking-[0.14em] md:tracking-[0.16em] uppercase text-[#2B4C66]">
-              {isAr ? "منصة للجميع" : "For Everyone"}
-            </span>
-          </div>
           <h2 className="text-[26px] sm:text-[34px] md:text-[44px] font-bold text-[#1E374B] mb-4 md:mb-5 tracking-tight leading-[1.15] md:leading-[1.1]">
             {t.categories.title}
           </h2>

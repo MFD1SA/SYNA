@@ -3,7 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, ArrowRight, Landmark, Building2, ShieldCheck,
-  Sparkles, CheckCircle2, TrendingUp, Users,
+  CheckCircle2, TrendingUp, Users,
 } from "lucide-react";
 import cityRiyadhImg from "@/assets/city-riyadh.jpg";
 import { getHeroImage } from "@/services/siteSettings.service";
@@ -80,16 +80,6 @@ const HeroSection: React.FC = () => {
       {/* Content */}
       <div className="container relative z-[10] py-20 md:py-24 lg:py-32">
         <div className="max-w-3xl">
-          {/* Eyebrow badge */}
-          <div className="inline-flex items-center gap-2 mb-5 md:mb-8 px-3 md:px-4 py-1.5 md:py-2 rounded-full border border-white/15 bg-white/5 backdrop-blur-md">
-            <div className="flex items-center justify-center w-4 md:w-5 h-4 md:h-5 rounded-full bg-gradient-to-br from-[#C2A86B] to-[#A88A4A]">
-              <Sparkles className="w-2 md:w-2.5 h-2 md:h-2.5 text-white" strokeWidth={2.5} />
-            </div>
-            <span className="text-[10px] md:text-[11px] font-semibold tracking-[0.12em] md:tracking-[0.14em] uppercase text-white/85">
-              {isAr ? "منصة سعودية احترافية" : "Professional Saudi Platform"}
-            </span>
-          </div>
-
           <h1 className="text-[34px] sm:text-[44px] md:text-[60px] lg:text-[76px] font-bold text-white leading-[1.08] md:leading-[1.05] tracking-tight mb-4 md:mb-6">
             {t.hero.title}
           </h1>
@@ -164,40 +154,6 @@ const HeroSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Floating right-side card (desktop only) */}
-        <div className="hidden lg:block absolute end-10 top-1/2 -translate-y-1/2 w-[300px] rounded-3xl border border-white/15 bg-white/[0.06] backdrop-blur-xl p-6 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.5)]">
-          <div className="flex items-center gap-2.5 mb-4">
-            <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/70">
-              {isAr ? "نشط الآن" : "Live Now"}
-            </span>
-          </div>
-          <p className="text-[13px] text-white/85 leading-relaxed mb-5">
-            {isAr
-              ? "فرص تطويرية جديدة تُضاف يومياً في أبرز مدن المملكة بتقييم احترافي."
-              : "Fresh development opportunities added daily in the Kingdom's major cities."}
-          </p>
-          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
-            <div>
-              <div className="flex items-center gap-1.5 mb-1.5">
-                <TrendingUp className="w-3 h-3 text-[#D7C084]" strokeWidth={2.2} />
-                <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider">
-                  {isAr ? "فرص" : "Deals"}
-                </p>
-              </div>
-              <p className="text-[22px] font-bold text-white" dir="ltr">150+</p>
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5 mb-1.5">
-                <Users className="w-3 h-3 text-[#D7C084]" strokeWidth={2.2} />
-                <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider">
-                  {isAr ? "مطورون" : "Devs"}
-                </p>
-              </div>
-              <p className="text-[22px] font-bold text-white" dir="ltr">60+</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Bottom fade */}

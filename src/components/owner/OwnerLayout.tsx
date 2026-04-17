@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Menu, LayoutDashboard, Landmark, FileText, Handshake, Settings,
+  Menu, Gauge, MapPinned, Inbox, HandCoins, SlidersHorizontal,
 } from "lucide-react";
 import OwnerSidebar from "./OwnerSidebar";
 import NotificationDropdown from "@/components/crm/NotificationDropdown";
@@ -24,11 +24,11 @@ const OwnerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isImpersonating = isImpersonationSession();
 
   const navItems = [
-    { label: { ar: "لوحة التحكم", en: "Dashboard" }, href: "/owner/dashboard", icon: LayoutDashboard },
-    { label: { ar: "أراضيي", en: "My Lands" }, href: "/owner/lands", icon: Landmark },
-    { label: { ar: "طلبات الشراكة", en: "Requests" }, href: "/owner/requests", icon: FileText },
-    { label: { ar: "صفقاتي", en: "My Deals" }, href: "/owner/deals", icon: Handshake },
-    { label: { ar: "الإعدادات", en: "Settings" }, href: "/owner/settings", icon: Settings },
+    { label: { ar: "لوحة التحكم", en: "Dashboard" }, href: "/owner/dashboard", icon: Gauge },
+    { label: { ar: "أراضيي", en: "My Lands" }, href: "/owner/lands", icon: MapPinned },
+    { label: { ar: "طلبات الشراكة", en: "Requests" }, href: "/owner/requests", icon: Inbox },
+    { label: { ar: "صفقاتي", en: "My Deals" }, href: "/owner/deals", icon: HandCoins },
+    { label: { ar: "الإعدادات", en: "Settings" }, href: "/owner/settings", icon: SlidersHorizontal },
   ];
 
   return (

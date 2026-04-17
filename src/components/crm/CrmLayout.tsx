@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Settings, Menu, LayoutDashboard, Search, FileText, Handshake,
+  SlidersHorizontal, Menu, Gauge, Compass, Send, HandCoins,
 } from "lucide-react";
 import CrmSidebar from "./CrmSidebar";
 import NotificationDropdown from "./NotificationDropdown";
@@ -26,11 +26,11 @@ const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isImpersonating = isImpersonationSession();
 
   const navItems = [
-    { label: { ar: "لوحة التحكم", en: "Dashboard" }, href: "/crm/dashboard", icon: LayoutDashboard },
-    { label: { ar: "استعراض الفرص", en: "Opportunities" }, href: "/crm/browse", icon: Search },
-    { label: { ar: "طلباتي", en: "My Requests" }, href: "/crm/my-requests", icon: FileText },
-    { label: { ar: "الصفقات", en: "Deals" }, href: "/crm/deals", icon: Handshake },
-    { label: { ar: "الإعدادات", en: "Settings" }, href: "/crm/settings", icon: Settings },
+    { label: { ar: "لوحة التحكم", en: "Dashboard" }, href: "/crm/dashboard", icon: Gauge },
+    { label: { ar: "استعراض الفرص", en: "Opportunities" }, href: "/crm/browse", icon: Compass },
+    { label: { ar: "طلباتي", en: "My Requests" }, href: "/crm/my-requests", icon: Send },
+    { label: { ar: "الصفقات", en: "Deals" }, href: "/crm/deals", icon: HandCoins },
+    { label: { ar: "الإعدادات", en: "Settings" }, href: "/crm/settings", icon: SlidersHorizontal },
   ];
 
   return (
@@ -78,7 +78,7 @@ const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               className="hidden sm:flex h-9 w-9 rounded-full items-center justify-center text-slate-400 hover:text-[#2B4C66] hover:bg-[#2B4C66]/10 dark:hover:bg-white/5 transition-colors"
               title={isAr ? "الإعدادات" : "Settings"}
             >
-              <Settings className="h-4 w-4" strokeWidth={1.5} />
+              <SlidersHorizontal className="h-4 w-4" strokeWidth={1.5} />
             </Link>
             <NotificationDropdown />
             <UserAvatarMenu variant="blue" settingsPath="/crm/settings" />

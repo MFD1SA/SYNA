@@ -2,7 +2,7 @@ import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, ArrowRight, Landmark, Building2, Sparkles, ShieldCheck,
+  ArrowLeft, ArrowRight, Landmark, Building2, ShieldCheck,
 } from "lucide-react";
 
 const CTASection: React.FC = () => {
@@ -34,16 +34,6 @@ const CTASection: React.FC = () => {
 
       <div className="container relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Eyebrow */}
-          <div className="inline-flex items-center gap-2 mb-7 px-4 py-2 rounded-full border border-white/15 bg-white/5 backdrop-blur-md">
-            <div className="flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-[#C2A86B] to-[#A88A4A]">
-              <Sparkles className="w-2.5 h-2.5 text-white" strokeWidth={2.5} />
-            </div>
-            <span className="text-[11px] font-bold tracking-[0.14em] uppercase text-white/85">
-              {isAr ? "ابدأ الآن" : "Get Started"}
-            </span>
-          </div>
-
           <h2 className="text-[28px] sm:text-[36px] md:text-[52px] lg:text-[60px] font-bold text-white mb-4 md:mb-6 tracking-tight leading-[1.1] md:leading-[1.05]">
             {t.ctaFinal.title}
           </h2>

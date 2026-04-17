@@ -1,6 +1,6 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { ScanEye, ShieldCheck, LockKeyhole, Bolt, Sparkles } from "lucide-react";
+import { ScanEye, ShieldCheck, LockKeyhole, Bolt } from "lucide-react";
 
 const WhySinaSection: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -30,12 +30,6 @@ const WhySinaSection: React.FC = () => {
 
       <div className="container relative">
         <div className="text-center mb-10 md:mb-16 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 mb-4 md:mb-5 px-3 md:px-3.5 py-1 md:py-1.5 rounded-full border border-[#2B4C66]/15 bg-[#2B4C66]/[0.04]">
-            <Sparkles className="w-3 h-3 text-[#C2A86B]" strokeWidth={2.5} />
-            <span className="text-[10px] font-bold tracking-[0.14em] md:tracking-[0.16em] uppercase text-[#2B4C66]">
-              {isAr ? "لماذا سينا" : "Why SINA"}
-            </span>
-          </div>
           <h2 className="text-[26px] sm:text-[34px] md:text-[44px] font-bold text-[#1E374B] mb-4 md:mb-5 tracking-tight leading-[1.15] md:leading-[1.1]">
             {t.whySina.title}
           </h2>

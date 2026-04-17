@@ -12,8 +12,8 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import {
-  LayoutDashboard, Search, FileText, Handshake, Settings,
-  Landmark, Sun, Moon, Globe, LogOut, Plus,
+  Gauge, Compass, Send, HandCoins, SlidersHorizontal,
+  MapPinned, Inbox, Sun, Moon, Globe, LogOut, Plus,
 } from "lucide-react";
 
 interface Props {
@@ -50,19 +50,19 @@ export const CommandPalette: React.FC<Props> = ({ role = "developer", onSignOut 
   };
 
   const devNav = [
-    { label: isAr ? "لوحة التحكم" : "Dashboard", icon: LayoutDashboard, href: "/crm/dashboard" },
-    { label: isAr ? "استعراض الفرص" : "Browse Opportunities", icon: Search, href: "/crm/browse" },
-    { label: isAr ? "طلباتي" : "My Requests", icon: FileText, href: "/crm/my-requests" },
-    { label: isAr ? "الصفقات" : "Deals", icon: Handshake, href: "/crm/deals" },
-    { label: isAr ? "الإعدادات" : "Settings", icon: Settings, href: "/crm/settings" },
+    { label: isAr ? "لوحة التحكم" : "Dashboard", icon: Gauge, href: "/crm/dashboard" },
+    { label: isAr ? "استعراض الفرص" : "Browse Opportunities", icon: Compass, href: "/crm/browse" },
+    { label: isAr ? "طلباتي" : "My Requests", icon: Send, href: "/crm/my-requests" },
+    { label: isAr ? "الصفقات" : "Deals", icon: HandCoins, href: "/crm/deals" },
+    { label: isAr ? "الإعدادات" : "Settings", icon: SlidersHorizontal, href: "/crm/settings" },
   ];
 
   const ownerNav = [
-    { label: isAr ? "لوحة التحكم" : "Dashboard", icon: LayoutDashboard, href: "/owner/dashboard" },
-    { label: isAr ? "أراضيي" : "My Lands", icon: Landmark, href: "/owner/lands" },
-    { label: isAr ? "الطلبات" : "Requests", icon: FileText, href: "/owner/requests" },
-    { label: isAr ? "الصفقات" : "Deals", icon: Handshake, href: "/owner/deals" },
-    { label: isAr ? "الإعدادات" : "Settings", icon: Settings, href: "/owner/settings" },
+    { label: isAr ? "لوحة التحكم" : "Dashboard", icon: Gauge, href: "/owner/dashboard" },
+    { label: isAr ? "أراضيي" : "My Lands", icon: MapPinned, href: "/owner/lands" },
+    { label: isAr ? "الطلبات" : "Requests", icon: Inbox, href: "/owner/requests" },
+    { label: isAr ? "الصفقات" : "Deals", icon: HandCoins, href: "/owner/deals" },
+    { label: isAr ? "الإعدادات" : "Settings", icon: SlidersHorizontal, href: "/owner/settings" },
   ];
 
   const nav = role === "owner" ? ownerNav : devNav;
@@ -96,7 +96,7 @@ export const CommandPalette: React.FC<Props> = ({ role = "developer", onSignOut 
         {role === "developer" && (
           <CommandGroup heading={isAr ? "إجراءات" : "Actions"}>
             <CommandItem onSelect={() => go("/crm/browse")}>
-              <Search className="me-2 h-4 w-4" strokeWidth={1.6} />
+              <Compass className="me-2 h-4 w-4" strokeWidth={1.6} />
               {isAr ? "تصفح الفرص الجديدة" : "Browse new opportunities"}
             </CommandItem>
           </CommandGroup>
