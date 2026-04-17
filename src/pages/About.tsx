@@ -6,7 +6,7 @@ import InnerHero from "@/components/landing/InnerHero";
 import CTASection from "@/components/landing/CTASection";
 import {
   ScanEye, ShieldCheck, Trophy, Lightbulb, Target, Users, Handshake, Globe,
-  Building2, Scale, Cpu, Layers, Lock, BarChart3, Rocket, Crown,
+  Building2, Scale, Cpu, Lock,
 } from "lucide-react";
 import headerAboutImg from "@/assets/header-about.jpg";
 
@@ -41,24 +41,6 @@ const About: React.FC = () => {
         { icon: ShieldCheck, title: "Trust Through Action", desc: "We build trust through verification, governance, and tangible results" },
         { icon: Trophy, title: "High Professionalism", desc: "We maintain the highest operational standards in every detail we deliver" },
         { icon: Lightbulb, title: "Continuous Innovation", desc: "We leverage technology to solve real challenges in the real estate development sector" },
-      ];
-
-  const differentiators = isAr
-    ? [
-        { icon: Layers, title: "نظام حوكمة شامل", desc: "كل مرحلة من مراحل الشراكة التطويرية مُنظمة ومُوثقة رقمياً بآلية حوكمة متكاملة تضمن وضوح الحقوق والالتزامات" },
-        { icon: Lock, title: "خصوصية لا تُخترق", desc: "بيانات الملاك والمطورين محمية بنظام إفصاح متدرج لا يكشف أي معلومة حساسة إلا بموافقة صريحة من صاحبها" },
-        { icon: BarChart3, title: "متابعة لحظية ذكية", desc: "لوحات تحكم متقدمة تعرض حالة كل صفقة ومرحلة وإجراء بشكل فوري مع تنبيهات آلية لضمان سير العملية بسلاسة" },
-        { icon: Rocket, title: "تسريع دورة الشراكة", desc: "بدلاً من أشهر من البحث والتفاوض التقليدي نختصر الرحلة إلى خطوات واضحة ومنظمة تسرّع الوصول للنتائج" },
-        { icon: Building2, title: "فرص تطويرية مؤهلة", desc: "كل أرض مُدرجة مُراجعة وكل مطور مُتحقق منه مما يضمن جودة الفرص المتاحة وجدية الأطراف المشاركة" },
-        { icon: Crown, title: "تجربة مستخدم استثنائية", desc: "واجهات مصممة بعناية فائقة تجعل إدارة الشراكات العقارية تجربة سهلة واحترافية لجميع الأطراف" },
-      ]
-    : [
-        { icon: Layers, title: "Comprehensive Governance", desc: "Every stage of the development partnership is organized and digitally documented with an integrated governance mechanism ensuring clarity of rights and obligations" },
-        { icon: Lock, title: "Unbreakable Privacy", desc: "Owner and developer data is protected by a tiered disclosure system that never reveals sensitive information without explicit consent from the owner" },
-        { icon: BarChart3, title: "Smart Real-Time Tracking", desc: "Advanced dashboards display the status of every deal, stage, and action instantly with automated alerts ensuring smooth process flow" },
-        { icon: Rocket, title: "Accelerated Partnership Cycle", desc: "Instead of months of traditional searching and negotiating we shorten the journey to clear organized steps that accelerate results" },
-        { icon: Building2, title: "Qualified Development Opportunities", desc: "Every listed land is reviewed and every developer is verified ensuring the quality of available opportunities and seriousness of participating parties" },
-        { icon: Crown, title: "Exceptional User Experience", desc: "Carefully designed interfaces that make managing real estate partnerships an easy and professional experience for all parties" },
       ];
 
   return (
@@ -148,31 +130,6 @@ const About: React.FC = () => {
                 <p.icon className="w-7 h-7 text-[#2B4C66] mx-auto mb-5" strokeWidth={1.5} />
                 <h3 className="text-[16px] font-semibold text-[#1E374B] mb-3">{p.title}</h3>
                 <p className="text-[13px] text-gray-500 leading-[1.9]">{p.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* What Makes Us Different */}
-      <section className="py-16 lg:py-20 bg-[#1E374B]" dir={isAr ? "rtl" : "ltr"}>
-        <div className="container">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              {isAr ? "ما الذي يميّز سينا" : "What Makes SINA Different"}
-            </h2>
-            <p className="text-[15px] text-white/50 max-w-2xl mx-auto">
-              {isAr
-                ? "ست مزايا جوهرية تجعل سينا الخيار الأمثل لتنظيم شراكتك التطويرية القادمة"
-                : "Six core advantages that make SINA the optimal choice for organizing your next development partnership"}
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {differentiators.map((d, i) => (
-              <div key={i} className="rounded-2xl p-8 bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.07] transition-all duration-300">
-                <d.icon className="w-6 h-6 text-[#C2A86B] mb-5" strokeWidth={1.5} />
-                <h3 className="text-[15px] font-semibold text-white mb-3">{d.title}</h3>
-                <p className="text-[13px] text-white/50 leading-[1.9]">{d.desc}</p>
               </div>
             ))}
           </div>

@@ -28,7 +28,17 @@
       "mcp__72b51d88-3a69-48ff-8707-2878f2053817__deploy_to_vercel",
       "Bash(command -v vercel)",
       "mcp__72b51d88-3a69-48ff-8707-2878f2053817__get_project",
-      "Bash(ls src/components/ui/command*)"
+      "Bash(ls src/components/ui/command*)",
+      "Bash(npm install:*)",
+      "Bash(node_modules/.bin/vercel --version)",
+      "Bash(node_modules/.bin/vercel whoami:*)",
+      "Bash(node_modules/.bin/vercel --prod --yes)",
+      "mcp__72b51d88-3a69-48ff-8707-2878f2053817__get_deployment",
+      "Bash(curl -sI https://cidoma.com)",
+      "Bash(curl -s https://cidoma.com)",
+      "Bash(grep -rn \"InnerHero\\\\|PageHeader\" src/pages/*.tsx)",
+      "Bash(grep -rn \"header.*Img\\\\|import.*from.*@/assets\" src/pages/*.tsx)",
+      "Bash(ls -lah src/assets/header-*.jpg)"
     ]
   }
 }

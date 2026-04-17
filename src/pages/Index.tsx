@@ -7,7 +7,6 @@ import TrustStrip from "@/components/landing/TrustStrip";
 import WhySinaSection from "@/components/landing/WhySinaSection";
 import CategoriesSection from "@/components/landing/CategoriesSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
-import AdvantagesSection from "@/components/landing/AdvantagesSection";
 import PreviewSection from "@/components/landing/PreviewSection";
 import FeaturedSection from "@/components/landing/FeaturedSection";
 import CTASection from "@/components/landing/CTASection";
@@ -158,7 +157,6 @@ const Index: React.FC = () => {
         <WhySinaSection />
         <CategoriesSection />
         <HowItWorksSection />
-        <AdvantagesSection />
         <OffersPreview isAr={isAr} />
         <PreviewSection />
         <FeaturedSection />
