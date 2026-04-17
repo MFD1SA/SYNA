@@ -13,7 +13,7 @@ const CTASection: React.FC = () => {
 
   return (
     <section
-      className="relative py-20 lg:py-28 overflow-hidden"
+      className="relative py-14 md:py-20 lg:py-28 overflow-hidden"
       dir={isAr ? "rtl" : "ltr"}
     >
       {/* Gradient background */}
@@ -44,20 +44,20 @@ const CTASection: React.FC = () => {
             </span>
           </div>
 
-          <h2 className="text-[36px] md:text-[52px] lg:text-[60px] font-bold text-white mb-6 tracking-tight leading-[1.05]">
+          <h2 className="text-[28px] sm:text-[36px] md:text-[52px] lg:text-[60px] font-bold text-white mb-4 md:mb-6 tracking-tight leading-[1.1] md:leading-[1.05]">
             {t.ctaFinal.title}
           </h2>
 
-          <div className="mx-auto mb-8 h-1 w-24 rounded-full bg-gradient-to-r from-transparent via-[#C2A86B] to-transparent" />
+          <div className="mx-auto mb-6 md:mb-8 h-0.5 md:h-1 w-16 md:w-24 rounded-full bg-gradient-to-r from-transparent via-[#C2A86B] to-transparent" />
 
-          <p className="text-[17px] md:text-[19px] text-white/70 max-w-2xl mx-auto mb-12 leading-[1.7]">
+          <p className="text-[14.5px] sm:text-[17px] md:text-[19px] text-white/70 max-w-2xl mx-auto mb-8 md:mb-12 leading-[1.75] md:leading-[1.7]">
             {t.ctaFinal.subtitle}
           </p>
 
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-col sm:flex-row justify-center gap-2.5 sm:gap-3">
             <button
               onClick={() => navigate("/auth/login?type=owner")}
-              className="group inline-flex items-center gap-3 h-[58px] px-9 bg-white text-[#1E374B] text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(255,255,255,0.3)] hover:shadow-[0_14px_44px_-10px_rgba(255,255,255,0.45)] hover:-translate-y-0.5 transition-all duration-300"
+              className="group inline-flex items-center justify-center gap-3 h-[54px] md:h-[58px] px-7 md:px-9 bg-white text-[#1E374B] text-[13.5px] md:text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(255,255,255,0.3)] hover:shadow-[0_14px_44px_-10px_rgba(255,255,255,0.45)] hover:-translate-y-0.5 transition-all duration-300"
             >
               <Landmark className="w-5 h-5 text-[#2B4C66] group-hover:text-[#A88A4A] transition-colors" strokeWidth={1.6} />
               {isAr ? "دخول الملاك" : "Owner Login"}
@@ -65,7 +65,7 @@ const CTASection: React.FC = () => {
             </button>
             <button
               onClick={() => navigate("/auth/login")}
-              className="group inline-flex items-center gap-3 h-[58px] px-9 bg-gradient-to-r from-[#C2A86B] to-[#A88A4A] text-white text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(194,168,107,0.5)] hover:shadow-[0_14px_44px_-10px_rgba(194,168,107,0.65)] hover:-translate-y-0.5 transition-all duration-300"
+              className="group inline-flex items-center justify-center gap-3 h-[54px] md:h-[58px] px-7 md:px-9 bg-gradient-to-r from-[#C2A86B] to-[#A88A4A] text-white text-[13.5px] md:text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(194,168,107,0.5)] hover:shadow-[0_14px_44px_-10px_rgba(194,168,107,0.65)] hover:-translate-y-0.5 transition-all duration-300"
             >
               <Building2 className="w-5 h-5" strokeWidth={1.6} />
               {isAr ? "دخول المطورين" : "Developer Login"}

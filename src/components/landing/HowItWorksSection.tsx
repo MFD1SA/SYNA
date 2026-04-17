@@ -15,7 +15,7 @@ const HowItWorksSection: React.FC = () => {
 
   return (
     <section
-      className="relative py-20 lg:py-28 bg-[#0F1F2E] overflow-hidden"
+      className="relative py-14 md:py-20 lg:py-28 bg-[#0F1F2E] overflow-hidden"
       dir={isAr ? "rtl" : "ltr"}
     >
       {/* Background pattern */}
@@ -31,23 +31,23 @@ const HowItWorksSection: React.FC = () => {
       <div className="absolute bottom-0 start-1/3 w-[500px] h-[500px] bg-[#2B4C66]/30 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="container relative">
-        <div className="text-center mb-16 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 mb-5 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/5 backdrop-blur-md">
+        <div className="text-center mb-10 md:mb-16 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 mb-4 md:mb-5 px-3 md:px-3.5 py-1 md:py-1.5 rounded-full border border-white/15 bg-white/5 backdrop-blur-md">
             <Route className="w-3 h-3 text-[#D7C084]" strokeWidth={2.5} />
-            <span className="text-[10px] font-bold tracking-[0.16em] uppercase text-white/80">
+            <span className="text-[10px] font-bold tracking-[0.14em] md:tracking-[0.16em] uppercase text-white/80">
               {isAr ? "العملية" : "The Journey"}
             </span>
           </div>
-          <h2 className="text-[34px] md:text-[44px] font-bold text-white mb-5 tracking-tight leading-[1.1]">
+          <h2 className="text-[26px] sm:text-[34px] md:text-[44px] font-bold text-white mb-4 md:mb-5 tracking-tight leading-[1.15] md:leading-[1.1]">
             {t.howItWorks.title}
           </h2>
-          <div className="mx-auto mb-6 h-0.5 w-16 rounded-full bg-gradient-to-r from-transparent via-[#C2A86B] to-transparent" />
-          <p className="text-[16px] text-white/65 leading-[1.8] max-w-2xl mx-auto">
+          <div className="mx-auto mb-5 md:mb-6 h-0.5 w-14 md:w-16 rounded-full bg-gradient-to-r from-transparent via-[#C2A86B] to-transparent" />
+          <p className="text-[14px] md:text-[16px] text-white/65 leading-[1.8] max-w-2xl mx-auto">
             {t.howItWorks.subtitle}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-5 relative">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-5 relative">
           {/* Connector line */}
           <div className="hidden lg:block absolute top-10 inset-x-0 z-0 px-20">
             <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#C2A86B]/40 to-transparent" />
@@ -56,7 +56,7 @@ const HowItWorksSection: React.FC = () => {
           {steps.map((step, i) => (
             <div
               key={i}
-              className="group relative z-10 rounded-2xl p-6 lg:p-7 border border-white/10 bg-white/[0.03] backdrop-blur-sm hover:bg-white/[0.06] hover:border-white/20 transition-all duration-500"
+              className="group relative z-10 rounded-2xl p-5 md:p-6 lg:p-7 border border-white/10 bg-white/[0.03] backdrop-blur-sm hover:bg-white/[0.06] hover:border-white/20 transition-all duration-500"
             >
               {/* Number badge */}
               <div className="flex items-center justify-between mb-6">
@@ -70,10 +70,10 @@ const HowItWorksSection: React.FC = () => {
                 </div>
               </div>
 
-              <h3 className="text-[17px] font-bold text-white mb-3 tracking-tight">
+              <h3 className="text-[16px] md:text-[17px] font-bold text-white mb-2 md:mb-3 tracking-tight">
                 {step.title}
               </h3>
-              <p className="text-[13.5px] text-white/60 leading-[1.85]">
+              <p className="text-[13px] md:text-[13.5px] text-white/65 leading-[1.85]">
                 {step.desc}
               </p>
 

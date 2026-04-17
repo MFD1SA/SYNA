@@ -60,7 +60,7 @@ const CrmSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`sticky top-0 flex h-screen flex-col bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border-e border-white/70 dark:border-white/5 transition-all duration-300 ease-in-out ${
+      className={`hidden lg:sticky lg:top-0 lg:flex h-screen flex-col bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border-e border-white/70 dark:border-white/5 transition-all duration-300 ease-in-out ${
         collapsed ? "w-[68px]" : "w-[260px]"
       }`}
     >

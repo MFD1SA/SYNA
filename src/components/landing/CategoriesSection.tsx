@@ -35,7 +35,7 @@ const CategoriesSection: React.FC = () => {
 
   return (
     <section
-      className="relative py-20 lg:py-24 bg-gradient-to-b from-[#F7F9FB] via-white to-[#F7F9FB] overflow-hidden"
+      className="relative py-14 md:py-20 lg:py-24 bg-gradient-to-b from-[#F7F9FB] via-white to-[#F7F9FB] overflow-hidden"
       dir={isAr ? "rtl" : "ltr"}
     >
       {/* Decorative orbs */}
@@ -43,30 +43,30 @@ const CategoriesSection: React.FC = () => {
       <div className="absolute bottom-20 end-20 w-72 h-72 rounded-full bg-[#2B4C66]/[0.08] blur-3xl pointer-events-none" />
 
       <div className="container relative">
-        <div className="text-center mb-14 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 mb-5 px-3.5 py-1.5 rounded-full border border-[#2B4C66]/15 bg-white">
+        <div className="text-center mb-10 md:mb-14 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 mb-4 md:mb-5 px-3 md:px-3.5 py-1 md:py-1.5 rounded-full border border-[#2B4C66]/15 bg-white">
             <div className="w-1.5 h-1.5 rounded-full bg-[#C2A86B]" />
-            <span className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#2B4C66]">
+            <span className="text-[10px] font-bold tracking-[0.14em] md:tracking-[0.16em] uppercase text-[#2B4C66]">
               {isAr ? "منصة للجميع" : "For Everyone"}
             </span>
           </div>
-          <h2 className="text-[34px] md:text-[44px] font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
+          <h2 className="text-[26px] sm:text-[34px] md:text-[44px] font-bold text-[#1E374B] mb-4 md:mb-5 tracking-tight leading-[1.15] md:leading-[1.1]">
             {t.categories.title}
           </h2>
-          <div className="mx-auto mb-6 h-0.5 w-16 rounded-full bg-gradient-to-r from-transparent via-[#C2A86B] to-transparent" />
-          <p className="text-[16px] text-gray-600 leading-[1.8] max-w-2xl mx-auto">
+          <div className="mx-auto mb-5 md:mb-6 h-0.5 w-14 md:w-16 rounded-full bg-gradient-to-r from-transparent via-[#C2A86B] to-transparent" />
+          <p className="text-[14px] md:text-[16px] text-gray-600 leading-[1.8] max-w-2xl mx-auto">
             {t.categories.subtitle}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-7 max-w-5xl mx-auto">
+        <div className="grid sm:grid-cols-2 gap-4 md:gap-6 lg:gap-7 max-w-5xl mx-auto">
           {categories.map((cat, i) => {
             const isGold = cat.accent === "gold";
             return (
               <Link
                 key={i}
                 to={cat.to}
-                className="group relative bg-white rounded-3xl p-8 lg:p-10 border border-gray-100 hover:border-gray-200 hover:shadow-[0_24px_60px_-24px_rgba(15,31,46,0.22)] hover:-translate-y-1 transition-all duration-500 overflow-hidden"
+                className="group relative bg-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-gray-100 hover:border-gray-200 hover:shadow-[0_24px_60px_-24px_rgba(15,31,46,0.22)] hover:-translate-y-1 transition-all duration-500 overflow-hidden"
               >
                 {/* Top gradient bar */}
                 <div
@@ -100,10 +100,10 @@ const CategoriesSection: React.FC = () => {
                   </span>
                 </div>
 
-                <h3 className="relative text-[22px] lg:text-[26px] font-bold text-[#1E374B] mb-4 tracking-tight">
+                <h3 className="relative text-[20px] sm:text-[22px] lg:text-[26px] font-bold text-[#1E374B] mb-3 md:mb-4 tracking-tight">
                   {cat.title}
                 </h3>
-                <p className="relative text-[14px] text-gray-600 leading-[1.85] mb-7">
+                <p className="relative text-[13.5px] md:text-[14px] text-gray-600 leading-[1.85] mb-5 md:mb-7">
                   {cat.desc}
                 </p>
 

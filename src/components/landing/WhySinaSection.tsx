@@ -15,7 +15,7 @@ const WhySinaSection: React.FC = () => {
 
   return (
     <section
-      className="relative py-20 lg:py-24 bg-gradient-to-b from-white via-[#FAFBFC] to-white overflow-hidden"
+      className="relative py-14 md:py-20 lg:py-24 bg-gradient-to-b from-white via-[#FAFBFC] to-white overflow-hidden"
       dir={isAr ? "rtl" : "ltr"}
     >
       {/* Decorative grid */}
@@ -29,27 +29,27 @@ const WhySinaSection: React.FC = () => {
       />
 
       <div className="container relative">
-        <div className="text-center mb-16 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 mb-5 px-3.5 py-1.5 rounded-full border border-[#2B4C66]/15 bg-[#2B4C66]/[0.04]">
+        <div className="text-center mb-10 md:mb-16 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 mb-4 md:mb-5 px-3 md:px-3.5 py-1 md:py-1.5 rounded-full border border-[#2B4C66]/15 bg-[#2B4C66]/[0.04]">
             <Sparkles className="w-3 h-3 text-[#C2A86B]" strokeWidth={2.5} />
-            <span className="text-[10px] font-bold tracking-[0.16em] uppercase text-[#2B4C66]">
+            <span className="text-[10px] font-bold tracking-[0.14em] md:tracking-[0.16em] uppercase text-[#2B4C66]">
               {isAr ? "لماذا سينا" : "Why SINA"}
             </span>
           </div>
-          <h2 className="text-[34px] md:text-[44px] font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
+          <h2 className="text-[26px] sm:text-[34px] md:text-[44px] font-bold text-[#1E374B] mb-4 md:mb-5 tracking-tight leading-[1.15] md:leading-[1.1]">
             {t.whySina.title}
           </h2>
-          <div className="mx-auto mb-6 h-0.5 w-16 rounded-full bg-gradient-to-r from-transparent via-[#C2A86B] to-transparent" />
-          <p className="text-[16px] text-gray-600 leading-[1.8] max-w-2xl mx-auto">
+          <div className="mx-auto mb-5 md:mb-6 h-0.5 w-14 md:w-16 rounded-full bg-gradient-to-r from-transparent via-[#C2A86B] to-transparent" />
+          <p className="text-[14px] md:text-[16px] text-gray-600 leading-[1.8] max-w-2xl mx-auto">
             {t.whySina.subtitle}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
           {cards.map((card, i) => (
             <div
               key={i}
-              className="group relative bg-white rounded-2xl p-7 border border-gray-100 hover:border-[#2B4C66]/20 hover:shadow-[0_20px_40px_-20px_rgba(43,76,102,0.15)] hover:-translate-y-1 transition-all duration-500 overflow-hidden"
+              className="group relative bg-white rounded-2xl p-5 md:p-7 border border-gray-100 hover:border-[#2B4C66]/20 hover:shadow-[0_20px_40px_-20px_rgba(43,76,102,0.15)] hover:-translate-y-1 transition-all duration-500 overflow-hidden"
             >
               {/* Hover gradient glow */}
               <div
@@ -57,17 +57,17 @@ const WhySinaSection: React.FC = () => {
               />
 
               {/* Icon container */}
-              <div className="relative mb-5">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] flex items-center justify-center shadow-[0_6px_16px_-6px_rgba(43,76,102,0.5)] group-hover:scale-110 transition-transform duration-500">
+              <div className="relative mb-4 md:mb-5">
+                <div className="w-11 md:w-12 h-11 md:h-12 rounded-2xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] flex items-center justify-center shadow-[0_6px_16px_-6px_rgba(43,76,102,0.5)] group-hover:scale-110 transition-transform duration-500">
                   <card.icon className="w-5 h-5 text-white" strokeWidth={1.7} />
                 </div>
                 <div className="absolute -top-1 -end-1 w-4 h-4 rounded-full bg-[#C2A86B] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
 
-              <h3 className="relative text-[17px] font-bold text-[#1E374B] mb-3 tracking-tight">
+              <h3 className="relative text-[15px] md:text-[17px] font-bold text-[#1E374B] mb-2 md:mb-3 tracking-tight">
                 {card.title}
               </h3>
-              <p className="relative text-[13.5px] text-gray-600 leading-[1.85]">
+              <p className="relative text-[13px] md:text-[13.5px] text-gray-600 leading-[1.8] md:leading-[1.85]">
                 {card.desc}
               </p>
             </div>
