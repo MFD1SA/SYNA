@@ -278,8 +278,8 @@ async function buildServicePage(
   const intro = render(locale === "ar" ? (template.intro_template_ar ?? "") : (template.intro_template_en ?? ""), vars);
 
   const bodyHtml = locale === "ar"
-    ? `<section><h2>ماذا نقدّم</h2><p>تقدّم منصة سينا خدمة ${name} ضمن بيئة رقمية مرخّصة من الهيئة العامة للعقار (REGA)، بمسار موثّق متدرّج يضمن وضوح الحقوق والالتزامات.</p></section><section><h2>كيف تستفيد</h2><p>سواء كنت مالك أرض أو مطوّراً عقارياً، يتيح لك نظام سينا الوصول إلى أدوات احترافية مع حماية بيانات كاملة وفحص نافٍ للجهالة.</p></section>`
-    : `<section><h2>What we offer</h2><p>SINA delivers ${name} in a REGA-licensed digital environment, with a staged verified journey ensuring clarity of rights and obligations.</p></section><section><h2>How you benefit</h2><p>Whether you are a landowner or a real estate developer, SINA's system gives you access to professional tools with full data protection and due diligence.</p></section>`;
+    ? `<section><h2>ماذا نقدّم</h2><p>تقدّم سينا خدمة ${name} ضمن بيئة رقمية موثّقة، بمسار متدرّج يضمن وضوح الحقوق والالتزامات وحوكمة متكاملة لجميع الأطراف.</p></section><section><h2>كيف تستفيد</h2><p>سواء كنت مالك أرض أو مطوّراً عقارياً، يتيح لك نظام سينا الوصول إلى أدوات احترافية مع حماية بيانات كاملة وفحص نافٍ للجهالة.</p></section>`
+    : `<section><h2>What we offer</h2><p>SINA delivers ${name} in a documented digital environment, with a staged verified journey ensuring clarity of rights, obligations and integrated governance for all parties.</p></section><section><h2>How you benefit</h2><p>Whether you are a landowner or a real estate developer, SINA's system gives you access to professional tools with full data protection and due diligence.</p></section>`;
 
   const internalLinks = [
     { label: locale === "ar" ? `كيف تعمل سينا` : `How SINA Works`, url: `/how-it-works` },

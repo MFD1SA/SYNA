@@ -272,7 +272,7 @@ const OfferDetailPage: React.FC = () => {
                 </div>
                 <div className="grid sm:grid-cols-3 gap-3">
                   {[
-                    { icon: BadgeCheck, label: isAr ? "مرخّصة من REGA" : "REGA Licensed" },
+                    { icon: BadgeCheck, label: isAr ? "شراكات موثّقة" : "Documented Partnerships" },
                     { icon: Lock, label: isAr ? "حماية بيانات كاملة" : "Full Data Protection" },
                     { icon: Scale, label: isAr ? "حوكمة نظامية" : "Regulatory Governance" },
                   ].map((item, i) => (

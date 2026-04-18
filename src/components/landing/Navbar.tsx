@@ -246,8 +246,8 @@ const Navbar: React.FC = () => {
             {/* Footer */}
             <p className="mt-6 text-center text-[11px] text-gray-400">
               {isAr
-                ? "سينا للاستثمارات العقارية — مرخّصة من REGA"
-                : "SINA — Licensed by REGA"}
+                ? "سينا للاستثمارات العقارية — شراكات موثّقة"
+                : "SINA — Documented Partnerships"}
             </p>
           </div>
         </div>

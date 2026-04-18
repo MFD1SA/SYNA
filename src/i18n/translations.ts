@@ -29,7 +29,7 @@ export const translations = {
       stat3: "صفقة منجزة",
     },
     trust: {
-      line: "بيئة رقمية منظّمة ومرخّصة تعمل وفق أعلى معايير الحوكمة والشفافية",
+      line: "بيئة رقمية منظّمة وموثّقة تعمل وفق أعلى معايير الحوكمة والشفافية",
     },
     whySina: {
       title: "لماذا سينا؟",
@@ -231,7 +231,7 @@ export const translations = {
         { q: "ما المعلومات التي أحتاجها للتسجيل كمطور", a: "تحتاج لتقديم السجل التجاري الساري والتراخيص المطلوبة وملف تعريفي لشركتك يتضمن سجل المشاريع السابقة والقدرات التنفيذية والمالية وهذه المعلومات ضرورية لضمان جودة المطورين لدى سينا", cat: "developers" },
         { q: "كيف أختار الأرض المناسبة لمشروعي", a: "سينا توفر لك بيانات كافية عن كل أرض مدرجة تشمل الموقع والمساحة ونوع التطوير المرغوب وشروط الشراكة مما يمكّنك من تقييم الفرص واختيار الأنسب لإمكانياتك وخططك التطويرية", cat: "developers" },
         { q: "كيف تحمي سينا بياناتي الشخصية", a: "نستخدم تشفيراً متقدماً ونظام صلاحيات متعدد المستويات لحماية جميع البيانات وبيانات الأرض الحساسة مثل رقم الصك والموقع الدقيق وهوية المالك لا تُكشف لأي طرف إلا بموافقة صريحة من المالك نفسه", cat: "security" },
-        { q: "هل سينا مرخصة وتعمل وفق الأنظمة", a: "سينا تعمل وفق الأنظمة والتشريعات المعمول بها في المملكة العربية السعودية وتلتزم بأعلى معايير الحوكمة والشفافية في جميع عملياتها", cat: "security" },
+        { q: "هل تعمل سينا وفق الأنظمة والحوكمة", a: "سينا تعمل وفق الأنظمة والتشريعات المعمول بها في المملكة العربية السعودية وتلتزم بأعلى معايير الحوكمة والشفافية في جميع عملياتها", cat: "security" },
         { q: "ماذا يحدث لبياناتي إذا ألغيت حسابي", a: "يمكنك إلغاء حسابك في أي وقت وعند الإلغاء يتم التعامل مع بياناتك وفق سياسة الخصوصية المعتمدة مع ضمان عدم استخدام بياناتك الشخصية لأي غرض بعد الإلغاء", cat: "security" },
         { q: "ما هي الشراكة التطويرية العقارية", a: "الشراكة التطويرية هي نموذج استثماري يجمع بين مالك الأرض والمطور العقاري حيث يساهم المالك بالأرض ويساهم المطور بالخبرة والتمويل والتنفيذ والطرفان يتقاسمان عوائد المشروع المطوّر وفق اتفاق واضح وموثق", cat: "partnerships" },
         { q: "لماذا الشراكة التطويرية أفضل من بيع الأرض", a: "الشراكة التطويرية تمنح المالك عوائد أعلى بكثير من البيع المباشر لأنه يستفيد من القيمة المضافة بعد التطوير وليس فقط سعر الأرض الخام بالإضافة لاحتفاظه بجزء من الملكية ومشاركته في أرباح المشروع المطوّر", cat: "partnerships" },
@@ -619,7 +619,7 @@ export const translations = {
         { q: "What information do I need to register as a developer", a: "You need to provide a valid commercial registration, required licenses, and a company profile including previous project history and executive and financial capabilities This information is necessary to ensure the quality of developers on the platform", cat: "developers" },
         { q: "How do I choose the right land for my project", a: "The platform provides sufficient data about each listed land including location, area, desired development type, and partnership terms enabling you to evaluate opportunities and choose the most suitable for your capabilities and development plans", cat: "developers" },
         { q: "How does SINA protect my personal data", a: "We use advanced encryption and multi-level permission systems to protect all data Sensitive land data such as deed number, exact location, and owner identity is never revealed to any party without explicit consent from the owner themselves", cat: "security" },
-        { q: "Is the platform licensed and compliant with regulations", a: "SINA operates in accordance with applicable regulations and legislation in the Kingdom of Saudi Arabia and is committed to the highest standards of governance and transparency in all its operations", cat: "security" },
+        { q: "Does SINA operate in compliance with regulations and governance", a: "SINA operates in accordance with applicable regulations and legislation in the Kingdom of Saudi Arabia and is committed to the highest standards of governance and transparency in all its operations", cat: "security" },
         { q: "What happens to my data if I cancel my account", a: "You can cancel your account at any time and upon cancellation your data is handled according to the approved privacy policy with assurance that your personal data will not be used for any purpose after cancellation", cat: "security" },
         { q: "What is a real estate development partnership", a: "A development partnership is an investment model that brings together a landowner and a real estate developer where the owner contributes the land and the developer contributes expertise, financing, and execution Both parties share the developed projects returns according to a clear and documented agreement", cat: "partnerships" },
         { q: "Why is a development partnership better than selling land", a: "Development partnerships give the owner much higher returns than direct sale because they benefit from post-development added value not just raw land price In addition to retaining partial ownership and sharing in the developed projects profits", cat: "partnerships" },

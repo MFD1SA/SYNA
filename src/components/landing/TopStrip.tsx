@@ -132,7 +132,7 @@ const TopStrip: React.FC = () => {
               paddingInlineEnd: "4px",
             }}
           >
-            REGA · CMA
+            شراكات موثّقة
           </span>
 
           <span

@@ -21,7 +21,7 @@ const TrustStrip: React.FC = () => {
     },
     {
       icon: BadgeCheck,
-      label: isAr ? "مرخّصة من REGA" : "REGA Licensed",
+      label: isAr ? "شراكات موثّقة" : "Documented Partnerships",
     },
     {
       icon: Clock,
