@@ -16,6 +16,8 @@ interface InnerHeroProps {
   eyebrow?: string;
   /** Hide the default Home → Title breadcrumb. */
   hideBreadcrumb?: boolean;
+  /** Show image as a full illustration (no brightness filter, no heavy gradient wash). */
+  illustrated?: boolean;
 }
 
 const InnerHero: React.FC<InnerHeroProps> = ({
@@ -27,6 +29,7 @@ const InnerHero: React.FC<InnerHeroProps> = ({
   icon: Icon = Sparkles,
   eyebrow,
   hideBreadcrumb,
+  illustrated,
 }) => {
   const { heroImage } = useHeroImage(pageSlug);
 
@@ -51,18 +54,32 @@ const InnerHero: React.FC<InnerHeroProps> = ({
               src={resolvedImage}
               alt={isAr ? (heroImage?.alt_ar || "") : (heroImage?.alt_en || "")}
               className="w-full h-full object-cover"
-              style={{ filter: "brightness(0.55) saturate(0.85)" }}
+              style={illustrated ? undefined : { filter: "brightness(0.55) saturate(0.85)" }}
             />
           </picture>
-          {/* Gradient overlays — darker toward the text side */}
-          <div className="absolute inset-0 z-[1] bg-gradient-to-br from-[#0F1F2E]/95 via-[#1E374B]/85 to-[#0F1F2E]/70" />
-          <div
-            className={`absolute inset-0 z-[2] ${
-              isAr
-                ? "bg-gradient-to-l from-transparent via-[#1E374B]/50 to-[#0F1F2E]/80"
-                : "bg-gradient-to-r from-[#0F1F2E]/80 via-[#1E374B]/50 to-transparent"
-            }`}
-          />
+          {/* Gradient overlays — darker toward the text side (skipped for illustrations) */}
+          {!illustrated && (
+            <>
+              <div className="absolute inset-0 z-[1] bg-gradient-to-br from-[#0F1F2E]/95 via-[#1E374B]/85 to-[#0F1F2E]/70" />
+              <div
+                className={`absolute inset-0 z-[2] ${
+                  isAr
+                    ? "bg-gradient-to-l from-transparent via-[#1E374B]/50 to-[#0F1F2E]/80"
+                    : "bg-gradient-to-r from-[#0F1F2E]/80 via-[#1E374B]/50 to-transparent"
+                }`}
+              />
+            </>
+          )}
+          {/* Light side-anchored scrim for illustrations — keeps text legible without darkening the art */}
+          {illustrated && (
+            <div
+              className={`absolute inset-0 z-[2] ${
+                isAr
+                  ? "bg-gradient-to-l from-[#0F1F2E]/80 via-[#0F1F2E]/40 to-transparent"
+                  : "bg-gradient-to-r from-[#0F1F2E]/80 via-[#0F1F2E]/40 to-transparent"
+              }`}
+            />
+          )}
         </div>
       ) : (
         <div

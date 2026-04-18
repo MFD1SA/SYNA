@@ -7,6 +7,7 @@ import CTASection from "@/components/landing/CTASection";
 import {
   ScanEye, ShieldCheck, Trophy, Lightbulb, Target, Scale, Cpu, Lock,
 } from "lucide-react";
+import aboutHero from "@/assets/about-hero.svg";
 
 const About: React.FC = () => {
   const { lang } = useLanguage();
@@ -50,7 +51,8 @@ const About: React.FC = () => {
           ? "شركة رقمية سعودية تعيد تعريف مستقبل الشراكات التطويرية العقارية بحوكمة متكاملة وتقنية متقدمة"
           : "A Saudi digital platform redefining the future of real estate development partnerships with integrated governance and advanced technology"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1920&q=85&auto=format&fit=crop"
+        image={aboutHero}
+        illustrated
       />
 
       {/* Who We Are */}

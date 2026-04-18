@@ -1,0 +1,284 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 900" preserveAspectRatio="xMidYMid slice" role="img" aria-label="نربط الأرض بالفرصة — شراكات التطوير العقاري">
+  <defs>
+    <!-- Deep navy sky gradient -->
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0B1826"/>
+      <stop offset="45%" stop-color="#14283B"/>
+      <stop offset="100%" stop-color="#0F1F2E"/>
+    </linearGradient>
+
+    <!-- Dusk horizon glow -->
+    <radialGradient id="dusk" cx="50%" cy="82%" r="65%">
+      <stop offset="0%" stop-color="#C2A86B" stop-opacity="0.55"/>
+      <stop offset="45%" stop-color="#8F6F3A" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#8F6F3A" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Gold accent gradient -->
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#A88A4A"/>
+      <stop offset="50%" stop-color="#E4C97A"/>
+      <stop offset="100%" stop-color="#A88A4A"/>
+    </linearGradient>
+    <linearGradient id="goldSoft" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E4C97A" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#A88A4A" stop-opacity="0.85"/>
+    </linearGradient>
+
+    <!-- Ivory façade -->
+    <linearGradient id="ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F1E6CE"/>
+      <stop offset="100%" stop-color="#B39B6E"/>
+    </linearGradient>
+
+    <!-- Tower silhouettes gradient -->
+    <linearGradient id="towerDark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E374B"/>
+      <stop offset="100%" stop-color="#0F1F2E"/>
+    </linearGradient>
+
+    <!-- Blueprint grid pattern -->
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#C2A86B" stroke-opacity="0.06" stroke-width="1"/>
+    </pattern>
+
+    <!-- Dot pattern (subtle stars) -->
+    <pattern id="stars" width="90" height="90" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#ffffff" opacity="0.06"/>
+      <circle cx="45" cy="38" r="0.8" fill="#ffffff" opacity="0.04"/>
+      <circle cx="72" cy="70" r="1" fill="#ffffff" opacity="0.05"/>
+    </pattern>
+
+    <!-- Soft gold glow -->
+    <radialGradient id="goldGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#E4C97A" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#E4C97A" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Najdi stepped-merlon clip (heritage motif) -->
+    <symbol id="merlon" viewBox="0 0 60 30">
+      <polygon points="0,30 0,15 10,15 10,0 30,0 30,15 50,15 50,0 60,0 60,30"/>
+    </symbol>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="1920" height="900" fill="url(#sky)"/>
+  <rect width="1920" height="900" fill="url(#stars)"/>
+  <rect width="1920" height="900" fill="url(#grid)"/>
+  <rect width="1920" height="900" fill="url(#dusk)"/>
+
+  <!-- Decorative 8-point Saudi/Arabesque star, far left -->
+  <g transform="translate(230 215)" opacity="0.5">
+    <g stroke="url(#gold)" stroke-width="1.5" fill="none">
+      <polygon points="0,-90 21,-21 90,0 21,21 0,90 -21,21 -90,0 -21,-21"/>
+      <polygon points="0,-60 14,-14 60,0 14,14 0,60 -14,14 -60,0 -14,-14" transform="rotate(22.5)"/>
+      <circle r="30"/>
+    </g>
+  </g>
+
+  <!-- Decorative 8-point star, far right (smaller) -->
+  <g transform="translate(1700 180)" opacity="0.35">
+    <g stroke="url(#gold)" stroke-width="1.2" fill="none">
+      <polygon points="0,-62 14,-14 62,0 14,14 0,62 -14,14 -62,0 -14,-14"/>
+      <circle r="22"/>
+    </g>
+  </g>
+
+  <!-- Blueprint arcs suggesting partnership/connection -->
+  <g fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.4">
+    <path d="M -50 720 C 400 520, 900 460, 1400 560 S 1900 700, 2000 780"/>
+    <path d="M -50 760 C 420 580, 920 520, 1420 610 S 1900 740, 2000 820" opacity="0.55"/>
+  </g>
+
+  <!-- Modern skyscraper silhouettes (right side, contemporary) -->
+  <g fill="url(#towerDark)">
+    <!-- Central spire (Kingdom-like) -->
+    <polygon points="1330,740 1330,320 1360,260 1390,320 1390,740"/>
+    <rect x="1340" y="340" width="40" height="400"/>
+    <!-- Opening at top -->
+    <rect x="1348" y="380" width="24" height="60" fill="#0B1826"/>
+
+    <!-- Twin slim towers -->
+    <rect x="1220" y="420" width="55" height="320"/>
+    <rect x="1280" y="460" width="40" height="280"/>
+
+    <!-- Stepped office tower -->
+    <polygon points="1420,740 1420,430 1440,430 1440,400 1480,400 1480,430 1500,430 1500,740"/>
+
+    <!-- Low wide tower -->
+    <rect x="1520" y="500" width="90" height="240"/>
+    <polygon points="1520,500 1610,500 1580,470 1550,470"/>
+
+    <!-- Far right low-rise -->
+    <rect x="1630" y="560" width="60" height="180"/>
+    <rect x="1700" y="540" width="70" height="200"/>
+    <polygon points="1700,540 1770,540 1750,510 1720,510"/>
+
+    <rect x="1790" y="580" width="80" height="160"/>
+    <rect x="1880" y="600" width="50" height="140"/>
+  </g>
+
+  <!-- Window lights (tiny) on modern towers -->
+  <g fill="#E4C97A" opacity="0.75">
+    <rect x="1345" y="430" width="3" height="3"/>
+    <rect x="1355" y="470" width="3" height="3"/>
+    <rect x="1370" y="510" width="3" height="3"/>
+    <rect x="1360" y="560" width="3" height="3"/>
+    <rect x="1350" y="620" width="3" height="3"/>
+    <rect x="1375" y="680" width="3" height="3"/>
+
+    <rect x="1235" y="460" width="3" height="3"/>
+    <rect x="1250" y="520" width="3" height="3"/>
+    <rect x="1260" y="600" width="3" height="3"/>
+    <rect x="1245" y="680" width="3" height="3"/>
+
+    <rect x="1295" y="500" width="3" height="3"/>
+    <rect x="1305" y="580" width="3" height="3"/>
+    <rect x="1300" y="660" width="3" height="3"/>
+
+    <rect x="1445" y="480" width="3" height="3"/>
+    <rect x="1470" y="540" width="3" height="3"/>
+    <rect x="1460" y="620" width="3" height="3"/>
+    <rect x="1485" y="680" width="3" height="3"/>
+
+    <rect x="1540" y="560" width="3" height="3"/>
+    <rect x="1570" y="620" width="3" height="3"/>
+    <rect x="1590" y="680" width="3" height="3"/>
+
+    <rect x="1720" y="600" width="3" height="3"/>
+    <rect x="1745" y="660" width="3" height="3"/>
+
+    <rect x="1810" y="620" width="3" height="3"/>
+    <rect x="1840" y="680" width="3" height="3"/>
+  </g>
+
+  <!-- Najdi heritage fort (left side, traditional) -->
+  <g>
+    <!-- Fort body -->
+    <rect x="200" y="500" width="340" height="240" fill="url(#ivory)"/>
+    <!-- Rear tower -->
+    <rect x="230" y="420" width="90" height="320" fill="url(#ivory)"/>
+    <!-- Front round tower -->
+    <rect x="470" y="460" width="80" height="280" fill="url(#ivory)"/>
+
+    <!-- Merlons (stepped crenellations) -->
+    <g fill="#F1E6CE">
+      <use href="#merlon" x="200" y="485" width="340" height="18"/>
+      <use href="#merlon" x="230" y="405" width="90" height="18"/>
+      <use href="#merlon" x="470" y="445" width="80" height="18"/>
+    </g>
+
+    <!-- Triangular ventilation pattern (Najdi) -->
+    <g fill="#0F1F2E" opacity="0.55">
+      <polygon points="240,560 254,540 268,560"/>
+      <polygon points="285,560 299,540 313,560"/>
+      <polygon points="330,560 344,540 358,560"/>
+      <polygon points="375,560 389,540 403,560"/>
+      <polygon points="420,560 434,540 448,560"/>
+      <polygon points="465,560 479,540 493,560"/>
+      <polygon points="500,600 514,580 528,600"/>
+
+      <polygon points="250,620 264,600 278,620"/>
+      <polygon points="295,620 309,600 323,620"/>
+      <polygon points="340,620 354,600 368,620"/>
+      <polygon points="385,620 399,600 413,620"/>
+      <polygon points="430,620 444,600 458,620"/>
+      <polygon points="475,620 489,600 503,620"/>
+    </g>
+
+    <!-- Door -->
+    <rect x="345" y="665" width="50" height="75" fill="#4B331A"/>
+    <path d="M345 680 Q370 640 395 680 L395 665 L345 665 Z" fill="#0F1F2E" opacity="0.4"/>
+
+    <!-- Small windows on back tower -->
+    <rect x="260" y="470" width="10" height="18" fill="#4B331A"/>
+    <rect x="280" y="470" width="10" height="18" fill="#4B331A"/>
+    <rect x="260" y="520" width="10" height="18" fill="#4B331A"/>
+    <rect x="280" y="520" width="10" height="18" fill="#4B331A"/>
+
+    <!-- Small windows on front tower -->
+    <rect x="490" y="510" width="10" height="18" fill="#4B331A"/>
+    <rect x="510" y="510" width="10" height="18" fill="#4B331A"/>
+    <rect x="490" y="570" width="10" height="18" fill="#4B331A"/>
+    <rect x="510" y="570" width="10" height="18" fill="#4B331A"/>
+
+    <!-- Texture shadow on the right face -->
+    <rect x="500" y="500" width="40" height="240" fill="#0F1F2E" opacity="0.2"/>
+    <rect x="290" y="420" width="30" height="320" fill="#0F1F2E" opacity="0.2"/>
+  </g>
+
+  <!-- Golden arch bridging heritage ↔ modern (partnership symbol) -->
+  <g opacity="0.95">
+    <!-- Glow behind arch -->
+    <circle cx="960" cy="520" r="300" fill="url(#goldGlow)"/>
+
+    <!-- Main arch -->
+    <path d="M 560 740 C 560 420, 1360 420, 1360 740"
+          fill="none" stroke="url(#gold)" stroke-width="6" stroke-linecap="round"/>
+    <!-- Inner arch -->
+    <path d="M 620 740 C 620 470, 1300 470, 1300 740"
+          fill="none" stroke="url(#gold)" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+
+    <!-- Keystone -->
+    <g transform="translate(960 430)">
+      <polygon points="-22,-22 22,-22 30,22 -30,22" fill="url(#goldSoft)"/>
+      <polygon points="-22,-22 22,-22 30,22 -30,22" fill="none" stroke="#6B4E1E" stroke-width="1" opacity="0.4"/>
+      <circle r="6" fill="#0F1F2E"/>
+      <circle r="3" fill="url(#goldSoft)"/>
+    </g>
+
+    <!-- Vertical columns flanking arch base -->
+    <rect x="552" y="740" width="16" height="0"/>
+  </g>
+
+  <!-- Two hands / pillars: abstract clasping columns rising from the ground into the arch -->
+  <g fill="url(#goldSoft)">
+    <!-- Left pillar (heritage side) -->
+    <path d="M 640 740 L 640 560 Q 640 520 680 520 L 720 520 Q 760 520 760 560 L 760 740 Z" opacity="0.18"/>
+    <path d="M 640 740 L 640 600 Q 640 580 660 580 L 740 580 Q 760 580 760 600 L 760 740 Z" opacity="0.35"/>
+
+    <!-- Right pillar (modern side) -->
+    <path d="M 1160 740 L 1160 560 Q 1160 520 1200 520 L 1240 520 Q 1280 520 1280 560 L 1280 740 Z" opacity="0.18"/>
+    <path d="M 1160 740 L 1160 600 Q 1160 580 1180 580 L 1260 580 Q 1280 580 1280 600 L 1280 740 Z" opacity="0.35"/>
+  </g>
+
+  <!-- Horizon / ground line (the Land) -->
+  <g>
+    <rect x="0" y="740" width="1920" height="160" fill="#0A1520"/>
+    <!-- Gold horizon line -->
+    <line x1="0" y1="740" x2="1920" y2="740" stroke="url(#gold)" stroke-width="2"/>
+    <!-- Subtle land strata -->
+    <line x1="0" y1="770" x2="1920" y2="770" stroke="#C2A86B" stroke-opacity="0.12" stroke-width="1"/>
+    <line x1="0" y1="800" x2="1920" y2="800" stroke="#C2A86B" stroke-opacity="0.08" stroke-width="1"/>
+    <line x1="0" y1="840" x2="1920" y2="840" stroke="#C2A86B" stroke-opacity="0.06" stroke-width="1"/>
+  </g>
+
+  <!-- Surveyor's plot marks on the land line -->
+  <g stroke="url(#gold)" stroke-width="1.6" opacity="0.9">
+    <line x1="240" y1="735" x2="240" y2="755"/>
+    <line x1="480" y1="735" x2="480" y2="755"/>
+    <line x1="720" y1="735" x2="720" y2="755"/>
+    <line x1="960" y1="730" x2="960" y2="760"/>
+    <line x1="1200" y1="735" x2="1200" y2="755"/>
+    <line x1="1440" y1="735" x2="1440" y2="755"/>
+    <line x1="1680" y1="735" x2="1680" y2="755"/>
+  </g>
+
+  <!-- Blueprint callout lines -->
+  <g stroke="url(#gold)" stroke-width="1" stroke-dasharray="4 6" opacity="0.5" fill="none">
+    <path d="M 380 500 L 380 360 L 620 360"/>
+    <circle cx="380" cy="500" r="3" fill="url(#gold)"/>
+    <path d="M 1440 430 L 1440 300 L 1280 300"/>
+    <circle cx="1440" cy="430" r="3" fill="url(#gold)"/>
+    <path d="M 960 430 L 960 260"/>
+    <circle cx="960" cy="260" r="4" fill="url(#gold)"/>
+  </g>
+
+  <!-- Cinematic vignette fade at edges -->
+  <rect width="1920" height="900" fill="url(#sky)" opacity="0"/>
+  <radialGradient id="vignette" cx="50%" cy="50%" r="75%">
+    <stop offset="60%" stop-color="#000" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#000" stop-opacity="0.55"/>
+  </radialGradient>
+  <rect width="1920" height="900" fill="url(#vignette)"/>
+</svg>
