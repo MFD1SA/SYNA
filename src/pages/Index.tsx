@@ -99,7 +99,7 @@ const OffersPreview: React.FC<{ isAr: boolean }> = ({ isAr }) => {
         <div className="md:hidden mt-6 text-center">
           <Link
             to="/offers"
-            className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#2B4C66] hover:underline"
+            className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#2B4C66] hover:text-[#1E374B] transition-colors"
           >
             {isAr ? "عرض جميع العروض" : "View All Offers"}
             {isAr ? <ArrowLeft className="h-4 w-4" strokeWidth={1.5} /> : <ArrowRightIcon className="h-4 w-4" strokeWidth={1.5} />}

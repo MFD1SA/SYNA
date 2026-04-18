@@ -13,10 +13,10 @@
   :root {
     /* ─── SINA Design System ─────────────────────────── */
 
-    /* Soft Background — #F7F9FB */
-    --background: 210 33% 97%;
-    /* Main Text — #1F2937 */
-    --foreground: 215 28% 17%;
+    /* Soft warm background — softened from harsh #F7F9FB to a gentler off-white */
+    --background: 30 15% 96.5%;          /* #F4F2EE — warm cream, low eye strain */
+    /* Main Text — deep slate, high contrast against the warm bg */
+    --foreground: 217 33% 14%;           /* #171F2B */
 
     /* Primary Blue — #2B4C66 */
     --primary: 207 41% 28%;
@@ -149,6 +149,65 @@
   .dark [data-dashboard-root] [class*="border-gray-100/"],
   .dark [data-dashboard-root] [class*="border-gray-200/"] {
     border-color: hsl(var(--border)) !important;
+  }
+
+  /* ─────────────────────────────────────────────────────
+     Icon tile backgrounds — mute in dark mode
+     Dark mode: make tinted icon backgrounds transparent/low-contrast
+     so the icon itself reads cleanly against the card surface.
+     ───────────────────────────────────────────────────── */
+  .dark [data-dashboard-root] [class*="bg-[#2B4C66]/[0."],
+  .dark [data-dashboard-root] [class*="bg-[#2B4C66]/5"],
+  .dark [data-dashboard-root] [class*="bg-[#2B4C66]/10"],
+  .dark [data-dashboard-root] [class*="bg-[#2B4C66]/15"] {
+    background-color: hsl(215 30% 22% / 0.4) !important;
+  }
+  .dark [data-dashboard-root] [class*="bg-[#C2A86B]/[0."],
+  .dark [data-dashboard-root] [class*="bg-[#C2A86B]/10"],
+  .dark [data-dashboard-root] [class*="bg-[#C2A86B]/15"],
+  .dark [data-dashboard-root] [class*="bg-[#C2A86B]/20"] {
+    background-color: hsl(42 25% 30% / 0.35) !important;
+  }
+  /* Tint-50 utility backgrounds (emerald-50, amber-50, rose-50, etc.) */
+  .dark [data-dashboard-root] .bg-emerald-50 { background-color: hsl(160 40% 22% / 0.4) !important; }
+  .dark [data-dashboard-root] .bg-amber-50   { background-color: hsl(40 50% 22% / 0.4) !important; }
+  .dark [data-dashboard-root] .bg-rose-50    { background-color: hsl(350 40% 22% / 0.4) !important; }
+  .dark [data-dashboard-root] .bg-blue-50    { background-color: hsl(217 40% 22% / 0.4) !important; }
+  .dark [data-dashboard-root] .bg-violet-50  { background-color: hsl(270 40% 22% / 0.4) !important; }
+  .dark [data-dashboard-root] .bg-slate-100,
+  .dark [data-dashboard-root] .bg-slate-100\/70,
+  .dark [data-dashboard-root] [class*="bg-slate-100"] {
+    background-color: hsl(215 25% 18%) !important;
+  }
+
+  /* Dark mode: ensure icons inside tinted backgrounds stay visible
+     (text-emerald-600, text-amber-700 etc. get slightly brighter) */
+  .dark [data-dashboard-root] .text-emerald-600,
+  .dark [data-dashboard-root] .text-emerald-700 { color: hsl(160 65% 55%) !important; }
+  .dark [data-dashboard-root] .text-amber-600,
+  .dark [data-dashboard-root] .text-amber-700 { color: hsl(40 85% 65%) !important; }
+  .dark [data-dashboard-root] .text-rose-600,
+  .dark [data-dashboard-root] .text-rose-700 { color: hsl(350 80% 65%) !important; }
+  .dark [data-dashboard-root] .text-blue-600,
+  .dark [data-dashboard-root] .text-blue-700 { color: hsl(217 85% 70%) !important; }
+
+  /* Light mode: soften raw-white icon tile backgrounds so they don't
+     harshly pop against the warm cream canvas. */
+  :root [data-dashboard-root] .bg-slate-50,
+  :root [data-dashboard-root] .bg-gray-50,
+  :root [data-dashboard-root] .bg-slate-100\/70 {
+    background-color: hsl(30 12% 93.5%) !important;  /* subtle warm gray */
+  }
+
+  /* Placeholders — always readable in both modes */
+  [data-dashboard-root] input::placeholder,
+  [data-dashboard-root] textarea::placeholder {
+    color: hsl(215 14% 50%);
+    opacity: 1;
+  }
+  .dark [data-dashboard-root] input::placeholder,
+  .dark [data-dashboard-root] textarea::placeholder {
+    color: hsl(215 15% 60%);
   }
 
   * {
