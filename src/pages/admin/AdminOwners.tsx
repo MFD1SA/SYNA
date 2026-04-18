@@ -83,11 +83,13 @@ const AdminOwners: React.FC = () => {
       });
       if (error || data?.error) throw new Error(data?.error || error?.message);
       if (data?.access_token && data?.refresh_token) {
-        localStorage.setItem("syna_impersonate_tokens", JSON.stringify({
+        // Pass tokens via URL hash — hashes are never sent to the server and
+        // leave no trace in localStorage. The callback consumes + wipes them.
+        const payload = btoa(JSON.stringify({
           access_token: data.access_token,
           refresh_token: data.refresh_token,
         }));
-        window.open("/impersonate-callback", "_blank");
+        window.open(`/impersonate-callback#t=${encodeURIComponent(payload)}`, "_blank");
         toast({ title: isAr ? `تم فتح جلسة ${name} في تبويب جديد` : `Opened ${name}'s session in new tab` });
       }
     } catch (err: any) {

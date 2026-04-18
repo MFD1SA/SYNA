@@ -20,9 +20,24 @@ const ImpersonateCallback: React.FC = () => {
   useEffect(() => {
     const processTokens = async () => {
       try {
-        const raw = localStorage.getItem(TOKENS_KEY);
-        // Delete immediately to prevent reuse
-        localStorage.removeItem(TOKENS_KEY);
+        // Tokens are passed through the URL hash (#t=...) — hashes are never
+        // sent to any server. Consume + wipe immediately.
+        const hash = window.location.hash;
+        let raw: string | null = null;
+        if (hash.startsWith("#t=")) {
+          try {
+            raw = atob(decodeURIComponent(hash.slice(3)));
+          } catch {
+            raw = null;
+          }
+          // Clear hash from URL and browser history
+          history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+        // Legacy fallback (older admin clients may still write to localStorage)
+        if (!raw) {
+          raw = localStorage.getItem(TOKENS_KEY);
+          localStorage.removeItem(TOKENS_KEY);
+        }
 
         if (!raw) {
           setError("No impersonation tokens found");

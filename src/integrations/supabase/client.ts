@@ -15,10 +15,12 @@ const isImpersonationTab = (() => {
   if (typeof window === "undefined") return false;
   // Already marked (from a prior page in this tab)
   if (sessionStorage.getItem(IMPERSONATION_FLAG) === "true") return true;
-  // First landing on /impersonate-callback with tokens waiting → mark now
+  // First landing on /impersonate-callback with tokens waiting → mark now.
+  // Tokens may arrive via URL hash (preferred) or legacy localStorage bridge.
   if (
     window.location.pathname === "/impersonate-callback" &&
-    localStorage.getItem("syna_impersonate_tokens")
+    (window.location.hash.startsWith("#t=") ||
+      localStorage.getItem("syna_impersonate_tokens"))
   ) {
     sessionStorage.setItem(IMPERSONATION_FLAG, "true");
     return true;

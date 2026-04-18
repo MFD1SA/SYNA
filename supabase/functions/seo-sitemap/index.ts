@@ -55,6 +55,23 @@ Deno.serve(async (_req) => {
     .order("published_at", { ascending: false })
     .limit(50000);
 
+  // Fetch active platform offers (public marketing catalog)
+  const { data: offers } = await client
+    .from("platform_offers")
+    .select("slug, updated_at")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true })
+    .limit(5000);
+
+  // Fetch published + owner-approved opportunities (lands)
+  const { data: lands } = await client
+    .from("lands")
+    .select("id, updated_at")
+    .eq("is_active", true)
+    .eq("owner_approved", true)
+    .order("updated_at", { ascending: false })
+    .limit(5000);
+
   if (error) {
     return new Response(`<?xml version="1.0" encoding="UTF-8"?><error>${escapeXml(error.message)}</error>`, {
       status: 500,
@@ -77,6 +94,28 @@ Deno.serve(async (_req) => {
   staticPaths.forEach((s) => {
     urls.push(
       `  <url>\n    <loc>${SITE}${s.loc}</loc>\n    <changefreq>${s.changefreq}</changefreq>\n    <priority>${s.priority}</priority>\n  </url>`
+    );
+  });
+
+  // Dynamic offers (/offers/{slug})
+  (offers ?? []).forEach((o: any) => {
+    if (!o.slug) return;
+    const lastmod = toIsoDate(o.updated_at);
+    const arUrl = `${SITE}/offers/${encodeURIComponent(o.slug)}`;
+    const enUrl = `${SITE}/en/offers/${encodeURIComponent(o.slug)}`;
+    urls.push(
+      `  <url>\n    <loc>${arUrl}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <xhtml:link rel="alternate" hreflang="ar" href="${arUrl}"/>\n    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}"/>\n  </url>`
+    );
+  });
+
+  // Dynamic opportunities (/opportunity/{id})
+  (lands ?? []).forEach((l: any) => {
+    if (!l.id) return;
+    const lastmod = toIsoDate(l.updated_at);
+    const arUrl = `${SITE}/opportunity/${l.id}`;
+    const enUrl = `${SITE}/en/opportunity/${l.id}`;
+    urls.push(
+      `  <url>\n    <loc>${arUrl}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n    <xhtml:link rel="alternate" hreflang="ar" href="${arUrl}"/>\n    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}"/>\n  </url>`
     );
   });
 

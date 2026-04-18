@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Navigate, Link } from "react-router-dom";
+import DOMPurify from "dompurify";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import InnerHero from "@/components/landing/InnerHero";
@@ -123,6 +124,17 @@ export const SeoPageRenderer: React.FC<Props> = ({ slug }) => {
     );
   }
 
+  // Sanitize stored HTML before rendering — prevents stored-XSS if a
+  // seo_pages row is compromised or authored with unsafe markup.
+  const sanitizedBody = useMemo(() => {
+    if (!page?.body_html) return "";
+    return DOMPurify.sanitize(page.body_html, {
+      USE_PROFILES: { html: true },
+      ADD_ATTR: ["target", "rel"],
+      FORBID_TAGS: ["script", "style", "iframe", "object", "embed"],
+    });
+  }, [page?.body_html]);
+
   if (notFound || !page) return <Navigate to="/404" replace />;
 
   return (
@@ -160,7 +172,7 @@ export const SeoPageRenderer: React.FC<Props> = ({ slug }) => {
                 prose-h2:text-[22px] md:prose-h2:text-[26px] prose-h2:mt-10 prose-h2:mb-4
                 prose-p:text-[15px] md:prose-p:text-[16px] prose-p:leading-[1.85] prose-p:text-gray-600
                 prose-a:text-[#2B4C66] prose-a:font-semibold prose-a:no-underline hover:prose-a:underline"
-              dangerouslySetInnerHTML={{ __html: page.body_html }}
+              dangerouslySetInnerHTML={{ __html: sanitizedBody }}
             />
           )}
 

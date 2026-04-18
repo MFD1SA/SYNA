@@ -69,7 +69,21 @@
       "Bash(node -e \"const fs=require\\('fs'\\);const files=['supabase/functions/_shared/email.ts','supabase/functions/_shared/notifications.ts','supabase/functions/send-contact/index.ts','supabase/functions/notify-new-opportunity/index.ts','supabase/functions/notify-interest/index.ts'];const out={};for\\(const f of files\\){out[f]=fs.readFileSync\\(f,'utf8'\\);}fs.writeFileSync\\('/tmp/edge-bundle.json',JSON.stringify\\(out\\)\\);console.log\\('ok',Object.keys\\(out\\).length\\);\")",
       "Bash(node -e ' *)",
       "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const arr=JSON.parse\\(d\\);console.log\\('files:',arr.length,'sample keys:',arr.map\\(a=>a.name\\).join\\(','\\)\\);}\\);\")",
-      "Bash(node -e \"try{require.resolve\\('sharp'\\);console.log\\('sharp available'\\)}catch{console.log\\('no sharp'\\)}\")"
+      "Bash(node -e \"try{require.resolve\\('sharp'\\);console.log\\('sharp available'\\)}catch{console.log\\('no sharp'\\)}\")",
+      "Bash(grep -E '\\\\.tsx$')",
+      "Bash(awk '{print $NF}')",
+      "Bash(node -e \"const fs=require\\('fs'\\); console.log\\(fs.readFileSync\\('supabase/functions/invite-owner/index.ts','utf8'\\)\\)\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const c=fs.readFileSync\\('supabase/functions/invite-owner/index.ts','utf8'\\); fs.writeFileSync\\('/tmp/invite-owner.txt', c\\);\")",
+      "mcp__10c2a5e4-638e-4496-953e-945a69e6be1e__list_edge_functions",
+      "mcp__10c2a5e4-638e-4496-953e-945a69e6be1e__get_advisors",
+      "Bash(node -e \"const d=JSON.parse\\(require\\('fs'\\).readFileSync\\('mcp-10c2a5e4-638e-4496-953e-945a69e6be1e-get_advisors-1776548323388.txt','utf8'\\)\\); const text = d.map\\(x=>x.text\\).join\\(''\\); const parsed = JSON.parse\\(text\\); const groups={}; for\\(const l of parsed.result.lints||parsed.lints||[]\\){groups[l.name]=\\(groups[l.name]||0\\)+1;} console.log\\('Total lints:', \\(parsed.result.lints||parsed.lints||[]\\).length\\); console.log\\(JSON.stringify\\(groups,null,2\\)\\);\")",
+      "Bash(find src *)",
+      "Bash(find supabase/functions -name \"*sitemap*\" -exec cat {}/index.ts \\\\;)",
+      "Bash(npm ls *)",
+      "Bash(node -e \"const fs=require\\('fs'\\); const src=fs.readFileSync\\('supabase/functions/seo-sitemap/index.ts','utf8'\\); console.log\\('LEN:',src.length\\); fs.writeFileSync\\('/tmp/sitemap.txt', src\\);\")",
+      "Bash(curl -sS -o /tmp/sitemap.xml \"https://nqbobxtlwzvtzxqcdfdo.supabase.co/functions/v1/seo-sitemap\")",
+      "Bash(curl -sS -o /dev/null -w \"Google ping: %{http_code}\\\\n\" \"https://www.google.com/ping?sitemap=https://cidoma.com/sitemap.xml\")",
+      "Bash(curl -sS -o /dev/null -w \"Bing IndexNow ping: %{http_code}\\\\n\" \"https://www.bing.com/ping?sitemap=https://cidoma.com/sitemap.xml\")"
     ]
   }
 }

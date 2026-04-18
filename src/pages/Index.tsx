@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import Navbar from "@/components/landing/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
 import TrustStrip from "@/components/landing/TrustStrip";
@@ -145,6 +146,24 @@ const Index: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "سينا | الرئيسية" : "SINA | Home");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | منصة شراكات التطوير العقاري في السعودية"
+      : "SINA | Real Estate Development Partnerships in Saudi Arabia",
+    description: isAr
+      ? "سينا تربط ملاك الأراضي بالمطورين والمستثمرين في بيئة عقارية موثوقة — شراكات موثّقة، حوكمة متكاملة، وفرص استثمارية حصرية."
+      : "SINA connects landowners with developers and investors in a trusted real-estate ecosystem — governed partnerships, exclusive opportunities, and end-to-end automation.",
+    canonical: isAr ? "https://cidoma.com/" : "https://cidoma.com/en",
+    ogTitle: isAr ? "سينا — الفرصة القادمة تبدأ هنا" : "SINA — Where your next opportunity begins",
+    ogDescription: isAr
+      ? "شراكات موثّقة بين ملاك الأراضي والمطورين في المملكة العربية السعودية."
+      : "Governed development partnerships between landowners and developers in Saudi Arabia.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en" : "https://cidoma.com/" },
+  });
 
   return (
     <div className="min-h-screen bg-white">
