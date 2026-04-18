@@ -264,15 +264,15 @@ const AdminTeam: React.FC = () => {
 
       {/* Add Supervisor Dialog */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="sm:max-w-xl" dir={isAr ? "rtl" : "ltr"}>
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-lg md:max-w-xl max-h-[90vh] overflow-y-auto" dir={isAr ? "rtl" : "ltr"}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
-                <UserPlus className="h-4.5 w-4.5 text-primary" strokeWidth={1.5} />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 dark:bg-white/10">
+                <UserPlus className="h-4.5 w-4.5 text-primary dark:text-white" strokeWidth={1.5} />
               </div>
               <div>
-                <span className="block text-[15px]">{isAr ? "إضافة مشرف جديد" : "Add New Supervisor"}</span>
-                <span className="block text-[11px] font-normal text-muted-foreground mt-0.5">
+                <span className="block text-[15px] text-[#1E374B] dark:text-white">{isAr ? "إضافة مشرف جديد" : "Add New Supervisor"}</span>
+                <span className="block text-[11px] font-normal text-muted-foreground dark:text-slate-300 mt-0.5">
                   {isAr ? "أنشئ حساباً وحدد صلاحياته" : "Create an account and define permissions"}
                 </span>
               </div>

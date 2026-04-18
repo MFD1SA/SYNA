@@ -358,10 +358,21 @@ const AdminDevelopers: React.FC = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-4 min-w-[200px]">
+                      <td className="px-5 py-4 min-w-[240px]">
                         <p className="text-xs text-foreground font-medium" dir="ltr">{dev.cr_number}</p>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">{dev.email || "—"}</p>
-                        <p className="text-[11px] text-muted-foreground" dir="ltr">{dev.phone || "—"}</p>
+                        <div className="flex items-center flex-wrap gap-x-2 gap-y-1 mt-1">
+                          {dev.phone && (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground" dir="ltr">
+                              <span className="text-[9px] opacity-70">📞</span>{dev.phone}
+                            </span>
+                          )}
+                          {dev.email && (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground truncate max-w-[180px]" dir="ltr" title={dev.email}>
+                              <span className="text-[9px] opacity-70">✉</span>{dev.email}
+                            </span>
+                          )}
+                          {!dev.phone && !dev.email && <span className="text-[11px] text-muted-foreground">—</span>}
+                        </div>
                       </td>
                       <td className="px-5 py-4">
                         <Badge variant={sc.variant} className="gap-1 text-[10px] whitespace-nowrap">

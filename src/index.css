@@ -279,6 +279,41 @@
     background-color: hsl(215 20% 22%) !important;
   }
 
+  /* ─────────────────────────────────────────────────────
+     DARK MODE — brand colors with low-opacity variants
+     These are used heavily for "accent" KPI numbers, icons,
+     and small labels. In dark mode they disappear.
+     Remap to bright neutrals that stay readable.
+     ───────────────────────────────────────────────────── */
+  .dark [data-dashboard-root] .text-\[#2B4C66\],
+  .dark [data-dashboard-root] [class*="text-[#2B4C66]/"] {
+    color: hsl(210 40% 88%) !important;    /* bright slate for dark bg */
+  }
+  .dark [data-dashboard-root] .text-\[#1E374B\] {
+    color: hsl(210 20% 96%) !important;   /* near-white for titles */
+  }
+  .dark [data-dashboard-root] .text-\[#C2A86B\],
+  .dark [data-dashboard-root] [class*="text-[#C2A86B]/"] {
+    color: hsl(42 60% 72%) !important;    /* keep gold but brighter */
+  }
+  .dark [data-dashboard-root] .text-\[#A88A4A\] {
+    color: hsl(42 55% 70%) !important;
+  }
+  /* Shadcn text-muted-foreground hard-baked to dim: bump brighter in dashboards */
+  .dark [data-dashboard-root] .text-muted-foreground {
+    color: hsl(215 15% 72%) !important;
+  }
+  /* Table cell foreground sometimes binds to text-foreground (near-white is fine,
+     but make sure any row-border keeps subtle on the new dark card surface) */
+  .dark [data-dashboard-root] table tbody tr {
+    border-color: hsl(215 20% 18%) !important;
+  }
+
+  /* KPI numbers — explicit high-contrast */
+  .dark [data-dashboard-root] p[class*="font-bold"][dir="ltr"] {
+    color: hsl(210 20% 96%) !important;
+  }
+
   * {
     @apply border-border outline-none;
     box-sizing: border-box;

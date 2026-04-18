@@ -1,222 +1,287 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// ═══════════════════════════════════════════════════════════════════════
+// SINA — Developer Website Analyzer (site-only, no external AI)
+// ═══════════════════════════════════════════════════════════════════════
+// Fetches the developer's public website and derives a factual snapshot
+// from the HTML itself (meta tags, Open Graph, schema.org JSON-LD,
+// detected social links, heading counts, security signals, etc).
+// NO external AI call. NO hallucinated content. If a signal isn't in the
+// HTML we say so explicitly.
+// ═══════════════════════════════════════════════════════════════════════
+
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const publicSiteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://cidoma.com";
-const allowedRootDomain = (Deno.env.get("ALLOWED_ROOT_DOMAIN") ?? "cidoma.com").toLowerCase();
+const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-const isAllowedOrigin = (origin: string | null) => {
-  if (!origin) return false;
-  try {
-    const url = new URL(origin);
-    const hostname = url.hostname.toLowerCase();
-    return hostname === allowedRootDomain || hostname.endsWith(`.${allowedRootDomain}`);
-  } catch {
-    return false;
-  }
-};
-
-const resolveSafeOrigin = (origin: string | null) => {
-  if (isAllowedOrigin(origin)) return origin!;
-  return publicSiteUrl;
-};
-
-const buildCorsHeaders = (origin: string | null) => ({
-  "Access-Control-Allow-Origin": resolveSafeOrigin(origin),
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  Vary: "Origin",
-});
+};
 
-async function firecrawlScrape(apiKey: string, url: string) {
-  const resp = await fetch("https://api.firecrawl.dev/v1/scrape", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ url, formats: ["markdown"], onlyMainContent: true, waitFor: 3000 }),
-  });
-  if (!resp.ok) throw new Error(`Scrape failed (${resp.status})`);
-  const data = await resp.json();
-  return data?.data?.markdown || data?.markdown || "";
+// ─── Helpers ─────────────────────────────────────────────────────────
+function normalizeUrl(raw: string): string {
+  let url = raw.trim();
+  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+  return url.replace(/\/+$/, "");
 }
 
-async function firecrawlSearch(apiKey: string, query: string, limit = 10) {
-  const resp = await fetch("https://api.firecrawl.dev/v1/search", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ query, limit, scrapeOptions: { formats: ["markdown"] } }),
-  });
-  if (!resp.ok) return [];
-  const data = await resp.json();
-  return data?.data || [];
+function extractMeta(html: string, pattern: RegExp): string {
+  const m = html.match(pattern);
+  return m ? m[1].trim().replace(/\s+/g, " ").slice(0, 400) : "";
 }
 
-serve(async (req) => {
-  const corsHeaders = buildCorsHeaders(req.headers.get("origin"));
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+function countMatches(html: string, re: RegExp): number {
+  const m = html.match(re);
+  return m ? m.length : 0;
+}
 
-  try {
-    // --- Auth: require valid JWT + admin role ---
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Missing authorization" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+function detectSocials(html: string): { platform: string; url: string }[] {
+  const patterns: Array<[string, RegExp]> = [
+    ["twitter",    /https?:\/\/(?:www\.|mobile\.)?(?:twitter|x)\.com\/[A-Za-z0-9_]{1,40}/gi],
+    ["linkedin",   /https?:\/\/(?:www\.)?linkedin\.com\/(?:company|in)\/[A-Za-z0-9-]{1,100}/gi],
+    ["instagram",  /https?:\/\/(?:www\.)?instagram\.com\/[A-Za-z0-9_.]{1,40}/gi],
+    ["facebook",   /https?:\/\/(?:www\.)?facebook\.com\/(?!sharer|dialog)[A-Za-z0-9.]{1,70}/gi],
+    ["youtube",    /https?:\/\/(?:www\.)?youtube\.com\/(?:@[A-Za-z0-9-_]{1,50}|channel\/[A-Za-z0-9-_]{1,30})/gi],
+    ["tiktok",     /https?:\/\/(?:www\.)?tiktok\.com\/@[A-Za-z0-9._-]{1,40}/gi],
+  ];
+  const out: { platform: string; url: string }[] = [];
+  const seen = new Set<string>();
+  for (const [platform, re] of patterns) {
+    const ms = html.match(re);
+    if (!ms) continue;
+    for (const u of ms) {
+      if (seen.has(u)) continue;
+      seen.add(u);
+      out.push({ platform, url: u });
+      if (out.length >= 12) break;
     }
+  }
+  return out;
+}
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
-    const userClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: { user } } = await userClient.auth.getUser();
-    if (!user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const adminRoleClient = createClient(supabaseUrl, serviceKey);
-    const { data: roleData } = await adminRoleClient
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "admin")
-      .maybeSingle();
-    if (!roleData) {
-      return new Response(JSON.stringify({ error: "Admin access required" }), {
-        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    // --- End auth check ---
-
-    const { website_url, developer_name, developer_id, model } = await req.json();
-    if (!website_url) throw new Error("website_url is required");
-
-    const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
-    if (!FIRECRAWL_API_KEY) throw new Error("FIRECRAWL_API_KEY not configured");
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
-
-    // Use stronger model for website analysis
-    const aiModel = model || "google/gemini-2.5-pro";
-
-    let formattedUrl = website_url.trim();
-    if (!formattedUrl.startsWith("http://") && !formattedUrl.startsWith("https://")) {
-      formattedUrl = `https://${formattedUrl}`;
-    }
-
-    const searchName = developer_name || formattedUrl.replace(/https?:\/\//, "").split("/")[0];
-
-    const [websiteContent, socialResults, newsResults] = await Promise.all([
-      firecrawlScrape(FIRECRAWL_API_KEY, formattedUrl).catch(() => ""),
-      firecrawlSearch(FIRECRAWL_API_KEY, `"${searchName}" site:linkedin.com OR site:twitter.com OR site:x.com OR site:instagram.com OR site:youtube.com`, 8).catch(() => []),
-      firecrawlSearch(FIRECRAWL_API_KEY, `"${searchName}" شركة تطوير عقاري أخبار مشاريع`, 10).catch(() => []),
-    ]);
-
-    if (!websiteContent || websiteContent.length < 50) {
-      return new Response(JSON.stringify({ success: false, error: "لم يتم العثور على محتوى كافٍ في الموقع" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const truncatedWeb = websiteContent.slice(0, 12000);
-
-    const socialSummary = socialResults.length > 0
-      ? socialResults.map((r: any) => `- ${r.title || ""}: ${r.url || ""}\n${(r.description || r.markdown || "").slice(0, 250)}`).join("\n")
-      : "لم يتم العثور على حسابات سوشيال ميديا";
-
-    const newsSummary = newsResults.length > 0
-      ? newsResults.map((r: any) => `- ${r.title || ""}: ${r.url || ""}\n${(r.description || r.markdown || "").slice(0, 350)}`).join("\n")
-      : "لم يتم العثور على أخبار";
-
-    const prompt = `أنت محلل أعمال عقاري خبير في السوق السعودي تعمل في منصة SYNA. حلل جميع البيانات التالية عن شركة التطوير وقدم تقييماً شاملاً ودقيقاً.
-
-## اسم المطور: ${searchName}
-## رابط الموقع: ${formattedUrl}
-
-## محتوى الموقع الإلكتروني:
-${truncatedWeb}
-
-## حسابات السوشيال ميديا المكتشفة:
-${socialSummary}
-
-## الأخبار والمقالات المكتشفة:
-${newsSummary}
-
-## المطلوب:
-حلل كل ما سبق وقدم تقييماً شاملاً يشمل تحليل الموقع والسوشيال ميديا والأخبار بتفصيل كامل ودقيق.`;
-
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: aiModel,
-        messages: [{ role: "user", content: prompt }],
-        tools: [{
-          type: "function",
-          function: {
-            name: "website_analysis",
-            description: "Structured analysis of a developer company based on website, social media, and news",
-            parameters: {
-              type: "object",
-              properties: {
-                company_overview_ar: { type: "string", description: "Detailed company overview in Arabic" },
-                projects_count: { type: "number", description: "Estimated number of projects" },
-                projects_summary_ar: { type: "string", description: "Detailed summary of projects in Arabic" },
-                website_quality_score: { type: "number", description: "Website quality score 0-100" },
-                financial_strength_indicators_ar: { type: "string", description: "Financial indicators in Arabic" },
-                overall_score: { type: "number", description: "Overall score 0-100" },
-                strengths_ar: { type: "array", items: { type: "string" }, description: "Strengths in Arabic" },
-                weaknesses_ar: { type: "array", items: { type: "string" }, description: "Weaknesses in Arabic" },
-                recommendation_ar: { type: "string", description: "Detailed recommendation for land owner in Arabic" },
-                recommendation_level: { type: "string", enum: ["strong", "moderate", "weak"] },
-                notable_projects_ar: { type: "array", items: { type: "string" }, description: "Notable projects in Arabic" },
-                social_media_presence: {
-                  type: "object",
-                  properties: {
-                    overall_strength: { type: "string", enum: ["strong", "moderate", "weak", "absent"] },
-                    platforms_found: { type: "array", items: { type: "object", properties: { platform: { type: "string" }, url: { type: "string" }, summary_ar: { type: "string" } }, required: ["platform", "url", "summary_ar"] } },
-                    analysis_ar: { type: "string" },
-                  },
-                  required: ["overall_strength", "platforms_found", "analysis_ar"],
-                },
-                news_intelligence: {
-                  type: "object",
-                  properties: {
-                    coverage_level: { type: "string", enum: ["high", "moderate", "low", "none"] },
-                    articles: { type: "array", items: { type: "object", properties: { title_ar: { type: "string" }, url: { type: "string" }, sentiment: { type: "string", enum: ["positive", "neutral", "negative"] }, summary_ar: { type: "string" } }, required: ["title_ar", "sentiment", "summary_ar"] } },
-                    analysis_ar: { type: "string" },
-                  },
-                  required: ["coverage_level", "articles", "analysis_ar"],
-                },
-              },
-              required: ["company_overview_ar", "projects_count", "projects_summary_ar", "website_quality_score", "overall_score", "strengths_ar", "weaknesses_ar", "recommendation_ar", "recommendation_level", "social_media_presence", "news_intelligence"],
-              additionalProperties: false,
-            },
-          },
-        }],
-        tool_choice: { type: "function", function: { name: "website_analysis" } },
-      }),
-    });
-
-    if (!aiResponse.ok) throw new Error("AI analysis failed");
-
-    const aiData = await aiResponse.json();
-    let analysis: any = {};
+function parseJsonLdBlocks(html: string): unknown[] {
+  const re = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  const blocks: unknown[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html)) !== null) {
     try {
-      const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-      if (toolCall?.function?.arguments) analysis = JSON.parse(toolCall.function.arguments);
-    } catch { analysis = { overall_score: 0, recommendation_level: "weak", company_overview_ar: "تعذر تحليل الموقع" }; }
+      const trimmed = m[1].trim();
+      if (!trimmed) continue;
+      blocks.push(JSON.parse(trimmed));
+      if (blocks.length >= 5) break;
+    } catch { /* malformed JSON-LD — ignore */ }
+  }
+  return blocks;
+}
 
-    return new Response(JSON.stringify({
-      success: true, website_url: formattedUrl, developer_id: developer_id || null, developer_name: searchName, analysis,
-    }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-  } catch (e) {
-    console.error("analyze-developer-website error:", e);
-    return new Response(JSON.stringify({ error: "Website analysis failed" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+function extractOrganizationFromLd(blocks: unknown[]): Record<string, unknown> | null {
+  const flatten = (x: unknown): unknown[] =>
+    Array.isArray(x) ? x.flatMap(flatten) :
+    (x && typeof x === "object" && Array.isArray((x as { "@graph"?: unknown[] })["@graph"])) ? flatten((x as { "@graph": unknown[] })["@graph"]) :
+    [x];
+  const all = blocks.flatMap(flatten);
+  const org = all.find((n) => {
+    const t = (n as { "@type"?: unknown })?.["@type"];
+    const types = Array.isArray(t) ? t : [t];
+    return types.includes("Organization") || types.includes("Corporation") || types.includes("LocalBusiness");
+  });
+  return (org as Record<string, unknown>) || null;
+}
+
+// ─── Scoring ────────────────────────────────────────────────────────
+interface ScoreBreakdown {
+  score: number;
+  band: "weak" | "fair" | "strong" | "excellent";
+  signals: Array<{ label_ar: string; label_en: string; weight: number; passed: boolean; value?: string }>;
+}
+
+function computeScore(input: {
+  reachable: boolean;
+  https: boolean;
+  status: number;
+  contentLength: number;
+  hasTitle: boolean;
+  hasDescription: boolean;
+  hasOgImage: boolean;
+  hasViewport: boolean;
+  hasLang: boolean;
+  h1Count: number;
+  socialsCount: number;
+  hasStructuredData: boolean;
+  hasCanonical: boolean;
+  latencyMs: number;
+}): ScoreBreakdown {
+  const signals: ScoreBreakdown["signals"] = [
+    { label_ar: "الموقع يستجيب",             label_en: "Site is reachable",          weight: 20, passed: input.reachable && input.status >= 200 && input.status < 400 },
+    { label_ar: "اتصال مشفّر (HTTPS)",        label_en: "Secure connection (HTTPS)",  weight: 10, passed: input.https },
+    { label_ar: "عنوان صفحة واضح",            label_en: "Clear page <title>",         weight: 8,  passed: input.hasTitle },
+    { label_ar: "وصف meta مُعرَّف",            label_en: "Meta description set",       weight: 8,  passed: input.hasDescription },
+    { label_ar: "عنصر H1 واحد على الأقل",     label_en: "At least one H1",            weight: 6,  passed: input.h1Count >= 1, value: String(input.h1Count) },
+    { label_ar: "متوافق مع الجوال (viewport)", label_en: "Mobile viewport tag",        weight: 8,  passed: input.hasViewport },
+    { label_ar: "لغة الموقع محدّدة (lang)",    label_en: "HTML lang attribute",        weight: 4,  passed: input.hasLang },
+    { label_ar: "Open Graph image",           label_en: "Open Graph image",           weight: 6,  passed: input.hasOgImage },
+    { label_ar: "Canonical URL",              label_en: "Canonical URL",              weight: 4,  passed: input.hasCanonical },
+    { label_ar: "بيانات منظَّمة (JSON-LD)",     label_en: "Structured data (JSON-LD)",  weight: 10, passed: input.hasStructuredData },
+    { label_ar: "حجم محتوى معقول",             label_en: "Reasonable content size",    weight: 6,  passed: input.contentLength > 2000 },
+    { label_ar: "حضور على منصات التواصل",     label_en: "Social presence detected",   weight: 6,  passed: input.socialsCount >= 2, value: String(input.socialsCount) },
+    { label_ar: "سرعة استجابة مقبولة",         label_en: "Acceptable response time",   weight: 4,  passed: input.latencyMs < 3500, value: input.latencyMs + "ms" },
+  ];
+  const earned = signals.filter((s) => s.passed).reduce((a, s) => a + s.weight, 0);
+  const max = signals.reduce((a, s) => a + s.weight, 0);
+  const score = Math.round((earned / max) * 100);
+  const band: ScoreBreakdown["band"] = score >= 85 ? "excellent" : score >= 70 ? "strong" : score >= 50 ? "fair" : "weak";
+  return { score, band, signals };
+}
+
+// ─── Handler ────────────────────────────────────────────────────────
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
+
+  const started = Date.now();
+  try {
+    const body = await req.json().catch(() => ({}));
+    const rawUrl: string | undefined = body.website;
+    const developerId: string | undefined = body.developer_id;
+
+    if (!rawUrl && !developerId) {
+      return new Response(JSON.stringify({ error: "website or developer_id required" }),
+        { status: 400, headers: { ...CORS, "Content-Type": "application/json" } });
+    }
+
+    const admin = createClient(supabaseUrl, serviceKey);
+
+    let website = rawUrl;
+    let developerName = "";
+    if (developerId) {
+      const { data: d } = await admin.from("developers").select("website, company_name").eq("id", developerId).maybeSingle();
+      if (!website) website = (d as { website?: string } | null)?.website ?? undefined;
+      developerName = (d as { company_name?: string } | null)?.company_name ?? "";
+    }
+    if (!website || !website.trim()) {
+      return new Response(JSON.stringify({ error: "Developer has no website on file" }),
+        { status: 400, headers: { ...CORS, "Content-Type": "application/json" } });
+    }
+
+    const normalized = normalizeUrl(website);
+    const urlObj = new URL(normalized);
+    const https = urlObj.protocol === "https:";
+
+    // Fetch with a conservative 10s timeout
+    const ac = new AbortController();
+    const timer = setTimeout(() => ac.abort(), 10_000);
+    let status = 0;
+    let html = "";
+    let reachable = false;
+    try {
+      const res = await fetch(normalized, {
+        signal: ac.signal,
+        redirect: "follow",
+        headers: { "User-Agent": "SINA-Analyzer/1.0 (+https://cidoma.com)" },
+      });
+      status = res.status;
+      reachable = true;
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      if (reader) {
+        let total = 0;
+        while (total < 400_000) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          html += decoder.decode(value, { stream: true });
+          total += value.byteLength;
+        }
+      }
+    } catch (err) {
+      clearTimeout(timer);
+      return new Response(JSON.stringify({
+        success: false,
+        error: "Could not reach website",
+        details: String(err),
+        website: normalized,
+      }), { status: 200, headers: { ...CORS, "Content-Type": "application/json" } });
+    }
+    clearTimeout(timer);
+
+    const latencyMs = Date.now() - started;
+
+    const title = extractMeta(html, /<title[^>]*>([\s\S]*?)<\/title>/i);
+    const description = extractMeta(html, /<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)
+      || extractMeta(html, /<meta[^>]+content=["']([^"']+)["'][^>]+name=["']description["']/i);
+    const ogTitle = extractMeta(html, /<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
+    const ogDescription = extractMeta(html, /<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
+    const ogImage = extractMeta(html, /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
+    const canonical = extractMeta(html, /<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)["']/i);
+    const viewport = extractMeta(html, /<meta[^>]+name=["']viewport["'][^>]+content=["']([^"']+)["']/i);
+    const langMatch = html.match(/<html[^>]+lang=["']([^"']+)["']/i);
+    const lang = langMatch ? langMatch[1] : "";
+    const h1Count = countMatches(html, /<h1[\s>]/gi);
+    const h2Count = countMatches(html, /<h2[\s>]/gi);
+    const h3Count = countMatches(html, /<h3[\s>]/gi);
+    const imgCount = countMatches(html, /<img[\s>]/gi);
+    const scriptCount = countMatches(html, /<script[\s>]/gi);
+    const socials = detectSocials(html);
+    const ldBlocks = parseJsonLdBlocks(html);
+    const organization = extractOrganizationFromLd(ldBlocks);
+    const contentLength = html.length;
+
+    const scoring = computeScore({
+      reachable, https, status, contentLength,
+      hasTitle: !!title,
+      hasDescription: !!description,
+      hasOgImage: !!ogImage,
+      hasViewport: !!viewport,
+      hasLang: !!lang,
+      h1Count,
+      socialsCount: socials.length,
+      hasStructuredData: ldBlocks.length > 0,
+      hasCanonical: !!canonical,
+      latencyMs,
     });
+
+    const result = {
+      website: normalized,
+      developer_name: developerName || undefined,
+      fetched_at: new Date().toISOString(),
+      reachable,
+      status,
+      https,
+      latency_ms: latencyMs,
+      size_bytes: contentLength,
+      snapshot: {
+        page_title: title,
+        meta_description: description,
+        og_title: ogTitle,
+        og_description: ogDescription,
+        og_image: ogImage,
+        canonical_url: canonical,
+        html_lang: lang,
+        heading_counts: { h1: h1Count, h2: h2Count, h3: h3Count },
+        image_count: imgCount,
+        script_count: scriptCount,
+      },
+      organization_ld: organization,
+      social_links: socials,
+      score: scoring.score,
+      score_band: scoring.band,
+      score_signals: scoring.signals,
+    };
+
+    if (developerId) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await admin.from("developers").update({
+        website_analysis: result,
+        website_analyzed_at: new Date().toISOString(),
+      } as any).eq("id", developerId).then(() => {}, () => {});
+    }
+
+    return new Response(JSON.stringify({ success: true, result }),
+      { headers: { ...CORS, "Content-Type": "application/json" } });
+  } catch (err) {
+    return new Response(JSON.stringify({
+      success: false,
+      error: "Analysis failed",
+      details: String(err),
+    }), { status: 500, headers: { ...CORS, "Content-Type": "application/json" } });
   }
 });

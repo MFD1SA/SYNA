@@ -453,8 +453,10 @@ const AdminLands: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-5 py-4">
-                          <p className="text-sm font-medium text-foreground" dir="ltr">{Number(land.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</p>
-                          <Badge variant="outline" className="mt-1.5 text-[10px] bg-background text-muted-foreground border-border/60">{isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}</Badge>
+                          <div className="flex items-center flex-wrap gap-2">
+                            <p className="text-sm font-medium text-foreground whitespace-nowrap" dir="ltr">{Number(land.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</p>
+                            <Badge variant="outline" className="text-[10px] bg-background text-muted-foreground border-border/60 shrink-0">{isAr ? usageLabels[land.usage_type]?.ar : usageLabels[land.usage_type]?.en}</Badge>
+                          </div>
                         </td>
                         <td className="px-5 py-4">
                           <p className="text-xs font-medium text-foreground truncate max-w-[140px]">{land.owner_name || "—"}</p>
