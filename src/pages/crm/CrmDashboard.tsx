@@ -45,6 +45,7 @@ const CrmDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [developer, setDeveloper] = useState<DevProfile | null>(null);
   const [profileName, setProfileName] = useState("");
+  const [latestPhase, setLatestPhase] = useState<string | null>(null);
   const [devKpi, setDevKpi] = useState({
     browsedLands: 0, sentRequests: 0, activeDeals: 0, closedDeals: 0,
     pendingRequests: 0, approvedRequests: 0, rejectedRequests: 0,
@@ -104,6 +105,17 @@ const CrmDashboard: React.FC = () => {
             rejectedRequests: reqRejected.count ?? 0,
             todayOpportunities: todayRes.count ?? 0,
           });
+
+          // Pull the developer's most recent deal request to drive the
+          // dynamic lifecycle strip at the bottom of the dashboard.
+          const { data: latestReq } = await supabase
+            .from("deal_requests")
+            .select("current_phase, created_at")
+            .eq("developer_id", devProfile.id)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (latestReq?.current_phase) setLatestPhase(latestReq.current_phase);
         }
       } catch (err) {
         console.error("Failed to fetch CRM dashboard data:", err);
@@ -124,6 +136,56 @@ const CrmDashboard: React.FC = () => {
   }, [devKpi.sentRequests]);
 
   const totalRequests = devKpi.pendingRequests + devKpi.approvedRequests + devKpi.rejectedRequests;
+
+  // ─── Deal lifecycle: map the DB phase → a position on the 6-step strip ───
+  // Phase → step index (0..5) where 5 means "closed successfully".
+  // null / unknown phase leaves everything at step 0 (pre-listing).
+  const PHASE_TO_STEP: Record<string, number> = {
+    nda_pending: 0,
+    nda_developer_accepted: 0,
+    nda_both_accepted: 1,
+    under_review: 2,
+    study_required: 2,
+    study_submitted: 2,
+    study_under_review: 2,
+    study_changes_requested: 2,
+    study_resubmitted: 2,
+    study_approved: 3,
+    study_rejected: 2,
+    meeting_proposed: 3,
+    meeting_confirmed: 3,
+    meeting_completed: 3,
+    report_pending_approval: 3,
+    report_approved: 4,
+    report_rejected: 3,
+    report_changes_requested: 3,
+    report_expired: 3,
+    negotiation_active: 4,
+    final_approval: 4,
+    closed_won: 5,
+    closed_lost: 5,
+    cancelled: 5,
+  };
+  const currentStep = latestPhase ? (PHASE_TO_STEP[latestPhase] ?? 0) : -1;
+  const lifecycleStages = [
+    { ar: "مسودة",  en: "Draft" },
+    { ar: "تقديم",  en: "Submit" },
+    { ar: "مراجعة", en: "Review" },
+    { ar: "دراسة",  en: "Study" },
+    { ar: "تفاوض",  en: "Negotiate" },
+    { ar: "إغلاق",  en: "Close" },
+  ].map((s, i) => ({
+    ...s,
+    state: (i < currentStep ? "done" : i === currentStep ? "current" : "upcoming") as "done" | "current" | "upcoming",
+  }));
+  const latestPhaseLabel = (() => {
+    if (!latestPhase) return { ar: "لا توجد طلبات بعد", en: "No requests yet" };
+    const step = lifecycleStages[Math.max(0, currentStep)];
+    const badFinal = latestPhase === "closed_lost" || latestPhase === "cancelled";
+    if (latestPhase === "closed_won") return { ar: "تم إغلاق الصفقة بنجاح", en: "Deal closed successfully" };
+    if (badFinal) return { ar: "تم إغلاق/إلغاء الطلب", en: "Request closed / cancelled" };
+    return { ar: step.ar, en: step.en };
+  })();
 
   return (
     <CrmLayout>
@@ -360,44 +422,54 @@ const CrmDashboard: React.FC = () => {
           </BentoCard>
         </BentoGrid>
 
-        {/* ═══════ Row 3: Deal lifecycle ═══════ */}
+        {/* ═══════ Row 3: Deal lifecycle (dynamic — shows latest deal phase) ═══════ */}
         <BentoGrid>
           <BentoCard variant="neutral" span="full" padding="lg">
             <SectionHeading
               title={isAr ? "دورة حياة الصفقة" : "Deal lifecycle"}
-              subtitle={isAr ? "الرحلة من الإدراج إلى الإغلاق" : "From listing to closing on SINA"}
+              subtitle={
+                latestPhase
+                  ? (isAr ? `آخر طلب: ${latestPhaseLabel.ar}` : `Latest request: ${latestPhaseLabel.en}`)
+                  : (isAr ? "الرحلة من الإدراج إلى الإغلاق" : "From listing to closing on SINA")
+              }
               icon={TrendingUp}
               tone="primary"
             />
             <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2 mt-2">
-              {[
-                { ar: "مسودة", en: "Draft" },
-                { ar: "نشر", en: "Publish" },
-                { ar: "استلام", en: "Receive" },
-                { ar: "مراجعة", en: "Review" },
-                { ar: "تفاوض", en: "Negotiate" },
-                { ar: "إغلاق", en: "Close" },
-              ].map((stage, idx, arr) => (
-                <React.Fragment key={stage.en}>
-                  <div className="flex flex-col items-center gap-2 shrink-0">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-full text-[12px] font-bold ${
-                      idx === arr.length - 1
-                        ? "bg-emerald-500 text-white shadow-[0_4px_14px_-4px_rgba(16,185,129,0.5)]"
-                        : idx === 0
-                          ? "bg-[#2B4C66] text-white shadow-[0_4px_14px_-4px_rgba(43,76,102,0.5)]"
-                          : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300"
-                    }`}>
-                      {idx + 1}
+              {lifecycleStages.map((stage, idx, arr) => {
+                const state = stage.state; // "done" | "current" | "upcoming"
+                return (
+                  <React.Fragment key={stage.en}>
+                    <div className="flex flex-col items-center gap-2 shrink-0">
+                      <div className={`flex h-10 w-10 items-center justify-center rounded-full text-[12px] font-bold transition-all ${
+                        state === "done"
+                          ? "bg-emerald-500 text-white shadow-[0_4px_14px_-4px_rgba(16,185,129,0.5)]"
+                          : state === "current"
+                            ? "bg-[#2B4C66] text-white shadow-[0_4px_14px_-4px_rgba(43,76,102,0.6)] ring-4 ring-[#2B4C66]/20 scale-110"
+                            : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-400 dark:text-slate-500"
+                      }`}>
+                        {state === "done" ? <CheckCircle2 className="h-4 w-4" /> : idx + 1}
+                      </div>
+                      <span className={`text-[11px] font-semibold whitespace-nowrap ${
+                        state === "current"
+                          ? "text-[#1E374B] dark:text-white"
+                          : state === "done"
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-slate-500 dark:text-slate-400"
+                      }`}>
+                        {isAr ? stage.ar : stage.en}
+                      </span>
                     </div>
-                    <span className="text-[11px] font-semibold text-[#1E374B] dark:text-white whitespace-nowrap">
-                      {isAr ? stage.ar : stage.en}
-                    </span>
-                  </div>
-                  {idx < arr.length - 1 && (
-                    <div className="flex-1 min-w-6 h-px bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700" />
-                  )}
-                </React.Fragment>
-              ))}
+                    {idx < arr.length - 1 && (
+                      <div className={`flex-1 min-w-6 h-0.5 rounded-full transition-all ${
+                        arr[idx + 1].state === "done" || state === "done"
+                          ? "bg-gradient-to-r from-emerald-400 to-emerald-500"
+                          : "bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700"
+                      }`} />
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </div>
           </BentoCard>
         </BentoGrid>

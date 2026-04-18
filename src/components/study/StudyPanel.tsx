@@ -10,7 +10,7 @@ import {
   FileText, Upload, Eye, CheckCircle2, XCircle, AlertCircle, Loader2,
   Download, Clock, FileUp, MessageSquare, History,
 } from "lucide-react";
-import { getStudies, uploadStudy, reviewStudy, startStudyReview, type DealStudy } from "@/services/study.service";
+import { getStudies, uploadStudy, reviewStudy, startStudyReview, getStudySignedUrl, type DealStudy } from "@/services/study.service";
 
 const studyStatusLabels: Record<string, { ar: string; en: string }> = {
   submitted: { ar: "مرفوعة", en: "Submitted" },
@@ -224,9 +224,20 @@ const StudyPanel: React.FC<StudyPanelProps> = ({ requestId, currentPhase, viewer
                         <StatusIcon className="h-3 w-3" />
                         {isAr ? sl.ar : sl.en}
                       </Badge>
-                      <a href={s.file_url} target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            const url = await getStudySignedUrl(s.file_url, 300);
+                            window.open(url, "_blank", "noopener,noreferrer");
+                          } catch (err: any) {
+                            toast({ variant: "destructive", title: isAr ? "تعذّر فتح الملف" : "Cannot open file", description: err.message });
+                          }
+                        }}
+                        className="text-[10px] text-primary hover:underline flex items-center gap-1"
+                      >
                         <Download className="h-3 w-3" /> {isAr ? "تحميل" : "Download"}
-                      </a>
+                      </button>
                     </div>
                   </div>
                   {/* Review actions for latest study */}

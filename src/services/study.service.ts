@@ -8,7 +8,7 @@ export interface DealStudy {
   uploaded_by: string;
   title: string;
   summary: string | null;
-  file_url: string;
+  file_url: string;          // storage path (NOT a public URL) — caller must request a signed URL
   notes: string | null;
   status: StudyStatus;
   reviewer_id: string | null;
@@ -19,6 +19,37 @@ export interface DealStudy {
 }
 
 export type StudyStatus = "submitted" | "under_review" | "changes_requested" | "approved" | "rejected";
+
+/** Hard limits enforced before upload */
+const MAX_FILE_SIZE_MB = 50;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const ALLOWED_EXTENSIONS = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx"];
+const ALLOWED_MIME_PREFIXES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument",
+  "application/vnd.ms-excel",
+  "application/vnd.ms-powerpoint",
+];
+
+function validateFile(file: File): void {
+  if (file.size > MAX_FILE_SIZE_BYTES) {
+    throw new Error(`الملف كبير جداً. الحد الأقصى ${MAX_FILE_SIZE_MB}MB — File too large, max ${MAX_FILE_SIZE_MB}MB`);
+  }
+  if (file.size === 0) {
+    throw new Error("الملف فارغ — Empty file");
+  }
+  const ext = (file.name.split(".").pop() || "").toLowerCase();
+  if (!ALLOWED_EXTENSIONS.includes(ext)) {
+    throw new Error(`نوع الملف غير مسموح. المسموح: ${ALLOWED_EXTENSIONS.join(", ")}`);
+  }
+  // Soft MIME check — some browsers lie about type, so we don't hard-fail but
+  // log for future server-side tightening.
+  const mime = file.type || "";
+  if (mime && !ALLOWED_MIME_PREFIXES.some((p) => mime.startsWith(p))) {
+    console.warn(`[study.service] Suspicious MIME for ${file.name}: ${mime}`);
+  }
+}
 
 /** Fetch all study versions for a deal request */
 export async function getStudies(requestId: string): Promise<DealStudy[]> {
@@ -31,6 +62,27 @@ export async function getStudies(requestId: string): Promise<DealStudy[]> {
   return (data || []) as DealStudy[];
 }
 
+/**
+ * Get a short-lived signed URL for a study file. The bucket is private
+ * and `file_url` is stored as a storage path, so the UI must always call
+ * this before letting the user download/view the file.
+ */
+export async function getStudySignedUrl(
+  filePathOrUrl: string,
+  expiresInSeconds = 300,
+): Promise<string> {
+  // Back-compat: if a legacy record stored a full public URL, extract the path
+  let path = filePathOrUrl;
+  const m = filePathOrUrl.match(/\/object\/(?:public\/)?deal-studies\/(.+)$/);
+  if (m) path = m[1];
+
+  const { data, error } = await supabase.storage
+    .from("deal-studies")
+    .createSignedUrl(path, expiresInSeconds);
+  if (error) throw new Error(error.message);
+  return data.signedUrl;
+}
+
 /** Upload a new study version */
 export async function uploadStudy(params: {
   requestId: string;
@@ -40,30 +92,34 @@ export async function uploadStudy(params: {
   notes?: string;
 }): Promise<{ success: boolean; error?: string; study?: DealStudy }> {
   try {
-    // Get current version count
+    validateFile(params.file);
+
+    // Get current version count (optimistic — see note in comment)
     const { count } = await supabase
       .from("deal_studies" as any)
       .select("id", { count: "exact", head: true })
       .eq("deal_request_id", params.requestId);
 
     const version = (count || 0) + 1;
-    const ext = params.file.name.split(".").pop() || "pdf";
+    const ext = (params.file.name.split(".").pop() || "pdf").toLowerCase();
     const path = `${params.requestId}/v${version}_${Date.now()}.${ext}`;
 
     // Upload file
     const { error: uploadErr } = await supabase.storage
       .from("deal-studies")
-      .upload(path, params.file);
+      .upload(path, params.file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: params.file.type || `application/${ext}`,
+      });
     if (uploadErr) throw new Error(uploadErr.message);
-
-    const { data: urlData } = supabase.storage.from("deal-studies").getPublicUrl(path);
-    const fileUrl = urlData.publicUrl;
 
     // Get user
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Not authenticated");
 
-    // Insert study record
+    // Insert study record — store the storage path, NOT a public URL.
+    // This ensures access is always mediated by createSignedUrl().
     const { data: study, error: insertErr } = await supabase
       .from("deal_studies" as any)
       .insert({
@@ -72,13 +128,17 @@ export async function uploadStudy(params: {
         uploaded_by: user.id,
         title: params.title,
         summary: params.summary || null,
-        file_url: fileUrl,
+        file_url: path,
         notes: params.notes || null,
         status: "submitted",
       })
       .select()
       .single();
-    if (insertErr) throw new Error(insertErr.message);
+    if (insertErr) {
+      // Roll back the uploaded object so we don't leak orphan files
+      await supabase.storage.from("deal-studies").remove([path]).catch(() => {});
+      throw new Error(insertErr.message);
+    }
 
     // Transition phase: study_required → study_submitted OR study_changes_requested → study_resubmitted
     const { data: req } = await supabase
