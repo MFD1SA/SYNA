@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { listSeoPages, setSeoPageStatus, deleteSeoPage, updateSeoPage } from "@/services/seo/pages.service";
@@ -14,6 +15,7 @@ const AdminSeoPages: React.FC = () => {
   const isAr = lang === "ar";
   const { toast } = useToast();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [rows, setRows] = useState<SeoPage[]>([]);
   const [total, setTotal] = useState(0);
@@ -160,7 +162,7 @@ const AdminSeoPages: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/5">
                 {filtered.map((r) => (
-                  <tr key={r.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02]">
+                  <tr key={r.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] cursor-pointer" onClick={() => navigate(`/admincp/seo/pages/${r.id}`)}>
                     <td className="px-4 py-3">
                       <p className="font-semibold text-[#1E374B] dark:text-white line-clamp-1">{r.title}</p>
                       <p className="text-[11px] text-slate-400 font-mono line-clamp-1" dir="ltr">{r.slug}</p>
@@ -173,7 +175,7 @@ const AdminSeoPages: React.FC = () => {
                     <td className="px-4 py-3 text-end font-bold text-[#1E374B] dark:text-white" dir="ltr">
                       {r.quality_score ?? 0}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">
                         {r.status === "published" && (
                           <a

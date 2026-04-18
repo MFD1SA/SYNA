@@ -43,7 +43,10 @@
       "Bash(curl -sI https://cidoma.com/partnerships)",
       "mcp__10c2a5e4-638e-4496-953e-945a69e6be1e__list_projects",
       "mcp__10c2a5e4-638e-4496-953e-945a69e6be1e__generate_typescript_types",
-      "Bash(grep -l \"AdminSidebar\\\\|AdminLayout\" src/pages/admin/*.tsx)"
+      "Bash(grep -l \"AdminSidebar\\\\|AdminLayout\" src/pages/admin/*.tsx)",
+      "Bash(node_modules/.bin/supabase --version)",
+      "Bash(node_modules/.bin/supabase functions:*)",
+      "mcp__10c2a5e4-638e-4496-953e-945a69e6be1e__list_extensions"
     ]
   }
 }

@@ -5,6 +5,10 @@
       "destination": "https://nqbobxtlwzvtzxqcdfdo.supabase.co/functions/v1/seo-sitemap"
     },
     {
+      "source": "/robots.txt",
+      "destination": "https://nqbobxtlwzvtzxqcdfdo.supabase.co/functions/v1/seo-robots"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

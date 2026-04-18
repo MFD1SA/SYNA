@@ -62,11 +62,13 @@ const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminSeoLayout = lazy(() => import("./pages/admin/seo/AdminSeoLayout"));
 const AdminSeoOverview = lazy(() => import("./pages/admin/seo/AdminSeoOverview"));
 const AdminSeoPages = lazy(() => import("./pages/admin/seo/AdminSeoPages"));
+const AdminSeoPageDetail = lazy(() => import("./pages/admin/seo/AdminSeoPageDetail"));
 const AdminSeoTemplates = lazy(() => import("./pages/admin/seo/AdminSeoTemplates"));
 const AdminSeoEntities = lazy(() => import("./pages/admin/seo/AdminSeoEntities"));
 const AdminSeoRules = lazy(() => import("./pages/admin/seo/AdminSeoRules"));
 const AdminSeoRedirects = lazy(() => import("./pages/admin/seo/AdminSeoRedirects"));
 const AdminSeoIssues = lazy(() => import("./pages/admin/seo/AdminSeoIssues"));
+const AdminSeoQueue = lazy(() => import("./pages/admin/seo/AdminSeoQueue"));
 
 // Public SEO-generated page renderer
 const SeoRouteHandler = lazy(() => import("./pages/seo/SeoRouteHandler"));
@@ -229,10 +231,12 @@ const App: React.FC = () => (
                   <Route path="/admincp/seo" element={<AdminRoute><AdminSeoLayout /></AdminRoute>}>
                     <Route index element={<AdminSeoOverview />} />
                     <Route path="pages" element={<AdminSeoPages />} />
+                    <Route path="pages/:id" element={<AdminSeoPageDetail />} />
                     <Route path="templates" element={<AdminSeoTemplates />} />
                     <Route path="entities" element={<AdminSeoEntities />} />
                     <Route path="rules" element={<AdminSeoRules />} />
                     <Route path="redirects" element={<AdminSeoRedirects />} />
+                    <Route path="queue" element={<AdminSeoQueue />} />
                     <Route path="issues" element={<AdminSeoIssues />} />
                   </Route>
 

@@ -11,3 +11,4 @@ export * from "./redirects.service";
 export * from "./issues.service";
 export * from "./generation.service";
 export * from "./quality.service";
+export * from "./queue.service";

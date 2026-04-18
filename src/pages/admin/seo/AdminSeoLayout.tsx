@@ -3,7 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import AdminLayout from "@/components/admin/AdminLayout";
 import {
-  LayoutDashboard, FileText, FileCog, Layers, Filter, Repeat2, AlertTriangle,
+  LayoutDashboard, FileText, FileCog, Layers, Filter, Repeat2, AlertTriangle, Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +18,7 @@ const AdminSeoLayout: React.FC = () => {
     { to: "/admincp/seo/entities", label: isAr ? "الكيانات" : "Entities", icon: Layers },
     { to: "/admincp/seo/rules", label: isAr ? "القواعد" : "Rules", icon: Filter },
     { to: "/admincp/seo/redirects", label: isAr ? "التحويلات" : "Redirects", icon: Repeat2 },
+    { to: "/admincp/seo/queue", label: isAr ? "طابور النشر" : "Queue", icon: Clock },
     { to: "/admincp/seo/issues", label: isAr ? "المشاكل" : "Issues", icon: AlertTriangle },
   ];
 
