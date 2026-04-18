@@ -253,12 +253,12 @@ const AdminOffers: React.FC = () => {
                 {/* Info */}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <p className="text-[13px] font-semibold text-gray-800 truncate">{isAr ? offer.title_ar : offer.title_en}</p>
-                    <Badge variant="outline" className={`text-[9px] shrink-0 ${offer.type === "partnership" ? "border-[#2B4C66]/20 text-[#2B4C66]" : "border-emerald-200 text-emerald-600"}`}>
+                    <p className="text-[13px] font-semibold text-gray-800 dark:text-white truncate">{isAr ? offer.title_ar : offer.title_en}</p>
+                    <Badge variant="outline" className={`text-[9px] shrink-0 ${offer.type === "partnership" ? "border-[#2B4C66]/20 text-[#2B4C66] dark:text-[#9BBEDB]" : "border-emerald-200 text-emerald-600 dark:text-emerald-400"}`}>
                       {typeLabel(offer.type)}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-3 text-[11px] text-gray-400">
+                  <div className="flex items-center gap-3 text-[11px] text-gray-500 dark:text-slate-300">
                     <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{isAr ? offer.city_ar : offer.city_en}</span>
                     <span>{usageLabel(offer.usage_type)}</span>
                     <span className="flex items-center gap-1"><Ruler className="h-3 w-3" />{Number(offer.area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}</span>

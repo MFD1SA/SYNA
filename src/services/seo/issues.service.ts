@@ -18,3 +18,13 @@ export async function resolveSeoIssue(id: string, userId: string | null): Promis
     .eq("id", id);
   if (error) throw new Error(error.message);
 }
+
+/** Bulk resolve: mark a set of issue ids as resolved atomically. */
+export async function resolveSeoIssuesBulk(ids: string[], userId: string | null): Promise<number> {
+  if (ids.length === 0) return 0;
+  const { error, count } = await t()
+    .update({ is_resolved: true, resolved_at: new Date().toISOString(), resolved_by: userId }, { count: "exact" })
+    .in("id", ids);
+  if (error) throw new Error(error.message);
+  return count ?? ids.length;
+}

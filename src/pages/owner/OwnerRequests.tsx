@@ -23,7 +23,7 @@ import MeetingReportPanel from "@/components/meeting/MeetingReportPanel";
 import DeveloperReportPanel from "@/components/developer-report/DeveloperReportPanel";
 import NegotiationPanel from "@/components/negotiation/NegotiationPanel";
 import DealClosingPanel from "@/components/negotiation/DealClosingPanel";
-import { getNDAConsentsForUser, type NDAConsent } from "@/services/nda.service";
+import { getNDAConsentsForUser, submitNDADecision, type NDAConsent } from "@/services/nda.service";
 import {
   transitionDealPhase,
   phaseLabels,
@@ -88,8 +88,11 @@ const ownerGuidance: Record<DealPhase, { ar: string; en: string }> = {
 };
 
 /* ── Allowed owner actions per phase ── */
-function getOwnerActions(phase: DealPhase): Array<"approve" | "study" | "reject"> {
+function getOwnerActions(phase: DealPhase): Array<"accept_nda" | "approve" | "study" | "reject"> {
   switch (phase) {
+    case "nda_developer_accepted":
+      // Developer accepted NDA, now owner must accept too + can reject outright
+      return ["accept_nda", "reject"];
     case "nda_both_accepted":
       return ["approve", "study", "reject"];
     case "under_review":
@@ -190,6 +193,28 @@ const OwnerRequests: React.FC = () => {
     await handleTransition(rejectDialog.requestId, "closed_lost", rejectNotes || undefined);
     setRejectDialog(null);
     setRejectNotes("");
+  };
+
+  /* ── Owner accepts the NDA for a specific request ── */
+  const handleAcceptNDA = async (req: { id: string; land_id: string }) => {
+    setActionLoading(req.id);
+    try {
+      const result = await submitNDADecision(req.land_id, "accept", "owner");
+      if (!result.success) throw new Error(result.error || "NDA submit failed");
+      // Flip state optimistically — the land now has an accepted owner NDA
+      setOwnerNdaMap(prev => ({ ...prev, [req.land_id]: "accepted" }));
+      // Transition the request phase to nda_both_accepted (both parties are in)
+      const transition = await transitionDealPhase(req.id, "nda_both_accepted");
+      if (!transition.success) throw new Error(transition.error || "Phase transition failed");
+      setRequests(prev => prev.map(r => r.id === req.id
+        ? { ...r, current_phase: "nda_both_accepted", owner_nda_status: "accepted" }
+        : r));
+      toast({ title: isAr ? "تم قبول اتفاقية عدم الإفصاح" : "NDA accepted" });
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   /* ── Render ── */
@@ -363,6 +388,17 @@ const OwnerRequests: React.FC = () => {
                   {/* Action buttons (only if actions exist and not terminal) */}
                   {actions.length > 0 && !isTerminal && (
                     <div className="flex flex-wrap gap-2 mt-2">
+                      {actions.includes("accept_nda") && (
+                        <Button
+                          size="sm"
+                          className="h-9 gap-2 text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white"
+                          disabled={isLoading}
+                          onClick={() => handleAcceptNDA({ id: req.id, land_id: req.land_id })}
+                        >
+                          {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+                          {isAr ? "قبول اتفاقية عدم الإفصاح" : "Accept NDA"}
+                        </Button>
+                      )}
                       {actions.includes("approve") && (
                         <Button
                           size="sm"

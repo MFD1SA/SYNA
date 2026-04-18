@@ -330,8 +330,27 @@ const AdminDevelopers: React.FC = () => {
                     <tr key={dev.id} className="hover:bg-muted/20 transition-colors group">
                       <td className="px-5 py-4 min-w-[200px]">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent border border-border/50">
-                            <HardHat className="h-5 w-5 text-accent-foreground/70" />
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent dark:bg-white/5 border border-border/50 overflow-hidden">
+                            {dev.logo_url ? (
+                              <img
+                                src={dev.logo_url}
+                                alt={dev.company_name || "logo"}
+                                className="h-full w-full object-contain p-1"
+                                onError={(e) => {
+                                  // Hide broken image and fall back to icon
+                                  const el = e.currentTarget;
+                                  el.style.display = "none";
+                                  const fb = el.nextElementSibling as HTMLElement | null;
+                                  if (fb) fb.style.display = "flex";
+                                }}
+                              />
+                            ) : null}
+                            <div
+                              className="h-full w-full items-center justify-center"
+                              style={{ display: dev.logo_url ? "none" : "flex" }}
+                            >
+                              <HardHat className="h-5 w-5 text-accent-foreground/70 dark:text-slate-300" />
+                            </div>
                           </div>
                           <div>
                             <p className="text-sm font-medium text-foreground">{dev.company_name}</p>

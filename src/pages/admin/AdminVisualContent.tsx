@@ -342,16 +342,16 @@ const AdminVisualContent: React.FC = () => {
       ) : (
         <div className="space-y-8" dir={isAr ? "rtl" : "ltr"}>
           {/* Fallback Logic Explanation */}
-          <div className="rounded-xl border border-blue-200/60 bg-blue-50/30 p-4">
+          <div className="rounded-xl border border-blue-200/60 dark:border-blue-400/30 bg-blue-50/30 dark:bg-blue-500/10 p-4">
             <div className="flex items-start gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100/60 shrink-0 mt-0.5">
-                <Eye className="h-4 w-4 text-blue-600" strokeWidth={1.5} />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100/60 dark:bg-blue-400/20 shrink-0 mt-0.5">
+                <Eye className="h-4 w-4 text-blue-600 dark:text-blue-300" strokeWidth={1.5} />
               </div>
               <div>
-                <h4 className="text-[13px] font-semibold text-blue-900 mb-1">
+                <h4 className="text-[13px] font-semibold text-blue-900 dark:text-blue-100 mb-1">
                   {isAr ? "آلية عرض الصور" : "Image Display Logic"}
                 </h4>
-                <p className="text-[11px] text-blue-700/80 leading-relaxed">
+                <p className="text-[11px] text-blue-700/80 dark:text-blue-200/90 leading-relaxed">
                   {isAr
                     ? "1) إذا كانت الصفحة لها صورة مخصصة مفعّلة → تُعرض تلقائياً. 2) إذا لم يكن لها صورة → تُستخدم الصورة الافتراضية. 3) إذا لم توجد أي صورة → يبقى التصميم الأصلي كما هو."
                     : "1) If a page has its own active image → it's displayed automatically. 2) If not → the default image is used. 3) If neither exists → the original design remains unchanged."}

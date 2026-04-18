@@ -62,25 +62,25 @@ export const QuickActions: React.FC<Props> = ({ actions, className }) => {
 
         const Inner = (
           <>
-            {/* Icon tile — square, explicit size, centered */}
+            {/* Icon tile — compact, inline with label, NOT stacked vertically */}
             <div
               className={cn(
-                "flex items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-105 shrink-0",
+                "flex items-center justify-center rounded-xl shrink-0 transition-transform duration-300 group-hover:scale-105",
                 t.grad,
                 t.glow,
               )}
-              style={{ width: "44px", height: "44px", minWidth: "44px", minHeight: "44px" }}
+              style={{ width: "38px", height: "38px", minWidth: "38px", minHeight: "38px" }}
             >
-              <Icon className="w-5 h-5 text-white" strokeWidth={1.8} />
+              <Icon className="w-[18px] h-[18px] text-white" strokeWidth={2} />
             </div>
 
-            {/* Label — wraps naturally, never clipped mid-word */}
-            <div className="mt-3 min-w-0 flex-1">
-              <p className="text-[13px] font-bold text-[#1E374B] dark:text-white leading-[1.35] break-words">
+            {/* Label — beside the icon (row layout) */}
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] font-bold text-[#1E374B] dark:text-white leading-tight break-words">
                 {a.label}
               </p>
               {a.description && (
-                <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 leading-[1.5] line-clamp-2 break-words">
+                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-300 leading-snug line-clamp-1 break-words">
                   {a.description}
                 </p>
               )}
@@ -89,15 +89,16 @@ export const QuickActions: React.FC<Props> = ({ actions, className }) => {
         );
 
         const clsn = cn(
-          "group flex flex-col items-start text-start",
-          "rounded-2xl p-4",
-          "bg-white dark:bg-slate-800",
+          // Row layout → compact, balanced, never "tall narrow box"
+          "group flex flex-row items-center gap-3 text-start",
+          "rounded-xl px-3.5 py-3",
+          "bg-white dark:bg-slate-800/80",
           "border border-slate-200/80 dark:border-white/10",
           "hover:border-[#C2A86B]/50 dark:hover:border-[#C2A86B]/40",
-          "hover:-translate-y-0.5 hover:shadow-[0_12px_28px_-10px_rgba(15,31,46,0.18)]",
-          "dark:hover:shadow-[0_12px_28px_-10px_rgba(0,0,0,0.5)]",
+          "hover:-translate-y-0.5 hover:shadow-[0_10px_22px_-10px_rgba(15,31,46,0.18)]",
+          "dark:hover:shadow-[0_10px_22px_-10px_rgba(0,0,0,0.5)]",
           "transition-all duration-300 cursor-pointer",
-          "min-h-[130px]",
+          "min-h-[66px]",
         );
 
         return a.href ? (

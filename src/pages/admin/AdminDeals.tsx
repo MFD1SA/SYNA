@@ -166,7 +166,10 @@ const AdminDeals: React.FC = () => {
       if (!ownerId) throw new Error(isAr ? "لم يتم العثور على مالك الأرض" : "Land owner not found");
       const { error: dealErr } = await supabase.from("deals").insert({
         request_id: req.id, land_id: req.land_id, developer_id: req.developer_id,
-        owner_id: ownerId, commission_rate: 2.5,
+        owner_id: ownerId,
+        // Total platform fee: 2.50% brokerage + 1.50% platform = 4.00% of land value.
+        // Matches commission agreement v2.0 + PLATFORM_TOTAL_RATE constant.
+        commission_rate: 4.00,
       });
       if (dealErr) throw dealErr;
       try {
@@ -572,7 +575,7 @@ const AdminDeals: React.FC = () => {
                 <Shield className="h-4 w-4 text-emerald-600 shrink-0" />
                 <div>
                   <p className="text-xs font-medium text-emerald-700">{isAr ? "حقوق المنصة محفوظة" : "Platform Rights Protected"}</p>
-                  <p className="text-[10px] text-emerald-600">{isAr ? "عمولة المنصة 2.5% مُطبقة تلقائياً وموافق عليها من المطور" : "Platform commission 2.5% auto-applied & accepted by developer"}</p>
+                  <p className="text-[10px] text-emerald-600">{isAr ? "إجمالي الأتعاب المهنية 4.00% (سعي 2.50% + منصة 1.50%) مُطبقة تلقائياً وموافق عليها من المطور" : "Total professional fees 4.00% (brokerage 2.50% + platform 1.50%) auto-applied & accepted by developer"}</p>
                 </div>
               </div>
 
