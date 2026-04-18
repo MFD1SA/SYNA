@@ -1,14 +1,15 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+
+# Application surfaces — not for search indexing
+Disallow: /admincp
+Disallow: /admincp/
+Disallow: /crm
+Disallow: /crm/
+Disallow: /owner
+Disallow: /owner/
+Disallow: /auth/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://cidoma.com/sitemap.xml
