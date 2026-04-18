@@ -35,6 +35,7 @@ const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <div
+      data-dashboard-root
       className="flex min-h-screen bg-[#F7F8FA] dark:bg-[#0B1623] text-slate-900 dark:text-slate-100"
       dir={isAr ? "rtl" : "ltr"}
     >

@@ -124,7 +124,10 @@ const CrmBrowseLands: React.FC = () => {
       proposal_summary: requestForm.proposal_summary,
       proposed_project_type: requestForm.proposed_project_type,
       commission_accepted: true,
-      commission_rate: 2.5,
+      // Total platform fee the developer has just acknowledged:
+      // 2.50% brokerage + 1.50% platform services = 4.00% of land value.
+      // Matches PLATFORM_TOTAL_RATE in LandFormConstants and the signed agreement v2.0.
+      commission_rate: 4.00,
       proposal_link: requestForm.google_drive_link || null,
     } as any);
     if (error) {

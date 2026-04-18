@@ -65,6 +65,92 @@
     --sidebar-ring: 42 39% 59%;
   }
 
+  /* ─────────────────────────────────────────────────────
+     DARK THEME — no white surfaces, high-contrast light text
+     Applies to any element inside <html class="dark">
+     ───────────────────────────────────────────────────── */
+  .dark {
+    /* Deep blue-black canvas */
+    --background: 213 40% 8%;          /* #0B1623 */
+    --foreground: 210 20% 96%;         /* #F1F5F9 — near-white text */
+
+    /* Cards: solid dark slate, NEVER white */
+    --card: 215 28% 13%;               /* #1B2533 */
+    --card-foreground: 210 20% 96%;    /* #F1F5F9 */
+    --popover: 215 28% 13%;
+    --popover-foreground: 210 20% 96%;
+
+    /* Primary: gold-blue pair — primary text is near-white for contrast */
+    --primary: 210 30% 88%;            /* light slate */
+    --primary-foreground: 213 40% 8%;
+
+    /* Secondary / muted — used for subtle surfaces */
+    --secondary: 215 25% 17%;          /* slightly lighter than card */
+    --secondary-foreground: 210 20% 96%;
+    --muted: 215 25% 17%;
+    --muted-foreground: 215 14% 65%;   /* #8994A2 — visible but secondary */
+
+    /* Accent gold kept identical (gold works on dark too) */
+    --accent: 42 45% 65%;
+    --accent-foreground: 213 40% 8%;
+
+    --destructive: 0 72% 55%;          /* brighter rose for dark bg */
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 215 20% 22%;             /* ~#2E3948 */
+    --input: 215 20% 22%;
+    --ring: 42 45% 65%;                /* gold ring on focus */
+
+    --surface: 215 28% 13%;
+    --surface-hover: 215 25% 17%;
+
+    /* Sidebar: same deep blue as light; looks native in dark */
+    --sidebar-background: 213 45% 10%;
+    --sidebar-foreground: 210 20% 92%;
+    --sidebar-primary: 210 20% 96%;
+    --sidebar-primary-foreground: 213 40% 8%;
+    --sidebar-accent: 42 45% 65%;
+    --sidebar-accent-foreground: 213 40% 8%;
+    --sidebar-border: 215 20% 18%;
+    --sidebar-ring: 42 45% 65%;
+  }
+
+  /* ─────────────────────────────────────────────────────
+     Dashboard-wide dark mode safety net
+     Catches components that were built with hardcoded
+     bg-white / white bg without dark: variants.
+     Applies ONLY inside /admincp, /owner, /crm surfaces.
+     ───────────────────────────────────────────────────── */
+  .dark [data-dashboard-root] .bg-white,
+  .dark [data-dashboard-root] [class*="bg-white/"]:not([class*="bg-white/0"]),
+  .dark [data-dashboard-root] .bg-gray-50,
+  .dark [data-dashboard-root] .bg-slate-50,
+  .dark [data-dashboard-root] .bg-\[\#F7F8FA\],
+  .dark [data-dashboard-root] .bg-\[\#FAFBFC\] {
+    background-color: hsl(var(--card)) !important;
+  }
+
+  .dark [data-dashboard-root] .text-gray-800,
+  .dark [data-dashboard-root] .text-gray-900,
+  .dark [data-dashboard-root] .text-\[#1E374B\],
+  .dark [data-dashboard-root] .text-\[#1F2937\] {
+    color: hsl(var(--foreground)) !important;
+  }
+  .dark [data-dashboard-root] .text-gray-600,
+  .dark [data-dashboard-root] .text-gray-700 {
+    color: hsl(210 20% 88%) !important;
+  }
+  .dark [data-dashboard-root] .text-gray-400,
+  .dark [data-dashboard-root] .text-gray-500 {
+    color: hsl(215 14% 70%) !important;
+  }
+  .dark [data-dashboard-root] .border-gray-100,
+  .dark [data-dashboard-root] .border-gray-200,
+  .dark [data-dashboard-root] [class*="border-gray-100/"],
+  .dark [data-dashboard-root] [class*="border-gray-200/"] {
+    border-color: hsl(var(--border)) !important;
+  }
+
   * {
     @apply border-border outline-none;
     box-sizing: border-box;
