@@ -84,10 +84,7 @@ const HeroSection: React.FC = () => {
             {t.hero.title}
           </h1>
 
-          {/* Accent gradient rule */}
-          <div className="mb-5 md:mb-7 h-1 w-14 md:w-20 rounded-full bg-gradient-to-r from-[#C2A86B] via-[#D7C084] to-transparent" />
-
-          <p className="text-[15px] sm:text-[17px] md:text-[19px] text-white/75 leading-[1.75] md:leading-[1.7] mb-7 md:mb-10 max-w-2xl">
+          <p className="text-[15px] sm:text-[17px] md:text-[19px] text-white/75 leading-[1.75] md:leading-[1.7] mb-7 md:mb-10 max-w-2xl mt-5 md:mt-7">
             {t.hero.subtitle}
           </p>
 

@@ -70,7 +70,7 @@ const PartnershipsDevelopers: React.FC = () => {
         pageSlug="partnerships-developers"
         title={isAr ? "شراكات المطورين العقاريين" : "Partnerships for Real Estate Developers"}
         subtitle={isAr
-          ? "نفّذ مشاريع أكثر بتكلفة أقل مع وصول مباشر لأراضي مؤهلة وملاك يبحثون عن مطورين موثوقين عبر منصة سينا"
+          ? "نفّذ مشاريع أكثر بتكلفة أقل مع وصول مباشر لأراضي مؤهلة وملاك يبحثون عن مطورين موثوقين عبر سينا للاستثمارات العقارية"
           : "Execute more projects at lower cost with direct access to qualified lands and owners seeking reliable developers through SINA platform"}
         isAr={isAr}
         image={headerPartnershipsImg}
@@ -108,7 +108,7 @@ const PartnershipsDevelopers: React.FC = () => {
         <div className="container">
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4">
-              {isAr ? "مميزات منصة سينا للمطورين" : "SINA Platform Features for Developers"}
+              {isAr ? "مميزات سينا للاستثمارات العقارية للمطورين" : "SINA Platform Features for Developers"}
             </h2>
             <p className="text-[15px] text-gray-500 max-w-2xl mx-auto leading-relaxed">
               {isAr
@@ -194,7 +194,7 @@ const PartnershipsDevelopers: React.FC = () => {
           </h2>
           <p className="text-[15px] text-gray-500 mb-10 max-w-xl mx-auto">
             {isAr
-              ? "سجّل كمطور واكتشف فرص الشراكة التطويرية المتاحة عبر منصة سينا"
+              ? "سجّل كمطور واكتشف فرص الشراكة التطويرية المتاحة عبر سينا للاستثمارات العقارية"
               : "Register as a developer and discover available development partnership opportunities through SINA"}
           </p>
           <button

@@ -46,7 +46,7 @@ const LegalAcknowledgmentDoc: React.FC<Props> = ({ form, referenceNumber, ownerN
         <h1 className="text-lg font-semibold">
           {isAr ? "وثيقة الإقرار القانوني" : "Legal Acknowledgment Document"}
         </h1>
-        <p className="text-xs text-muted-foreground mt-1">SINA Platform — {isAr ? "منصة سينا للتطوير العقاري" : "Real Estate Development Platform"}</p>
+        <p className="text-xs text-muted-foreground mt-1">SINA Platform — {isAr ? "سينا للاستثمارات العقارية للتطوير العقاري" : "Real Estate Development Platform"}</p>
         {referenceNumber && (
           <p className="text-xs text-muted-foreground mt-2">
             {isAr ? "رقم المرجع:" : "Reference #:"} <span className="font-mono font-medium">{referenceNumber}</span>

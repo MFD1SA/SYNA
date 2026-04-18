@@ -302,7 +302,7 @@ const Register: React.FC = () => {
         <div className="mb-5 rounded-xl border border-[#2B4C66]/10 bg-[#2B4C66]/[0.03] px-5 py-3.5 text-center">
           <p className="text-[13px] text-[#2B4C66]/80 leading-relaxed font-medium">
             {isAr
-              ? "مرحباً بك في منصة سينا — هذا التسجيل مخصص للمطورين العقاريين فقط."
+              ? "مرحباً بك في سينا للاستثمارات العقارية — هذا التسجيل مخصص للمطورين العقاريين فقط."
               : "Welcome to SINA — this registration is exclusively for real estate developers."}
           </p>
         </div>

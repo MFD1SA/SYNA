@@ -101,23 +101,12 @@ const InnerHero: React.FC<InnerHeroProps> = ({
           </nav>
         )}
 
-        {/* Icon badge */}
-        <div className="mb-4 md:mb-6 inline-flex items-center gap-2 md:gap-2.5 rounded-full border border-white/15 bg-white/5 backdrop-blur-md px-3 md:px-3.5 py-1 md:py-1.5">
-          <div className="flex items-center justify-center w-5 md:w-6 h-5 md:h-6 rounded-full bg-gradient-to-br from-[#C2A86B] to-[#A88A4A]">
-            <Icon className="h-2.5 md:h-3 w-2.5 md:w-3 text-white" strokeWidth={2.5} />
-          </div>
-          <span className="text-[10px] md:text-[11px] font-semibold tracking-[0.1em] md:tracking-[0.12em] uppercase text-white/80">
-            {eyebrow || (isAr ? "سينا" : "SINA")}
-          </span>
-        </div>
-
-        {/* Title with accent rule */}
+        {/* Title */}
         <div className="max-w-3xl">
           <h1 className="relative text-[26px] sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-5 tracking-tight leading-[1.15]">
             {title}
           </h1>
-          <div className="mb-4 md:mb-5 h-0.5 w-12 md:w-14 bg-gradient-to-r from-[#C2A86B] to-transparent rounded-full" />
-          <p className="text-[14px] sm:text-[15px] md:text-[17px] text-white/70 max-w-2xl leading-relaxed">
+          <p className="text-[14px] sm:text-[15px] md:text-[17px] text-white/70 max-w-2xl leading-relaxed mt-4 md:mt-5">
             {subtitle}
           </p>
         </div>

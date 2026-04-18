@@ -33,8 +33,7 @@ const WhySinaSection: React.FC = () => {
           <h2 className="text-[26px] sm:text-[34px] md:text-[44px] font-bold text-[#1E374B] mb-4 md:mb-5 tracking-tight leading-[1.15] md:leading-[1.1]">
             {t.whySina.title}
           </h2>
-          <div className="mx-auto mb-5 md:mb-6 h-0.5 w-14 md:w-16 rounded-full bg-gradient-to-r from-transparent via-[#C2A86B] to-transparent" />
-          <p className="text-[14px] md:text-[16px] text-gray-600 leading-[1.8] max-w-2xl mx-auto">
+          <p className="text-[14px] md:text-[16px] text-gray-600 leading-[1.8] max-w-2xl mx-auto mt-4 md:mt-5">
             {t.whySina.subtitle}
           </p>
         </div>

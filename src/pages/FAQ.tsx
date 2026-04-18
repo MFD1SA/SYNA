@@ -26,7 +26,7 @@ const FAQ: React.FC = () => {
         pageSlug="faq"
         title={isAr ? "الأسئلة الشائعة" : "Frequently Asked Questions"}
         subtitle={isAr
-          ? "إجابات واضحة ومفصلة على أكثر الأسئلة شيوعاً حول منصة سينا وشراكات التطوير العقاري"
+          ? "إجابات واضحة ومفصلة على أكثر الأسئلة شيوعاً حول سينا للاستثمارات العقارية وشراكات التطوير العقاري"
           : "Clear and detailed answers to the most frequently asked questions about SINA platform and real estate development partnerships"}
         isAr={isAr}
         image={headerFaqImg}

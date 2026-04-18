@@ -76,11 +76,11 @@ const OwnerNDAConsentModal: React.FC<Props> = ({ isAr, open, landCity, landDistr
 
           {isAr ? (
             <div className="space-y-4 whitespace-pre-line font-[inherit]">
-              <p className="font-bold text-gray-800 text-[14px]">اتفاقية عدم الإفصاح — مالك الأرض — منصة سينا للتطوير العقاري</p>
+              <p className="font-bold text-gray-800 text-[14px]">اتفاقية عدم الإفصاح — مالك الأرض — سينا للاستثمارات العقارية للتطوير العقاري</p>
 
               <div>
                 <p className="font-semibold text-gray-800">المادة الأولى: أطراف الاتفاقية</p>
-                <p>هذه الاتفاقية مبرمة بين منصة سينا للتطوير العقاري (المشغّل) ومالك الأرض (الطرف الثاني) المسجّل في المنصة، وتتعلق بالأرض المحددة: <strong>{landLabel}</strong></p>
+                <p>هذه الاتفاقية مبرمة بين سينا للاستثمارات العقارية للتطوير العقاري (المشغّل) ومالك الأرض (الطرف الثاني) المسجّل في المنصة، وتتعلق بالأرض المحددة: <strong>{landLabel}</strong></p>
               </div>
 
               <div>

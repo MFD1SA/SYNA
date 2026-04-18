@@ -38,9 +38,7 @@ const CTASection: React.FC = () => {
             {t.ctaFinal.title}
           </h2>
 
-          <div className="mx-auto mb-6 md:mb-8 h-0.5 md:h-1 w-16 md:w-24 rounded-full bg-gradient-to-r from-transparent via-[#C2A86B] to-transparent" />
-
-          <p className="text-[14.5px] sm:text-[17px] md:text-[19px] text-white/70 max-w-2xl mx-auto mb-8 md:mb-12 leading-[1.75] md:leading-[1.7]">
+          <p className="text-[14.5px] sm:text-[17px] md:text-[19px] text-white/70 max-w-2xl mx-auto mt-5 md:mt-6 mb-8 md:mb-12 leading-[1.75] md:leading-[1.7]">
             {t.ctaFinal.subtitle}
           </p>
 

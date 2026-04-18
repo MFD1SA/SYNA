@@ -71,7 +71,7 @@ const PartnershipsOwners: React.FC = () => {
         pageSlug="partnerships-owners"
         title={isAr ? "شراكات ملاك الأراضي" : "Partnerships for Landowners"}
         subtitle={isAr
-          ? "حوّل أرضك إلى مشروع استثماري مربح بعوائد مضاعفة مع حماية كاملة لحقوقك وخصوصيتك عبر منصة سينا الرقمية المحكومة"
+          ? "حوّل أرضك إلى مشروع استثماري مربح بعوائد مضاعفة مع حماية كاملة لحقوقك وخصوصيتك عبر سينا للاستثمارات العقارية الرقمية المحكومة"
           : "Transform your land into a profitable investment project with multiplied returns and complete protection of your rights and privacy through SINAs governed digital platform"}
         isAr={isAr}
         image={headerPartnershipsImg}
@@ -109,7 +109,7 @@ const PartnershipsOwners: React.FC = () => {
         <div className="container">
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4">
-              {isAr ? "مميزات منصة سينا لملاك الأراضي" : "SINA Platform Features for Landowners"}
+              {isAr ? "مميزات سينا للاستثمارات العقارية لملاك الأراضي" : "SINA Platform Features for Landowners"}
             </h2>
             <p className="text-[15px] text-gray-500 max-w-2xl mx-auto leading-relaxed">
               {isAr
@@ -276,7 +276,7 @@ const PartnershipsOwners: React.FC = () => {
           </h2>
           <p className="text-[15px] text-gray-500 mb-10 max-w-xl mx-auto">
             {isAr
-              ? "سجّل أرضك واستقبل طلبات شراكة من مطورين مؤهلين ومتحقق منهم عبر منصة سينا"
+              ? "سجّل أرضك واستقبل طلبات شراكة من مطورين مؤهلين ومتحقق منهم عبر سينا للاستثمارات العقارية"
               : "Register your land and receive partnership requests from qualified verified developers through SINA"}
           </p>
           <button

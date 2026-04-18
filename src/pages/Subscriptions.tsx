@@ -16,7 +16,7 @@ const SubscriptionsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <PageHeader icon={Handshake} title={isAr ? "الشراكات" : "Partnerships"} description={isAr ? "كيف تعمل شراكات التطوير العقاري عبر منصة سينا" : "How real estate development partnerships work through the SINA platform"} backgroundImage={headerPartnershipsImg} />
+      <PageHeader icon={Handshake} title={isAr ? "الشراكات" : "Partnerships"} description={isAr ? "كيف تعمل شراكات التطوير العقاري عبر سينا للاستثمارات العقارية" : "How real estate development partnerships work through the SINA platform"} backgroundImage={headerPartnershipsImg} />
       <main className="flex-1">
         <SubscriptionsSection />
       </main>

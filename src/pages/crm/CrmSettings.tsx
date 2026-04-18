@@ -98,7 +98,7 @@ function generateAgreementPdf(agreement: DeveloperAgreement, isAr: boolean) {
 <body>
   <div class="header">
     <h1>${title}</h1>
-    <p>SINA Real Estate Development Platform — ${isAr ? "منصة سينا للتطوير العقاري" : "cidoma.com"}</p>
+    <p>SINA Real Estate Development Platform — ${isAr ? "سينا للاستثمارات العقارية للتطوير العقاري" : "cidoma.com"}</p>
   </div>
   <div class="content">${text}</div>
   <div class="meta">
