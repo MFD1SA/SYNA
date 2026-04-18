@@ -27,7 +27,7 @@ const PrivacyPage: React.FC = () => {
 
   return (
     <PageShell>
-      <InnerHero pageSlug="privacy" title={isAr ? "سياسة الخصوصية" : "Privacy Policy"} subtitle={isAr ? "كيف نحمي بياناتك ونستخدمها" : "How we protect and use your data"} isAr={isAr} image="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1920&q=85&auto=format&fit=crop" />
+      <InnerHero pageSlug="privacy" title={isAr ? "سياسة الخصوصية" : "Privacy Policy"} subtitle={isAr ? "كيف نحمي بياناتك ونستخدمها" : "How we protect and use your data"} isAr={isAr} image="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1920&q=85&auto=format&fit=crop" />
       <section className="py-20 lg:py-28 bg-white" dir={isAr ? "rtl" : "ltr"}>
         <div className="container max-w-3xl space-y-10">
           {sections.map((s, i) => (

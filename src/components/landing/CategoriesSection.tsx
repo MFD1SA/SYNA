@@ -79,15 +79,7 @@ const CategoriesSection: React.FC = () => {
 
                 {/* Icon */}
                 <div className="relative mb-8 flex items-center justify-between">
-                  <div
-                    className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-[0_8px_20px_-8px_rgba(15,31,46,0.3)] ${
-                      isGold
-                        ? "bg-gradient-to-br from-[#C2A86B] to-[#A88A4A]"
-                        : "bg-gradient-to-br from-[#2B4C66] to-[#1E374B]"
-                    }`}
-                  >
-                    <cat.icon className="w-6 h-6 text-white" strokeWidth={1.7} />
-                  </div>
+                  <cat.icon className={`w-8 h-8 ${isGold ? "text-[#A88A4A]" : "text-[#2B4C66]"}`} strokeWidth={1.7} />
                   <span className={`text-[10px] font-bold tracking-[0.14em] uppercase ${isGold ? "text-[#A88A4A]" : "text-[#2B4C66]"}`}>
                     {i === 0 ? (isAr ? "للملاك" : "FOR OWNERS") : (isAr ? "للمطورين" : "FOR DEVELOPERS")}
                   </span>

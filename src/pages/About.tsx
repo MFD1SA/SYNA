@@ -47,10 +47,10 @@ const About: React.FC = () => {
         pageSlug="about"
         title={isAr ? "من نحن" : "About SINA"}
         subtitle={isAr
-          ? "منصة رقمية سعودية تعيد تعريف مستقبل الشراكات التطويرية العقارية بحوكمة متكاملة وتقنية متقدمة"
+          ? "شركة رقمية سعودية تعيد تعريف مستقبل الشراكات التطويرية العقارية بحوكمة متكاملة وتقنية متقدمة"
           : "A Saudi digital platform redefining the future of real estate development partnerships with integrated governance and advanced technology"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=85&auto=format&fit=crop"
+        image="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1920&q=85&auto=format&fit=crop"
       />
 
       {/* Who We Are */}
@@ -64,7 +64,7 @@ const About: React.FC = () => {
           <div className="space-y-6">
             <p className="text-[16px] text-slate-600 leading-[2.1]">
               {isAr
-                ? "سينا منصة رقمية سعودية متخصصة في تنظيم شراكات التطوير العقاري بين ملاك الأراضي والمطورين العقاريين المؤهلين ضمن بيئة رقمية محكومة وآمنة تضمن حقوق جميع الأطراف وتحمي مصالحهم في كل مرحلة"
+                ? "سينا شركة رقمية سعودية متخصصة في تنظيم شراكات التطوير العقاري بين ملاك الأراضي والمطورين العقاريين المؤهلين ضمن بيئة رقمية محكومة وآمنة تضمن حقوق جميع الأطراف وتحمي مصالحهم في كل مرحلة"
                 : "SINA is a specialized Saudi digital platform for organizing real estate development partnerships between landowners and qualified developers within a governed and secure digital environment that guarantees all parties' rights and protects their interests at every stage"}
             </p>
             <p className="text-[16px] text-slate-600 leading-[2.1]">
@@ -74,7 +74,7 @@ const About: React.FC = () => {
             </p>
             <p className="text-[16px] text-slate-600 leading-[2.1]">
               {isAr
-                ? "من هذا المنطلق أُسست سينا لتكون المنصة المرجعية الأولى في تنظيم الشراكات التطويرية العقارية حيث نوفر بيئة تقنية متقدمة تُحفظ فيها الحقوق وتُوثّق الاتفاقيات وتُتابع جميع المراحل بشفافية كاملة من لحظة التسجيل وحتى إتمام الشراكة بنجاح"
+                ? "من هذا المنطلق أُسست سينا لتكون الشركة المرجعية الأولى في تنظيم الشراكات التطويرية العقارية حيث نوفر بيئة تقنية متقدمة تُحفظ فيها الحقوق وتُوثّق الاتفاقيات وتُتابع جميع المراحل بشفافية كاملة من لحظة التسجيل وحتى إتمام الشراكة بنجاح"
                 : "From this premise SINA was founded to be the leading reference platform for organizing real estate development partnerships providing an advanced technological environment where rights are preserved, agreements are documented, and all stages are tracked with complete transparency from the moment of registration until successful partnership completion"}
             </p>
           </div>
@@ -87,28 +87,24 @@ const About: React.FC = () => {
         <div className="container relative">
           <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
             <div className="group relative bg-white rounded-3xl p-10 ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.18)] hover:shadow-[0_30px_80px_-30px_rgba(15,31,46,0.28)] hover:ring-[#2B4C66]/20 transition-all duration-500">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-lg shadow-[#2B4C66]/20 mb-6">
-                <ScanEye className="w-6 h-6 text-white" strokeWidth={1.75} />
-              </div>
+              <ScanEye className="w-7 h-7 text-[#2B4C66] mb-6" strokeWidth={1.7} />
               <h3 className="text-2xl font-bold text-[#1E374B] mb-4 tracking-tight">
                 {isAr ? "رؤيتنا" : "Our Vision"}
               </h3>
               <p className="text-[15px] text-slate-600 leading-[2.1]">
                 {isAr
-                  ? "أن نكون المنصة الأولى والمرجع الرئيسي في تنظيم الشراكات التطويرية العقارية الرقمية وتحويل الأراضي غير المستغلة إلى مشاريع منتجة تُسهم في التنمية الحضرية وتخدم رؤية المملكة 2030"
+                  ? "أن نكون الشركة الأولى والمرجع الرئيسي في تنظيم الشراكات التطويرية العقارية الرقمية وتحويل الأراضي غير المستغلة إلى مشاريع منتجة تُسهم في التنمية الحضرية وتخدم رؤية المملكة 2030"
                   : "To be the leading platform and primary reference for organizing digital real estate development partnerships and transforming underutilized lands into productive projects that contribute to urban development and serve the Kingdom's Vision 2030"}
               </p>
             </div>
             <div className="group relative bg-white rounded-3xl p-10 ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.18)] hover:shadow-[0_30px_80px_-30px_rgba(15,31,46,0.28)] hover:ring-[#C2A86B]/30 transition-all duration-500">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D7C084] to-[#A88A4A] shadow-lg shadow-[#C2A86B]/25 mb-6">
-                <Trophy className="w-6 h-6 text-white" strokeWidth={1.75} />
-              </div>
+              <Trophy className="w-7 h-7 text-[#A88A4A] mb-6" strokeWidth={1.7} />
               <h3 className="text-2xl font-bold text-[#1E374B] mb-4 tracking-tight">
                 {isAr ? "رسالتنا" : "Our Mission"}
               </h3>
               <p className="text-[15px] text-slate-600 leading-[2.1]">
                 {isAr
-                  ? "تمكين ملاك الأراضي والمطورين العقاريين من بناء شراكات تطويرية واضحة وآمنة ومربحة للجميع من خلال منصة رقمية متكاملة تعتمد على الشفافية والحوكمة والتقنية المتقدمة"
+                  ? "تمكين ملاك الأراضي والمطورين العقاريين من بناء شراكات تطويرية واضحة وآمنة ومربحة للجميع من خلال شركة رقمية متكاملة تعتمد على الشفافية والحوكمة والتقنية المتقدمة"
                   : "Empowering landowners and real estate developers to build clear, secure, and mutually profitable development partnerships through a comprehensive digital platform founded on transparency, governance, and advanced technology"}
               </p>
             </div>
@@ -132,9 +128,7 @@ const About: React.FC = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
             {pillars.map((p, i) => (
               <div key={i} className="group relative bg-gradient-to-b from-white to-[#FAFBFC] rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#2B4C66]/25 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(15,31,46,0.25)] transition-all duration-500 hover:-translate-y-1">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-md shadow-[#2B4C66]/20 mb-5">
-                  <p.icon className="w-5 h-5 text-white" strokeWidth={1.75} />
-                </div>
+                <p.icon className="w-6 h-6 text-[#2B4C66] mb-5" strokeWidth={1.7} />
                 <h3 className="text-[16px] font-bold text-[#1E374B] mb-2.5 tracking-tight">{p.title}</h3>
                 <p className="text-[13px] text-slate-500 leading-[1.9]">{p.desc}</p>
               </div>
@@ -153,16 +147,14 @@ const About: React.FC = () => {
             </h2>
             <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
               {isAr
-                ? "القيم التي توجّه كل قرار نتخذه وكل ميزة نبنيها في المنصة"
+                ? "القيم التي توجّه كل قرار نتخذه وكل ميزة نبنيها في سينا"
                 : "The values that guide every decision we make and every feature we build on the platform"}
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
             {values.map((v, i) => (
               <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C2A86B]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.25)] transition-all duration-500 hover:-translate-y-1">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#D7C084] to-[#A88A4A] shadow-md shadow-[#C2A86B]/25 mb-5">
-                  <v.icon className="w-5 h-5 text-white" strokeWidth={1.75} />
-                </div>
+                <v.icon className="w-6 h-6 text-[#A88A4A] mb-5" strokeWidth={1.7} />
                 <h3 className="text-[16px] font-bold text-[#1E374B] mb-2.5 tracking-tight">{v.title}</h3>
                 <p className="text-[13px] text-slate-500 leading-[1.9]">{v.desc}</p>
               </div>

@@ -42,9 +42,7 @@ const TrustStrip: React.FC = () => {
           {items.map((item, i) => (
             <React.Fragment key={i}>
               <div className="flex items-center gap-2.5 group">
-                <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-[#2B4C66]/[0.08] to-[#2B4C66]/[0.04] group-hover:from-[#C2A86B]/15 group-hover:to-[#C2A86B]/5 transition-all">
-                  <item.icon className="w-3.5 h-3.5 text-[#2B4C66] group-hover:text-[#A88A4A] transition-colors" strokeWidth={1.8} />
-                </div>
+                <item.icon className="w-4 h-4 text-[#2B4C66] group-hover:text-[#A88A4A] transition-colors" strokeWidth={1.7} />
                 <span className="text-[12.5px] font-semibold text-gray-700 tracking-wide">
                   {item.label}
                 </span>

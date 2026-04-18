@@ -55,7 +55,7 @@ const Contact: React.FC = () => {
           ? "فريقنا جاهز لمساعدتك سواء كنت مالك أرض تبحث عن شريك تطوير أو مطوراً عقارياً يبحث عن فرص حقيقية"
           : "Our team is ready to help whether youre a landowner seeking a development partner or a developer looking for real opportunities"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1920&q=85&auto=format&fit=crop"
+        image="https://images.unsplash.com/photo-1556761175-4b46a572b786?w=1920&q=85&auto=format&fit=crop"
       />
 
       {/* Why Contact Us */}
@@ -65,9 +65,7 @@ const Contact: React.FC = () => {
           <div className="grid sm:grid-cols-3 gap-5 max-w-5xl mx-auto">
             {whyContact.map((item, i) => (
               <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C2A86B]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.25)] transition-all duration-500 hover:-translate-y-1">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#D7C084] to-[#A88A4A] shadow-md shadow-[#C2A86B]/25 mb-4">
-                  <item.icon className="w-5 h-5 text-white" strokeWidth={1.75} />
-                </div>
+                <item.icon className="w-6 h-6 text-[#A88A4A] mb-4" strokeWidth={1.7} />
                 <h3 className="text-[15px] font-bold text-[#1E374B] mb-2 tracking-tight">{item.title}</h3>
                 <p className="text-[13px] text-slate-500 leading-[1.9]">{item.desc}</p>
               </div>
@@ -87,7 +85,7 @@ const Contact: React.FC = () => {
               </h2>
               <p className="text-[15px] text-slate-600 leading-relaxed max-w-xl mx-auto">
                 {isAr
-                  ? "سواء كان لديك استفسار عن المنصة أو تحتاج مساعدة في التسجيل أو ترغب في معرفة المزيد عن شراكات التطوير نحن هنا لمساعدتك"
+                  ? "سواء كان لديك استفسار عن سينا أو تحتاج مساعدة في التسجيل أو ترغب في معرفة المزيد عن شراكات التطوير نحن هنا لمساعدتك"
                   : "Whether you have a question about the platform, need help registering, or want to learn more about development partnerships we are here to help"}
               </p>
             </div>
@@ -117,9 +115,7 @@ const Contact: React.FC = () => {
 
             {sent ? (
               <div className="text-center py-20 bg-white rounded-2xl ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.18)]">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-50 ring-8 ring-emerald-50/60 mb-5">
-                  <CheckCircle2 className="w-7 h-7 text-emerald-500" strokeWidth={2} />
-                </div>
+                <CheckCircle2 className="w-10 h-10 text-emerald-600 mb-5 mx-auto" strokeWidth={1.7} />
                 <p className="text-[18px] font-bold text-[#1E374B] tracking-tight">{t.contactPage.success}</p>
               </div>
             ) : (

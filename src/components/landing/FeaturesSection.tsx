@@ -77,9 +77,7 @@ const FeaturesSection: React.FC = () => {
               transition={{ duration: 0.8, delay: i * 0.1 }}
               className="group relative flex flex-col bg-background p-10 transition-colors hover:bg-primary"
             >
-              <div className="mb-10 inline-flex h-12 w-12 items-center justify-center border border-border bg-muted/30 text-primary transition-all duration-500 group-hover:border-accent/30 group-hover:bg-accent group-hover:text-primary">
-                <feature.icon className="h-5 w-5" strokeWidth={1} />
-              </div>
+              <feature.icon className="mb-10 h-7 w-7 text-primary transition-colors duration-500 group-hover:text-accent" strokeWidth={1.7} />
 
               <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-primary transition-colors group-hover:text-accent">
                 {isAr ? feature.titleAr : feature.titleEn}

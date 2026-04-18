@@ -3,7 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import {
-  HardHat, Loader2, User, Mail, Lock, ArrowRight, ArrowLeft,
+  Loader2, User, Mail, Lock, ArrowRight, ArrowLeft,
   Building2, Phone, MapPin, Globe, FileText, CheckCircle2, Upload, X as XIcon,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -592,7 +592,7 @@ const Register: React.FC = () => {
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                 <>
-                  <HardHat className="w-4 h-4" strokeWidth={1.5} />
+                  <Building2 className="w-4 h-4" strokeWidth={1.5} />
                   {isAr ? "متابعة التسجيل" : "Continue Registration"}
                 </>
               )}

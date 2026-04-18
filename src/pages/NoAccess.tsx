@@ -24,8 +24,8 @@ const NoAccess: React.FC = () => {
           </h1>
           <p className="text-[14px] text-gray-400 leading-relaxed max-w-xs">
             {isAr
-              ? "حسابك غير مرتبط بأي دور في المنصة. تواصل مع مدير النظام للحصول على الصلاحيات المناسبة."
-              : "Your account is not linked to any role on the platform. Contact the administrator for appropriate access."}
+              ? "حسابك غير مرتبط بأي دور في سينا. تواصل مع مدير النظام للحصول على الصلاحيات المناسبة."
+              : "Your account is not linked to any role on SINA. Contact the administrator for appropriate access."}
           </p>
         </div>
         <div className="flex flex-col gap-3">

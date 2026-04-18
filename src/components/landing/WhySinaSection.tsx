@@ -49,13 +49,8 @@ const WhySinaSection: React.FC = () => {
                 className={`absolute inset-0 bg-gradient-to-br ${card.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`}
               />
 
-              {/* Icon container */}
-              <div className="relative mb-4 md:mb-5">
-                <div className="w-11 md:w-12 h-11 md:h-12 rounded-2xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] flex items-center justify-center shadow-[0_6px_16px_-6px_rgba(43,76,102,0.5)] group-hover:scale-110 transition-transform duration-500">
-                  <card.icon className="w-5 h-5 text-white" strokeWidth={1.7} />
-                </div>
-                <div className="absolute -top-1 -end-1 w-4 h-4 rounded-full bg-[#C2A86B] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </div>
+              {/* Icon */}
+              <card.icon className="relative mb-4 md:mb-5 w-7 h-7 text-[#2B4C66] group-hover:text-[#A88A4A] transition-colors duration-500" strokeWidth={1.7} />
 
               <h3 className="relative text-[15px] md:text-[17px] font-bold text-[#1E374B] mb-2 md:mb-3 tracking-tight">
                 {card.title}

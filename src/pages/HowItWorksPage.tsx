@@ -21,8 +21,8 @@ const HowItWorksPage: React.FC = () => {
         { icon: Lock, num: "02", title: "بياناتك محمية بالكامل", desc: "بيانات أرضك الحساسة مثل رقم الصك والموقع الدقيق وهويتك الشخصية لا تُكشف لأي طرف إلا بموافقتك الصريحة والمسجلة" },
         { icon: ClipboardList, num: "03", title: "استقبل طلبات الشراكة", desc: "يصلك طلبات شراكة من مطورين عقاريين مؤهلين ومتحقق منهم مع ملفاتهم التعريفية الكاملة لتتمكن من التقييم واتخاذ القرار" },
         { icon: Eye, num: "04", title: "راجع وقرر بحرية كاملة", desc: "اطلع على تفاصيل كل مطور وسجل مشاريعه السابقة وقدراته التنفيذية وقرر من تريد قبول طلبه أو رفضه بكل حرية" },
-        { icon: MessageSquare, num: "05", title: "تفاوض وتواصل بشفافية", desc: "بعد قبول الطلب يتم فتح قنوات التواصل المنظمة بينك وبين المطور مع جدولة الاجتماعات وتبادل المستندات داخل المنصة" },
-        { icon: Handshake, num: "06", title: "أغلق شراكتك بنجاح", desc: "عند اكتمال الاتفاق يتم توثيق الشراكة وإغلاقها رسمياً عبر المنصة بضمان حقوق جميع الأطراف وتوثيق كل التفاصيل" },
+        { icon: MessageSquare, num: "05", title: "تفاوض وتواصل بشفافية", desc: "بعد قبول الطلب يتم فتح قنوات التواصل المنظمة بينك وبين المطور مع جدولة الاجتماعات وتبادل المستندات داخل سينا" },
+        { icon: Handshake, num: "06", title: "أغلق شراكتك بنجاح", desc: "عند اكتمال الاتفاق يتم توثيق الشراكة وإغلاقها رسمياً عبر سينا بضمان حقوق جميع الأطراف وتوثيق كل التفاصيل" },
       ]
     : [
         { icon: UserCheck, num: "01", title: "Create Your Owner Account", desc: "Register your account in minutes and add your lands basic information such as location, area, and desired development type with complete privacy" },
@@ -74,10 +74,10 @@ const HowItWorksPage: React.FC = () => {
           ? "رحلة واضحة ومنظمة لكل طرف من التسجيل والتحقق وحتى إتمام الشراكة التطويرية بنجاح وتوثيقها رسمياً"
           : "A clear organized journey for each party from registration and verification to successful development partnership completion and official documentation"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1920&q=85&auto=format&fit=crop"
+        image="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1920&q=85&auto=format&fit=crop"
       />
 
-      {/* Platform Highlights */}
+      {/* SINA Highlights */}
       <section className="py-10 bg-[#F8FAFB] border-b border-gray-100" dir={isAr ? "rtl" : "ltr"}>
         <div className="container">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
@@ -170,7 +170,7 @@ const HowItWorksPage: React.FC = () => {
           </h2>
           <p className="text-[15px] text-white/50 max-w-2xl mx-auto mb-12 leading-relaxed">
             {isAr
-              ? "سينا ليست مجرد منصة للتواصل بل منظومة حوكمة رقمية متكاملة تنظم كل مرحلة من مراحل الشراكة التطويرية وتحمي حقوق جميع الأطراف وتوثق كل خطوة بشفافية كاملة"
+              ? "سينا ليست مجرد شركة للتواصل بل منظومة حوكمة رقمية متكاملة تنظم كل مرحلة من مراحل الشراكة التطويرية وتحمي حقوق جميع الأطراف وتوثق كل خطوة بشفافية كاملة"
               : "SINA is not just a communication platform but a comprehensive digital governance ecosystem that organizes every stage of the development partnership, protects all parties rights, and documents every step with complete transparency"}
           </p>
           <div className="grid sm:grid-cols-3 gap-8 max-w-3xl mx-auto">

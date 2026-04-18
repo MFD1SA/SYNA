@@ -42,7 +42,7 @@ const Partnerships: React.FC = () => {
         { icon: CircleDollarSign, text: "وفّر تكاليف الاستحواذ بالكامل" },
         { icon: Rocket, text: "نفّذ مشاريع أكثر بنفس الميزانية" },
         { icon: Bolt, text: "متابعة شاملة حتى إتمام الشراكة" },
-        { icon: BadgeCheck, text: "بناء سمعة مهنية قوية على المنصة" },
+        { icon: BadgeCheck, text: "بناء سمعة مهنية قوية على سينا" },
       ]
     : [
         { icon: MapPin, text: "Real renewed development opportunities" },
@@ -103,7 +103,7 @@ const Partnerships: React.FC = () => {
           ? "سينا تجمع ملاك الأراضي والمطورين العقاريين في منظومة رقمية محكومة لبناء شراكات تطويرية ناجحة بعوائد مضاعفة وحوكمة شاملة"
           : "SINA brings together landowners and real estate developers in a governed digital ecosystem to build successful development partnerships with multiplied returns and comprehensive governance"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1664575600796-ffa828c5cb6e?w=1920&q=85&auto=format&fit=crop"
+        image="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1920&q=85&auto=format&fit=crop"
       />
 
       {/* Two Blocks - Owner & Developer */}
@@ -132,9 +132,7 @@ const Partnerships: React.FC = () => {
                 <Arrow className="w-5 h-5 text-slate-300 group-hover:text-[#C2A86B] transition-all duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
               </div>
 
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D7C084] to-[#A88A4A] shadow-lg shadow-[#C2A86B]/25 mb-6">
-                <Landmark className="w-6 h-6 text-white" strokeWidth={1.75} />
-              </div>
+              <Landmark className="w-7 h-7 text-[#A88A4A] mb-6" strokeWidth={1.7} />
 
               <h3 className="text-2xl md:text-[28px] font-bold text-[#1E374B] mb-3 tracking-tight leading-[1.15]">
                 {isAr ? "لملاك الأراضي" : "For Landowners"}
@@ -148,9 +146,7 @@ const Partnerships: React.FC = () => {
               <div className="space-y-3.5 mb-10">
                 {ownerHighlights.map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#C2A86B]/10 inline-flex items-center justify-center shrink-0">
-                      <item.icon className="w-4 h-4 text-[#A88A4A]" strokeWidth={1.75} />
-                    </div>
+                    <item.icon className="w-5 h-5 text-[#A88A4A] shrink-0" strokeWidth={1.7} />
                     <span className="text-[13px] text-slate-700">{item.text}</span>
                   </div>
                 ))}
@@ -171,9 +167,7 @@ const Partnerships: React.FC = () => {
                 <Arrow className="w-5 h-5 text-slate-300 group-hover:text-[#2B4C66] transition-all duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
               </div>
 
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-lg shadow-[#2B4C66]/25 mb-6">
-                <Building2 className="w-6 h-6 text-white" strokeWidth={1.75} />
-              </div>
+              <Building2 className="w-7 h-7 text-[#2B4C66] mb-6" strokeWidth={1.7} />
 
               <h3 className="text-2xl md:text-[28px] font-bold text-[#1E374B] mb-3 tracking-tight leading-[1.15]">
                 {isAr ? "للمطورين العقاريين" : "For Real Estate Developers"}
@@ -187,9 +181,7 @@ const Partnerships: React.FC = () => {
               <div className="space-y-3.5 mb-10">
                 {devHighlights.map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#2B4C66]/10 inline-flex items-center justify-center shrink-0">
-                      <item.icon className="w-4 h-4 text-[#2B4C66]" strokeWidth={1.75} />
-                    </div>
+                    <item.icon className="w-5 h-5 text-[#2B4C66] shrink-0" strokeWidth={1.7} />
                     <span className="text-[13px] text-slate-700">{item.text}</span>
                   </div>
                 ))}
@@ -222,17 +214,13 @@ const Partnerships: React.FC = () => {
             {/* Owner Side */}
             <div className="bg-white rounded-3xl p-8 md:p-10 ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.15)]">
               <div className="flex items-center gap-3 mb-8 pb-6 border-b border-slate-100">
-                <div className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-[#D7C084] to-[#A88A4A] shadow-md shadow-[#C2A86B]/25">
-                  <Landmark className="w-5 h-5 text-white" strokeWidth={1.75} />
-                </div>
+                <Landmark className="w-7 h-7 text-[#A88A4A]" strokeWidth={1.7} />
                 <h3 className="text-xl font-bold text-[#1E374B] tracking-tight">{isAr ? "المالك يحصل على" : "The Owner Gets"}</h3>
               </div>
               <div className="space-y-6">
                 {ownerBenefits.map((item, i) => (
-                  <div key={i} className="flex gap-4">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#C2A86B]/10 shrink-0">
-                      <item.icon className="w-5 h-5 text-[#A88A4A]" strokeWidth={1.75} />
-                    </div>
+                  <div key={i} className="flex items-start gap-4">
+                    <item.icon className="w-6 h-6 text-[#A88A4A] shrink-0 mt-0.5" strokeWidth={1.7} />
                     <div>
                       <h4 className="text-[15px] font-bold text-[#1E374B] mb-1.5 tracking-tight">{item.title}</h4>
                       <p className="text-[13px] text-slate-500 leading-[1.9]">{item.desc}</p>
@@ -245,17 +233,13 @@ const Partnerships: React.FC = () => {
             {/* Developer Side */}
             <div className="bg-white rounded-3xl p-8 md:p-10 ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.15)]">
               <div className="flex items-center gap-3 mb-8 pb-6 border-b border-slate-100">
-                <div className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-md shadow-[#2B4C66]/25">
-                  <Building2 className="w-5 h-5 text-white" strokeWidth={1.75} />
-                </div>
+                <Building2 className="w-7 h-7 text-[#2B4C66]" strokeWidth={1.7} />
                 <h3 className="text-xl font-bold text-[#1E374B] tracking-tight">{isAr ? "المطور يحصل على" : "The Developer Gets"}</h3>
               </div>
               <div className="space-y-6">
                 {devBenefits.map((item, i) => (
-                  <div key={i} className="flex gap-4">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#2B4C66]/10 shrink-0">
-                      <item.icon className="w-5 h-5 text-[#2B4C66]" strokeWidth={1.75} />
-                    </div>
+                  <div key={i} className="flex items-start gap-4">
+                    <item.icon className="w-6 h-6 text-[#2B4C66] shrink-0 mt-0.5" strokeWidth={1.7} />
                     <div>
                       <h4 className="text-[15px] font-bold text-[#1E374B] mb-1.5 tracking-tight">{item.title}</h4>
                       <p className="text-[13px] text-slate-500 leading-[1.9]">{item.desc}</p>
@@ -285,9 +269,7 @@ const Partnerships: React.FC = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
             {modelPillars.map((item, i) => (
               <div key={i} className="group relative bg-gradient-to-b from-white to-[#FAFBFC] rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#2B4C66]/25 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(43,76,102,0.25)] transition-all duration-500 hover:-translate-y-1">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-md shadow-[#2B4C66]/25 mb-5">
-                  <item.icon className="w-5 h-5 text-white" strokeWidth={1.75} />
-                </div>
+                <item.icon className="w-6 h-6 text-[#2B4C66] mb-5" strokeWidth={1.7} />
                 <h3 className="text-[16px] font-bold text-[#1E374B] mb-2.5 tracking-tight">{item.title}</h3>
                 <p className="text-[13px] text-slate-500 leading-[1.9]">{item.desc}</p>
               </div>

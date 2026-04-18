@@ -2,7 +2,7 @@ import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, ArrowRight, Crown, HardHat, ShieldCheck,
+  ArrowLeft, ArrowRight, Crown, Building2, ShieldCheck,
 } from "lucide-react";
 
 const CTASection: React.FC = () => {
@@ -55,7 +55,7 @@ const CTASection: React.FC = () => {
               onClick={() => navigate("/auth/login")}
               className="group inline-flex items-center justify-center gap-3 h-[54px] md:h-[58px] px-7 md:px-9 bg-gradient-to-r from-[#C2A86B] to-[#A88A4A] text-white text-[13.5px] md:text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(194,168,107,0.5)] hover:shadow-[0_14px_44px_-10px_rgba(194,168,107,0.65)] hover:-translate-y-0.5 transition-all duration-300"
             >
-              <HardHat className="w-5 h-5" strokeWidth={1.6} />
+              <Building2 className="w-5 h-5" strokeWidth={1.6} />
               {isAr ? "دخول المطورين" : "Developer Login"}
               <Arrow className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
             </button>

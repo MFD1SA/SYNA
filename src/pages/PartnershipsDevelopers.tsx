@@ -21,10 +21,10 @@ const PartnershipsDevelopers: React.FC = () => {
     ? [
         { icon: MapPin, title: "فرص تطويرية حقيقية ومتجددة", desc: "أراضي حقيقية من ملاك تم التحقق منهم متاحة للشراكة مع بيانات تفصيلية كافية لاتخاذ قرار استثماري مدروس دون الحاجة للبحث التقليدي المكلف والمستهلك للوقت" },
         { icon: CircleDollarSign, title: "وفّر تكاليف الاستحواذ بالكامل", desc: "بدلاً من شراء الأرض بالكامل وتجميد رأس مالك ادخل في شراكة تطويرية واستثمر ميزانيتك كاملة في جودة التطوير والبناء والتسويق لتحقيق أفضل النتائج" },
-        { icon: ClipboardList, title: "طلبات منظمة وموثقة رقمياً", desc: "قدّم طلبات شراكة رسمية واضحة مع تحديد نوع التعاون المطلوب وكل طلب يُوثّق ويُتابع داخل المنصة بشكل منظم مع إشعارات فورية لكل تحديث" },
+        { icon: ClipboardList, title: "طلبات منظمة وموثقة رقمياً", desc: "قدّم طلبات شراكة رسمية واضحة مع تحديد نوع التعاون المطلوب وكل طلب يُوثّق ويُتابع داخل سينا بشكل منظم مع إشعارات فورية لكل تحديث" },
         { icon: Bolt, title: "متابعة شاملة حتى إتمام الصفقة", desc: "تابع جميع مراحل الصفقة من التفاوض والاجتماعات والمستندات والعقود حتى إتمام الشراكة بنجاح عبر لوحة تحكم واحدة متكاملة وسهلة الاستخدام" },
         { icon: Rocket, title: "تنفيذ مشاريع أكثر بنفس الميزانية", desc: "بدلاً من مشروع واحد يمكنك الدخول في عدة شراكات تطويرية وتنويع محفظتك العقارية وزيادة عدد مشاريعك سنوياً وتقليل المخاطر عبر التوزيع" },
-        { icon: BadgeCheck, title: "بناء سمعة مهنية قوية ومتنامية", desc: "كل مشروع ناجح تنفذه يُسجّل في ملفك على المنصة ويرفع تصنيفك المهني ويجذب لك فرص شراكة أفضل مع ملاك أراضي أكثر وأراضي أكبر" },
+        { icon: BadgeCheck, title: "بناء سمعة مهنية قوية ومتنامية", desc: "كل مشروع ناجح تنفذه يُسجّل في ملفك على سينا ويرفع تصنيفك المهني ويجذب لك فرص شراكة أفضل مع ملاك أراضي أكثر وأراضي أكبر" },
       ]
     : [
         { icon: MapPin, title: "Real Renewed Development Opportunities", desc: "Real lands from verified owners available for partnership with detailed sufficient data to make informed investment decisions without costly and time-consuming traditional searching" },
@@ -39,7 +39,7 @@ const PartnershipsDevelopers: React.FC = () => {
     ? [
         { num: "01", title: "أنشئ حسابك وتأهّل تلقائياً", desc: "سجّل كمطور عقاري وارفع السجل التجاري والتراخيص المطلوبة ويتم التحقق منك وتأهيلك تلقائياً خلال وقت قصير لتبدأ استكشاف الفرص" },
         { num: "02", title: "اكتشف فرصاً تطويرية حقيقية", desc: "تصفّح الأراضي المتاحة للشراكة مع بيانات تفصيلية عن الموقع والمساحة ونوع التطوير المطلوب لاتخاذ قرار استثماري مبني على معلومات حقيقية" },
-        { num: "03", title: "قدّم طلب شراكة رسمي ومنظم", desc: "اختر الفرصة المناسبة وقدّم طلب شراكة واضحاً يحدد نوع التعاون المطلوب ورؤيتك للمشروع ويصل مباشرة إلى المالك عبر المنصة" },
+        { num: "03", title: "قدّم طلب شراكة رسمي ومنظم", desc: "اختر الفرصة المناسبة وقدّم طلب شراكة واضحاً يحدد نوع التعاون المطلوب ورؤيتك للمشروع ويصل مباشرة إلى المالك عبر سينا" },
         { num: "04", title: "تابع الصفقة حتى إتمامها بنجاح", desc: "بعد قبول طلبك تابع كل مراحل التفاوض والاجتماعات والمستندات والعقود عبر لوحة تحكم واحدة حتى إتمام الشراكة وبدء التنفيذ" },
       ]
     : [
@@ -53,7 +53,7 @@ const PartnershipsDevelopers: React.FC = () => {
     ? [
         { icon: Briefcase, title: "وفّر رأس المال", desc: "بدلاً من شراء الأرض وتجميد رأس مالك ادخل في شراكة واستثمر ميزانيتك في جودة التطوير والبناء والتسويق" },
         { icon: Network, title: "وصول مباشر للفرص", desc: "لا تضيع وقتك في البحث التقليدي عن أراضي مناسبة بل تصفّح فرصاً حقيقية متاحة من ملاك يبحثون عن مطورين" },
-        { icon: Trophy, title: "سمعة تنمو مع كل مشروع", desc: "كل مشروع ناجح يُسجّل في ملفك على المنصة ويرفع تصنيفك ويجذب لك فرص شراكة أفضل مع ملاك أكثر" },
+        { icon: Trophy, title: "سمعة تنمو مع كل مشروع", desc: "كل مشروع ناجح يُسجّل في ملفك على سينا ويرفع تصنيفك ويجذب لك فرص شراكة أفضل مع ملاك أكثر" },
         { icon: Cpu, title: "أدوات رقمية متقدمة", desc: "لوحة تحكم شاملة لإدارة طلباتك ومتابعة صفقاتك وتوثيق كل مرحلة من مراحل الشراكة بكفاءة واحترافية" },
       ]
     : [
@@ -72,7 +72,7 @@ const PartnershipsDevelopers: React.FC = () => {
           ? "نفّذ مشاريع أكثر بتكلفة أقل مع وصول مباشر لأراضي مؤهلة وملاك يبحثون عن مطورين موثوقين عبر سينا للاستثمارات العقارية"
           : "Execute more projects at lower cost with direct access to qualified lands and owners seeking reliable developers through SINA platform"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1920&q=85&auto=format&fit=crop"
+        image="https://images.unsplash.com/photo-1590725140246-20acdee442be?w=1920&q=85&auto=format&fit=crop"
       />
 
       {/* Why Partnership for Developers */}
@@ -92,10 +92,8 @@ const PartnershipsDevelopers: React.FC = () => {
           <div className="grid sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
             {devAdvantages.map((item, i) => (
               <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#2B4C66]/25 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(43,76,102,0.25)] transition-all duration-500 hover:-translate-y-0.5">
-                <div className="flex gap-5">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-md shadow-[#2B4C66]/25 shrink-0">
-                    <item.icon className="w-5 h-5 text-white" strokeWidth={1.75} />
-                  </div>
+                <div className="flex items-start gap-5">
+                  <item.icon className="w-6 h-6 text-[#2B4C66] shrink-0 mt-0.5" strokeWidth={1.7} />
                   <div>
                     <h3 className="text-[16px] font-bold text-[#1E374B] mb-2 tracking-tight">{item.title}</h3>
                     <p className="text-[13px] text-slate-500 leading-[1.9]">{item.desc}</p>
@@ -113,7 +111,7 @@ const PartnershipsDevelopers: React.FC = () => {
         <div className="container relative">
           <div className="text-center mb-14 max-w-2xl mx-auto">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
-              {isAr ? "مميزات سينا للاستثمارات العقارية للمطورين" : "SINA Platform Features for Developers"}
+              {isAr ? "مميزات سينا للاستثمارات العقارية للمطورين" : "SINA Features for Developers"}
             </h2>
             <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
               {isAr
@@ -124,9 +122,7 @@ const PartnershipsDevelopers: React.FC = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
             {devFeatures.map((v, i) => (
               <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#2B4C66]/25 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(43,76,102,0.25)] transition-all duration-500 hover:-translate-y-1">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-md shadow-[#2B4C66]/25 mb-5">
-                  <v.icon className="w-5 h-5 text-white" strokeWidth={1.75} />
-                </div>
+                <v.icon className="w-6 h-6 text-[#2B4C66] mb-5" strokeWidth={1.7} />
                 <h3 className="text-[16px] font-bold text-[#1E374B] mb-2.5 tracking-tight">{v.title}</h3>
                 <p className="text-[13px] text-slate-500 leading-[1.9]">{v.desc}</p>
               </div>
@@ -167,9 +163,7 @@ const PartnershipsDevelopers: React.FC = () => {
         <div className="absolute -bottom-40 start-[-140px] w-[520px] h-[520px] rounded-full bg-[#2B4C66]/30 blur-3xl pointer-events-none" />
         <div className="container relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 ring-1 ring-white/15 backdrop-blur-sm mb-6">
-              <BarChart3 className="w-6 h-6 text-[#C2A86B]" strokeWidth={1.75} />
-            </div>
+            <BarChart3 className="w-8 h-8 text-[#C2A86B] mb-6 mx-auto" strokeWidth={1.7} />
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-5 tracking-tight leading-[1.1]">
               {isAr ? "ضاعف عدد مشاريعك سنوياً" : "Multiply Your Annual Projects"}
             </h2>
@@ -200,9 +194,7 @@ const PartnershipsDevelopers: React.FC = () => {
       <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white border-t border-slate-100 overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
         <div className="absolute -top-20 start-1/2 -translate-x-1/2 w-[520px] h-[420px] rounded-full bg-[#2B4C66]/[0.06] blur-3xl pointer-events-none" />
         <div className="container relative text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-lg shadow-[#2B4C66]/25 mb-6 mx-auto">
-            <Building2 className="w-6 h-6 text-white" strokeWidth={1.75} />
-          </div>
+          <Building2 className="w-8 h-8 text-[#2B4C66] mb-6 mx-auto" strokeWidth={1.7} />
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-4 tracking-tight leading-[1.1]">
             {isAr ? "ابدأ رحلتك كمطور عقاري الآن" : "Start Your Journey as a Developer Now"}
           </h2>

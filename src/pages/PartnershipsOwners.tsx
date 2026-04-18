@@ -72,7 +72,7 @@ const PartnershipsOwners: React.FC = () => {
           ? "حوّل أرضك إلى مشروع استثماري مربح بعوائد مضاعفة مع حماية كاملة لحقوقك وخصوصيتك عبر سينا للاستثمارات العقارية الرقمية المحكومة"
           : "Transform your land into a profitable investment project with multiplied returns and complete protection of your rights and privacy through SINAs governed digital platform"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1920&q=85&auto=format&fit=crop"
+        image="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1920&q=85&auto=format&fit=crop"
       />
 
       {/* Why Partner as Owner */}
@@ -92,10 +92,8 @@ const PartnershipsOwners: React.FC = () => {
           <div className="grid sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
             {ownerAdvantages.map((item, i) => (
               <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C2A86B]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.3)] transition-all duration-500 hover:-translate-y-0.5">
-                <div className="flex gap-5">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#D7C084] to-[#A88A4A] shadow-md shadow-[#C2A86B]/25 shrink-0">
-                    <item.icon className="w-5 h-5 text-white" strokeWidth={1.75} />
-                  </div>
+                <div className="flex items-start gap-5">
+                  <item.icon className="w-6 h-6 text-[#A88A4A] shrink-0 mt-0.5" strokeWidth={1.7} />
                   <div>
                     <h3 className="text-[16px] font-bold text-[#1E374B] mb-2 tracking-tight">{item.title}</h3>
                     <p className="text-[13px] text-slate-500 leading-[1.9]">{item.desc}</p>
@@ -113,7 +111,7 @@ const PartnershipsOwners: React.FC = () => {
         <div className="container relative">
           <div className="text-center mb-14 max-w-2xl mx-auto">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
-              {isAr ? "مميزات سينا للاستثمارات العقارية لملاك الأراضي" : "SINA Platform Features for Landowners"}
+              {isAr ? "مميزات سينا للاستثمارات العقارية لملاك الأراضي" : "SINA Features for Landowners"}
             </h2>
             <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
               {isAr
@@ -124,9 +122,7 @@ const PartnershipsOwners: React.FC = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
             {ownerFeatures.map((v, i) => (
               <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C2A86B]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.25)] transition-all duration-500 hover:-translate-y-1">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#D7C084] to-[#A88A4A] shadow-md shadow-[#C2A86B]/25 mb-5">
-                  <v.icon className="w-5 h-5 text-white" strokeWidth={1.75} />
-                </div>
+                <v.icon className="w-6 h-6 text-[#A88A4A] mb-5" strokeWidth={1.7} />
                 <h3 className="text-[16px] font-bold text-[#1E374B] mb-2.5 tracking-tight">{v.title}</h3>
                 <p className="text-[13px] text-slate-500 leading-[1.9]">{v.desc}</p>
               </div>
@@ -276,9 +272,7 @@ const PartnershipsOwners: React.FC = () => {
       <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white border-t border-slate-100 overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
         <div className="absolute -top-20 start-1/2 -translate-x-1/2 w-[520px] h-[420px] rounded-full bg-[#C2A86B]/[0.08] blur-3xl pointer-events-none" />
         <div className="container relative text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D7C084] to-[#A88A4A] shadow-lg shadow-[#C2A86B]/30 mb-6 mx-auto">
-            <Landmark className="w-6 h-6 text-white" strokeWidth={1.75} />
-          </div>
+          <Landmark className="w-8 h-8 text-[#A88A4A] mb-6 mx-auto" strokeWidth={1.7} />
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-4 tracking-tight leading-[1.1]">
             {isAr ? "ابدأ رحلتك كمالك أرض الآن" : "Start Your Journey as a Landowner Now"}
           </h2>

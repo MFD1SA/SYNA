@@ -43,9 +43,7 @@ const HowItWorksSection: React.FC = () => {
               transition={{ duration: 0.8, delay: i * 0.1 }}
               className="group relative flex flex-col bg-primary p-16 transition-all hover:bg-white/[0.03]"
             >
-              <div className="mb-12 flex h-20 w-20 items-center justify-center border border-white/10 bg-white/5 text-accent transition-all duration-700 group-hover:border-accent group-hover:bg-accent group-hover:text-primary rounded-none">
-                <step.icon className="h-8 w-8" strokeWidth={1} />
-              </div>
+              <step.icon className="mb-12 h-8 w-8 text-accent transition-colors duration-700" strokeWidth={1.7} />
 
               <h3 className="mb-6 text-[11px] font-bold uppercase tracking-[0.3em] text-white transition-colors">
                 {isAr ? step.titleAr : step.titleEn}

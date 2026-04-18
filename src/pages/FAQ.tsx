@@ -28,7 +28,7 @@ const FAQ: React.FC = () => {
           ? "إجابات واضحة ومفصلة على أكثر الأسئلة شيوعاً حول سينا للاستثمارات العقارية وشراكات التطوير العقاري"
           : "Clear and detailed answers to the most frequently asked questions about SINA platform and real estate development partnerships"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1920&q=85&auto=format&fit=crop"
+        image="https://images.unsplash.com/photo-1553484771-689277e6fa16?w=1920&q=85&auto=format&fit=crop"
       />
 
       {/* Stats bar */}
@@ -46,9 +46,7 @@ const FAQ: React.FC = () => {
             </div>
             <div className="w-px h-10 bg-gradient-to-b from-transparent via-slate-200 to-transparent" />
             <div>
-              <div className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-md shadow-[#2B4C66]/20 mx-auto">
-                <HelpCircle className="w-5 h-5 text-white" strokeWidth={1.75} />
-              </div>
+              <HelpCircle className="w-6 h-6 text-[#2B4C66] mx-auto" strokeWidth={1.7} />
               <p className="text-[12px] text-slate-500 mt-1">{isAr ? "إجابات مفصلة" : "Detailed Answers"}</p>
             </div>
           </div>

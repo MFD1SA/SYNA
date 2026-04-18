@@ -31,7 +31,6 @@ const Partnerships = lazy(() => import("./pages/Partnerships"));
 const PartnershipsOwners = lazy(() => import("./pages/PartnershipsOwners"));
 const PartnershipsDevelopers = lazy(() => import("./pages/PartnershipsDevelopers"));
 const BlogPage = lazy(() => import("./pages/Blog"));
-const Opportunities = lazy(() => import("./pages/Opportunities"));
 const OpportunityDetail = lazy(() => import("./pages/OpportunityDetail"));
 const OffersPage = lazy(() => import("./pages/OffersPage"));
 const OfferDetailPage = lazy(() => import("./pages/OfferDetailPage"));
@@ -185,7 +184,7 @@ const App: React.FC = () => (
                   <Route path="/partnerships/developers" element={<PartnershipsDevelopers />} />
                   <Route path="/blog" element={<BlogPage />} />
                   {/* /for-investors removed — system is owner + developer only */}
-                  <Route path="/opportunities" element={<Opportunities />} />
+                  <Route path="/opportunities" element={<Navigate to="/offers" replace />} />
                   <Route path="/opportunity/:id" element={<OpportunityDetail />} />
                   <Route path="/offers" element={<OffersPage />} />
                   <Route path="/offers/:id" element={<OfferDetailPage />} />

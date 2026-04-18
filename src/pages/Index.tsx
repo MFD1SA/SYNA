@@ -118,9 +118,7 @@ const FAQBanner: React.FC<{ isAr: boolean }> = ({ isAr }) => {
       <div className="container">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-sina-blue/10 flex items-center justify-center">
-              <HelpCircle className="w-6 h-6 text-sina-blue" strokeWidth={1.5} />
-            </div>
+            <HelpCircle className="w-7 h-7 text-sina-blue" strokeWidth={1.7} />
             <div>
               <h3 className="text-[18px] font-bold text-sina-charcoal">
                 {isAr ? "لديك أسئلة؟" : "Have Questions?"}

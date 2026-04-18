@@ -26,14 +26,14 @@ const ForOwners: React.FC = () => {
     ? [
         { num: "01", title: "سجّل أرضك", desc: "أدخل بيانات أرضك الأساسية بخصوصية تامة — لن يطلع عليها أحد إلا بعد موافقتك الصريحة." },
         { num: "02", title: "استقبل طلبات الشراكة", desc: "يتصفح المطورون المؤهّلون الفرص ويقدّمون طلبات رسمية — وأنت تختار من تقبل." },
-        { num: "03", title: "تابع المراحل", desc: "تابع كل مرحلة من الاجتماعات والمستندات والتفاوض داخل المنصة بشفافية كاملة." },
-        { num: "04", title: "أغلق الشراكة", desc: "عند اكتمال الاتفاق، يتم توثيق الشراكة وإغلاقها رسمياً عبر المنصة." },
+        { num: "03", title: "تابع المراحل", desc: "تابع كل مرحلة من الاجتماعات والمستندات والتفاوض داخل سينا بشفافية كاملة." },
+        { num: "04", title: "أغلق الشراكة", desc: "عند اكتمال الاتفاق، يتم توثيق الشراكة وإغلاقها رسمياً عبر سينا." },
       ]
     : [
         { num: "01", title: "Register Your Land", desc: "Enter your land's basic information privately — no one sees it without your explicit approval." },
         { num: "02", title: "Receive Partnership Requests", desc: "Qualified developers browse opportunities and submit formal requests — you choose whom to accept." },
-        { num: "03", title: "Track Progress", desc: "Follow every stage from meetings and documents to negotiation inside the platform with full transparency." },
-        { num: "04", title: "Close the Partnership", desc: "When the agreement is complete, the partnership is documented and officially closed via the platform." },
+        { num: "03", title: "Track Progress", desc: "Follow every stage from meetings and documents to negotiation inside SINA with full transparency." },
+        { num: "04", title: "Close the Partnership", desc: "When the agreement is complete, the partnership is documented and officially closed via SINA." },
       ];
 
   return (

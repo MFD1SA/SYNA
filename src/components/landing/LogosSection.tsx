@@ -56,9 +56,7 @@ const LogosSection: React.FC = () => {
                 transition={{ duration: 0.5, delay: idx * 0.08 }}
                 className="group flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-8 text-center shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
-                  <Icon className="h-5 w-5" strokeWidth={1.5} />
-                </div>
+                <Icon className="h-7 w-7 text-primary transition-colors duration-300 group-hover:text-accent" strokeWidth={1.7} />
                 <span className="text-base font-medium text-foreground">{sector.name}</span>
                 <span className="text-xs font-light leading-relaxed text-muted-foreground">{sector.desc}</span>
               </motion.div>

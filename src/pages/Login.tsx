@@ -3,7 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useSearchParams } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, HardHat, Crown, ShieldCheck, MapPin, FileCheck, BarChart3, MessageCircle } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, Building2, Crown, ShieldCheck, MapPin, FileCheck, BarChart3, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { notifyLocalAuthChange } from "@/contexts/AuthContext";
 import logoImg from "@/assets/logo.png";
@@ -126,7 +126,7 @@ const LoginPage: React.FC = () => {
           ) : (
             <>
               <h2 className="text-[22px] font-bold text-white/90 leading-relaxed mb-4">
-                {isAr ? "منصة متكاملة لإدارة المشاريع العقارية" : "An integrated platform for real estate management"}
+                {isAr ? "سينا لإدارة المشاريع العقارية" : "An integrated platform for real estate management"}
               </h2>
               <p className="text-[14px] text-white/40 leading-relaxed">
                 {isAr
@@ -172,7 +172,7 @@ const LoginPage: React.FC = () => {
             <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full font-bold text-[12px] tracking-wide text-[#2B4C66]">
               {isOwnerMode
                 ? <Crown className="h-4.5 w-4.5" strokeWidth={1.5} />
-                : <HardHat className="h-4.5 w-4.5" strokeWidth={1.5} />
+                : <Building2 className="h-4.5 w-4.5" strokeWidth={1.5} />
               }
               <span>
                 {isOwnerMode
@@ -191,7 +191,7 @@ const LoginPage: React.FC = () => {
             <p className="text-[14px] text-gray-400 leading-relaxed max-w-[320px] mx-auto">
               {isOwnerMode
                 ? (isAr ? "سجّل دخولك لإدارة أراضيك ومتابعة طلبات الشراكة" : "Sign in to manage your lands and track partnership requests")
-                : (isAr ? "منصة متكاملة لإدارة المشاريع العقارية بكفاءة" : "An integrated platform for efficient real estate project management")
+                : (isAr ? "سينا لإدارة المشاريع العقارية بكفاءة" : "An integrated platform for efficient real estate project management")
               }
             </p>
           </div>

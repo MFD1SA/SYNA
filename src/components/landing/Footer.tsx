@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
 
   const stakeholderLinks = [
     { to: "/how-it-works", label: isAr ? "كيف تعمل سينا" : "How It Works" },
-    { to: "/opportunities", label: isAr ? "الفرص" : "Opportunities" },
+    { to: "/offers", label: isAr ? "العروض العقارية" : "Real Estate Offers" },
     { to: "/faq", label: isAr ? "الأسئلة الشائعة" : "FAQ" },
   ];
 
