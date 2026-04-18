@@ -64,7 +64,11 @@
       "Bash(node -e \"try { require\\('jimp'\\); console.log\\('jimp: OK'\\); } catch\\(e\\) { console.log\\('jimp: NO'\\); } try { const r = require\\('puppeteer'\\); console.log\\('puppeteer: OK'\\); } catch\\(e\\) { console.log\\('puppeteer: NO'\\); }\")",
       "Bash(node scripts/build-og-image.mjs)",
       "Bash(curl -sI https://cidoma.com/og-image.png)",
-      "Bash(curl -s https://cidoma.com/)"
+      "Bash(curl -s https://cidoma.com/)",
+      "Bash(node -e \"const fs=require\\('fs'\\); console.log\\('email:',fs.readFileSync\\('supabase/functions/_shared/email.ts','utf8'\\).length,'notif:',fs.readFileSync\\('supabase/functions/_shared/notifications.ts','utf8'\\).length,'contact:',fs.readFileSync\\('supabase/functions/send-contact/index.ts','utf8'\\).length,'newopp:',fs.readFileSync\\('supabase/functions/notify-new-opportunity/index.ts','utf8'\\).length,'interest:',fs.readFileSync\\('supabase/functions/notify-interest/index.ts','utf8'\\).length\\);\")",
+      "Bash(node -e \"const fs=require\\('fs'\\);const files=['supabase/functions/_shared/email.ts','supabase/functions/_shared/notifications.ts','supabase/functions/send-contact/index.ts','supabase/functions/notify-new-opportunity/index.ts','supabase/functions/notify-interest/index.ts'];const out={};for\\(const f of files\\){out[f]=fs.readFileSync\\(f,'utf8'\\);}fs.writeFileSync\\('/tmp/edge-bundle.json',JSON.stringify\\(out\\)\\);console.log\\('ok',Object.keys\\(out\\).length\\);\")",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const arr=JSON.parse\\(d\\);console.log\\('files:',arr.length,'sample keys:',arr.map\\(a=>a.name\\).join\\(','\\)\\);}\\);\")"
     ]
   }
 }

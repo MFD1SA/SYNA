@@ -117,16 +117,29 @@ const OwnerLands: React.FC = () => {
     };
 
     let error;
+    let newLandId: string | null = null;
     if (editingId) {
       ({ error } = await supabase.from("lands").update(payload).eq("id", editingId));
     } else {
-      ({ error } = await supabase.from("lands").insert(payload));
+      const { data: inserted, error: insErr } = await supabase
+        .from("lands")
+        .insert(payload)
+        .select("id")
+        .single();
+      error = insErr;
+      newLandId = inserted?.id ?? null;
     }
 
     if (error) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
     } else {
       toast({ title: isAr ? (editingId ? "تم التحديث" : "تم إدراج الأرض بنجاح") : (editingId ? "Updated" : "Land submitted successfully") });
+      // Fanout to all verified developers when a brand-new opportunity is submitted.
+      if (!editingId && newLandId && payload.submission_status === "submitted") {
+        supabase.functions
+          .invoke("notify-new-opportunity", { body: { land_id: newLandId } })
+          .catch((e) => console.error("notify-new-opportunity failed", e));
+      }
       closeDialog();
       fetchLands();
     }

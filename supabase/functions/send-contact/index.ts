@@ -1,41 +1,29 @@
+// Public "Contact Us" endpoint.
+// - Stores the submission in contact_submissions (best-effort)
+// - Creates an in-app notification for the admin recipient (if registered)
+// - Sends a luxury RTL Resend email to the admin inbox
+// - Accepts reply_to = submitter's email so admin can reply directly
+//
+// CORS is locked to cidoma.com + subdomains.
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  ADMIN_EMAIL,
+  buildCorsHeaders,
+  esc,
+  renderLuxuryEmail,
+  sendEmail,
+  SITE_URL,
+} from "../_shared/email.ts";
+import { createNotification } from "../_shared/notifications.ts";
 
-const publicSiteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://cidoma.com";
-const allowedRootDomain = (Deno.env.get("ALLOWED_ROOT_DOMAIN") ?? "cidoma.com").toLowerCase();
-
-const isAllowedOrigin = (origin: string | null) => {
-  if (!origin) return false;
-  try {
-    const url = new URL(origin);
-    const hostname = url.hostname.toLowerCase();
-    return hostname === allowedRootDomain || hostname.endsWith(`.${allowedRootDomain}`);
-  } catch {
-    return false;
-  }
-};
-
-const resolveSafeOrigin = (origin: string | null) => {
-  if (isAllowedOrigin(origin)) return origin!;
-  return publicSiteUrl;
-};
-
-const buildCorsHeaders = (origin: string | null) => ({
-  "Access-Control-Allow-Origin": resolveSafeOrigin(origin),
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  Vary: "Origin",
-});
-
-const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") ?? "";
-if (!ADMIN_EMAIL) {
-  console.error("ADMIN_EMAIL env var is not configured");
-}
-
-function escapeHtml(str: string | undefined | null): string {
-  if (!str) return "";
-  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+interface ContactPayload {
+  name?: string;
+  email?: string;
+  phone?: string;
+  subject?: string;
+  message?: string;
 }
 
 serve(async (req) => {
@@ -43,74 +31,123 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
+  }
 
   try {
-    const { name, email, subject, message } = await req.json();
+    const body = (await req.json()) as ContactPayload;
+    const name = String(body.name ?? "").trim();
+    const email = String(body.email ?? "").trim();
+    const phone = String(body.phone ?? "").trim();
+    const subject = String(body.subject ?? "").trim();
+    const message = String(body.message ?? "").trim();
 
     if (!name || !email || !message) {
-      return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    if (String(name).length > 200 || String(email).length > 254 || String(subject || "").length > 500 || String(message).length > 5000) {
-      return new Response(
-        JSON.stringify({ error: "Input exceeds maximum length" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    const { error: dbError } = await supabase.from("contact_submissions").insert({
-      name, email, subject: subject || null, message,
-    });
-    if (dbError) console.error("DB error:", dbError);
-
-    // Send email via Resend API
-    const rawKey = Deno.env.get("RESEND_API_KEY") || "";
-    const resendApiKey = rawKey.replace(/[^\x20-\x7E]/g, "").trim();
-    if (resendApiKey) {
-      const emailRes = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: new Headers([
-          ["Authorization", "Bearer " + resendApiKey],
-          ["Content-Type", "application/json"],
-        ]),
-        body: JSON.stringify({
-          from: "SYNA Contact <onboarding@resend.dev>",
-          to: [ADMIN_EMAIL],
-          subject: `New message from ${escapeHtml(name)}: ${escapeHtml(subject) || "No subject"}`,
-          html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;direction:rtl">
-            <h2 style="color:#1a6fb5">SYNA - New Contact Message</h2>
-            <table style="width:100%;border-collapse:collapse;margin-top:16px">
-              <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #eee">Name:</td><td style="padding:8px;border-bottom:1px solid #eee">${escapeHtml(name)}</td></tr>
-              <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #eee">Email:</td><td style="padding:8px;border-bottom:1px solid #eee">${escapeHtml(email)}</td></tr>
-              <tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #eee">Subject:</td><td style="padding:8px;border-bottom:1px solid #eee">${escapeHtml(subject) || "—"}</td></tr>
-              <tr><td style="padding:8px;font-weight:bold">Message:</td><td style="padding:8px">${escapeHtml(message)}</td></tr>
-            </table></div>`,
-        }),
+      return new Response(JSON.stringify({ error: "Missing required fields" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
-      const emailData = await emailRes.json();
-      if (!emailRes.ok) {
-        console.error("Email error:", emailData);
-      } else {
-        console.log("Email sent successfully to", ADMIN_EMAIL);
-      }
+    }
+    if (name.length > 200 || email.length > 254 || subject.length > 500 || message.length > 5000 || phone.length > 40) {
+      return new Response(JSON.stringify({ error: "Input exceeds maximum length" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return new Response(JSON.stringify({ error: "Invalid email" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
-    return new Response(
-      JSON.stringify({ success: true }),
-      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    // Best-effort persistence
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      { auth: { persistSession: false } },
     );
-  } catch (error) {
-    console.error("send-contact error:", error);
+    try {
+      await supabase.from("contact_submissions").insert({
+        name,
+        email,
+        subject: subject || null,
+        message,
+        phone: phone || null,
+      } as Record<string, unknown>);
+    } catch (e) {
+      console.error("[send-contact] DB insert failed (non-fatal)", e);
+    }
+
+    // In-app notification for admin (if the admin has a matching auth user)
+    try {
+      const { data: adminUser } = await supabase
+        .from("profiles")
+        .select("user_id")
+        .eq("email", ADMIN_EMAIL)
+        .maybeSingle();
+      if (adminUser?.user_id) {
+        await createNotification({
+          userId: adminUser.user_id,
+          type: "contact",
+          titleAr: "رسالة جديدة من نموذج اتصل بنا",
+          titleEn: "New contact form message",
+          messageAr: `${name} أرسل رسالة${subject ? ` بعنوان: ${subject}` : ""}`,
+          messageEn: `${name} sent a message${subject ? ` — ${subject}` : ""}`,
+          entityType: "contact_submission",
+        });
+      }
+    } catch (e) {
+      console.error("[send-contact] notification failed (non-fatal)", e);
+    }
+
+    // Luxury RTL email
+    const rows = [
+      { label: "الاسم", value: name },
+      { label: "الجوال", value: phone || "—" },
+      { label: "البريد", value: email },
+      ...(subject ? [{ label: "الموضوع", value: subject }] : []),
+      { label: "الرسالة", value: message, block: true },
+    ];
+
+    const html = renderLuxuryEmail({
+      eyebrow: "نموذج التواصل",
+      headline: "رسالة جديدة من نموذج اتصل بنا",
+      intro: "تم استلام رسالة جديدة عبر موقع سينا. التفاصيل الكاملة أدناه — يمكنك الرد مباشرة على هذا البريد للتواصل مع العميل.",
+      rows,
+      cta: { label: "الردّ على العميل", url: `mailto:${email}` },
+      outro: `البريد المرسِل: ${esc(email)}`,
+    });
+
+    const result = await sendEmail({
+      to: ADMIN_EMAIL,
+      subject: "رسالة جديدة من نموذج اتصل بنا",
+      html,
+      replyTo: email,
+    });
+
+    if (!result.ok) {
+      console.error("[send-contact] email send failed", result.error);
+      return new Response(
+        JSON.stringify({ success: false, error: "Email delivery failed" }),
+        { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } },
+      );
+    }
+
+    return new Response(JSON.stringify({ success: true, id: result.id }), {
+      status: 200,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[send-contact] fatal", msg);
     return new Response(
       JSON.stringify({ error: "Failed to process contact request" }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );
   }
 });

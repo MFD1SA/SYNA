@@ -118,7 +118,7 @@ const CrmBrowseLands: React.FC = () => {
     // Get the land info for notification
     const targetLand = lands.find(l => l.id === requestDialog);
 
-    const { error } = await supabase.from("deal_requests").insert({
+    const { data: insertedReq, error } = await supabase.from("deal_requests").insert({
       developer_id: developerId,
       land_id: requestDialog,
       proposal_summary: requestForm.proposal_summary,
@@ -129,13 +129,20 @@ const CrmBrowseLands: React.FC = () => {
       // Matches PLATFORM_TOTAL_RATE in LandFormConstants and the signed agreement v2.0.
       commission_rate: 4.00,
       proposal_link: requestForm.google_drive_link || null,
-    } as any);
+    } as any).select("id").single();
     if (error) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
     } else {
       toast({ title: isAr ? "تم إرسال الطلب بنجاح" : "Request submitted successfully" });
-      
-      // Send email notification to land owner
+
+      // Primary: unified owner-facing notification (Resend email + in-app row).
+      if (insertedReq?.id) {
+        supabase.functions
+          .invoke("notify-interest", { body: { deal_request_id: insertedReq.id } })
+          .catch((e) => console.error("notify-interest failed", e));
+      }
+
+      // Legacy secondary path (kept for existing deal-notification pipeline).
       try {
         // Get developer info
         const { data: devInfo } = await supabase.from("developers").select("company_name, email").eq("id", developerId).maybeSingle();
