@@ -27,28 +27,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session from whatever storage the supabase client is using
-    // (localStorage for normal tabs, sessionStorage for impersonation tabs).
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    let cancelled = false;
 
-    // Listen for auth changes — straightforward now that impersonation
-    // no longer contaminates the admin's storage.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT" && !session) {
+    // Initial session load with retry for transient network failures.
+    const loadSession = async (attempt = 0): Promise<void> => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (cancelled) return;
+        if (error && attempt < 2) {
+          // Back off and retry for recoverable errors
+          await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+          return loadSession(attempt + 1);
+        }
+        setSession(data.session);
+        setUser(data.session?.user ?? null);
+        setLoading(false);
+      } catch {
+        if (cancelled) return;
+        if (attempt < 2) {
+          await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+          return loadSession(attempt + 1);
+        }
+        setLoading(false);
+      }
+    };
+    loadSession();
+
+    // Handle TOKEN_REFRESHED + SIGNED_IN + SIGNED_OUT correctly.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (cancelled) return;
+      if (event === "SIGNED_OUT" || !newSession) {
         setSession(null);
         setUser(null);
-      } else if (session) {
-        setSession(session);
-        setUser(session.user);
+      } else {
+        // SIGNED_IN, TOKEN_REFRESHED, USER_UPDATED — always reflect new state
+        setSession(newSession);
+        setUser(newSession.user);
       }
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {

@@ -239,6 +239,46 @@
     border-color: hsl(var(--border));
   }
 
+  /* Toast / Sonner notifications — force readable in dark */
+  .dark [data-sonner-toast] {
+    background-color: hsl(var(--popover)) !important;
+    color: hsl(var(--popover-foreground)) !important;
+    border-color: hsl(var(--border)) !important;
+  }
+
+  /* Radix Tabs underline + text — ensure visible active state */
+  .dark [data-state="active"][role="tab"] {
+    color: hsl(210 20% 96%) !important;
+  }
+  [data-state="active"][role="tab"] {
+    color: hsl(217 33% 14%);
+  }
+
+  /* Admin-Sidebar menu items — extra safety for dark */
+  [data-dashboard-root] aside a[aria-current="page"],
+  [data-dashboard-root] aside a.active {
+    color: inherit;
+  }
+
+  /* Charts (Recharts) tooltips readability in dark */
+  .dark .recharts-tooltip-wrapper .recharts-default-tooltip {
+    background-color: hsl(var(--popover)) !important;
+    border-color: hsl(var(--border)) !important;
+    color: hsl(var(--popover-foreground)) !important;
+  }
+
+  /* Any remaining icon-on-white-circle tiles — harmonize border in dark */
+  .dark [data-dashboard-root] .border-gray-100,
+  .dark [data-dashboard-root] .border-gray-200\/60,
+  .dark [data-dashboard-root] .border-gray-200\/80 {
+    border-color: hsl(215 20% 22%) !important;
+  }
+
+  /* Outline badges in dark should remain legible */
+  .dark [data-dashboard-root] .border-transparent.bg-white\/20 {
+    background-color: hsl(215 20% 22%) !important;
+  }
+
   * {
     @apply border-border outline-none;
     box-sizing: border-box;
