@@ -62,7 +62,9 @@
       "Bash(cp /tmp/c9807316-56dd-46da-b2fa-b10ac2c225e0.tmp \"/tmp/check2.webp\")",
       "Bash(node -e \"try { require\\('sharp'\\); console.log\\('sharp: OK'\\); } catch\\(e\\) { console.log\\('sharp: NO'\\); } try { const r = require\\('canvas'\\); console.log\\('canvas: OK'\\); } catch\\(e\\) { console.log\\('canvas: NO'\\); }\")",
       "Bash(node -e \"try { require\\('jimp'\\); console.log\\('jimp: OK'\\); } catch\\(e\\) { console.log\\('jimp: NO'\\); } try { const r = require\\('puppeteer'\\); console.log\\('puppeteer: OK'\\); } catch\\(e\\) { console.log\\('puppeteer: NO'\\); }\")",
-      "Bash(node scripts/build-og-image.mjs)"
+      "Bash(node scripts/build-og-image.mjs)",
+      "Bash(curl -sI https://cidoma.com/og-image.png)",
+      "Bash(curl -s https://cidoma.com/)"
     ]
   }
 }

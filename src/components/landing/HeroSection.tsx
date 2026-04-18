@@ -5,10 +5,11 @@ import { ArrowLeft, ArrowRight, Crown, Building2, ShieldCheck, CheckCircle2 } fr
 import heroHomeImg from "@/assets/hero-home.jpg";
 
 /**
- * Homepage hero — image is shown AS-IS:
- *   • No crop, no zoom, no filter, no overlay, no tint.
- *   • No DB fallback / no useHeroImage override.
- * Layout: split — copy on one side, image on the other (both visible in full).
+ * Homepage hero — attached image is used as the FULL BACKGROUND of the hero.
+ *   • Image covers the entire hero section (width + height).
+ *   • No crop beyond object-cover, no zoom, no filter, no color tint.
+ *   • A soft readability scrim is applied ONLY on the copy side so text stays legible
+ *     without altering the image itself.
  */
 const HeroSection: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -22,25 +23,45 @@ const HeroSection: React.FC = () => {
 
   return (
     <section
-      className="relative bg-[#0F1F2E] overflow-hidden"
+      className="relative bg-[#0F1F2E] overflow-hidden isolate"
       dir={isAr ? "rtl" : "ltr"}
     >
-      {/* Split layout: content + image. Image is displayed natively (no transform). */}
-      <div className="container relative z-10 grid lg:grid-cols-2 gap-10 lg:gap-14 items-center pt-24 md:pt-28 lg:pt-32 pb-14 md:pb-20 lg:pb-24">
-        {/* Copy column */}
-        <div className="order-2 lg:order-1">
-          <h1 className="text-[34px] sm:text-[42px] md:text-[54px] lg:text-[64px] font-bold text-white leading-[1.1] tracking-tight mb-5 md:mb-6">
+      {/* Full-bleed background image — covers the entire hero */}
+      <img
+        src={heroHomeImg}
+        alt="سينا للاستثمارات العقارية"
+        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
+        loading="eager"
+        fetchPriority="high"
+        draggable={false}
+      />
+
+      {/* Readability scrim — soft, side-anchored so the image is not darkened uniformly */}
+      <div
+        className={`absolute inset-0 pointer-events-none ${
+          isAr
+            ? "bg-gradient-to-l from-[#0F1F2E]/85 via-[#0F1F2E]/55 to-transparent"
+            : "bg-gradient-to-r from-[#0F1F2E]/85 via-[#0F1F2E]/55 to-transparent"
+        }`}
+      />
+      {/* Gentle bottom fade for section edge */}
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0F1F2E]/70 to-transparent pointer-events-none" />
+
+      {/* Content */}
+      <div className="container relative z-10 pt-28 md:pt-36 lg:pt-44 pb-20 md:pb-28 lg:pb-36 min-h-[calc(100vh-72px)] flex items-center">
+        <div className="max-w-2xl">
+          <h1 className="text-[34px] sm:text-[44px] md:text-[56px] lg:text-[66px] font-bold text-white leading-[1.1] tracking-tight mb-5 md:mb-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]">
             {t.hero.title}
           </h1>
 
-          <p className="text-[15px] sm:text-[16.5px] md:text-[18px] text-white/75 leading-[1.8] max-w-xl mt-5 md:mt-6">
+          <p className="text-[15px] sm:text-[16.5px] md:text-[18px] text-white/85 leading-[1.8] max-w-xl mt-5 md:mt-6 drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]">
             {t.hero.subtitle}
           </p>
 
           {/* Highlights */}
           <div className="mt-7 md:mt-9 flex flex-wrap gap-x-5 gap-y-2.5">
             {highlights.map((h, i) => (
-              <div key={i} className="flex items-center gap-2 text-[12.5px] md:text-[13px] text-white/80">
+              <div key={i} className="flex items-center gap-2 text-[12.5px] md:text-[13px] text-white/90">
                 <CheckCircle2 className="w-4 h-4 text-[#D7C084] shrink-0" strokeWidth={2} />
                 <span className="font-medium">{h}</span>
               </div>
@@ -60,7 +81,7 @@ const HeroSection: React.FC = () => {
 
             <button
               onClick={() => navigate("/auth/login")}
-              className="group inline-flex items-center justify-center gap-2.5 h-[54px] px-7 bg-white/[0.06] border border-white/20 text-white text-[14px] font-bold rounded-xl backdrop-blur-sm hover:bg-white/[0.12] hover:border-white/35 hover:-translate-y-0.5 transition-all duration-300"
+              className="group inline-flex items-center justify-center gap-2.5 h-[54px] px-7 bg-white/[0.08] border border-white/25 text-white text-[14px] font-bold rounded-xl backdrop-blur-md hover:bg-white/[0.14] hover:border-white/40 hover:-translate-y-0.5 transition-all duration-300"
             >
               <Building2 className="w-4 h-4 text-[#D7C084]" strokeWidth={2} />
               {isAr ? "دخول المطورين" : "Developer Login"}
@@ -69,7 +90,7 @@ const HeroSection: React.FC = () => {
           </div>
 
           {/* Trust */}
-          <div className="mt-8 md:mt-10 flex items-start gap-2 text-[11.5px] md:text-[12.5px] text-white/55 leading-relaxed">
+          <div className="mt-8 md:mt-10 flex items-start gap-2 text-[11.5px] md:text-[12.5px] text-white/70 leading-relaxed">
             <ShieldCheck className="w-4 h-4 text-[#D7C084] shrink-0 mt-0.5" strokeWidth={1.8} />
             <span>
               {isAr
@@ -77,17 +98,6 @@ const HeroSection: React.FC = () => {
                 : "Licensed by REGA • Compliant with Saudi data protection laws"}
             </span>
           </div>
-        </div>
-
-        {/* Image column — rendered exactly as delivered: no filter / crop / zoom / overlay. */}
-        <div className="order-1 lg:order-2">
-          <img
-            src={heroHomeImg}
-            alt="سينا للاستثمارات العقارية"
-            className="block w-full h-auto rounded-2xl"
-            loading="eager"
-            fetchPriority="high"
-          />
         </div>
       </div>
     </section>
