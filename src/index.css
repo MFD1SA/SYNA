@@ -210,6 +210,35 @@
     color: hsl(215 15% 60%);
   }
 
+  /* Dark mode: headings were often hard-coded in brand blue which becomes
+     muddy against a dark card. Dashboard headings → force near-white. */
+  .dark [data-dashboard-root] h1,
+  .dark [data-dashboard-root] h2,
+  .dark [data-dashboard-root] h3,
+  .dark [data-dashboard-root] h4,
+  .dark [data-dashboard-root] h5,
+  .dark [data-dashboard-root] h6 {
+    color: hsl(210 20% 96%);
+  }
+
+  /* Dark mode: table cells + row text contrast */
+  .dark [data-dashboard-root] table thead {
+    background-color: hsl(215 25% 15%) !important;
+    color: hsl(215 15% 72%) !important;
+  }
+  .dark [data-dashboard-root] table tbody tr:hover {
+    background-color: hsl(215 25% 17%) !important;
+  }
+
+  /* Shadcn Select / Popover / Dialog panels in dark — force dark surface */
+  .dark [role="listbox"],
+  .dark [role="dialog"],
+  .dark [role="menu"] {
+    background-color: hsl(var(--popover)) !important;
+    color: hsl(var(--popover-foreground));
+    border-color: hsl(var(--border));
+  }
+
   * {
     @apply border-border outline-none;
     box-sizing: border-box;
