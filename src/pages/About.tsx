@@ -7,7 +7,6 @@ import CTASection from "@/components/landing/CTASection";
 import {
   ScanEye, ShieldCheck, Trophy, Lightbulb, Target, Scale, Cpu, Lock,
 } from "lucide-react";
-import headerAboutImg from "@/assets/header-about.jpg";
 
 const About: React.FC = () => {
   const { lang } = useLanguage();
@@ -51,7 +50,7 @@ const About: React.FC = () => {
           ? "منصة رقمية سعودية تعيد تعريف مستقبل الشراكات التطويرية العقارية بحوكمة متكاملة وتقنية متقدمة"
           : "A Saudi digital platform redefining the future of real estate development partnerships with integrated governance and advanced technology"}
         isAr={isAr}
-        image={headerAboutImg}
+        image="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=85&auto=format&fit=crop"
       />
 
       {/* Who We Are */}

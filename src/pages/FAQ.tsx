@@ -5,7 +5,6 @@ import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import CTASection from "@/components/landing/CTASection";
 import { ChevronDown, HelpCircle, MessageCircle } from "lucide-react";
-import headerFaqImg from "@/assets/header-faq.jpg";
 
 const FAQ: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -29,7 +28,7 @@ const FAQ: React.FC = () => {
           ? "إجابات واضحة ومفصلة على أكثر الأسئلة شيوعاً حول سينا للاستثمارات العقارية وشراكات التطوير العقاري"
           : "Clear and detailed answers to the most frequently asked questions about SINA platform and real estate development partnerships"}
         isAr={isAr}
-        image={headerFaqImg}
+        image="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1920&q=85&auto=format&fit=crop"
       />
 
       {/* Stats bar */}

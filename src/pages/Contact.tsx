@@ -4,7 +4,6 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import { Loader2, CheckCircle2, MessageCircle, Clock, ShieldCheck, Headphones, Send } from "lucide-react";
-import cityRiyadhImg from "@/assets/city-riyadh.jpg";
 import { supabase } from "@/integrations/supabase/client";
 
 const Contact: React.FC = () => {
@@ -56,7 +55,7 @@ const Contact: React.FC = () => {
           ? "فريقنا جاهز لمساعدتك سواء كنت مالك أرض تبحث عن شريك تطوير أو مطوراً عقارياً يبحث عن فرص حقيقية"
           : "Our team is ready to help whether youre a landowner seeking a development partner or a developer looking for real opportunities"}
         isAr={isAr}
-        image={cityRiyadhImg}
+        image="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1920&q=85&auto=format&fit=crop"
       />
 
       {/* Why Contact Us */}

@@ -9,7 +9,6 @@ import {
   Eye, Target, ArrowLeft, ArrowRight, BadgeCheck,
   Landmark, Crown, Gem, Fingerprint, Scale,
 } from "lucide-react";
-import headerPartnershipsImg from "@/assets/header-partnerships.jpg";
 
 const PartnershipsOwners: React.FC = () => {
   const { lang } = useLanguage();
@@ -22,8 +21,8 @@ const PartnershipsOwners: React.FC = () => {
     ? [
         { icon: LockKeyhole, title: "خصوصية لا تُخترق", desc: "بيانات أرضك محمية بنظام إفصاح متدرج حيث لا يطلع على أي معلومة أي طرف إلا بعد موافقتك الشخصية الصريحة في كل مرحلة من مراحل التفاوض" },
         { icon: TrendingUp, title: "عوائد أعلى بكثير من البيع", desc: "الشراكة التطويرية تمنحك نسبة من القيمة الكاملة للمشروع بعد التطوير وليس فقط سعر الأرض الخام مما يعني عوائد قد تصل إلى ثلاثة أضعاف البيع المباشر أو أكثر" },
-        { icon: ShieldCheck, title: "حماية قانونية شاملة", desc: "جميع الاتفاقيات توثّق رسمياً عبر المنصة بعقود واضحة ومحكمة تحفظ حقوقك من بداية التفاوض حتى إتمام المشروع وتسليم الأرباح" },
-        { icon: Settings2, title: "تحكم كامل بقراراتك", desc: "أنت صاحب القرار في كل خطوة فأنت من يقبل أو يرفض أي طلب وأنت من يحدد الشروط والمنصة تسهّل لك العملية دون فرض أي شيء عليك" },
+        { icon: ShieldCheck, title: "حماية قانونية شاملة", desc: "جميع الاتفاقيات توثّق رسمياً عبر سينا بعقود واضحة ومحكمة تحفظ حقوقك من بداية التفاوض حتى إتمام المشروع وتسليم الأرباح" },
+        { icon: Settings2, title: "تحكم كامل بقراراتك", desc: "أنت صاحب القرار في كل خطوة فأنت من يقبل أو يرفض أي طلب وأنت من يحدد الشروط وسينا تسهّل لك العملية دون فرض أي شيء عليك" },
         { icon: Eye, title: "متابعة شفافة لكل خطوة", desc: "لوحة تحكم متكاملة تعرض لك حالة شراكتك ومراحلها وكل التحديثات بشكل فوري من الاجتماعات والمستندات والتفاوض حتى إتمام الشراكة" },
         { icon: Target, title: "مطورون مؤهلون ومتحقق منهم", desc: "كل مطور يتقدم لأرضك مرّ بعملية تحقق شاملة تشمل السجل التجاري والتراخيص وسجل المشاريع السابقة والتقييمات لضمان جدية وكفاءة الشريك" },
       ]
@@ -73,7 +72,7 @@ const PartnershipsOwners: React.FC = () => {
           ? "حوّل أرضك إلى مشروع استثماري مربح بعوائد مضاعفة مع حماية كاملة لحقوقك وخصوصيتك عبر سينا للاستثمارات العقارية الرقمية المحكومة"
           : "Transform your land into a profitable investment project with multiplied returns and complete protection of your rights and privacy through SINAs governed digital platform"}
         isAr={isAr}
-        image={headerPartnershipsImg}
+        image="https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1920&q=85&auto=format&fit=crop"
       />
 
       {/* Why Partner as Owner */}

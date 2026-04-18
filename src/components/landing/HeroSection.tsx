@@ -5,18 +5,15 @@ import {
   ArrowLeft, ArrowRight, Crown, HardHat, ShieldCheck,
   CheckCircle2, TrendingUp, Users,
 } from "lucide-react";
-import cityRiyadhImg from "@/assets/city-riyadh.jpg";
+import heroHomeImg from "@/assets/hero-home.jpg";
 import { getHeroImage } from "@/services/siteSettings.service";
-import { useHeroImage } from "@/hooks/useHeroImage";
 
 const HeroSection: React.FC = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
   const navigate = useNavigate();
   const Arrow = isAr ? ArrowLeft : ArrowRight;
-  const [bgImage, setBgImage] = useState<string>(cityRiyadhImg);
-
-  const { heroImage: dynamicHero } = useHeroImage("home");
+  const [bgImage, setBgImage] = useState<string>(heroHomeImg);
 
   useEffect(() => {
     getHeroImage().then((img) => {
@@ -24,7 +21,7 @@ const HeroSection: React.FC = () => {
     });
   }, []);
 
-  const resolvedBg = dynamicHero?.desktop || bgImage;
+  const resolvedBg = bgImage;
 
   const highlights = isAr
     ? ["حوكمة كاملة", "خصوصية محمية", "شفافية مطلقة"]
@@ -38,14 +35,11 @@ const HeroSection: React.FC = () => {
       {/* Background image */}
       <div className="absolute inset-0">
         <picture>
-          {dynamicHero?.mobile && (
-            <source media="(max-width: 768px)" srcSet={dynamicHero.mobile} />
-          )}
           <img
             src={resolvedBg}
-            alt={isAr ? (dynamicHero?.alt_ar || "") : (dynamicHero?.alt_en || "")}
+            alt=""
             className="w-full h-full object-cover scale-105"
-            style={{ filter: "brightness(0.42) saturate(0.85)" }}
+            style={{ filter: "brightness(0.55) saturate(0.95)" }}
           />
         </picture>
         {/* Deep overlay gradient */}

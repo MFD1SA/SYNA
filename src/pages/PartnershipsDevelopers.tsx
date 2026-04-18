@@ -9,7 +9,6 @@ import {
   BadgeCheck, CircleDollarSign, Rocket, Building2,
   BarChart3, Briefcase, Network, Trophy, Cpu,
 } from "lucide-react";
-import headerPartnershipsImg from "@/assets/header-partnerships.jpg";
 
 const PartnershipsDevelopers: React.FC = () => {
   const { lang } = useLanguage();
@@ -73,7 +72,7 @@ const PartnershipsDevelopers: React.FC = () => {
           ? "نفّذ مشاريع أكثر بتكلفة أقل مع وصول مباشر لأراضي مؤهلة وملاك يبحثون عن مطورين موثوقين عبر سينا للاستثمارات العقارية"
           : "Execute more projects at lower cost with direct access to qualified lands and owners seeking reliable developers through SINA platform"}
         isAr={isAr}
-        image={headerPartnershipsImg}
+        image="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1920&q=85&auto=format&fit=crop"
       />
 
       {/* Why Partnership for Developers */}

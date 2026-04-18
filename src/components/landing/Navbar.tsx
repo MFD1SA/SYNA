@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Menu, X, Globe, KeyRound, ArrowUpRight,
+  Menu, X, Globe, ArrowUpRight,
   Home, Info, Handshake, Newspaper, MessageSquare, Crown, HardHat,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
@@ -45,7 +45,7 @@ const Navbar: React.FC = () => {
         className={`fixed top-0 start-0 end-0 z-50 transition-all duration-300 ${
           scrolled
             ? "bg-white/95 backdrop-blur-xl shadow-[0_2px_10px_-2px_rgba(15,31,46,0.06)] border-b border-gray-100/80"
-            : "bg-white/70 backdrop-blur-md border-b border-transparent"
+            : "bg-[#0F1F2E]/20 backdrop-blur-md border-b border-white/10"
         }`}
         dir={isAr ? "rtl" : "ltr"}
       >
@@ -58,8 +58,10 @@ const Navbar: React.FC = () => {
                 to={to}
                 className={`relative text-[13px] font-semibold px-3.5 py-2 rounded-xl transition-all duration-200 ${
                   location.pathname === to
-                    ? "text-[#1E374B]"
-                    : "text-gray-500 hover:text-[#1E374B] hover:bg-gray-50"
+                    ? scrolled ? "text-[#1E374B]" : "text-white"
+                    : scrolled
+                      ? "text-gray-500 hover:text-[#1E374B] hover:bg-gray-50"
+                      : "text-white/70 hover:text-white hover:bg-white/10"
                 }`}
               >
                 {label}
@@ -75,7 +77,9 @@ const Navbar: React.FC = () => {
             <img
               src={logoImg}
               alt="SINA"
-              className="h-8 md:h-10 w-auto object-contain"
+              className={`h-8 md:h-10 w-auto object-contain ${
+                scrolled ? "" : "drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)]"
+              }`}
             />
           </Link>
 
@@ -83,25 +87,35 @@ const Navbar: React.FC = () => {
           <div className="hidden lg:flex items-center gap-2 flex-1 justify-end">
             <button
               onClick={toggleLang}
-              className="inline-flex items-center gap-1.5 text-[12px] font-bold text-gray-500 hover:text-[#2B4C66] h-9 px-3 rounded-lg hover:bg-gray-50 transition-all"
+              className={`inline-flex items-center gap-1.5 text-[12px] font-bold h-9 px-3 rounded-lg transition-all ${
+                scrolled
+                  ? "text-gray-500 hover:text-[#2B4C66] hover:bg-gray-50"
+                  : "text-white/80 hover:text-white hover:bg-white/10"
+              }`}
             >
               <Globe className="w-3.5 h-3.5" strokeWidth={2} />
               {isAr ? "EN" : "ع"}
             </button>
 
-            <div className="w-px h-5 bg-gray-200" />
+            <div className={`w-px h-5 ${scrolled ? "bg-gray-200" : "bg-white/20"}`} />
 
             <Link
               to="/auth/login?type=owner"
-              className="group inline-flex items-center gap-1.5 text-[13px] font-semibold text-gray-600 hover:text-[#A88A4A] h-9 px-3.5 rounded-xl hover:bg-[#C2A86B]/5 transition-all"
+              className={`group inline-flex items-center gap-1.5 text-[13px] font-semibold h-9 px-3.5 rounded-xl transition-all ${
+                scrolled
+                  ? "text-gray-600 hover:text-[#A88A4A] hover:bg-[#C2A86B]/5"
+                  : "text-white hover:bg-[#C2A86B]/15"
+              }`}
             >
-              <Crown className="w-3.5 h-3.5 text-[#C2A86B]" strokeWidth={1.8} />
+              <Crown className={`w-3.5 h-3.5 ${scrolled ? "text-[#C2A86B]" : "text-[#D7C084]"}`} strokeWidth={1.8} />
               {isAr ? "دخول الملاك" : "Owner Login"}
             </Link>
 
             <Link
               to="/auth/login"
-              className="group inline-flex items-center gap-2 h-10 px-5 bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[13px] font-bold rounded-xl hover:shadow-[0_8px_24px_-8px_rgba(43,76,102,0.55)] hover:-translate-y-0.5 transition-all duration-300"
+              className={`group inline-flex items-center gap-2 h-10 px-5 bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[13px] font-bold rounded-xl hover:shadow-[0_8px_24px_-8px_rgba(43,76,102,0.55)] hover:-translate-y-0.5 transition-all duration-300 ${
+                scrolled ? "" : "ring-1 ring-white/20"
+              }`}
             >
               <HardHat className="w-3.5 h-3.5" strokeWidth={1.8} />
               {isAr ? "دخول المطورين" : "Developer Login"}
@@ -113,14 +127,22 @@ const Navbar: React.FC = () => {
           <div className="lg:hidden flex items-center gap-1">
             <button
               onClick={toggleLang}
-              className="inline-flex items-center gap-1 text-[11px] font-bold text-gray-500 hover:text-[#2B4C66] h-9 w-9 rounded-xl hover:bg-gray-100 transition-all justify-center"
+              className={`inline-flex items-center gap-1 text-[11px] font-bold h-9 w-9 rounded-xl transition-all justify-center ${
+                scrolled
+                  ? "text-gray-500 hover:text-[#2B4C66] hover:bg-gray-100"
+                  : "text-white/80 bg-white/10 hover:bg-white/20"
+              }`}
               aria-label="Toggle language"
             >
               <Globe className="w-4 h-4" strokeWidth={1.8} />
             </button>
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="inline-flex items-center justify-center h-9 w-9 rounded-xl bg-[#2B4C66]/5 hover:bg-[#2B4C66]/10 text-[#1E374B] transition-colors"
+              className={`inline-flex items-center justify-center h-9 w-9 rounded-xl transition-colors ${
+                scrolled
+                  ? "bg-[#2B4C66]/5 hover:bg-[#2B4C66]/10 text-[#1E374B]"
+                  : "bg-white/10 hover:bg-white/20 text-white/80"
+              }`}
               aria-label="Toggle menu"
             >
               {mobileOpen ? <X className="w-5 h-5" strokeWidth={2} /> : <Menu className="w-5 h-5" strokeWidth={2} />}

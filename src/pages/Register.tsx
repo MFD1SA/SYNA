@@ -256,7 +256,7 @@ const Register: React.FC = () => {
             </h2>
             <p className="text-[14px] text-gray-600 leading-relaxed mb-6">
               {isAr
-                ? "تم إنشاء حسابك بنجاح. يمكنك الآن تسجيل الدخول والبدء في استخدام المنصة."
+                ? "تم إنشاء حسابك بنجاح. يمكنك الآن تسجيل الدخول والبدء في استخدام سينا."
                 : "Your account has been created successfully. You can now sign in and start using the platform."}
             </p>
             <Link

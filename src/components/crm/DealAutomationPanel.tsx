@@ -127,7 +127,7 @@ const DealAutomationPanel: React.FC<DealAutomationPanelProps> = ({
           </div>
           <p className="text-xs text-muted-foreground">
             {isAr
-              ? "اكتملت الصفقة بنجاح، وشكرًا لاستخدامك المنصة."
+              ? "اكتملت الصفقة بنجاح، وشكرًا لاستخدامك سينا."
               : "The deal has been closed successfully. Thank you for using the platform."}
           </p>
         </div>

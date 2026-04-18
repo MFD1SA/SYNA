@@ -51,7 +51,6 @@ const OfferDetailPage: React.FC = () => {
   const accentText = isPartnership ? "text-[#2B4C66]" : "text-emerald-700";
 
   // Calculated metrics (visual richness from real data)
-  const areaHa = (offer.area_sqm / 10000).toFixed(2);
   const expectedReturn = isPartnership
     ? (isAr ? "متوقّع 18—25%" : "Expected 18–25%")
     : (isAr ? "متوقّع 22—30%" : "Expected 22–30%");
@@ -123,7 +122,7 @@ const OfferDetailPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 md:py-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {[
-              { icon: Ruler, label: isAr ? "المساحة" : "Area", value: `${offer.area_sqm.toLocaleString("en-US")}`, unit: isAr ? "م²" : "sqm", sub: `${areaHa} ${isAr ? "هكتار" : "ha"}` },
+              { icon: Ruler, label: isAr ? "المساحة" : "Area", value: `${offer.area_sqm.toLocaleString("en-US")}`, unit: isAr ? "م²" : "sqm", sub: isAr ? "حدود موثّقة" : "verified boundaries" },
               { icon: Building2, label: isAr ? "الاستخدام" : "Usage", value: isAr ? usageTypeLabels[offer.usageType]?.ar : usageTypeLabels[offer.usageType]?.en, unit: "", sub: isAr ? "معتمد نظامياً" : "Regulation compliant" },
               { icon: TrendingUp, label: isAr ? "عوائد متوقعة" : "Est. Returns", value: expectedReturn, unit: "", sub: isAr ? "على 3 سنوات" : "over 3 years" },
               { icon: Clock, label: isAr ? "المدة المتوقعة" : "Timeline", value: timeline, unit: "", sub: isAr ? "من التوقيع" : "from signing" },

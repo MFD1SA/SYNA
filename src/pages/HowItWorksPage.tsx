@@ -9,7 +9,6 @@ import {
   FileCheck2, BarChart3, UserCheck, MapPin, MessageSquare, CheckCircle2,
   Lock, Layers, Rocket, Target,
 } from "lucide-react";
-import headerPartnershipsImg from "@/assets/header-partnerships.jpg";
 
 const HowItWorksPage: React.FC = () => {
   const { lang } = useLanguage();
@@ -75,7 +74,7 @@ const HowItWorksPage: React.FC = () => {
           ? "رحلة واضحة ومنظمة لكل طرف من التسجيل والتحقق وحتى إتمام الشراكة التطويرية بنجاح وتوثيقها رسمياً"
           : "A clear organized journey for each party from registration and verification to successful development partnership completion and official documentation"}
         isAr={isAr}
-        image={headerPartnershipsImg}
+        image="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1920&q=85&auto=format&fit=crop"
       />
 
       {/* Platform Highlights */}

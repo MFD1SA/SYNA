@@ -11,11 +11,11 @@ const UsagePolicyPage: React.FC = () => {
   usePageTitle(isAr ? "سياسة الاستخدام" : "Usage Policy");
 
   const sections = isAr ? [
-    { title: "1. الاستخدام المقبول", text: "يجب استخدام المنصة فقط للأغراض المشروعة المتعلقة بشراكات التطوير العقاري. يُحظر أي استخدام ينتهك الأنظمة أو يضر بأطراف أخرى." },
+    { title: "1. الاستخدام المقبول", text: "يجب استخدام سينا فقط للأغراض المشروعة المتعلقة بشراكات التطوير العقاري. يُحظر أي استخدام ينتهك الأنظمة أو يضر بأطراف أخرى." },
     { title: "2. حساب المستخدم", text: "أنت مسؤول عن جميع الأنشطة التي تتم تحت حسابك. يجب الحفاظ على سرية بيانات الدخول وإبلاغنا فورًا عن أي استخدام غير مصرح به." },
     { title: "3. المحتوى", text: "يجب أن تكون جميع البيانات المقدمة صحيحة ودقيقة. يُحظر نشر محتوى مضلل أو غير لائق أو ينتهك حقوق الملكية الفكرية للآخرين." },
-    { title: "4. السلوك", text: "يُتوقع من جميع المستخدمين التعامل بمهنية واحترام. أي سلوك مسيء أو احتيالي أو تحايلي على أنظمة المنصة سيؤدي إلى تعليق أو إيقاف الحساب." },
-    { title: "5. التعديلات", text: "تحتفظ SINA بالحق في تعديل سياسة الاستخدام في أي وقت. استمرارك في استخدام المنصة يعني موافقتك على التعديلات." },
+    { title: "4. السلوك", text: "يُتوقع من جميع المستخدمين التعامل بمهنية واحترام. أي سلوك مسيء أو احتيالي أو تحايلي على أنظمة سينا سيؤدي إلى تعليق أو إيقاف الحساب." },
+    { title: "5. التعديلات", text: "تحتفظ SINA بالحق في تعديل سياسة الاستخدام في أي وقت. استمرارك في استخدام سينا يعني موافقتك على التعديلات." },
   ] : [
     { title: "1. Acceptable Use", text: "The platform must only be used for legitimate purposes related to real estate development partnerships. Any use that violates regulations or harms other parties is prohibited." },
     { title: "2. User Account", text: "You are responsible for all activities under your account. Login credentials must be kept confidential and any unauthorized use must be reported immediately." },
@@ -26,7 +26,7 @@ const UsagePolicyPage: React.FC = () => {
 
   return (
     <PageShell>
-      <InnerHero pageSlug="usage-policy" title={isAr ? "سياسة الاستخدام" : "Usage Policy"} subtitle={isAr ? "قواعد ومعايير استخدام المنصة" : "Platform usage rules and standards"} isAr={isAr} image={headerUsageImg} />
+      <InnerHero pageSlug="usage-policy" title={isAr ? "سياسة الاستخدام" : "Usage Policy"} subtitle={isAr ? "قواعد ومعايير استخدام سينا" : "Platform usage rules and standards"} isAr={isAr} image={headerUsageImg} />
       <section className="py-20 lg:py-28 bg-white" dir={isAr ? "rtl" : "ltr"}>
         <div className="container max-w-3xl space-y-10">
           {sections.map((s, i) => (

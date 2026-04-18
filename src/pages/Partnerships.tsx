@@ -12,7 +12,6 @@ import {
   Crown, Layers, BarChart3, Cpu, Target,
   Gem, Briefcase, Network,
 } from "lucide-react";
-import headerPartnershipsImg from "@/assets/header-partnerships.jpg";
 
 const Partnerships: React.FC = () => {
   const { lang } = useLanguage();
@@ -104,7 +103,7 @@ const Partnerships: React.FC = () => {
           ? "سينا تجمع ملاك الأراضي والمطورين العقاريين في منظومة رقمية محكومة لبناء شراكات تطويرية ناجحة بعوائد مضاعفة وحوكمة شاملة"
           : "SINA brings together landowners and real estate developers in a governed digital ecosystem to build successful development partnerships with multiplied returns and comprehensive governance"}
         isAr={isAr}
-        image={headerPartnershipsImg}
+        image="https://images.unsplash.com/photo-1664575600796-ffa828c5cb6e?w=1920&q=85&auto=format&fit=crop"
       />
 
       {/* Two Blocks - Owner & Developer */}
