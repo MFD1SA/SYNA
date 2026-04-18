@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import PageShell from "@/components/landing/PageShell";
+import ImageGallery from "@/components/shared/ImageGallery";
 import {
   MapPin, Ruler, Layers, ArrowRight, ArrowLeft, Building2,
   Target, TrendingUp, Shield, Calendar, Maximize2,
@@ -185,6 +186,22 @@ const OpportunityDetail: React.FC = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Gallery — optional */}
+              {(() => {
+                const gallery: string[] = [
+                  ...(land.image_url ? [land.image_url] : []),
+                  ...((land.gallery_urls as string[] | undefined) || []),
+                ];
+                return gallery.length > 0 ? (
+                  <div>
+                    <h2 className="text-lg font-bold text-sina-charcoal mb-4">
+                      {isAr ? "صور الأرض" : "Land Images"}
+                    </h2>
+                    <ImageGallery images={gallery} isAr={isAr} />
+                  </div>
+                ) : null;
+              })()}
 
               {/* Description */}
               <div className="bg-[#F7F9FB] rounded-xl p-8 border border-gray-100">

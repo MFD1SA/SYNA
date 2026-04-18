@@ -14,7 +14,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useToast } from "@/hooks/use-toast";
 import {
   Plus, Landmark, Mail, User, Eye, EyeOff, Copy, KeyRound, Trash2,
-  Search, MapPin, Ruler, CheckCircle2, Loader2, Shield, Phone, LogIn
+  Search, MapPin, Ruler, CheckCircle2, Loader2, Shield, Phone, LogIn,
+  Send
 } from "lucide-react";
 
 const AdminOwners: React.FC = () => {
@@ -41,6 +42,38 @@ const AdminOwners: React.FC = () => {
   const [deleteDialog, setDeleteDialog] = useState<{ owner_id: string; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [impersonating, setImpersonating] = useState<string | null>(null);
+
+  // Invite-by-email flow (separate from create-with-password)
+  const [showInvite, setShowInvite] = useState(false);
+  const [inviting, setInviting] = useState(false);
+  const [inviteForm, setInviteForm] = useState({ full_name: "", email: "" });
+  const [inviteResult, setInviteResult] = useState<{ email: string; email_sent: boolean; invite_url?: string } | null>(null);
+
+  const handleInvite = async () => {
+    if (!inviteForm.email) return;
+    setInviting(true);
+    try {
+      const res = await supabase.functions.invoke("invite-owner", {
+        body: { email: inviteForm.email, full_name: inviteForm.full_name },
+      });
+      if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      setInviteResult({
+        email: res.data.email,
+        email_sent: !!res.data.email_sent,
+        invite_url: res.data.invite_url,
+      });
+      toast({
+        title: res.data.email_sent
+          ? (isAr ? "تم إرسال الدعوة" : "Invitation sent")
+          : (isAr ? "تم إنشاء الرابط — أرسله يدوياً" : "Link ready — send manually"),
+      });
+      fetchOwners();
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "تعذّر إرسال الدعوة" : "Invite failed", description: err.message });
+    } finally {
+      setInviting(false);
+    }
+  };
 
   const handleImpersonate = async (userId: string, name: string) => {
     setImpersonating(userId);
@@ -187,6 +220,9 @@ const AdminOwners: React.FC = () => {
                 <LogIn className="h-3.5 w-3.5" />
                 {isAr ? "للدخول كمالك، اضغط أيقونة الدخول بجانب اسمه" : "To enter as owner, click login icon next to their name"}
               </div>
+              <Button variant="outline" className="gap-2" onClick={() => { setShowInvite(true); setInviteResult(null); setInviteForm({ full_name: "", email: "" }); }}>
+                <Send className="h-4 w-4" />{isAr ? "دعوة مالك بالبريد" : "Invite by Email"}
+              </Button>
               <Button className="gap-2 bg-primary hover:bg-primary/90" onClick={() => setShowAdd(true)}>
                 <Plus className="h-4 w-4" />{isAr ? "إضافة مالك" : "Add Owner"}
               </Button>
@@ -361,6 +397,76 @@ const AdminOwners: React.FC = () => {
               <Button className="gap-2 bg-primary hover:bg-primary/90" onClick={handleCreate} disabled={creating || !form.email || !form.password || !form.full_name}>
                 {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                 {creating ? (isAr ? "جاري الإنشاء..." : "Creating...") : (isAr ? "إنشاء الحساب" : "Create Account")}
+              </Button>
+            </DialogFooter>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Invite Owner Dialog — secure invite flow (no shared password) */}
+      <Dialog open={showInvite} onOpenChange={(v) => { setShowInvite(v); if (!v) { setInviteResult(null); setInviteForm({ full_name: "", email: "" }); } }}>
+        <DialogContent className="sm:max-w-md" dir={isAr ? "rtl" : "ltr"}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Send className="h-5 w-5 text-primary" />
+              {isAr ? "دعوة مالك بالبريد" : "Invite Owner by Email"}
+            </DialogTitle>
+          </DialogHeader>
+          {inviteResult ? (
+            <div className="space-y-4 py-4">
+              <div className={`rounded-xl border p-5 text-center ${inviteResult.email_sent ? "border-emerald-500/20 bg-emerald-500/5" : "border-amber-500/20 bg-amber-500/5"}`}>
+                <CheckCircle2 className={`h-10 w-10 mx-auto mb-3 ${inviteResult.email_sent ? "text-emerald-600" : "text-amber-600"}`} />
+                <p className={`text-sm font-medium mb-2 ${inviteResult.email_sent ? "text-emerald-700" : "text-amber-700"}`}>
+                  {inviteResult.email_sent
+                    ? (isAr ? "تم إرسال الدعوة بنجاح" : "Invitation sent successfully")
+                    : (isAr ? "تعذر إرسال البريد — انسخ الرابط أدناه" : "Email send failed — copy link below")}
+                </p>
+                <p className="text-[12px] text-muted-foreground mb-3" dir="ltr">{inviteResult.email}</p>
+                {inviteResult.invite_url && (
+                  <div className="rounded-lg border border-border bg-card p-3 text-start" dir="ltr">
+                    <p className="text-[11px] font-mono break-all">{inviteResult.invite_url}</p>
+                    <Button
+                      variant="outline" size="sm" className="mt-2 gap-2"
+                      onClick={() => { navigator.clipboard.writeText(inviteResult.invite_url!); toast({ title: isAr ? "تم النسخ" : "Copied!" }); }}
+                    >
+                      <Copy className="h-3.5 w-3.5" />{isAr ? "نسخ الرابط" : "Copy Link"}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4 py-2">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">{isAr ? "اسم المالك" : "Full Name"}</Label>
+                <div className="relative">
+                  <User className="absolute start-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input className="ps-9" value={inviteForm.full_name} onChange={e => setInviteForm(f => ({ ...f, full_name: e.target.value }))} placeholder={isAr ? "الاسم الكامل (اختياري)" : "Full name (optional)"} />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">{isAr ? "البريد الإلكتروني" : "Email"} <span className="text-destructive">*</span></Label>
+                <div className="relative">
+                  <Mail className="absolute start-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input className="ps-9" type="email" value={inviteForm.email} onChange={e => setInviteForm(f => ({ ...f, email: e.target.value }))} dir="ltr" placeholder="owner@example.com" />
+                </div>
+              </div>
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 flex items-start gap-2">
+                <Shield className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <p className="text-[11px] text-primary/80 leading-relaxed">
+                  {isAr
+                    ? "سيستلم المالك رابطاً آمناً لتعيين كلمة مرور خاصة به. لا يتم مشاركة أي كلمة مرور مسبقة."
+                    : "The owner receives a secure link to set their own password. No shared password."}
+                </p>
+              </div>
+            </div>
+          )}
+          {!inviteResult && (
+            <DialogFooter className="gap-2">
+              <Button variant="outline" onClick={() => setShowInvite(false)}>{isAr ? "إلغاء" : "Cancel"}</Button>
+              <Button className="gap-2 bg-primary hover:bg-primary/90" onClick={handleInvite} disabled={inviting || !inviteForm.email}>
+                {inviting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                {inviting ? (isAr ? "جاري الإرسال..." : "Sending...") : (isAr ? "إرسال الدعوة" : "Send Invite")}
               </Button>
             </DialogFooter>
           )}

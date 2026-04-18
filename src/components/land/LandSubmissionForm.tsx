@@ -176,6 +176,49 @@ const LandSubmissionForm: React.FC<Props> = ({ initialData, ownerProfiles, isAdm
     update("gallery_urls", next);
   };
 
+  const MAX_EXTRA_DOCS = 10;
+
+  const handleExtraDocsAdd = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const current = form.additional_docs_urls || [];
+    const remaining = MAX_EXTRA_DOCS - current.length;
+    if (remaining <= 0) {
+      toast({ variant: "destructive", title: isAr ? `الحد الأقصى ${MAX_EXTRA_DOCS} ملفات` : `Max ${MAX_EXTRA_DOCS} files` });
+      return;
+    }
+    let ownerId = form.selected_owner_id || "";
+    if (!ownerId) {
+      const { data } = await supabase.auth.getUser();
+      ownerId = data.user?.id || "";
+    }
+    if (!ownerId) {
+      toast({ variant: "destructive", title: isAr ? "تعذّر تحديد المالك" : "Missing owner id" });
+      return;
+    }
+    setUploading("additional_docs_urls");
+    try {
+      const paths: string[] = [];
+      for (const f of files.slice(0, remaining)) {
+        const p = await uploadPrivateFile(f, "land-documents", ownerId);
+        paths.push(p);
+      }
+      update("additional_docs_urls", [...current, ...paths]);
+      toast({ title: isAr ? `تم رفع ${paths.length} ملف ✓` : `Uploaded ${paths.length} file(s) ✓` });
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ في الرفع" : "Upload error", description: err?.message });
+    } finally {
+      setUploading(null);
+      e.target.value = "";
+    }
+  };
+
+  const handleExtraDocsRemove = (idx: number) => {
+    const next = [...(form.additional_docs_urls || [])];
+    next.splice(idx, 1);
+    update("additional_docs_urls", next);
+  };
+
   const handleOpenPrivateFile = async (pathOrUrl: string | null | undefined) => {
     if (!pathOrUrl) return;
     const ok = await openPrivateFileInTab(pathOrUrl, "land-documents");
@@ -520,6 +563,42 @@ const LandSubmissionForm: React.FC<Props> = ({ initialData, ownerProfiles, isAdm
                 <span className="text-sm text-muted-foreground">{uploading === "kroki_file_url" ? (isAr ? "جاري الرفع..." : "Uploading...") : (isAr ? "اختر ملف" : "Choose file")}</span>
                 <input type="file" accept=".pdf,image/*" className="hidden" onChange={e => handleFileUpload(e, "kroki_file_url")} disabled={!!uploading} />
               </label>
+            </div>
+
+            {/* Additional docs (private) */}
+            <div>
+              <Label className="text-xs mb-2 block">
+                {isAr ? `مستندات إضافية (حتى ${MAX_EXTRA_DOCS})` : `Additional Documents (up to ${MAX_EXTRA_DOCS})`}
+                {form.additional_docs_urls?.length ? <span className="ms-2 text-muted-foreground">· {form.additional_docs_urls.length}/{MAX_EXTRA_DOCS}</span> : null}
+              </Label>
+              {form.additional_docs_urls?.length > 0 && (
+                <div className="mb-2 space-y-1.5">
+                  {form.additional_docs_urls.map((p, i) => (
+                    <div key={i} className="flex items-center justify-between gap-2 rounded-lg border border-border/60 px-3 py-2">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenPrivateFile(p)}
+                        className="flex items-center gap-2 text-[12px] text-[#1E374B] hover:text-primary truncate"
+                      >
+                        <FileText className="h-3.5 w-3.5 shrink-0" />
+                        <span className="truncate">{isAr ? `مستند ${i + 1}` : `Document ${i + 1}`}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleExtraDocsRemove(i)}
+                        className="text-[11px] text-red-600 hover:underline shrink-0"
+                      >{isAr ? "حذف" : "Remove"}</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {(form.additional_docs_urls?.length || 0) < MAX_EXTRA_DOCS && (
+                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border/60 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
+                  <Upload className="h-5 w-5 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{uploading === "additional_docs_urls" ? (isAr ? "جاري الرفع..." : "Uploading...") : (isAr ? "أضف مستندات" : "Add documents")}</span>
+                  <input type="file" accept=".pdf,.doc,.docx,.xlsx,image/*" multiple className="hidden" onChange={handleExtraDocsAdd} disabled={!!uploading} />
+                </label>
+              )}
             </div>
 
             {/* Land Image (cover) */}

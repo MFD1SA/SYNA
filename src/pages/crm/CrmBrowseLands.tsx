@@ -23,6 +23,7 @@ import DeveloperFeeAcknowledgment from "@/components/crm/DeveloperFeeAcknowledgm
 import LandAIInsights from "@/components/crm/LandAIInsights";
 import NDAConsentModal from "@/components/agreements/NDAConsentModal";
 import { logAudit } from "@/lib/auditLog";
+import ImageGallery from "@/components/shared/ImageGallery";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import BentoCard from "@/components/dashboard/BentoCard";
 import StatusBadge from "@/components/dashboard/StatusBadge";
@@ -104,7 +105,7 @@ const CrmBrowseLands: React.FC = () => {
         setNdaMap(map);
       }
       // Select only fields needed for display — exclude owner_name to prevent identity leakage
-      const { data } = await supabase.from("lands").select("id, city, district, land_area_sqm, usage_type, partnership_goal, street_width_m, created_at, brokerage_license_number, brokerage_license_status, vision_summary, image_url, is_active, owner_approved, owner_id, partnership_model, project_type").eq("is_active", true).eq("owner_approved", true).order("created_at", { ascending: false });
+      const { data } = await supabase.from("lands").select("id, city, district, land_area_sqm, usage_type, partnership_goal, street_width_m, created_at, brokerage_license_number, brokerage_license_status, vision_summary, image_url, gallery_urls, is_active, owner_approved, owner_id, partnership_model, project_type").eq("is_active", true).eq("owner_approved", true).order("created_at", { ascending: false });
       setLands(data || []);
       setLoading(false);
     };
@@ -503,12 +504,21 @@ const CrmBrowseLands: React.FC = () => {
                 </DialogTitle>
               </DialogHeader>
 
-              {/* Image */}
-              {getImageUrl(detailDialog) && (
-                <div className="rounded-xl overflow-hidden h-48 bg-muted">
-                  <img src={getImageUrl(detailDialog)!} alt="" className="h-full w-full object-cover" />
-                </div>
-              )}
+              {/* Image + Gallery */}
+              {(() => {
+                const cover = getImageUrl(detailDialog);
+                const extras: string[] = Array.isArray(detailDialog.gallery_urls) ? detailDialog.gallery_urls.filter(Boolean) : [];
+                const all = [cover, ...extras].filter(Boolean) as string[];
+                if (!all.length) return null;
+                return (
+                  <div className="space-y-3">
+                    <div className="rounded-xl overflow-hidden h-48 bg-muted">
+                      <img src={all[0]} alt="" className="h-full w-full object-cover" />
+                    </div>
+                    {all.length > 1 && <ImageGallery images={all.slice(1)} isAr={isAr} />}
+                  </div>
+                );
+              })()}
 
               {/* Executive Summary */}
               {detailDialog.vision_summary && (

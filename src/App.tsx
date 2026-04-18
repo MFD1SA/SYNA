@@ -36,6 +36,7 @@ const OffersPage = lazy(() => import("./pages/OffersPage"));
 const OfferDetailPage = lazy(() => import("./pages/OfferDetailPage"));
 const Contact = lazy(() => import("./pages/Contact"));
 const RegisterPage = lazy(() => import("./pages/Register"));
+const SetPasswordPage = lazy(() => import("./pages/SetPassword"));
 
 const ImpersonateCallback = lazy(() => import("./pages/ImpersonateCallback"));
 
@@ -53,6 +54,7 @@ const AdminOffers = lazy(() => import("./pages/admin/AdminOffers"));
 const AdminOwners = lazy(() => import("./pages/admin/AdminOwners"));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminAuditLog = lazy(() => import("./pages/admin/AdminAuditLog"));
+const AdminMonitoring = lazy(() => import("./pages/admin/AdminMonitoring"));
 const AdminTeam = lazy(() => import("./pages/admin/AdminTeam"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 
@@ -202,6 +204,7 @@ const App: React.FC = () => (
                   {/* Auth */}
                   <Route path="/auth/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
                   <Route path="/auth/register" element={<PublicOnlyRoute><RegisterPage /></PublicOnlyRoute>} />
+                  <Route path="/auth/set-password" element={<SetPasswordPage />} />
                   <Route path="/login" element={<Navigate to="/auth/login" replace />} />
                   <Route path="/register" element={<Navigate to="/auth/register" replace />} />
 
@@ -221,6 +224,7 @@ const App: React.FC = () => (
                   <Route path="/admincp/offers" element={<AdminRoute><AdminOffers /></AdminRoute>} />
                   <Route path="/admincp/owners" element={<AdminRoute><AdminOwners /></AdminRoute>} />
                   <Route path="/admincp/audit" element={<AdminRoute><AdminAuditLog /></AdminRoute>} />
+                  <Route path="/admincp/monitoring" element={<AdminRoute><AdminMonitoring /></AdminRoute>} />
                   <Route path="/admincp/team" element={<AdminRoute><AdminTeam /></AdminRoute>} />
                   <Route path="/admincp/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
 

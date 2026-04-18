@@ -44,6 +44,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     "/admincp/deals": { ar: "الصفقات", en: "Deals" },
     "/admincp/offers": { ar: "العروض العقارية", en: "Offers" },
     "/admincp/audit": { ar: "سجل العمليات", en: "Audit Log" },
+    "/admincp/monitoring": { ar: "لوحة المراقبة", en: "Monitoring" },
     "/admincp/team": { ar: "فريق الإدارة", en: "Team" },
     "/admincp/settings": { ar: "الإعدادات", en: "Settings" },
   };
