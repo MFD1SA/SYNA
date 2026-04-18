@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
+import heroImg from "@/assets/hero/contact.svg";
 import { Loader2, CheckCircle2, MessageCircle, Clock, ShieldCheck, Headphones, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -55,7 +56,8 @@ const Contact: React.FC = () => {
           ? "فريقنا جاهز لمساعدتك سواء كنت مالك أرض تبحث عن شريك تطوير أو مطوراً عقارياً يبحث عن فرص حقيقية"
           : "Our team is ready to help whether youre a landowner seeking a development partner or a developer looking for real opportunities"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1556761175-4b46a572b786?w=1920&q=85&auto=format&fit=crop"
+        image={heroImg}
+        illustrated
       />
 
       {/* Why Contact Us */}

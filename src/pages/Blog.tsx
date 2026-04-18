@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
+import heroImg from "@/assets/hero/blog.svg";
 import { Clock, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, TrendingUp, Handshake, Building2, CircleDollarSign, ShieldCheck, Users, BookOpen, Landmark } from "lucide-react";
 
 interface BlogArticle {
@@ -190,7 +191,8 @@ const Blog: React.FC = () => {
           ? "مقالات متخصصة عن الشراكات التطويرية العقارية: أساسياتها وفوائدها وأهميتها في تطوير القطاع العقاري"
           : "Specialized articles on real estate development partnerships: fundamentals, benefits, and importance in developing the real estate sector"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1455849318743-b2233052fcff?w=1920&q=85&auto=format&fit=crop"
+        image={heroImg}
+        illustrated
       />
 
       {/* Stats bar */}

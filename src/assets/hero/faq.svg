@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0B1826"/><stop offset="100%" stop-color="#14283B"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#8F6F3A"/><stop offset="50%" stop-color="#E4C97A"/><stop offset="100%" stop-color="#A88A4A"/></linearGradient>
+    <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M 80 0 L 0 0 0 80" fill="none" stroke="#C2A86B" stroke-opacity="0.05"/></pattern>
+    <radialGradient id="glow" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="#E4C97A" stop-opacity="0.2"/><stop offset="100%" stop-color="#E4C97A" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1920" height="900" fill="url(#sky)"/>
+  <rect width="1920" height="900" fill="url(#grid)"/>
+  <circle cx="960" cy="450" r="450" fill="url(#glow)"/>
+  <g opacity="0.12" fill="none" stroke="url(#gold)" stroke-width="1.5">
+    <g transform="translate(180 170)"><polygon points="0,-56 14,-14 56,0 14,14 0,56 -14,14 -56,0 -14,-14"/></g>
+    <g transform="translate(1740 730)"><polygon points="0,-56 14,-14 56,0 14,14 0,56 -14,14 -56,0 -14,-14"/></g>
+  </g>
+  <line x1="120" y1="840" x2="1800" y2="840" stroke="url(#gold)" stroke-width="1" opacity="0.3"/>
+  <!-- Emblem: concentric target rings + central inquiry dot -->
+  <g transform="translate(960 450)">
+    <circle r="290" fill="none" stroke="url(#gold)" stroke-width="1.2" stroke-dasharray="3 8" opacity="0.5"/>
+    <circle r="210" fill="none" stroke="url(#gold)" stroke-width="2"/>
+    <circle r="160" fill="none" stroke="url(#gold)" stroke-width="1.5" opacity="0.7"/>
+    <circle r="110" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.5"/>
+    <!-- abstract question mark: arc + dot -->
+    <path d="M -50 -30 A 55 55 0 1 1 30 40 L 30 60" fill="none" stroke="url(#gold)" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="30" cy="95" r="10" fill="url(#gold)"/>
+  </g>
+</svg>

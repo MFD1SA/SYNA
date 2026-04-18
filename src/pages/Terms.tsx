@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
+import heroImg from "@/assets/hero/terms.svg";
 
 const TermsPage: React.FC = () => {
   const { lang } = useLanguage();
@@ -31,7 +32,7 @@ const TermsPage: React.FC = () => {
 
   return (
     <PageShell>
-      <InnerHero pageSlug="terms" title={isAr ? "الشروط والأحكام" : "Terms & Conditions"} subtitle={isAr ? "الأطر القانونية التي تنظم استخدام سينا" : "Legal frameworks governing platform usage"} isAr={isAr} image="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=85&auto=format&fit=crop" />
+      <InnerHero pageSlug="terms" title={isAr ? "الشروط والأحكام" : "Terms & Conditions"} subtitle={isAr ? "الأطر القانونية التي تنظم استخدام سينا" : "Legal frameworks governing platform usage"} isAr={isAr} image={heroImg} illustrated />
       <section className="py-20 lg:py-28 bg-white" dir={isAr ? "rtl" : "ltr"}>
         <div className="container max-w-3xl space-y-10">
           {sections.map((s, i) => (

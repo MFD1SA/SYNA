@@ -7,7 +7,7 @@ import CTASection from "@/components/landing/CTASection";
 import {
   ScanEye, ShieldCheck, Trophy, Lightbulb, Target, Scale, Cpu, Lock,
 } from "lucide-react";
-import aboutHero from "@/assets/about-hero.svg";
+import aboutHero from "@/assets/hero/about.svg";
 
 const About: React.FC = () => {
   const { lang } = useLanguage();

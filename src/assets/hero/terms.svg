@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0B1826"/><stop offset="100%" stop-color="#14283B"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#8F6F3A"/><stop offset="50%" stop-color="#E4C97A"/><stop offset="100%" stop-color="#A88A4A"/></linearGradient>
+    <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M 80 0 L 0 0 0 80" fill="none" stroke="#C2A86B" stroke-opacity="0.05"/></pattern>
+    <radialGradient id="glow" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="#E4C97A" stop-opacity="0.2"/><stop offset="100%" stop-color="#E4C97A" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1920" height="900" fill="url(#sky)"/>
+  <rect width="1920" height="900" fill="url(#grid)"/>
+  <circle cx="960" cy="450" r="450" fill="url(#glow)"/>
+  <g opacity="0.12" fill="none" stroke="url(#gold)" stroke-width="1.5">
+    <g transform="translate(180 170)"><polygon points="0,-56 14,-14 56,0 14,14 0,56 -14,14 -56,0 -14,-14"/></g>
+    <g transform="translate(1740 730)"><polygon points="0,-56 14,-14 56,0 14,14 0,56 -14,14 -56,0 -14,-14"/></g>
+  </g>
+  <line x1="120" y1="840" x2="1800" y2="840" stroke="url(#gold)" stroke-width="1" opacity="0.3"/>
+  <!-- Emblem: justice scales (balance) -->
+  <g transform="translate(960 450)">
+    <circle r="290" fill="none" stroke="url(#gold)" stroke-width="1.2" stroke-dasharray="3 8" opacity="0.5"/>
+    <g stroke="url(#gold)" stroke-width="2.5" fill="none" stroke-linecap="round">
+      <!-- central axis -->
+      <line x1="0" y1="-160" x2="0" y2="150"/>
+      <!-- beam -->
+      <line x1="-180" y1="-80" x2="180" y2="-80"/>
+      <!-- hanging strings -->
+      <line x1="-180" y1="-80" x2="-180" y2="-10" stroke-width="1.5"/>
+      <line x1="180" y1="-80" x2="180" y2="-10" stroke-width="1.5"/>
+    </g>
+    <!-- Top tip -->
+    <circle cx="0" cy="-160" r="9" fill="url(#gold)"/>
+    <!-- Pans (trapezoids) -->
+    <g fill="none" stroke="url(#gold)" stroke-width="2.2">
+      <path d="M -215 -10 L -145 -10 L -125 45 L -235 45 Z"/>
+      <path d="M 215 -10 L 145 -10 L 125 45 L 235 45 Z"/>
+      <line x1="-235" y1="45" x2="-125" y2="45" opacity="0.4"/>
+      <line x1="125" y1="45" x2="235" y2="45" opacity="0.4"/>
+    </g>
+    <!-- Base -->
+    <polygon points="-18,150 18,150 0,135" fill="url(#gold)"/>
+    <line x1="-70" y1="150" x2="70" y2="150" stroke="url(#gold)" stroke-width="3"/>
+  </g>
+</svg>

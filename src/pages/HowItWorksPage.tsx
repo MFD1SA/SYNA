@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
+import heroImg from "@/assets/hero/how-it-works.svg";
 import CTASection from "@/components/landing/CTASection";
 import {
   Users, Building2, ShieldCheck, Eye, ClipboardList, Handshake,
@@ -74,7 +75,8 @@ const HowItWorksPage: React.FC = () => {
           ? "رحلة واضحة ومنظمة لكل طرف من التسجيل والتحقق وحتى إتمام الشراكة التطويرية بنجاح وتوثيقها رسمياً"
           : "A clear organized journey for each party from registration and verification to successful development partnership completion and official documentation"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1920&q=85&auto=format&fit=crop"
+        image={heroImg}
+        illustrated
       />
 
       {/* SINA Highlights */}

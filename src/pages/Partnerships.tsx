@@ -4,6 +4,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
+import heroImg from "@/assets/hero/partnerships.svg";
 import {
   ArrowLeft, ArrowRight, TrendingUp,
   Building2, Landmark, Handshake, FileCheck2,
@@ -103,7 +104,8 @@ const Partnerships: React.FC = () => {
           ? "سينا تجمع ملاك الأراضي والمطورين العقاريين في منظومة رقمية محكومة لبناء شراكات تطويرية ناجحة بعوائد مضاعفة وحوكمة شاملة"
           : "SINA brings together landowners and real estate developers in a governed digital ecosystem to build successful development partnerships with multiplied returns and comprehensive governance"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1920&q=85&auto=format&fit=crop"
+        image={heroImg}
+        illustrated
       />
 
       {/* Two Blocks - Owner & Developer */}

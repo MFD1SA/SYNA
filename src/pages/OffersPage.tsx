@@ -8,6 +8,7 @@ import { getActiveOffers, usageTypeLabels, offerTypeLabels, type RealEstateOffer
 import { supabase } from "@/integrations/supabase/client";
 import { MapPin, Ruler, Handshake, Gem, Sparkles, ArrowUpRight, Landmark } from "lucide-react";
 import InnerHero from "@/components/landing/InnerHero";
+import heroImg from "@/assets/hero/offers.svg";
 
 type UnifiedItem = {
   id: string;
@@ -121,7 +122,8 @@ const OffersPage: React.FC = () => {
             : "Discover premier real estate opportunities across Saudi Arabia with development partnerships and contributions in strategic locations"
           }
           isAr={isAr}
-          image="https://images.unsplash.com/photo-1577495508048-b635879837f1?w=1920&q=85&auto=format&fit=crop"
+          image={heroImg}
+          illustrated
         />
 
         <section className="-mt-10 relative z-10 pb-24">

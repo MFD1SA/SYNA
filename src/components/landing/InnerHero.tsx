@@ -31,10 +31,12 @@ const InnerHero: React.FC<InnerHeroProps> = ({
   hideBreadcrumb,
   illustrated,
 }) => {
-  const { heroImage } = useHeroImage(pageSlug);
+  // For illustrated heroes we always honor the static SVG prop and skip the DB
+  // lookup so the curated illustration is never overridden by legacy DB entries.
+  const { heroImage } = useHeroImage(illustrated ? undefined : pageSlug);
 
-  // Resolved image: DB image takes priority, then static prop, then nothing
-  const resolvedImage = heroImage?.desktop || image || undefined;
+  // Resolved image: for illustrations the prop wins; otherwise DB takes priority.
+  const resolvedImage = illustrated ? (image || heroImage?.desktop) : (heroImage?.desktop || image || undefined);
   const Chevron = isAr ? ChevronLeft : ChevronRight;
 
   return (
