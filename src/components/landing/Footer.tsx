@@ -26,24 +26,24 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-[#1E374B] text-white" dir={isAr ? "rtl" : "ltr"}>
-      <div className="container py-12 lg:py-16">
-        <div className="grid gap-12 lg:grid-cols-12">
+    <footer className="bg-[#0F1F2E] text-white" dir={isAr ? "rtl" : "ltr"}>
+      <div className="container py-10 sm:py-12 lg:py-16">
+        <div className="grid gap-10 lg:gap-12 lg:grid-cols-12">
           {/* Brand */}
           <div className="lg:col-span-4">
-            <Link to="/" className="inline-block mb-6">
+            <Link to="/" className="inline-block mb-5 sm:mb-6">
               <img
                 src={logoImg}
                 alt="SINA"
-                className="h-10 w-auto object-contain brightness-0 invert"
+                className="h-9 sm:h-10 w-auto object-contain brightness-0 invert"
               />
             </Link>
-            <p className="text-[14px] leading-[1.9] text-white/60 max-w-sm">
+            <p className="text-[13px] sm:text-[14px] leading-[1.9] text-white/60 max-w-sm">
               {t.footer.desc}
             </p>
 
             {/* Social media */}
-            <div className="flex items-center gap-3 mt-8">
+            <div className="flex items-center gap-3 mt-6 sm:mt-8">
               {/* X (Twitter) */}
               <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors duration-200">
                 <svg className="w-4 h-4 text-white/60" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
@@ -60,18 +60,18 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Links columns */}
-          <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-10">
+          <div className="lg:col-span-8 grid grid-cols-3 gap-6 sm:gap-8 md:gap-10">
             {/* About */}
-            <div>
-              <h4 className="text-[14px] font-bold text-white mb-6">
+            <div className="min-w-0">
+              <h4 className="text-[13px] sm:text-[14px] font-bold text-white mb-4 sm:mb-6">
                 {t.footer.aboutSina}
               </h4>
-              <div className="flex flex-col gap-3.5">
+              <div className="flex flex-col gap-3 sm:gap-3.5">
                 {aboutLinks.map(link => (
                   <Link
                     key={link.to}
                     to={link.to}
-                    className="text-[13px] text-white/50 hover:text-white transition-colors duration-200"
+                    className="text-[12px] sm:text-[13px] text-white/50 hover:text-white transition-colors duration-200 break-words"
                   >
                     {link.label}
                   </Link>
@@ -80,16 +80,16 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Stakeholders */}
-            <div>
-              <h4 className="text-[14px] font-bold text-white mb-6">
+            <div className="min-w-0">
+              <h4 className="text-[13px] sm:text-[14px] font-bold text-white mb-4 sm:mb-6">
                 {isAr ? "روابط مفيدة" : "Useful Links"}
               </h4>
-              <div className="flex flex-col gap-3.5">
+              <div className="flex flex-col gap-3 sm:gap-3.5">
                 {stakeholderLinks.map(link => (
                   <Link
                     key={link.to}
                     to={link.to}
-                    className="text-[13px] text-white/50 hover:text-white transition-colors duration-200"
+                    className="text-[12px] sm:text-[13px] text-white/50 hover:text-white transition-colors duration-200 break-words"
                   >
                     {link.label}
                   </Link>
@@ -98,16 +98,16 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Legal */}
-            <div>
-              <h4 className="text-[14px] font-bold text-white mb-6">
+            <div className="min-w-0">
+              <h4 className="text-[13px] sm:text-[14px] font-bold text-white mb-4 sm:mb-6">
                 {t.footer.legal}
               </h4>
-              <div className="flex flex-col gap-3.5">
+              <div className="flex flex-col gap-3 sm:gap-3.5">
                 {legalLinks.map(link => (
                   <Link
                     key={link.to}
                     to={link.to}
-                    className="text-[13px] text-white/50 hover:text-white transition-colors duration-200"
+                    className="text-[12px] sm:text-[13px] text-white/50 hover:text-white transition-colors duration-200 break-words"
                   >
                     {link.label}
                   </Link>
@@ -120,11 +120,11 @@ const Footer: React.FC = () => {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <div className="container flex flex-col md:flex-row items-center justify-between gap-4 py-6">
-          <p className="text-[12px] text-white/40">
+        <div className="container flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 py-5 sm:py-6 text-center md:text-start">
+          <p className="text-[11px] sm:text-[12px] text-white/40">
             &copy; {new Date().getFullYear()} SINA. {t.footer.rights}.
           </p>
-          <p className="text-[12px] text-white/40">
+          <p className="text-[11px] sm:text-[12px] text-white/40">
             {isAr ? "الرياض، المملكة العربية السعودية" : "Riyadh, Saudi Arabia"}
           </p>
         </div>
