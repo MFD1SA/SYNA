@@ -64,29 +64,44 @@ async function main() {
   const scale   = targetH / logoMeta.height;
   const targetW = Math.round(logoMeta.width * scale);
 
-  // Convert the logo to a white-on-transparent silhouette:
-  //   1. Extract the alpha channel (shape mask).
-  //   2. Composite it as an in-mask over a solid white rectangle.
-  //   3. The result is a pure-white logo that sits transparently on any bg.
-  const alpha = await sharp(logoBuf)
+  // Convert the logo to a white-on-transparent silhouette.
+  //
+  // logo.png is a BLACK glyph on a fully opaque WHITE background, so its
+  // alpha channel is uniformly 255 — using it as a mask produces a solid
+  // rectangle (this is what caused the white-box bug on WhatsApp previews).
+  //
+  // Instead, derive the mask from luminance: dark pixels are the glyph
+  // (high opacity), bright pixels are background (zero opacity). Then use
+  // that mask to cut a pure-white silhouette.
+  const { data: rgba, info } = await sharp(logoBuf)
     .resize(targetW, targetH)
-    .extractChannel("alpha")
+    .ensureAlpha()
     .raw()
-    .toBuffer();
+    .toBuffer({ resolveWithObject: true });
 
-  const whiteLogo = await sharp({
-    create: {
-      width:  targetW,
-      height: targetH,
-      channels: 4,
-      background: { r: 255, g: 255, b: 255, alpha: 1 },
-    },
+  // Build the white silhouette directly as an RGBA raw buffer:
+  //   R=G=B=255 (pure white), A = derived opacity from (luminance × source alpha).
+  // This avoids sharp's quirky single-channel-mask composite behaviour that
+  // was producing a fully opaque rectangle.
+  const outRgba = Buffer.alloc(info.width * info.height * 4);
+  for (let i = 0; i < rgba.length; i += 4) {
+    const r = rgba[i], g = rgba[i + 1], b = rgba[i + 2], srcA = rgba[i + 3];
+    const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    let alpha;
+    if (lum >= 245) alpha = 0;
+    else if (lum <= 60) alpha = 255;
+    else alpha = Math.round(255 * (1 - (lum - 60) / (245 - 60)));
+    // Respect pre-existing alpha in the source PNG.
+    alpha = Math.round((alpha * srcA) / 255);
+    outRgba[i]     = 255;
+    outRgba[i + 1] = 255;
+    outRgba[i + 2] = 255;
+    outRgba[i + 3] = alpha;
+  }
+
+  const whiteLogo = await sharp(outRgba, {
+    raw: { width: info.width, height: info.height, channels: 4 },
   })
-    .composite([{
-      input: alpha,
-      blend: "dest-in",
-      raw: { width: targetW, height: targetH, channels: 1 },
-    }])
     .png()
     .toBuffer();
 
