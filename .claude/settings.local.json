@@ -40,7 +40,10 @@
       "Bash(grep -rn \"header.*Img\\\\|import.*from.*@/assets\" src/pages/*.tsx)",
       "Bash(ls -lah src/assets/header-*.jpg)",
       "Bash(ls src/pages/Partnership*)",
-      "Bash(curl -sI https://cidoma.com/partnerships)"
+      "Bash(curl -sI https://cidoma.com/partnerships)",
+      "mcp__10c2a5e4-638e-4496-953e-945a69e6be1e__list_projects",
+      "mcp__10c2a5e4-638e-4496-953e-945a69e6be1e__generate_typescript_types",
+      "Bash(grep -l \"AdminSidebar\\\\|AdminLayout\" src/pages/admin/*.tsx)"
     ]
   }
 }

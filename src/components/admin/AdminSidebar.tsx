@@ -5,7 +5,7 @@ import { useUserProfile } from "@/hooks/useUserProfile";
 import {
   LayoutDashboard, Landmark, HardHat, Handshake,
   Globe, ChevronLeft, ChevronRight, Gift,
-  MapPin, History, Users, FileText,
+  MapPin, History, Users, FileText, Search,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 
@@ -26,6 +26,7 @@ const AdminSidebar: React.FC = () => {
     { label: { ar: "الصفقات", en: "Deals" }, href: "/admincp/deals", icon: Handshake },
     { label: { ar: "العروض", en: "Offers" }, href: "/admincp/offers", icon: Gift },
     { label: { ar: "المحتوى", en: "Content" }, href: "/admincp/content", icon: FileText },
+    { label: { ar: "SEO", en: "SEO" }, href: "/admincp/seo", icon: Search },
     { label: { ar: "سجل العمليات", en: "Audit Log" }, href: "/admincp/audit", icon: History },
     { label: { ar: "فريق الإدارة", en: "Team" }, href: "/admincp/team", icon: Users },
   ];

@@ -58,6 +58,19 @@ const AdminContent = lazy(() => import("./pages/admin/AdminContent"));
 const AdminTeam = lazy(() => import("./pages/admin/AdminTeam"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 
+// SEO Control Center
+const AdminSeoLayout = lazy(() => import("./pages/admin/seo/AdminSeoLayout"));
+const AdminSeoOverview = lazy(() => import("./pages/admin/seo/AdminSeoOverview"));
+const AdminSeoPages = lazy(() => import("./pages/admin/seo/AdminSeoPages"));
+const AdminSeoTemplates = lazy(() => import("./pages/admin/seo/AdminSeoTemplates"));
+const AdminSeoEntities = lazy(() => import("./pages/admin/seo/AdminSeoEntities"));
+const AdminSeoRules = lazy(() => import("./pages/admin/seo/AdminSeoRules"));
+const AdminSeoRedirects = lazy(() => import("./pages/admin/seo/AdminSeoRedirects"));
+const AdminSeoIssues = lazy(() => import("./pages/admin/seo/AdminSeoIssues"));
+
+// Public SEO-generated page renderer
+const SeoRouteHandler = lazy(() => import("./pages/seo/SeoRouteHandler"));
+
 const OwnerDashboard = lazy(() => import("./pages/owner/OwnerDashboard"));
 const OwnerLands = lazy(() => import("./pages/owner/OwnerLands"));
 const OwnerRequests = lazy(() => import("./pages/owner/OwnerRequests"));
@@ -211,6 +224,27 @@ const App: React.FC = () => (
                   <Route path="/admincp/content" element={<AdminRoute><AdminContent /></AdminRoute>} />
                   <Route path="/admincp/team" element={<AdminRoute><AdminTeam /></AdminRoute>} />
                   <Route path="/admincp/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+
+                  {/* SEO Control Center — nested tabs */}
+                  <Route path="/admincp/seo" element={<AdminRoute><AdminSeoLayout /></AdminRoute>}>
+                    <Route index element={<AdminSeoOverview />} />
+                    <Route path="pages" element={<AdminSeoPages />} />
+                    <Route path="templates" element={<AdminSeoTemplates />} />
+                    <Route path="entities" element={<AdminSeoEntities />} />
+                    <Route path="rules" element={<AdminSeoRules />} />
+                    <Route path="redirects" element={<AdminSeoRedirects />} />
+                    <Route path="issues" element={<AdminSeoIssues />} />
+                  </Route>
+
+                  {/* Public SEO-generated pages */}
+                  <Route path="/sa/:city" element={<SeoRouteHandler />} />
+                  <Route path="/sa/:city/:district" element={<SeoRouteHandler />} />
+                  <Route path="/properties/:type" element={<SeoRouteHandler />} />
+                  <Route path="/services/:service" element={<SeoRouteHandler />} />
+                  <Route path="/services/:service/sa/:city" element={<SeoRouteHandler />} />
+                  <Route path="/developers/:slug" element={<SeoRouteHandler />} />
+                  <Route path="/companies/:slug" element={<SeoRouteHandler />} />
+                  <Route path="/topics/:slug" element={<SeoRouteHandler />} />
 
                   {/* Owner */}
                   <Route path="/owner/dashboard" element={<OwnerRoute><OwnerDashboard /></OwnerRoute>} />
