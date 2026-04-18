@@ -45,7 +45,7 @@ const Navbar: React.FC = () => {
         className={`fixed top-0 start-0 end-0 z-50 transition-all duration-300 ${
           scrolled
             ? "bg-white/95 backdrop-blur-xl shadow-[0_2px_10px_-2px_rgba(15,31,46,0.06)] border-b border-gray-100/80"
-            : "bg-gradient-to-b from-black/30 via-black/10 to-transparent backdrop-blur-[2px] border-b border-white/5"
+            : "bg-gradient-to-b from-black/30 via-black/10 to-transparent backdrop-blur-[2px]"
         }`}
         dir={isAr ? "rtl" : "ltr"}
       >
@@ -253,8 +253,8 @@ const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Spacer — skip on homepage so hero sits flush under the transparent navbar */}
-      {location.pathname !== "/" && <div className="h-[64px] md:h-[72px]" />}
+      {/* No spacer: public heroes (HeroSection/InnerHero/PageHeader) already reserve
+          enough top padding so content clears the fixed navbar without a white strip. */}
     </>
   );
 };
