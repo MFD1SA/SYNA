@@ -45,7 +45,7 @@ const Navbar: React.FC = () => {
         className={`fixed top-0 start-0 end-0 z-50 transition-all duration-300 ${
           scrolled
             ? "bg-white/95 backdrop-blur-xl shadow-[0_2px_10px_-2px_rgba(15,31,46,0.06)] border-b border-gray-100/80"
-            : "bg-[#0F1F2E]/20 backdrop-blur-md border-b border-white/10"
+            : "bg-gradient-to-b from-black/30 via-black/10 to-transparent backdrop-blur-[2px] border-b border-white/5"
         }`}
         dir={isAr ? "rtl" : "ltr"}
       >
@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
                     ? scrolled ? "text-[#1E374B]" : "text-white"
                     : scrolled
                       ? "text-gray-500 hover:text-[#1E374B] hover:bg-gray-50"
-                      : "text-white/70 hover:text-white hover:bg-white/10"
+                      : "text-white/85 hover:text-white hover:bg-white/10 drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
                 }`}
               >
                 {label}
@@ -90,7 +90,7 @@ const Navbar: React.FC = () => {
               className={`inline-flex items-center gap-1.5 text-[12px] font-bold h-9 px-3 rounded-lg transition-all ${
                 scrolled
                   ? "text-gray-500 hover:text-[#2B4C66] hover:bg-gray-50"
-                  : "text-white/80 hover:text-white hover:bg-white/10"
+                  : "text-white/90 hover:text-white hover:bg-white/10 drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
               }`}
             >
               <Globe className="w-3.5 h-3.5" strokeWidth={2} />
@@ -104,7 +104,7 @@ const Navbar: React.FC = () => {
               className={`group inline-flex items-center gap-1.5 text-[13px] font-semibold h-9 px-3.5 rounded-xl transition-all ${
                 scrolled
                   ? "text-gray-600 hover:text-[#A88A4A] hover:bg-[#C2A86B]/5"
-                  : "text-white hover:bg-[#C2A86B]/15"
+                  : "text-white hover:bg-white/10 drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
               }`}
             >
               <Crown className={`w-3.5 h-3.5 ${scrolled ? "text-[#C2A86B]" : "text-[#D7C084]"}`} strokeWidth={1.8} />
@@ -113,8 +113,10 @@ const Navbar: React.FC = () => {
 
             <Link
               to="/auth/login"
-              className={`group inline-flex items-center gap-2 h-10 px-5 bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[13px] font-bold rounded-xl hover:shadow-[0_8px_24px_-8px_rgba(43,76,102,0.55)] hover:-translate-y-0.5 transition-all duration-300 ${
-                scrolled ? "" : "ring-1 ring-white/20"
+              className={`group inline-flex items-center gap-2 h-10 px-5 text-[13px] font-bold rounded-xl hover:-translate-y-0.5 transition-all duration-300 ${
+                scrolled
+                  ? "bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white hover:shadow-[0_8px_24px_-8px_rgba(43,76,102,0.55)]"
+                  : "bg-white/10 text-white border border-white/25 backdrop-blur-md hover:bg-white/15 hover:border-white/40"
               }`}
             >
               <Building2 className="w-3.5 h-3.5" strokeWidth={1.8} />
@@ -251,8 +253,8 @@ const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Spacer */}
-      <div className="h-[64px] md:h-[72px]" />
+      {/* Spacer — skip on homepage so hero sits flush under the transparent navbar */}
+      {location.pathname !== "/" && <div className="h-[64px] md:h-[72px]" />}
     </>
   );
 };
