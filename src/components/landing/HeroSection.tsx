@@ -2,7 +2,9 @@ import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Crown, Building2, ShieldCheck } from "lucide-react";
-import heroHomeImg from "@/assets/hero-home.jpg";
+// Iconic Saudi architecture — King Abdullah Financial District (KAFD), Riyadh.
+// Night skyline with motion-blurred traffic, unmistakably Saudi.
+import heroHomeImg from "@/assets/riyadh-kafd.png";
 
 /**
  * Homepage hero — attached image is used as the FULL BACKGROUND of the hero.

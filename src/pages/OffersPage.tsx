@@ -6,9 +6,20 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { getActiveOffers, usageTypeLabels, offerTypeLabels, type RealEstateOffer } from "@/data/offers";
 import { supabase } from "@/integrations/supabase/client";
-import { MapPin, Ruler, Handshake, Gem, Sparkles, ArrowUpRight, Landmark } from "lucide-react";
+import { MapPin, Ruler, Handshake, Gem, Sparkles, ArrowUpRight, Landmark, ShieldCheck } from "lucide-react";
 import InnerHero from "@/components/landing/InnerHero";
 import heroImg from "@/assets/hero/offers.svg";
+// Saudi 3D fallback assets for offer cards missing an imageUrl —
+// rotated by a hash of the offer id so each card gets a stable image.
+import fallback1 from "@/assets/riyadh-kafd-elite.png";
+import fallback2 from "@/assets/riyadh-residential.png";
+import fallback3 from "@/assets/riyadh-kafd.png";
+const fallbackImages = [fallback1, fallback2, fallback3];
+const pickFallback = (id: string): string => {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return fallbackImages[h % fallbackImages.length];
+};
 
 type UnifiedItem = {
   id: string;
@@ -129,6 +140,21 @@ const OffersPage: React.FC = () => {
         <section className="-mt-10 relative z-10 pb-24">
           <div className="max-w-7xl mx-auto px-6">
 
+            {/* Privacy disclaimer — opportunities shown are demonstrative, not real listings */}
+            <div className="mb-6 rounded-2xl bg-gradient-to-r from-[#2B4C66]/[0.06] via-[#C2A86B]/[0.08] to-[#2B4C66]/[0.06] ring-1 ring-[#C2A86B]/30 px-5 md:px-6 py-4 md:py-4.5 flex items-start gap-3.5">
+              <ShieldCheck className="w-5 h-5 md:w-6 md:h-6 text-[#A88A4A] shrink-0 mt-0.5" strokeWidth={1.7} />
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] md:text-[14px] font-bold text-[#1E374B] mb-1 leading-snug">
+                  {isAr ? "الفرص المعروضة أمثلة توضيحية" : "Displayed opportunities are illustrative examples"}
+                </p>
+                <p className="text-[12px] md:text-[12.5px] text-gray-600 leading-[1.8]">
+                  {isAr
+                    ? "حفاظاً على خصوصية الملاك وحماية بياناتهم، جميع الفرص والصور المعروضة هنا تمثيلية لأغراض العرض فقط — الفرص الفعلية تُكشف للمطورين الموثّقين بعد التسجيل وتوقيع اتفاقية السرية."
+                    : "To protect landowner privacy, all opportunities and images shown are demonstrative only — actual opportunities are revealed to verified developers after registration and NDA signing."}
+                </p>
+              </div>
+            </div>
+
             {!loading && items.length > 0 && (
               <div className="mb-10 rounded-3xl bg-white ring-1 ring-slate-200/70 shadow-[0_8px_30px_-12px_rgba(15,31,46,0.08)] px-6 md:px-8 py-6 md:py-7 relative overflow-hidden">
                 <div className="absolute top-0 start-0 w-full h-0.5 bg-gradient-to-r from-[#C2A86B]/60 via-[#2B4C66]/40 to-[#C2A86B]/60" />
@@ -203,17 +229,11 @@ const OffersPage: React.FC = () => {
                       className="group bg-white rounded-3xl overflow-hidden transition-all duration-300 ring-1 ring-slate-200/70 hover:ring-slate-300/80 shadow-[0_4px_18px_-8px_rgba(15,31,46,0.08)] hover:shadow-[0_18px_48px_-16px_rgba(15,31,46,0.22)] hover:-translate-y-1 flex flex-col"
                     >
                       <div className="relative h-[240px] md:h-[260px] overflow-hidden">
-                        {item.imageUrl ? (
-                          <img
-                            src={item.imageUrl}
-                            alt={isAr ? item.title.ar : item.title.en}
-                            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.08]"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-[#2B4C66]/15 to-[#C2A86B]/10 flex items-center justify-center">
-                            <Landmark className="w-12 h-12 text-[#2B4C66]/40" strokeWidth={1.3} />
-                          </div>
-                        )}
+                        <img
+                          src={item.imageUrl || pickFallback(item.id)}
+                          alt={isAr ? item.title.ar : item.title.en}
+                          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.08]"
+                        />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
 
                         <div className="absolute top-4 start-4">

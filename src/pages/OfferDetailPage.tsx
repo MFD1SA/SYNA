@@ -12,7 +12,8 @@ import {
   Calendar, BadgeCheck, BarChart3, Award,
 } from "lucide-react";
 import InnerHero from "@/components/landing/InnerHero";
-import headerPartnershipsImg from "@/assets/header-partnerships.jpg";
+// Fallback hero for the offer detail page — premium Saudi architecture.
+import offerHeroFallback from "@/assets/riyadh-kafd-elite.png";
 
 const OfferDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -99,7 +100,7 @@ const OfferDetailPage: React.FC = () => {
         title={isAr ? offer.title.ar : offer.title.en}
         subtitle={isAr ? `${offer.city.ar} • ${offer.district.ar}` : `${offer.city.en} • ${offer.district.en}`}
         isAr={isAr}
-        image={headerPartnershipsImg}
+        image={offer.imageUrl || offerHeroFallback}
         icon={isPartnership ? Handshake : Gem}
         eyebrow={isAr ? offerTypeLabels[offer.type].ar : offerTypeLabels[offer.type].en}
       />

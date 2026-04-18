@@ -6,7 +6,9 @@ import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import CTASection from "@/components/landing/CTASection";
 import { LockKeyhole, UserCheck, Settings2, BarChart3, ArrowLeft, ArrowRight } from "lucide-react";
-import headerPartnershipsImg from "@/assets/header-partnerships.jpg";
+// Premium Saudi architecture — KAFD twisted tower at sunset. Matches the
+// visual caliber of the For-Developers hero.
+import ownersHeroImg from "@/assets/riyadh-kafd-elite.png";
 
 const ForOwners: React.FC = () => {
   const { t, lang } = useLanguage();
@@ -43,7 +45,8 @@ const ForOwners: React.FC = () => {
         title={isAr ? "لملاك الأراضي" : "For Landowners"}
         subtitle={isAr ? "حوّل أرضك إلى فرصة استثمارية حقيقية — بخصوصية تامة وتحكم كامل في كل خطوة" : "Transform your land into a real investment opportunity — with complete privacy and control at every step"}
         isAr={isAr}
-        image={headerPartnershipsImg}
+        image={ownersHeroImg}
+        illustrated
       />
 
       <section className="py-14 lg:py-16 bg-white" dir={isAr ? "rtl" : "ltr"}>
