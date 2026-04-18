@@ -70,7 +70,7 @@ const Partnerships: React.FC = () => {
     ? [
         { icon: Briefcase, title: "تحرير رأس المال", desc: "بدلاً من تجميد ملايين في شراء الأرض يستثمر المطور كامل ميزانيته في التصميم والبناء والتسويق لتحقيق أعلى جودة ممكنة وأفضل عائد" },
         { icon: Network, title: "توسيع المحفظة العقارية", desc: "الشراكة تتيح للمطور تنفيذ عدة مشاريع بالتوازي بدلاً من مشروع واحد مما يعني تنويعاً أكبر وتقليلاً للمخاطر ونمواً أسرع لأعماله" },
-        { icon: Target, title: "فرص جاهزة ومؤهلة", desc: "بدلاً من أشهر من البحث التقليدي عن أراضٍ مناسبة يجد المطور فرصاً حقيقية متاحة من ملاك جادين يبحثون عن شريك تطوير موثوق" },
+        { icon: Target, title: "فرص جاهزة ومؤهلة", desc: "بدلاً من أشهر من البحث التقليدي عن أراضي مناسبة يجد المطور فرصاً حقيقية متاحة من ملاك جادين يبحثون عن شريك تطوير موثوق" },
       ]
     : [
         { icon: Briefcase, title: "Free Up Capital", desc: "Instead of freezing millions in land purchase the developer invests their full budget in design construction and marketing to achieve the highest quality and best returns" },
@@ -175,7 +175,7 @@ const Partnerships: React.FC = () => {
               </h3>
               <p className="text-[14px] text-gray-500 leading-relaxed mb-8">
                 {isAr
-                  ? "نفّذ مشاريع أكثر بتكلفة أقل مع وصول مباشر لأراضٍ مؤهلة وملاك يبحثون عن مطورين موثوقين وأدوات رقمية متقدمة"
+                  ? "نفّذ مشاريع أكثر بتكلفة أقل مع وصول مباشر لأراضي مؤهلة وملاك يبحثون عن مطورين موثوقين وأدوات رقمية متقدمة"
                   : "Execute more projects at lower cost with direct access to qualified lands, owners seeking reliable developers, and advanced digital tools"}
               </p>
 
@@ -388,7 +388,7 @@ const Partnerships: React.FC = () => {
               </h3>
               <p className="text-[14px] text-white/60 leading-[1.9]">
                 {isAr
-                  ? "المالك يتحول من دافع رسوم إلى شريك في مشروع مربح والمطور يحصل على أراضٍ جاهزة دون تكلفة استحواذ والمجتمع يستفيد من مشاريع تنموية حقيقية تسهم في تحقيق رؤية المملكة 2030"
+                  ? "المالك يتحول من دافع رسوم إلى شريك في مشروع مربح والمطور يحصل على أراضي جاهزة دون تكلفة استحواذ والمجتمع يستفيد من مشاريع تنموية حقيقية تسهم في تحقيق رؤية المملكة 2030"
                   : "The owner transforms from a fee payer to a partner in a profitable project the developer gets ready lands without acquisition costs and the community benefits from real development projects contributing to the Kingdoms Vision 2030"}
               </p>
             </div>

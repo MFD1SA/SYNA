@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { getSeoOverview, type SeoOverviewCounts } from "@/services/seo/pages.service";
-import { triggerSeoGeneration, listGenerationRuns } from "@/services/seo/generation.service";
+import { triggerSeoGeneration, listGenerationRuns, waitForRun } from "@/services/seo/generation.service";
 import { listSeoRules } from "@/services/seo/rules.service";
 import type { SeoGenerationRule, SeoGenerationRun } from "@/types/seo";
 import {
@@ -63,16 +63,31 @@ const AdminSeoOverview: React.FC = () => {
   const handleGenerate = async (ruleId?: string) => {
     setRunning(true);
     try {
-      const result = await triggerSeoGeneration({ ruleId });
+      const started = await triggerSeoGeneration({ ruleId });
       toast({
-        title: isAr ? "اكتمل التوليد" : "Generation complete",
+        title: isAr ? "بدأ التوليد في الخلفية" : "Generation started",
         description: isAr
-          ? `تم توليد ${result.pagesGenerated} صفحة، وتخطّي ${result.pagesSkipped}.`
-          : `Generated ${result.pagesGenerated} pages, skipped ${result.pagesSkipped}.`,
+          ? "يجري التوليد في الخلفية. سنُحدِّث الحالة تلقائياً."
+          : "Running in background. Status will update automatically.",
       });
+      // Refresh overview immediately to show the new run as "running"
       await load();
+      // Poll for completion — safe because page stays usable during the wait
+      try {
+        const final = await waitForRun(started.runId, { pollIntervalMs: 4000, timeoutMs: 10 * 60 * 1000 });
+        toast({
+          title: final.status === "completed" ? (isAr ? "اكتمل التوليد" : "Generation complete") : (isAr ? "فشل التوليد" : "Generation failed"),
+          description: isAr
+            ? `تم توليد ${final.pages_generated} صفحة، وتخطّي ${final.pages_skipped}.`
+            : `Generated ${final.pages_generated} pages, skipped ${final.pages_skipped}.`,
+          variant: final.status === "failed" ? "destructive" : undefined,
+        });
+        await load();
+      } catch (pollErr: unknown) {
+        toast({ variant: "destructive", title: isAr ? "انتهت مهلة المتابعة" : "Polling timed out", description: String(pollErr) });
+      }
     } catch (err: unknown) {
-      toast({ variant: "destructive", title: isAr ? "فشل التوليد" : "Generation failed", description: String(err) });
+      toast({ variant: "destructive", title: isAr ? "فشل بدء التوليد" : "Failed to start generation", description: String(err) });
     } finally {
       setRunning(false);
     }

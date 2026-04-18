@@ -168,7 +168,7 @@ async function buildCityPage(
   }).filter(Boolean).join("\n");
 
   const internalLinks = [
-    { label: locale === "ar" ? `أراضٍ في ${name}` : `Lands in ${name}`, url: `/properties/lands` },
+    { label: locale === "ar" ? `أراضي في ${name}` : `Lands in ${name}`, url: `/properties/lands` },
     { label: locale === "ar" ? `مطورون عقاريون` : `Real Estate Developers`, url: `/services/real-estate-development` },
     { label: locale === "ar" ? `الشراكة العقارية` : `Real Estate Partnership`, url: `/services/real-estate-partnership` },
   ];
@@ -547,24 +547,10 @@ async function buildHybridServiceCity(
   };
 }
 
-// ─── Main handler ───────────────────────────────────────────────────
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
-
+// ─── Background worker: runs all the generation work off the hot path ───
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function runGeneration(admin: any, runId: string, ruleId: string | undefined, dryRun: boolean) {
   try {
-    const body = await req.json().catch(() => ({}));
-    const ruleId: string | undefined = body.ruleId;
-    const dryRun: boolean = body.dryRun === true;
-
-    const admin = createClient(supabaseUrl, serviceKey);
-
-    const { data: run, error: runError } = await admin
-      .from("seo_generation_runs")
-      .insert({ rule_id: ruleId ?? null, trigger_type: body.triggerType ?? "manual", status: "running" })
-      .select("id").single();
-    if (runError || !run) throw new Error(runError?.message ?? "Failed to create run");
-    const runId = (run as { id: string }).id;
-
     let rulesQuery = admin.from("seo_generation_rules").select("*").eq("is_active", true);
     if (ruleId) rulesQuery = rulesQuery.eq("id", ruleId);
     const { data: rules, error: rulesError } = await rulesQuery;
@@ -789,10 +775,75 @@ Deno.serve(async (req) => {
       errors,
       completed_at: new Date().toISOString(),
     }).eq("id", runId);
+    return { generated, skipped, skippedReasons, errors };
+  } catch (err) {
+    await admin.from("seo_generation_runs").update({
+      status: "failed",
+      errors: [{ reason: String(err) }],
+      completed_at: new Date().toISOString(),
+    }).eq("id", runId);
+    throw err;
+  }
+}
+
+// ─── Main handler: accepts the job, schedules it, returns immediately ───
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
+
+  try {
+    const body = await req.json().catch(() => ({}));
+    const ruleId: string | undefined = body.ruleId;
+    const dryRun: boolean = body.dryRun === true;
+    // Optional: when waitFor=true the caller blocks on results (smaller rules only).
+    const waitFor: boolean = body.waitFor === true;
+
+    const admin = createClient(supabaseUrl, serviceKey);
+
+    const { data: run, error: runError } = await admin
+      .from("seo_generation_runs")
+      .insert({ rule_id: ruleId ?? null, trigger_type: body.triggerType ?? "manual", status: "running" })
+      .select("id").single();
+    if (runError || !run) throw new Error(runError?.message ?? "Failed to create run");
+    const runId = (run as { id: string }).id;
+
+    // Kick off work
+    const workPromise = runGeneration(admin, runId, ruleId, dryRun);
+
+    if (waitFor) {
+      try {
+        const result = await workPromise;
+        return new Response(JSON.stringify({
+          runId,
+          status: "completed",
+          pagesGenerated: result.generated,
+          pagesSkipped: result.skipped,
+          skippedReasons: result.skippedReasons,
+          errors: result.errors,
+        }), { headers: { ...CORS, "Content-Type": "application/json" } });
+      } catch (err) {
+        return new Response(JSON.stringify({ runId, status: "failed", error: String(err) }), {
+          status: 500, headers: { ...CORS, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    // Default: fire-and-forget. Use EdgeRuntime.waitUntil so the worker
+    // keeps running after the HTTP response returns. Client polls
+    // seo_generation_runs for completion.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const runtime = (globalThis as any).EdgeRuntime;
+    if (runtime && typeof runtime.waitUntil === "function") {
+      runtime.waitUntil(workPromise.catch((err: unknown) => console.error("[seo-generate] background error:", err)));
+    } else {
+      // Fallback: swallow the promise to avoid unhandled rejection in environments without EdgeRuntime
+      workPromise.catch((err) => console.error("[seo-generate] background error:", err));
+    }
 
     return new Response(JSON.stringify({
-      runId, status: "completed", pagesGenerated: generated, pagesSkipped: skipped, skippedReasons, errors,
-    }), { headers: { ...CORS, "Content-Type": "application/json" } });
+      runId,
+      status: "started",
+      message: "Generation started in background. Poll seo_generation_runs for completion.",
+    }), { status: 202, headers: { ...CORS, "Content-Type": "application/json" } });
   } catch (err) {
     return new Response(JSON.stringify({ status: "failed", error: String(err) }), {
       status: 500, headers: { ...CORS, "Content-Type": "application/json" },

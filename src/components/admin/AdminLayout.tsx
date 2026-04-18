@@ -9,6 +9,7 @@ import { Bell, Search, X, Check, Loader2, Settings, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import ThemeToggle from "@/components/dashboard/ThemeToggle";
 
 interface SearchResult {
   type: "land" | "owner" | "developer" | "deal";
@@ -199,18 +200,18 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F7F8FA]" dir={isAr ? "rtl" : "ltr"}>
+    <div className="flex min-h-screen bg-[#F7F8FA] dark:bg-[#0B1623] text-slate-900 dark:text-slate-100" dir={isAr ? "rtl" : "ltr"}>
       <AdminSidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between bg-white/90 backdrop-blur-xl border-b border-gray-100/80 px-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+        <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl border-b border-gray-100/80 dark:border-white/10 px-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-4">
             {/* Page title / breadcrumb */}
             {currentPage && (
               <div className="hidden sm:flex items-center gap-2 me-2">
                 <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">{isAr ? "لوحة الإدارة" : "Admin"}</span>
                 <span className="text-gray-300 text-[10px]">/</span>
-                <span className="text-[13px] font-semibold text-[#1E374B]">{isAr ? currentPage.ar : currentPage.en}</span>
+                <span className="text-[13px] font-semibold text-[#1E374B] dark:text-white">{isAr ? currentPage.ar : currentPage.en}</span>
               </div>
             )}
 
@@ -218,7 +219,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="relative hidden md:block" ref={searchRef}>
               <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" strokeWidth={1.5} />
               <Input
-                className="h-9 w-72 rounded-lg bg-gray-50/60 border-gray-200/30 ps-10 text-[13px] text-gray-700 placeholder:text-gray-400 focus-visible:ring-1 focus-visible:ring-[#2B4C66]/20 focus-visible:border-[#2B4C66]/20 transition-all duration-200"
+                className="h-9 w-72 rounded-lg bg-gray-50/60 dark:bg-white/5 border-gray-200/30 dark:border-white/10 ps-10 text-[13px] text-gray-700 dark:text-slate-200 placeholder:text-gray-400 focus-visible:ring-1 focus-visible:ring-[#2B4C66]/20 focus-visible:border-[#2B4C66]/20 transition-all duration-200"
                 placeholder={isAr ? "بحث سريع..." : "Quick search..."}
                 value={searchQuery}
                 onChange={e => { setSearchQuery(e.target.value); setShowSearch(true); }}
@@ -260,6 +261,8 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </div>
 
           <div className="flex items-center gap-1.5">
+            <ThemeToggle />
+
             {/* Notifications */}
             <div className="relative" ref={notifRef}>
               <button

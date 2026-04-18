@@ -51,7 +51,9 @@
       "Bash(curl -sI https://cidoma.com/robots.txt)",
       "Bash(curl -s https://cidoma.com/robots.txt)",
       "Bash(curl -s https://cidoma.com/sitemap.xml)",
-      "Bash([ -f public/robots.txt ])"
+      "Bash([ -f public/robots.txt ])",
+      "Bash(curl -sX POST https://nqbobxtlwzvtzxqcdfdo.supabase.co/functions/v1/seo-generate -H \"Content-Type: application/json\" -d '{\"triggerType\":\"manual\"}')",
+      "Bash(curl -s -X POST https://nqbobxtlwzvtzxqcdfdo.supabase.co/functions/v1/seo-generate -H \"Content-Type: application/json\" -d '{\"triggerType\":\"manual\"}' --max-time 30)"
     ]
   }
 }
