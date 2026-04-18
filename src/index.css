@@ -314,6 +314,59 @@
     color: hsl(210 20% 96%) !important;
   }
 
+  /* ─────────────────────────────────────────────────────
+     LIGHT MODE — make cards legible against the cream canvas
+     The default card bg is white and the canvas is cream-white,
+     leaving cards blending in. Add visible borders + subtle shadow
+     so hierarchy reads cleanly.
+     ───────────────────────────────────────────────────── */
+  :root:not(.dark) [data-dashboard-root] .bg-white,
+  :root:not(.dark) [data-dashboard-root] .bg-card {
+    box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.04),
+                0 1px 4px -1px rgba(15, 23, 42, 0.06);
+  }
+  :root:not(.dark) [data-dashboard-root] .rounded-2xl.bg-white,
+  :root:not(.dark) [data-dashboard-root] .rounded-xl.bg-white {
+    border-color: hsl(215 15% 86%);
+  }
+  /* Tables: zebra rows + crisp borders in light */
+  :root:not(.dark) [data-dashboard-root] table thead {
+    background-color: hsl(30 15% 94%);
+    color: hsl(215 20% 30%);
+  }
+  :root:not(.dark) [data-dashboard-root] table tbody tr {
+    border-color: hsl(215 15% 90%);
+  }
+  :root:not(.dark) [data-dashboard-root] table tbody tr:hover {
+    background-color: hsl(30 15% 96%);
+  }
+  /* Light mode: ensure all body text reads as deep slate, not washed out */
+  :root:not(.dark) [data-dashboard-root] .text-muted-foreground {
+    color: hsl(215 20% 40%) !important;
+  }
+  :root:not(.dark) [data-dashboard-root] .text-gray-400 {
+    color: hsl(215 15% 45%) !important;
+  }
+  :root:not(.dark) [data-dashboard-root] .text-gray-500 {
+    color: hsl(215 18% 38%) !important;
+  }
+  /* KPI numbers in light — deep slate for strong contrast */
+  :root:not(.dark) [data-dashboard-root] p[class*="font-bold"][dir="ltr"] {
+    color: hsl(215 28% 17%);
+  }
+  /* Badges / pills — slightly warmer border for better definition */
+  :root:not(.dark) [data-dashboard-root] .bg-slate-100,
+  :root:not(.dark) [data-dashboard-root] .bg-slate-100\/70 {
+    background-color: hsl(30 10% 94%) !important;
+  }
+  /* Inputs in light — subtle contrast against cream canvas */
+  :root:not(.dark) [data-dashboard-root] input:not([type="checkbox"]):not([type="radio"]),
+  :root:not(.dark) [data-dashboard-root] textarea,
+  :root:not(.dark) [data-dashboard-root] select {
+    background-color: #ffffff;
+    border-color: hsl(215 15% 85%);
+  }
+
   * {
     @apply border-border outline-none;
     box-sizing: border-box;

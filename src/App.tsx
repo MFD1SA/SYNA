@@ -54,7 +54,6 @@ const AdminOffers = lazy(() => import("./pages/admin/AdminOffers"));
 const AdminOwners = lazy(() => import("./pages/admin/AdminOwners"));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminAuditLog = lazy(() => import("./pages/admin/AdminAuditLog"));
-const AdminContent = lazy(() => import("./pages/admin/AdminContent"));
 const AdminTeam = lazy(() => import("./pages/admin/AdminTeam"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 
@@ -223,7 +222,6 @@ const App: React.FC = () => (
                   <Route path="/admincp/offers" element={<AdminRoute><AdminOffers /></AdminRoute>} />
                   <Route path="/admincp/owners" element={<AdminRoute><AdminOwners /></AdminRoute>} />
                   <Route path="/admincp/audit" element={<AdminRoute><AdminAuditLog /></AdminRoute>} />
-                  <Route path="/admincp/content" element={<AdminRoute><AdminContent /></AdminRoute>} />
                   <Route path="/admincp/team" element={<AdminRoute><AdminTeam /></AdminRoute>} />
                   <Route path="/admincp/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
 
