@@ -78,7 +78,7 @@ const ForOwners: React.FC = () => {
             ))}
           </div>
           <div className="text-center mt-14">
-            <button onClick={() => navigate("/auth/register?role=owner")} className="inline-flex items-center gap-3 h-14 px-12 bg-[#2B4C66] text-white text-[15px] font-semibold rounded-xl hover:bg-[#1E374B] shadow-lg shadow-[#2B4C66]/20 transition-all duration-300">
+            <button onClick={() => navigate("/auth/login?type=owner")} className="inline-flex items-center gap-3 h-14 px-12 bg-[#2B4C66] text-white text-[15px] font-semibold rounded-xl hover:bg-[#1E374B] shadow-lg shadow-[#2B4C66]/20 transition-all duration-300">
               {t.forOwners.cta}
               <Arrow className="w-4 h-4" />
             </button>
