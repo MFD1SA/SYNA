@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import { Link } from "react-router-dom";
@@ -21,6 +22,34 @@ const Opportunities: React.FC = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "الفرص المتاحة" : "Available Opportunities");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | الفرص العقارية المتاحة — أراضٍ جاهزة للشراكة في السعودية"
+      : "SINA | Available Opportunities — Partnership-Ready Saudi Lands",
+    description: isAr
+      ? "تصفّح الفرص العقارية المتاحة في سينا: أراضٍ في مدن المملكة جاهزة لشراكات التطوير مع بيانات كافية لاتخاذ قرار استثماري مدروس."
+      : "Browse SINA real-estate opportunities — partnership-ready lands across Saudi cities with enough data to make informed development investment decisions.",
+    canonical: isAr ? "https://cidoma.com/opportunities" : "https://cidoma.com/en/opportunities",
+    ogTitle: isAr ? "سينا | الفرص العقارية المتاحة" : "SINA | Available Opportunities",
+    ogDescription: isAr
+      ? "أراضٍ في مدن المملكة جاهزة للشراكة التطويرية."
+      : "Lands across Saudi cities ready for development partnership.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/opportunities" : "https://cidoma.com/opportunities" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "الفرص" : "Opportunities", item: isAr ? "https://cidoma.com/opportunities" : "https://cidoma.com/en/opportunities" },
+        ],
+      },
+    ],
+  });
 
   const [lands, setLands] = useState<Land[]>([]);
   const [loading, setLoading] = useState(true);

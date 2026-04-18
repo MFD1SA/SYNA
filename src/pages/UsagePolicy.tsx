@@ -1,6 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import headerUsageImg from "@/assets/hero/usage.svg";
@@ -9,6 +10,34 @@ const UsagePolicyPage: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "سياسة الاستخدام" : "Usage Policy");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | سياسة الاستخدام — قواعد السلوك والمحتوى على المنصة"
+      : "SINA | Usage Policy — Platform Conduct and Content Rules",
+    description: isAr
+      ? "سياسة استخدام سينا تحدد القواعد المقبولة لحسابات الملاك والمطورين، ومعايير المحتوى، والسلوك المهني في منصة شراكات التطوير العقاري."
+      : "SINAs usage policy defines acceptable rules for owner and developer accounts, content standards, and professional conduct across the partnership platform.",
+    canonical: isAr ? "https://cidoma.com/usage-policy" : "https://cidoma.com/en/usage-policy",
+    ogTitle: isAr ? "سينا | سياسة الاستخدام" : "SINA Usage Policy",
+    ogDescription: isAr
+      ? "قواعد ومعايير استخدام منصة سينا بطريقة مهنية وآمنة."
+      : "Rules and standards for using SINA professionally and safely.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/usage-policy" : "https://cidoma.com/usage-policy" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "سياسة الاستخدام" : "Usage Policy", item: isAr ? "https://cidoma.com/usage-policy" : "https://cidoma.com/en/usage-policy" },
+        ],
+      },
+    ],
+  });
 
   const sections = isAr ? [
     { title: "1. الاستخدام المقبول", text: "يجب استخدام سينا فقط للأغراض المشروعة المتعلقة بشراكات التطوير العقاري. يُحظر أي استخدام ينتهك الأنظمة أو يضر بأطراف أخرى." },

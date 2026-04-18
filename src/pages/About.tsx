@@ -1,6 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import CTASection from "@/components/landing/CTASection";
@@ -13,6 +14,34 @@ const About: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "من نحن" : "About SINA");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | من نحن — منصة شراكات التطوير العقاري في السعودية"
+      : "About SINA | Real-Estate Partnership Platform in Saudi Arabia",
+    description: isAr
+      ? "تعرّف على سينا: منصة متخصصة تربط ملاك الأراضي بالمطورين العقاريين في المملكة بشراكات موثّقة، حوكمة رقمية، وخصوصية متدرجة تحمي جميع الأطراف."
+      : "Meet SINA — the specialized platform connecting Saudi landowners with verified developers through governed partnerships, tiered privacy, and end-to-end digital workflows.",
+    canonical: isAr ? "https://cidoma.com/about" : "https://cidoma.com/en/about",
+    ogTitle: isAr ? "سينا | من نحن" : "About SINA",
+    ogDescription: isAr
+      ? "رؤيتنا ورسالتنا وقيمنا في تنظيم شراكات التطوير العقاري."
+      : "Our vision, mission, and values in organizing real-estate development partnerships.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/about" : "https://cidoma.com/about" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "من نحن" : "About", item: isAr ? "https://cidoma.com/about" : "https://cidoma.com/en/about" },
+        ],
+      },
+    ],
+  });
 
   const pillars = isAr
     ? [

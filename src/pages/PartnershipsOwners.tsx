@@ -1,6 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import { useNavigate } from "react-router-dom";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
@@ -16,6 +17,35 @@ const PartnershipsOwners: React.FC = () => {
   const navigate = useNavigate();
   const Arrow = isAr ? ArrowLeft : ArrowRight;
   usePageTitle(isAr ? "شراكات الملاك" : "Partnerships for Landowners");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | شراكات لملاك الأراضي — عوائد أعلى وخصوصية كاملة"
+      : "SINA | Partnerships for Landowners — Higher Returns, Full Privacy",
+    description: isAr
+      ? "لملاك الأراضي في السعودية: ادخل شراكة تطويرية بدلاً من البيع المباشر، مع نظام إفصاح متدرج، مطورين متحقق منهم، وحماية قانونية شاملة."
+      : "Saudi landowners: enter a development partnership instead of a direct sale — tiered disclosure, verified developers, and comprehensive legal protection.",
+    canonical: isAr ? "https://cidoma.com/partnerships/owners" : "https://cidoma.com/en/partnerships/owners",
+    ogTitle: isAr ? "سينا | شراكات لملاك الأراضي" : "SINA | Partnerships for Landowners",
+    ogDescription: isAr
+      ? "عوائد تفوق البيع المباشر مع تحكم كامل بقراراتك."
+      : "Returns that exceed direct sale — with full control over your decisions.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/partnerships/owners" : "https://cidoma.com/partnerships/owners" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "الشراكات" : "Partnerships", item: isAr ? "https://cidoma.com/partnerships" : "https://cidoma.com/en/partnerships" },
+          { "@type": "ListItem", position: 3, name: isAr ? "للملاك" : "For Landowners", item: isAr ? "https://cidoma.com/partnerships/owners" : "https://cidoma.com/en/partnerships/owners" },
+        ],
+      },
+    ],
+  });
 
   const ownerFeatures = isAr
     ? [

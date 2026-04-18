@@ -1,6 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import heroImg from "@/assets/hero/privacy.svg";
@@ -9,6 +10,34 @@ const PrivacyPage: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "سياسة الخصوصية" : "Privacy Policy");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | سياسة الخصوصية — كيف نحمي بياناتك ومعلومات أرضك"
+      : "SINA | Privacy Policy — How We Protect Your Data and Land Info",
+    description: isAr
+      ? "سياسة خصوصية سينا تشرح كيف نجمع ونستخدم ونحمي بيانات الملاك والمطورين، ونظام الإفصاح المتدرج للأراضي في شراكات التطوير العقاري بالسعودية."
+      : "SINAs privacy policy explains how we collect, use, and protect owner and developer data, plus the tiered land-disclosure system inside Saudi partnerships.",
+    canonical: isAr ? "https://cidoma.com/privacy" : "https://cidoma.com/en/privacy",
+    ogTitle: isAr ? "سينا | سياسة الخصوصية" : "SINA Privacy Policy",
+    ogDescription: isAr
+      ? "حماية بياناتك ونظام إفصاح متدرج لبيانات الأرض."
+      : "Data protection and a tiered disclosure system for land data.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/privacy" : "https://cidoma.com/privacy" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "سياسة الخصوصية" : "Privacy Policy", item: isAr ? "https://cidoma.com/privacy" : "https://cidoma.com/en/privacy" },
+        ],
+      },
+    ],
+  });
 
   const sections = isAr ? [
     { title: "1. جمع البيانات", text: "نقوم بجمع البيانات الشخصية التي تقدمها عند التسجيل مثل الاسم والبريد الإلكتروني ورقم الجوال، بالإضافة إلى بيانات الأرض أو السجل التجاري بحسب نوع الحساب." },

@@ -1,6 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import { useNavigate } from "react-router-dom";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
@@ -16,6 +17,34 @@ const ForOwners: React.FC = () => {
   const navigate = useNavigate();
   const Arrow = isAr ? ArrowLeft : ArrowRight;
   usePageTitle(isAr ? "للملاك" : "For Landowners");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | لملاك الأراضي — شراكات تطوير بخصوصية كاملة"
+      : "SINA for Landowners | Development Partnerships with Full Privacy",
+    description: isAr
+      ? "ملاك الأراضي في السعودية: سجّل أرضك بسرية تامة، استقبل طلبات شراكة من مطورين موثّقين، واحصل على عوائد تفوق البيع المباشر عبر سينا."
+      : "Saudi landowners: list your land with complete confidentiality, receive partnership requests from verified developers, and earn returns exceeding direct sale via SINA.",
+    canonical: isAr ? "https://cidoma.com/for-owners" : "https://cidoma.com/en/for-owners",
+    ogTitle: isAr ? "سينا | لملاك الأراضي" : "SINA for Landowners",
+    ogDescription: isAr
+      ? "خصوصية متدرجة وعوائد أعلى من البيع التقليدي."
+      : "Tiered privacy and higher returns than a traditional land sale.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/for-owners" : "https://cidoma.com/for-owners" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "للملاك" : "For Landowners", item: isAr ? "https://cidoma.com/for-owners" : "https://cidoma.com/en/for-owners" },
+        ],
+      },
+    ],
+  });
 
   const values = [
     { icon: LockKeyhole, title: t.forOwners.value1, desc: t.forOwners.value1Desc },

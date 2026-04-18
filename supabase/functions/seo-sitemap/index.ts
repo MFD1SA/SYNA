@@ -27,7 +27,23 @@ const staticPaths = [
   { loc: "/blog", changefreq: "weekly", priority: "0.6" },
   { loc: "/terms", changefreq: "yearly", priority: "0.1" },
   { loc: "/privacy", changefreq: "yearly", priority: "0.1" },
+  { loc: "/usage-policy", changefreq: "yearly", priority: "0.1" },
+  { loc: "/subscriptions", changefreq: "monthly", priority: "0.6" },
+  { loc: "/for-owners", changefreq: "monthly", priority: "0.7" },
+  { loc: "/for-developers", changefreq: "monthly", priority: "0.7" },
 ];
+
+// Every static path has an English twin at /en<path>. Emit both with
+// reciprocal hreflang so Google picks the right locale per searcher.
+function staticHreflang(path: string): string {
+  const ar = `${SITE}${path === "/" ? "/" : path}`;
+  const en = `${SITE}/en${path === "/" ? "" : path}`;
+  return (
+    `    <xhtml:link rel="alternate" hreflang="ar" href="${ar}"/>\n` +
+    `    <xhtml:link rel="alternate" hreflang="en" href="${en}"/>\n` +
+    `    <xhtml:link rel="alternate" hreflang="x-default" href="${ar}"/>`
+  );
+}
 
 function escapeXml(text: string): string {
   return text
@@ -90,10 +106,15 @@ Deno.serve(async (_req) => {
 
   const urls: string[] = [];
 
-  // Static paths
+  // Static paths — emit the Arabic URL and an English sibling via hreflang
   staticPaths.forEach((s) => {
     urls.push(
-      `  <url>\n    <loc>${SITE}${s.loc}</loc>\n    <changefreq>${s.changefreq}</changefreq>\n    <priority>${s.priority}</priority>\n  </url>`
+      `  <url>\n    <loc>${SITE}${s.loc}</loc>\n    <changefreq>${s.changefreq}</changefreq>\n    <priority>${s.priority}</priority>\n${staticHreflang(s.loc)}\n  </url>`
+    );
+    // Also emit the English URL itself so Google has a direct entry
+    const enLoc = s.loc === "/" ? "/en" : `/en${s.loc}`;
+    urls.push(
+      `  <url>\n    <loc>${SITE}${enLoc}</loc>\n    <changefreq>${s.changefreq}</changefreq>\n    <priority>${s.priority}</priority>\n${staticHreflang(s.loc)}\n  </url>`
     );
   });
 

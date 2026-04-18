@@ -1,6 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import { useNavigate } from "react-router-dom";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
@@ -20,6 +21,34 @@ const Partnerships: React.FC = () => {
   const navigate = useNavigate();
   const Arrow = isAr ? ArrowLeft : ArrowRight;
   usePageTitle(isAr ? "شراكات التطوير" : "Development Partnerships");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | شراكات التطوير العقاري — ملاك ومطورون في بيئة موحّدة"
+      : "SINA | Real-Estate Development Partnerships — Owners & Developers",
+    description: isAr
+      ? "نموذج شراكة تطويرية جديد يجمع ملاك الأراضي بالمطورين العقاريين في السعودية ضمن إطار موثّق، عوائد مضاعفة، وحماية قانونية لكل الأطراف."
+      : "A new partnership model uniting Saudi landowners and developers within a governed framework — multiplied returns, legal protection, and verified counterparties.",
+    canonical: isAr ? "https://cidoma.com/partnerships" : "https://cidoma.com/en/partnerships",
+    ogTitle: isAr ? "سينا | شراكات التطوير العقاري" : "SINA | Development Partnerships",
+    ogDescription: isAr
+      ? "ملاك ومطورون في إطار شراكة موثّق ومحكم."
+      : "Owners and developers inside a trusted, governed partnership framework.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/partnerships" : "https://cidoma.com/partnerships" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "الشراكات" : "Partnerships", item: isAr ? "https://cidoma.com/partnerships" : "https://cidoma.com/en/partnerships" },
+        ],
+      },
+    ],
+  });
 
   const ownerHighlights = isAr
     ? [

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import heroImg from "@/assets/hero/blog.svg";
@@ -176,6 +177,34 @@ const Blog: React.FC = () => {
   const isAr = lang === "ar";
   const Arrow = isAr ? ArrowLeft : ArrowRight;
   usePageTitle(isAr ? "المدونة" : "Blog");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | المدونة — رؤى ومقالات في شراكات التطوير العقاري"
+      : "SINA Blog | Insights & Articles on Real-Estate Development Partnerships",
+    description: isAr
+      ? "مقالات سينا التخصصية حول شراكات التطوير العقاري، نماذج الاستثمار، حوكمة الصفقات، ورؤية 2030 — محتوى موجّه لملاك الأراضي والمطورين في السعودية."
+      : "SINAs specialist articles on real-estate development partnerships, investment models, deal governance, and Vision 2030 — for Saudi landowners and developers.",
+    canonical: isAr ? "https://cidoma.com/blog" : "https://cidoma.com/en/blog",
+    ogTitle: isAr ? "سينا | المدونة" : "SINA Blog",
+    ogDescription: isAr
+      ? "محتوى متخصص في التطوير العقاري والشراكات في المملكة."
+      : "Specialist content on Saudi real-estate development and partnerships.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/blog" : "https://cidoma.com/blog" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "المدونة" : "Blog", item: isAr ? "https://cidoma.com/blog" : "https://cidoma.com/en/blog" },
+        ],
+      },
+    ],
+  });
 
   const [expanded, setExpanded] = useState<string | null>(null);
 

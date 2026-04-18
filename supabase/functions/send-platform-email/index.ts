@@ -7,6 +7,7 @@ const publicSiteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://cidoma.com";
 const allowedRootDomain = (Deno.env.get("ALLOWED_ROOT_DOMAIN") ?? "cidoma.com").toLowerCase();
 const RESEND_API_KEY = (Deno.env.get("RESEND_API_KEY") || "").replace(/[^\x20-\x7E]/g, "").trim();
 const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") ?? "";
+const EMAIL_FROM = Deno.env.get("EMAIL_FROM") ?? "SYNA Platform <onboarding@resend.dev>";
 
 /* ── CORS ── */
 const isAllowedOrigin = (o: string | null) => {
@@ -395,7 +396,7 @@ async function sendAndLog(
             Authorization: `Bearer ${RESEND_API_KEY}`,
           },
           body: JSON.stringify({
-            from: "SYNA Platform <onboarding@resend.dev>",
+            from: EMAIL_FROM,
             to: [recipient.email],
             subject: template.subject,
             html: template.html,

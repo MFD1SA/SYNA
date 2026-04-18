@@ -17,6 +17,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -798,6 +799,44 @@ Deno.serve(async (req) => {
     const waitFor: boolean = body.waitFor === true;
 
     const admin = createClient(supabaseUrl, serviceKey);
+
+    // ── Admin-only gate ──────────────────────────────────────────────
+    // Two valid callers: (a) a human admin from the UI with a JWT; or
+    // (b) pg_cron hitting us server-side with the service-role key.
+    // Everything else is rejected — SEO generation rewrites sitewide
+    // content and calls OpenAI (costs $$). Any authenticated user must
+    // NOT be able to trigger this.
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const bearer = authHeader.replace(/^Bearer\s+/i, "").trim();
+    const isServiceRoleCall = bearer && bearer === serviceKey;
+
+    if (!isServiceRoleCall) {
+      if (!bearer) {
+        return new Response(JSON.stringify({ error: "Missing authorization" }), {
+          status: 401, headers: { ...CORS, "Content-Type": "application/json" },
+        });
+      }
+      const userClient = createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: `Bearer ${bearer}` } },
+      });
+      const { data: { user }, error: userErr } = await userClient.auth.getUser();
+      if (userErr || !user) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401, headers: { ...CORS, "Content-Type": "application/json" },
+        });
+      }
+      const { data: roleRow } = await admin
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (!roleRow) {
+        return new Response(JSON.stringify({ error: "Admin access required" }), {
+          status: 403, headers: { ...CORS, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     const { data: run, error: runError } = await admin
       .from("seo_generation_runs")

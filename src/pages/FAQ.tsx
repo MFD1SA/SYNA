@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import heroImg from "@/assets/hero/faq.svg";
@@ -11,6 +12,34 @@ const FAQ: React.FC = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "الأسئلة الشائعة" : "FAQ");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | الأسئلة الشائعة حول شراكات التطوير العقاري"
+      : "SINA FAQ | Real-Estate Development Partnership Questions",
+    description: isAr
+      ? "إجابات واضحة حول عمل منصة سينا: تسجيل الأراضي، تأهيل المطورين، خصوصية البيانات، إدارة الصفقات، والعوائد في شراكات التطوير العقاري بالسعودية."
+      : "Clear answers about how SINA works — land registration, developer verification, data privacy, deal management, and returns in Saudi real-estate partnerships.",
+    canonical: isAr ? "https://cidoma.com/faq" : "https://cidoma.com/en/faq",
+    ogTitle: isAr ? "سينا | الأسئلة الشائعة" : "SINA FAQ",
+    ogDescription: isAr
+      ? "كل ما تحتاج معرفته عن شراكات التطوير العقاري عبر سينا."
+      : "Everything you need to know about development partnerships on SINA.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/faq" : "https://cidoma.com/faq" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "الأسئلة الشائعة" : "FAQ", item: isAr ? "https://cidoma.com/faq" : "https://cidoma.com/en/faq" },
+        ],
+      },
+    ],
+  });
 
   const categories = t.faqPage.categories;
   const items = t.faqPage.items as unknown as { q: string; a: string; cat: string }[];

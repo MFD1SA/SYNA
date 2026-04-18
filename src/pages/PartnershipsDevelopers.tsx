@@ -1,6 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import { useNavigate } from "react-router-dom";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
@@ -16,6 +17,35 @@ const PartnershipsDevelopers: React.FC = () => {
   const navigate = useNavigate();
   const Arrow = isAr ? ArrowLeft : ArrowRight;
   usePageTitle(isAr ? "شراكات المطورين" : "Partnerships for Developers");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | شراكات للمطورين — فرص تطوير بدون تكلفة استحواذ"
+      : "SINA | Partnerships for Developers — Build Without Land Acquisition",
+    description: isAr
+      ? "للمطورين العقاريين في السعودية: شراكات تطويرية على أراضٍ موثّقة دون تجميد رأس المال في الاستحواذ، ومتابعة رقمية كاملة حتى إغلاق الصفقة."
+      : "Saudi developers: partnership-ready lands without freezing capital on acquisition, plus full digital tracking from formal request to closing inside SINA.",
+    canonical: isAr ? "https://cidoma.com/partnerships/developers" : "https://cidoma.com/en/partnerships/developers",
+    ogTitle: isAr ? "سينا | شراكات للمطورين" : "SINA | Partnerships for Developers",
+    ogDescription: isAr
+      ? "نفّذ مشاريع أكثر بنفس الميزانية عبر نموذج الشراكة."
+      : "Execute more projects on the same budget through the partnership model.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/partnerships/developers" : "https://cidoma.com/partnerships/developers" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "الشراكات" : "Partnerships", item: isAr ? "https://cidoma.com/partnerships" : "https://cidoma.com/en/partnerships" },
+          { "@type": "ListItem", position: 3, name: isAr ? "للمطورين" : "For Developers", item: isAr ? "https://cidoma.com/partnerships/developers" : "https://cidoma.com/en/partnerships/developers" },
+        ],
+      },
+    ],
+  });
 
   const devFeatures = isAr
     ? [

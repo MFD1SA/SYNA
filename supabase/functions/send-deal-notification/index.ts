@@ -2,6 +2,9 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const publicSiteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://cidoma.com";
+// From-address for outbound email. Must be a domain verified in Resend.
+// Default is the Resend sandbox — OK for dev but should be overridden in prod.
+const EMAIL_FROM = Deno.env.get("EMAIL_FROM") ?? "SYNA Platform <onboarding@resend.dev>";
 const allowedRootDomain = (Deno.env.get("ALLOWED_ROOT_DOMAIN") ?? "cidoma.com").toLowerCase();
 
 const isAllowedOrigin = (origin: string | null) => {
@@ -666,7 +669,7 @@ serve(async (req) => {
           ["Content-Type", "application/json"],
         ]),
         body: JSON.stringify({
-          from: "SYNA Platform <onboarding@resend.dev>",
+          from: EMAIL_FROM,
           to: [to],
           subject,
           html,
@@ -691,7 +694,7 @@ serve(async (req) => {
                 ["Content-Type", "application/json"],
               ]),
               body: JSON.stringify({
-                from: "SYNA Platform <onboarding@resend.dev>",
+                from: EMAIL_FROM,
                 to: [recipient],
                 subject,
                 html,

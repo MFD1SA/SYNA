@@ -1,73 +1,53 @@
-# Welcome to your Lovable project
+# SINA / CIDOMA — Real-Estate Partnership Platform
 
-## Project info
+Arabic-first digital platform connecting Saudi landowners with real-estate
+developers under vetted, audited partnership agreements. Production site:
+https://cidoma.com.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Stack
 
-## How can I edit this code?
+- **Frontend**: React 18 + Vite 5 + TypeScript 5.8
+- **UI**: Tailwind + Radix/shadcn + lucide-react
+- **Backend**: Supabase (Postgres + Auth + Storage + Realtime + Edge Functions)
+- **Hosting**: Vercel (SPA + rewrites to Supabase edge functions for `/sitemap.xml`, `/robots.txt`)
+- **Observability**: Resend (transactional email), pg_cron (scheduled jobs)
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Quick start
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+git clone <repo>
+cd syna
+cp .env.example .env.local   # fill in your own keys
+npm install
+npm run dev                  # http://localhost:5173
 ```
 
-**Edit a file directly in GitHub**
+Required env vars are listed in `.env.example`. The app will not build
+without a valid Supabase URL + publishable key.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Scripts
 
-**Use GitHub Codespaces**
+| Command            | What it does                          |
+| ------------------ | ------------------------------------- |
+| `npm run dev`      | Vite dev server with HMR              |
+| `npm run build`    | Production build → `dist/`            |
+| `npm run lint`     | ESLint on `src/`                      |
+| `npm run preview`  | Preview the production build          |
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Documentation
 
-## What technologies are used for this project?
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** — module layout, data model, auth
+  flow, SEO pipeline.
+- **[RUNBOOK.md](./RUNBOOK.md)** — on-call procedures: deployments,
+  rollbacks, common incidents, secrets rotation.
+- **[.env.example](./.env.example)** — every env var consumed by the
+  frontend + every secret referenced by the edge functions.
 
-This project is built with:
+## Deploying
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Pushes to `main` are auto-deployed by Vercel. Edge functions are
+deployed separately via the Supabase MCP or CLI — see `RUNBOOK.md`.
 
-## How can I deploy this project?
+## License
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Proprietary. © SINA Real Estate Investments.

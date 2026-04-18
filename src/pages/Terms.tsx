@@ -1,6 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import heroImg from "@/assets/hero/terms.svg";
@@ -9,6 +10,34 @@ const TermsPage: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "الشروط والأحكام" : "Terms & Conditions");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | الشروط والأحكام لاستخدام منصة الشراكات العقارية"
+      : "SINA | Terms & Conditions for the Real-Estate Partnership Platform",
+    description: isAr
+      ? "الشروط والأحكام التي تحكم استخدام سينا من قِبل ملاك الأراضي والمطورين العقاريين في المملكة العربية السعودية، بما يشمل الحقوق والمسؤوليات."
+      : "Terms governing SINA use by landowners and developers in Saudi Arabia — including rights, obligations, privacy, IP, liability limits, and account termination.",
+    canonical: isAr ? "https://cidoma.com/terms" : "https://cidoma.com/en/terms",
+    ogTitle: isAr ? "سينا | الشروط والأحكام" : "SINA Terms & Conditions",
+    ogDescription: isAr
+      ? "الإطار القانوني لاستخدام منصة سينا."
+      : "The legal framework for using the SINA platform.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/terms" : "https://cidoma.com/terms" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "الشروط والأحكام" : "Terms & Conditions", item: isAr ? "https://cidoma.com/terms" : "https://cidoma.com/en/terms" },
+        ],
+      },
+    ],
+  });
 
   const sections = isAr ? [
     { title: "1. مقدمة", text: "مرحباً بك في سينا، الشركة المتخصصة في تسهيل شراكات التطوير العقاري بين ملاك الأراضي والمطورين في المملكة العربية السعودية. باستخدامك لخدماتنا فإنك توافق على الالتزام بهذه الشروط والأحكام." },

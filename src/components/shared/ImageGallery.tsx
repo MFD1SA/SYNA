@@ -15,12 +15,13 @@ interface Props {
 const ImageGallery: React.FC<Props> = ({ images, isAr = false, className = "" }) => {
   const [active, setActive] = useState<number | null>(null);
   const valid = (images || []).filter(Boolean);
-  if (!valid.length) return null;
 
   const close = () => setActive(null);
   const prev = () => setActive((i) => (i === null ? null : (i - 1 + valid.length) % valid.length));
   const next = () => setActive((i) => (i === null ? null : (i + 1) % valid.length));
 
+  // Keyboard handler — hook must run unconditionally (before any early
+  // returns) to satisfy React's Rules of Hooks.
   React.useEffect(() => {
     if (active === null) return;
     const handler = (e: KeyboardEvent) => {
@@ -30,7 +31,10 @@ const ImageGallery: React.FC<Props> = ({ images, isAr = false, className = "" })
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [active, isAr]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, isAr, valid.length]);
+
+  if (!valid.length) return null;
 
   return (
     <>

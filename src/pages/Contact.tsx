@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import heroImg from "@/assets/hero/contact.svg";
@@ -11,6 +12,34 @@ const Contact: React.FC = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "تواصل معنا" : "Contact Us");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | تواصل معنا — دعم شراكات التطوير العقاري"
+      : "Contact SINA | Real-Estate Partnership Support Team",
+    description: isAr
+      ? "تواصل مع فريق سينا للاستفسارات والدعم حول شراكات التطوير العقاري، تسجيل الأراضي، تأهيل المطورين، أو أي خدمة من خدمات المنصة في المملكة."
+      : "Reach the SINA team for inquiries, developer onboarding, landowner support, and partnership guidance across our Saudi real-estate development platform.",
+    canonical: isAr ? "https://cidoma.com/contact" : "https://cidoma.com/en/contact",
+    ogTitle: isAr ? "سينا | تواصل معنا" : "Contact SINA",
+    ogDescription: isAr
+      ? "فريق دعم متخصص في شراكات التطوير العقاري جاهز لخدمتك."
+      : "A specialized support team ready to help with your real-estate partnership questions.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/contact" : "https://cidoma.com/contact" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "تواصل معنا" : "Contact", item: isAr ? "https://cidoma.com/contact" : "https://cidoma.com/en/contact" },
+        ],
+      },
+    ],
+  });
 
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [loading, setLoading] = useState(false);

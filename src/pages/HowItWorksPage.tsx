@@ -1,6 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import heroImg from "@/assets/hero/how-it-works.svg";
@@ -15,6 +16,34 @@ const HowItWorksPage: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "كيف تعمل سينا" : "How SINA Works");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | كيف تعمل المنصة — رحلة الشراكة خطوة بخطوة"
+      : "How SINA Works | The Real-Estate Partnership Journey Explained",
+    description: isAr
+      ? "اكتشف كيف تسهّل سينا شراكات التطوير العقاري في السعودية: من تسجيل الأرض أو تأهيل المطور إلى التفاوض، توثيق العقود، وإغلاق الصفقة."
+      : "See how SINA powers Saudi real-estate partnerships end-to-end — from land listing and developer verification to negotiation, contract documentation, and deal closing.",
+    canonical: isAr ? "https://cidoma.com/how-it-works" : "https://cidoma.com/en/how-it-works",
+    ogTitle: isAr ? "سينا | كيف تعمل المنصة" : "How SINA Works",
+    ogDescription: isAr
+      ? "رحلة شراكة واضحة وموثّقة من الطلب حتى الإغلاق."
+      : "A clear, documented partnership journey from request to closing.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/how-it-works" : "https://cidoma.com/how-it-works" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "كيف تعمل سينا" : "How It Works", item: isAr ? "https://cidoma.com/how-it-works" : "https://cidoma.com/en/how-it-works" },
+        ],
+      },
+    ],
+  });
 
   const ownerSteps = isAr
     ? [

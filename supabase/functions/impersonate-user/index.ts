@@ -117,18 +117,21 @@ Deno.serve(async (req) => {
       throw new Error("Session tokens not returned from verification");
     }
 
-    // Build the redirect URL pointing to the PRODUCTION site with session tokens in hash
-    // Supabase JS client auto-detects tokens in the URL hash and establishes the session
-    const hashParams = new URLSearchParams({
+    // Build the redirect URL with tokens in the URL FRAGMENT (#t=<base64>).
+    // URL fragments are never transmitted to any server (not logged by CDN,
+    // proxies, or our own Deno runtime) — this is the only reason it's safe
+    // to ship session tokens this way. The callback page reads them from
+    // window.location.hash, wipes the hash, and hands them to supabase.auth.
+    //
+    // Security hardening (2026-04): we DO NOT include access/refresh tokens
+    // in the JSON response body anymore — that body *is* transmitted and
+    // would end up in the browser's network-log / devtools / any
+    // well-meaning error reporter. The caller receives ONLY this opaque URL.
+    const payload = btoa(JSON.stringify({
       access_token: session.access_token,
       refresh_token: session.refresh_token,
-      expires_in: String(session.expires_in || 3600),
-      expires_at: String(session.expires_at || Math.floor(Date.now() / 1000) + 3600),
-      token_type: "bearer",
-      type: "magiclink",
-    });
-
-    const redirectUrl = `${publicSiteUrl}/impersonate-callback#${hashParams.toString()}`;
+    }));
+    const redirectUrl = `${publicSiteUrl}/impersonate-callback#t=${encodeURIComponent(payload)}`;
 
     // Audit log: record impersonation action server-side (mandatory — fail if not recorded)
     const { error: auditError } = await adminClient.from("audit_logs").insert({
@@ -147,11 +150,12 @@ Deno.serve(async (req) => {
       throw new Error("Impersonation blocked: audit log failed");
     }
 
+    // NOTE: we deliberately do NOT return access_token / refresh_token in
+    // the JSON body. They live only inside redirectUrl's fragment (never
+    // sent to any server). Callers MUST consume `verify_url` by opening it.
     return new Response(JSON.stringify({
       success: true,
       verify_url: redirectUrl,
-      access_token: session.access_token,
-      refresh_token: session.refresh_token,
       email: targetUser.user.email,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

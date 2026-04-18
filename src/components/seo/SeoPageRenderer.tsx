@@ -116,16 +116,10 @@ export const SeoPageRenderer: React.FC<Props> = ({ slug }) => {
       : { title: isAr ? "جاري التحميل..." : "Loading..." }
   );
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="h-7 w-7 animate-spin rounded-full border-r-2 border-t-2 border-[#2B4C66]" />
-      </div>
-    );
-  }
-
   // Sanitize stored HTML before rendering — prevents stored-XSS if a
   // seo_pages row is compromised or authored with unsafe markup.
+  // NOTE: hook must run unconditionally (before any early returns) to
+  // satisfy React's Rules of Hooks.
   const sanitizedBody = useMemo(() => {
     if (!page?.body_html) return "";
     return DOMPurify.sanitize(page.body_html, {
@@ -134,6 +128,14 @@ export const SeoPageRenderer: React.FC<Props> = ({ slug }) => {
       FORBID_TAGS: ["script", "style", "iframe", "object", "embed"],
     });
   }, [page?.body_html]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="h-7 w-7 animate-spin rounded-full border-r-2 border-t-2 border-[#2B4C66]" />
+      </div>
+    );
+  }
 
   if (notFound || !page) return <Navigate to="/404" replace />;
 

@@ -66,14 +66,11 @@ const AdminDevelopers: React.FC = () => {
         body: { target_user_id: userId },
       });
       if (error || data?.error) throw new Error(data?.error || error?.message);
-      if (data?.access_token && data?.refresh_token) {
-        // Pass tokens via URL hash — hashes are never sent to the server and
-        // leave no trace in localStorage. The callback consumes + wipes them.
-        const payload = btoa(JSON.stringify({
-          access_token: data.access_token,
-          refresh_token: data.refresh_token,
-        }));
-        window.open(`/impersonate-callback#t=${encodeURIComponent(payload)}`, "_blank");
+      if (data?.verify_url) {
+        // Tokens live ONLY in the URL fragment of verify_url (never sent
+        // to any server). Edge function no longer ships raw tokens in the
+        // JSON body — this is the sole path.
+        window.open(data.verify_url, "_blank");
         toast({ title: isAr ? `تم فتح جلسة ${name} في تبويب جديد` : `Opened ${name}'s session in new tab` });
       }
     } catch (err: any) {

@@ -1,6 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import { useNavigate } from "react-router-dom";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
@@ -14,6 +15,34 @@ const ForDevelopers: React.FC = () => {
   const navigate = useNavigate();
   const Arrow = isAr ? ArrowLeft : ArrowRight;
   usePageTitle(isAr ? "للمطورين" : "For Developers");
+
+  useMetaTags({
+    title: isAr
+      ? "سينا | للمطورين العقاريين — فرص شراكة تطويرية في السعودية"
+      : "SINA for Developers | Real-Estate Partnership Opportunities KSA",
+    description: isAr
+      ? "مطورون عقاريون في السعودية: اكتشف أراضٍ جاهزة للشراكة من ملاك موثّقين، قدّم طلبات رسمية، ونفّذ مشاريع أكثر بنفس الميزانية عبر سينا."
+      : "Saudi real-estate developers: discover partnership-ready lands from verified owners, submit formal requests, and execute more projects on the same budget via SINA.",
+    canonical: isAr ? "https://cidoma.com/for-developers" : "https://cidoma.com/en/for-developers",
+    ogTitle: isAr ? "سينا | للمطورين العقاريين" : "SINA for Developers",
+    ogDescription: isAr
+      ? "فرص تطوير حقيقية من ملاك أراضٍ متحقق منهم."
+      : "Real development opportunities from verified Saudi landowners.",
+    ogImage: "https://cidoma.com/og-image.png",
+    ogType: "website",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: isAr ? "https://cidoma.com/en/for-developers" : "https://cidoma.com/for-developers" },
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+          { "@type": "ListItem", position: 2, name: isAr ? "للمطورين" : "For Developers", item: isAr ? "https://cidoma.com/for-developers" : "https://cidoma.com/en/for-developers" },
+        ],
+      },
+    ],
+  });
 
   const values = [
     { icon: MapPin, title: t.forDevelopers.value1, desc: t.forDevelopers.value1Desc },
