@@ -332,17 +332,31 @@ const CrmDashboard: React.FC = () => {
               icon={Zap}
               tone="gold"
             />
-            <div className="grid grid-cols-2 gap-3">
-              <QuickActions
-                actions={[
-                  { label: isAr ? "استكشف" : "Explore", icon: Search, onClick: () => navigate("/crm/browse"), tone: "primary" },
-                  { label: isAr ? "طلباتي" : "Requests", icon: FileText, onClick: () => navigate("/crm/my-requests"), tone: "primary" },
-                  { label: isAr ? "صفقاتي" : "Deals", icon: Handshake, onClick: () => navigate("/crm/deals"), tone: "gold" },
-                  { label: isAr ? "الإعدادات" : "Settings", icon: Target, onClick: () => navigate("/crm/settings"), tone: "neutral" },
-                ]}
-                className="!grid-cols-2"
-              />
-            </div>
+            <QuickActions
+              className="!grid-cols-2"
+              actions={[
+                {
+                  label: isAr ? "استكشف الفرص" : "Explore",
+                  description: isAr ? "فرص جديدة جاهزة للتقديم" : "New lands to apply to",
+                  icon: Search, onClick: () => navigate("/crm/browse"), tone: "primary",
+                },
+                {
+                  label: isAr ? "طلباتي" : "My Requests",
+                  description: isAr ? "متابعة تقديماتي الحالية" : "Track my submissions",
+                  icon: FileText, onClick: () => navigate("/crm/my-requests"), tone: "primary",
+                },
+                {
+                  label: isAr ? "صفقاتي" : "My Deals",
+                  description: isAr ? "الصفقات الجارية والمغلقة" : "Active & closed deals",
+                  icon: Handshake, onClick: () => navigate("/crm/deals"), tone: "gold",
+                },
+                {
+                  label: isAr ? "الإعدادات" : "Settings",
+                  description: isAr ? "الملف الشخصي والاتفاقية" : "Profile & agreement",
+                  icon: Target, onClick: () => navigate("/crm/settings"), tone: "neutral",
+                },
+              ]}
+            />
           </BentoCard>
         </BentoGrid>
 

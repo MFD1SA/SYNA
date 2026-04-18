@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { LucideIcon } from "lucide-react";
+import { ArrowUpRight, LucideIcon } from "lucide-react";
 import type { Tone } from "@/lib/design-tokens";
 
 export interface QuickAction {
@@ -18,43 +18,81 @@ interface Props {
 }
 
 /**
- * Quick-actions — clean card grid, clear labels, no text clipping.
- * - Icon: fixed square gradient tile (48×48)
- * - Label: wraps naturally; never truncated mid-word
- * - Description: optional, smaller, line-clamped to 2 lines
- * - No hover-only decoration that reserves space at rest
+ * Premium Quick Actions — dashboard-grade polish.
+ *
+ * Per-card design:
+ *   ┌─────────────────────┐
+ *   │  ● top accent bar   │
+ *   │                     │
+ *   │  ┌───┐              │
+ *   │  │icn│     ↗        │ ← arrow drifts on hover
+ *   │  └───┘              │
+ *   │                     │
+ *   │  Label              │
+ *   │  description        │
+ *   └─────────────────────┘
+ *
+ * - Thin gold/blue accent bar at the top, tone-aware
+ * - Square gradient icon badge (40×40) with soft matched-tone glow
+ * - Top-right ArrowUpRight in a subtle ghost pill — slides + scales on hover
+ * - Label on its own line (never clipped), description line-clamped to 2
+ * - Lift + tone-aware border highlight on hover
+ * - Works at any grid width (including third-span Bento columns)
  */
 export const QuickActions: React.FC<Props> = ({ actions, className }) => {
-  // Explicit solid gradients per tone — guarantees icon-on-card contrast
-  const toneStyles: Record<Tone, { grad: string; glow: string }> = {
+  const toneStyles: Record<Tone, {
+    grad: string;
+    glow: string;
+    bar: string;
+    hoverBorder: string;
+    hoverShadow: string;
+  }> = {
     primary: {
       grad: "bg-gradient-to-br from-[#2B4C66] to-[#1E374B]",
-      glow: "shadow-[0_6px_16px_-6px_rgba(43,76,102,0.55)]",
+      glow: "shadow-[0_8px_20px_-8px_rgba(43,76,102,0.5)]",
+      bar: "bg-gradient-to-r from-[#2B4C66] via-[#3A6088] to-transparent",
+      hoverBorder: "hover:border-[#2B4C66]/35 dark:hover:border-[#7FA7C4]/30",
+      hoverShadow: "hover:shadow-[0_16px_32px_-14px_rgba(43,76,102,0.28)]",
     },
     gold: {
       grad: "bg-gradient-to-br from-[#C2A86B] to-[#A88A4A]",
-      glow: "shadow-[0_6px_16px_-6px_rgba(194,168,107,0.55)]",
+      glow: "shadow-[0_8px_20px_-8px_rgba(194,168,107,0.55)]",
+      bar: "bg-gradient-to-r from-[#C2A86B] via-[#D7C084] to-transparent",
+      hoverBorder: "hover:border-[#C2A86B]/50 dark:hover:border-[#C2A86B]/40",
+      hoverShadow: "hover:shadow-[0_16px_32px_-14px_rgba(194,168,107,0.32)]",
     },
     success: {
       grad: "bg-gradient-to-br from-emerald-500 to-emerald-700",
-      glow: "shadow-[0_6px_16px_-6px_rgba(16,185,129,0.55)]",
+      glow: "shadow-[0_8px_20px_-8px_rgba(16,185,129,0.5)]",
+      bar: "bg-gradient-to-r from-emerald-500 via-emerald-400 to-transparent",
+      hoverBorder: "hover:border-emerald-500/40",
+      hoverShadow: "hover:shadow-[0_16px_32px_-14px_rgba(16,185,129,0.28)]",
     },
     warn: {
       grad: "bg-gradient-to-br from-amber-500 to-amber-600",
-      glow: "shadow-[0_6px_16px_-6px_rgba(245,158,11,0.55)]",
+      glow: "shadow-[0_8px_20px_-8px_rgba(245,158,11,0.5)]",
+      bar: "bg-gradient-to-r from-amber-500 via-amber-400 to-transparent",
+      hoverBorder: "hover:border-amber-500/40",
+      hoverShadow: "hover:shadow-[0_16px_32px_-14px_rgba(245,158,11,0.28)]",
     },
     danger: {
       grad: "bg-gradient-to-br from-rose-500 to-rose-600",
-      glow: "shadow-[0_6px_16px_-6px_rgba(244,63,94,0.55)]",
+      glow: "shadow-[0_8px_20px_-8px_rgba(244,63,94,0.5)]",
+      bar: "bg-gradient-to-r from-rose-500 via-rose-400 to-transparent",
+      hoverBorder: "hover:border-rose-500/40",
+      hoverShadow: "hover:shadow-[0_16px_32px_-14px_rgba(244,63,94,0.28)]",
     },
     neutral: {
       grad: "bg-gradient-to-br from-slate-500 to-slate-700",
-      glow: "shadow-[0_6px_16px_-6px_rgba(100,116,139,0.5)]",
+      glow: "shadow-[0_8px_20px_-8px_rgba(100,116,139,0.45)]",
+      bar: "bg-gradient-to-r from-slate-400 via-slate-300 to-transparent",
+      hoverBorder: "hover:border-slate-400/50 dark:hover:border-white/20",
+      hoverShadow: "hover:shadow-[0_16px_32px_-14px_rgba(100,116,139,0.22)]",
     },
   };
 
   return (
-    <div className={cn("grid grid-cols-2 md:grid-cols-4 gap-3", className)}>
+    <div className={cn("grid grid-cols-2 gap-3", className)}>
       {actions.map((a, i) => {
         const Icon = a.icon;
         const tone: Tone = a.tone ?? "primary";
@@ -62,25 +100,33 @@ export const QuickActions: React.FC<Props> = ({ actions, className }) => {
 
         const Inner = (
           <>
-            {/* Icon tile — compact, inline with label, NOT stacked vertically */}
-            <div
-              className={cn(
-                "flex items-center justify-center rounded-xl shrink-0 transition-transform duration-300 group-hover:scale-105",
-                t.grad,
-                t.glow,
-              )}
-              style={{ width: "38px", height: "38px", minWidth: "38px", minHeight: "38px" }}
-            >
-              <Icon className="w-[18px] h-[18px] text-white" strokeWidth={2} />
+            {/* Tone accent bar */}
+            <div className={cn("absolute inset-x-0 top-0 h-[2px] rounded-t-2xl", t.bar)} />
+
+            {/* Top row: gradient icon tile + ghost arrow pill */}
+            <div className="relative flex items-start justify-between">
+              <div
+                className={cn(
+                  "flex items-center justify-center rounded-xl shrink-0 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[4deg]",
+                  t.grad,
+                  t.glow,
+                )}
+                style={{ width: "40px", height: "40px", minWidth: "40px", minHeight: "40px" }}
+              >
+                <Icon className="w-[19px] h-[19px] text-white" strokeWidth={2} />
+              </div>
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100/80 dark:bg-white/5 border border-slate-200/70 dark:border-white/10 opacity-60 group-hover:opacity-100 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all duration-300">
+                <ArrowUpRight className="h-3.5 w-3.5 text-slate-500 dark:text-slate-300" strokeWidth={2} />
+              </div>
             </div>
 
-            {/* Label — beside the icon (row layout) */}
-            <div className="min-w-0 flex-1">
-              <p className="text-[13px] font-bold text-[#1E374B] dark:text-white leading-tight break-words">
+            {/* Label */}
+            <div className="relative mt-4 min-w-0">
+              <p className="text-[14px] font-bold leading-tight text-[#1E374B] dark:text-white break-words">
                 {a.label}
               </p>
               {a.description && (
-                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-300 leading-snug line-clamp-1 break-words">
+                <p className="mt-1 text-[11px] leading-snug text-slate-500 dark:text-slate-300 line-clamp-2 break-words">
                   {a.description}
                 </p>
               )}
@@ -89,16 +135,16 @@ export const QuickActions: React.FC<Props> = ({ actions, className }) => {
         );
 
         const clsn = cn(
-          // Row layout → compact, balanced, never "tall narrow box"
-          "group flex flex-row items-center gap-3 text-start",
-          "rounded-xl px-3.5 py-3",
+          "group relative flex flex-col items-stretch justify-between",
+          "rounded-2xl p-4",
           "bg-white dark:bg-slate-800/80",
           "border border-slate-200/80 dark:border-white/10",
-          "hover:border-[#C2A86B]/50 dark:hover:border-[#C2A86B]/40",
-          "hover:-translate-y-0.5 hover:shadow-[0_10px_22px_-10px_rgba(15,31,46,0.18)]",
-          "dark:hover:shadow-[0_10px_22px_-10px_rgba(0,0,0,0.5)]",
-          "transition-all duration-300 cursor-pointer",
-          "min-h-[66px]",
+          "shadow-[0_1px_2px_0_rgba(15,23,42,0.04)] dark:shadow-none",
+          "transition-all duration-300 cursor-pointer text-start overflow-hidden",
+          "hover:-translate-y-1",
+          t.hoverBorder,
+          t.hoverShadow,
+          "min-h-[124px]",
         );
 
         return a.href ? (
