@@ -22,6 +22,7 @@ import {
 import DeveloperFeeAcknowledgment from "@/components/crm/DeveloperFeeAcknowledgment";
 import LandAIInsights from "@/components/crm/LandAIInsights";
 import NDAConsentModal from "@/components/agreements/NDAConsentModal";
+import { logAudit } from "@/lib/auditLog";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import BentoCard from "@/components/dashboard/BentoCard";
 import StatusBadge from "@/components/dashboard/StatusBadge";
@@ -134,6 +135,18 @@ const CrmBrowseLands: React.FC = () => {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
     } else {
       toast({ title: isAr ? "تم إرسال الطلب بنجاح" : "Request submitted successfully" });
+
+      // Audit trail: developer created an interest request on a land.
+      if (insertedReq?.id && user) {
+        logAudit(
+          user.id,
+          user.email,
+          "deal_request.create",
+          "deal_request",
+          insertedReq.id,
+          { land_id: requestDialog, proposed_project_type: requestForm.proposed_project_type },
+        );
+      }
 
       // Primary: unified owner-facing notification (Resend email + in-app row).
       if (insertedReq?.id) {

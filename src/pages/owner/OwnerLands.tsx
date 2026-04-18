@@ -17,6 +17,7 @@ import {
   Clock, Eye, Image as ImageIcon, FileText, Shield, Download, Banknote,
 } from "lucide-react";
 import { getContractByLandId, getContractFileUrl, type BrokerageContract } from "@/services/brokerage.service";
+import { logAudit } from "@/lib/auditLog";
 
 const submissionStatusConfig: Record<string, { ar: string; en: string; color: string; icon: React.ElementType }> = {
   draft: { ar: "مسودة — بانتظار مراجعتك", en: "Draft — Awaiting Your Review", color: "bg-amber-500/10 text-amber-700 border-amber-500/20", icon: Clock },
@@ -109,6 +110,7 @@ const OwnerLands: React.FC = () => {
       deed_file_url: form.deed_file_url || null,
       kroki_file_url: form.kroki_file_url || null,
       additional_docs_urls: form.additional_docs_urls?.length ? form.additional_docs_urls : [],
+      gallery_urls: form.gallery_urls?.length ? form.gallery_urls : [],
       partnership_model: form.partnership_model || null,
       submission_status: form.legal_acknowledgment_accepted ? "submitted" : "draft",
       legal_acknowledgment_accepted: form.legal_acknowledgment_accepted,
@@ -134,6 +136,18 @@ const OwnerLands: React.FC = () => {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
     } else {
       toast({ title: isAr ? (editingId ? "تم التحديث" : "تم إدراج الأرض بنجاح") : (editingId ? "Updated" : "Land submitted successfully") });
+      // Audit trail: owner land create/update.
+      const auditedId = editingId || newLandId || undefined;
+      if (auditedId) {
+        logAudit(
+          user.id,
+          user.email,
+          editingId ? "land.update" : (payload.submission_status === "submitted" ? "land.submit" : "land.create_draft"),
+          "land",
+          auditedId,
+          { city: payload.city, submission_status: payload.submission_status },
+        );
+      }
       // Fanout to all verified developers when a brand-new opportunity is submitted.
       if (!editingId && newLandId && payload.submission_status === "submitted") {
         supabase.functions
@@ -172,6 +186,7 @@ const OwnerLands: React.FC = () => {
       estimated_total_value: land.estimated_total_value ? String(land.estimated_total_value) : "",
       deed_file_url: land.deed_file_url || "", kroki_file_url: land.kroki_file_url || "",
       additional_docs_urls: land.additional_docs_urls || [],
+      gallery_urls: land.gallery_urls || [],
       legal_acknowledgment_accepted: land.legal_acknowledgment_accepted || false,
       platform_fee_acknowledged: land.platform_fee_acknowledged || false,
     });

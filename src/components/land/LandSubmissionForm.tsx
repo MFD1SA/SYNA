@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { saudiCities } from "@/data/saudiCities";
+import { uploadPrivateFile, uploadPublicImage, openPrivateFileInTab } from "@/lib/storage";
 import {
   MapPin, LocateFixed, Link2, ImagePlus, Upload, FileText,
   ChevronLeft, ChevronRight, Check,
@@ -115,18 +116,72 @@ const LandSubmissionForm: React.FC<Props> = ({ initialData, ownerProfiles, isAdm
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(field);
-    const bucket = field === "image_url" ? "land-images" : "land-documents";
-    const folder = field === "image_url" ? "" : `${form.selected_owner_id || "admin"}/`;
-    const path = `${folder}${crypto.randomUUID()}.${file.name.split('.').pop()}`;
-    const { error } = await supabase.storage.from(bucket).upload(path, file);
-    if (error) {
-      toast({ variant: "destructive", title: isAr ? "خطأ في الرفع" : "Upload error", description: error.message });
-    } else {
-      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
-      update(field, urlData.publicUrl);
+    try {
+      if (field === "image_url") {
+        // Public bucket — store the public URL.
+        const url = await uploadPublicImage(file, "land-images");
+        update(field, url);
+      } else {
+        // Private bucket — store the PATH (a signed URL will be created on open).
+        // Owner id: explicit selection (admin flow) or current authenticated user.
+        let ownerId = form.selected_owner_id || "";
+        if (!ownerId) {
+          const { data } = await supabase.auth.getUser();
+          ownerId = data.user?.id || "";
+        }
+        if (!ownerId) throw new Error("Missing owner id for private upload");
+        const path = await uploadPrivateFile(file, "land-documents", ownerId);
+        update(field, path);
+      }
       toast({ title: isAr ? "تم الرفع ✓" : "Uploaded ✓" });
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ في الرفع" : "Upload error", description: err?.message });
+    } finally {
+      setUploading(null);
     }
-    setUploading(null);
+  };
+
+  const MAX_GALLERY = 10;
+
+  const handleGalleryAdd = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const current = form.gallery_urls || [];
+    const remaining = MAX_GALLERY - current.length;
+    if (remaining <= 0) {
+      toast({ variant: "destructive", title: isAr ? `الحد الأقصى ${MAX_GALLERY} صور` : `Max ${MAX_GALLERY} images` });
+      return;
+    }
+    const toUpload = files.slice(0, remaining);
+    setUploading("gallery_urls");
+    try {
+      const urls: string[] = [];
+      for (const f of toUpload) {
+        const url = await uploadPublicImage(f, "land-images");
+        urls.push(url);
+      }
+      update("gallery_urls", [...current, ...urls]);
+      toast({ title: isAr ? `تم رفع ${urls.length} صورة ✓` : `Uploaded ${urls.length} image(s) ✓` });
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ في الرفع" : "Upload error", description: err?.message });
+    } finally {
+      setUploading(null);
+      e.target.value = "";
+    }
+  };
+
+  const handleGalleryRemove = (idx: number) => {
+    const next = [...(form.gallery_urls || [])];
+    next.splice(idx, 1);
+    update("gallery_urls", next);
+  };
+
+  const handleOpenPrivateFile = async (pathOrUrl: string | null | undefined) => {
+    if (!pathOrUrl) return;
+    const ok = await openPrivateFileInTab(pathOrUrl, "land-documents");
+    if (!ok) {
+      toast({ variant: "destructive", title: isAr ? "تعذّر فتح الملف" : "Couldn't open file" });
+    }
   };
 
   const canNext = () => {
@@ -440,7 +495,11 @@ const LandSubmissionForm: React.FC<Props> = ({ initialData, ownerProfiles, isAdm
             {/* Deed Upload */}
             <div>
               <Label className="text-xs mb-2 block">{isAr ? "رفع الصك" : "Upload Deed"}</Label>
-              {form.deed_file_url && <Badge variant="outline" className="mb-2 text-[10px]"><FileText className="h-3 w-3 me-1" />{isAr ? "تم الرفع" : "Uploaded"}</Badge>}
+              {form.deed_file_url && (
+                <button type="button" onClick={() => handleOpenPrivateFile(form.deed_file_url)} className="mb-2 inline-flex">
+                  <Badge variant="outline" className="text-[10px] cursor-pointer hover:bg-primary/5"><FileText className="h-3 w-3 me-1" />{isAr ? "تم الرفع — فتح" : "Uploaded — open"}</Badge>
+                </button>
+              )}
               <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border/60 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
                 <Upload className="h-5 w-5 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">{uploading === "deed_file_url" ? (isAr ? "جاري الرفع..." : "Uploading...") : (isAr ? "اختر ملف PDF" : "Choose PDF file")}</span>
@@ -451,7 +510,11 @@ const LandSubmissionForm: React.FC<Props> = ({ initialData, ownerProfiles, isAdm
             {/* Kroki Upload */}
             <div>
               <Label className="text-xs mb-2 block">{isAr ? "رفع الكروكي (رسم الأرض)" : "Upload Land Sketch (Kroki)"}</Label>
-              {form.kroki_file_url && <Badge variant="outline" className="mb-2 text-[10px]"><FileText className="h-3 w-3 me-1" />{isAr ? "تم الرفع" : "Uploaded"}</Badge>}
+              {form.kroki_file_url && (
+                <button type="button" onClick={() => handleOpenPrivateFile(form.kroki_file_url)} className="mb-2 inline-flex">
+                  <Badge variant="outline" className="text-[10px] cursor-pointer hover:bg-primary/5"><FileText className="h-3 w-3 me-1" />{isAr ? "تم الرفع — فتح" : "Uploaded — open"}</Badge>
+                </button>
+              )}
               <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border/60 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
                 <Upload className="h-5 w-5 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">{uploading === "kroki_file_url" ? (isAr ? "جاري الرفع..." : "Uploading...") : (isAr ? "اختر ملف" : "Choose file")}</span>
@@ -459,15 +522,45 @@ const LandSubmissionForm: React.FC<Props> = ({ initialData, ownerProfiles, isAdm
               </label>
             </div>
 
-            {/* Land Image */}
+            {/* Land Image (cover) */}
             <div>
-              <Label className="text-xs mb-2 block">{isAr ? "صورة الأرض" : "Land Image"}</Label>
+              <Label className="text-xs mb-2 block">{isAr ? "الصورة الرئيسية (الغلاف)" : "Cover Image"}</Label>
               {form.image_url && <div className="mb-2 overflow-hidden rounded-xl"><img src={form.image_url} alt="Land" className="h-32 w-full object-cover rounded-xl" /></div>}
               <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border/60 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
                 <ImagePlus className="h-5 w-5 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">{uploading === "image_url" ? (isAr ? "جاري الرفع..." : "Uploading...") : (isAr ? "اختر صورة" : "Choose Image")}</span>
                 <input type="file" accept="image/*" className="hidden" onChange={e => handleFileUpload(e, "image_url")} disabled={!!uploading} />
               </label>
+            </div>
+
+            {/* Gallery — up to MAX_GALLERY additional images */}
+            <div>
+              <Label className="text-xs mb-2 block">
+                {isAr ? `معرض الصور (حتى ${MAX_GALLERY})` : `Gallery (up to ${MAX_GALLERY})`}
+                {form.gallery_urls?.length ? <span className="ms-2 text-muted-foreground">· {form.gallery_urls.length}/{MAX_GALLERY}</span> : null}
+              </Label>
+              {form.gallery_urls?.length > 0 && (
+                <div className="mb-2 grid grid-cols-3 gap-2">
+                  {form.gallery_urls.map((url, i) => (
+                    <div key={i} className="relative group rounded-lg overflow-hidden border border-border/60">
+                      <img src={url} alt={`Gallery ${i + 1}`} className="h-20 w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => handleGalleryRemove(i)}
+                        className="absolute top-1 end-1 h-5 w-5 rounded-full bg-black/70 text-white text-[10px] opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label={isAr ? "حذف" : "Remove"}
+                      >×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {(form.gallery_urls?.length || 0) < MAX_GALLERY && (
+                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border/60 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
+                  <ImagePlus className="h-5 w-5 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{uploading === "gallery_urls" ? (isAr ? "جاري الرفع..." : "Uploading...") : (isAr ? "أضف صور إضافية" : "Add more images")}</span>
+                  <input type="file" accept="image/*" multiple className="hidden" onChange={handleGalleryAdd} disabled={!!uploading} />
+                </label>
+              )}
             </div>
           </div>
         );

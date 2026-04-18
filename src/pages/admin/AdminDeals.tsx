@@ -205,6 +205,9 @@ const AdminDeals: React.FC = () => {
       if (!result.success) throw new Error(result.error || "Transition failed");
       // Also set legacy notes
       await supabase.from("deal_requests").update({ owner_response_notes: rejectNotes || null } as any).eq("id", req.id);
+      await logAudit(user?.id || "", user?.email, "reject_request", "deal_request", req.id, {
+        land_city: req.lands?.city, developer_id: req.developer_id, reason: rejectNotes || null,
+      });
       try {
         await supabase.functions.invoke("send-deal-notification", {
           body: {

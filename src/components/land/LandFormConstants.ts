@@ -121,6 +121,7 @@ export interface LandFormData {
   kroki_file_url: string;
   additional_docs_urls: string[];
   image_url: string;
+  gallery_urls: string[];
   // Project model
   project_model: string;
   development_subtype: string;
@@ -166,6 +167,7 @@ export const defaultLandForm: LandFormData = {
   kroki_file_url: "",
   additional_docs_urls: [],
   image_url: "",
+  gallery_urls: [],
   project_model: "development_partnership",
   development_subtype: "",
   partnership_goal: "develop_sell",

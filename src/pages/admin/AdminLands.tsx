@@ -114,6 +114,7 @@ const AdminLands: React.FC = () => {
       deed_file_url: form.deed_file_url || null,
       kroki_file_url: form.kroki_file_url || null,
       additional_docs_urls: form.additional_docs_urls?.length ? form.additional_docs_urls : [],
+      gallery_urls: form.gallery_urls?.length ? form.gallery_urls : [],
       submission_status: form.legal_acknowledgment_accepted ? "submitted" : "draft",
       legal_acknowledgment_accepted: form.legal_acknowledgment_accepted,
       legal_acknowledgment_date: form.legal_acknowledgment_accepted ? new Date().toISOString() : null,
@@ -200,6 +201,7 @@ const AdminLands: React.FC = () => {
       deed_file_url: land.deed_file_url || "",
       kroki_file_url: land.kroki_file_url || "",
       additional_docs_urls: land.additional_docs_urls || [],
+      gallery_urls: land.gallery_urls || [],
       legal_acknowledgment_accepted: land.legal_acknowledgment_accepted || false,
       platform_fee_acknowledged: land.platform_fee_acknowledged || false,
     });
