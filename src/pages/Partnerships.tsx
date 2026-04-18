@@ -5,11 +5,11 @@ import { useNavigate } from "react-router-dom";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import {
-  ArrowLeft, ArrowRight, TrendingUp, Scale,
+  ArrowLeft, ArrowRight, TrendingUp,
   Building2, Landmark, Handshake, FileCheck2,
   BadgeCheck, LockKeyhole, ShieldCheck, Eye,
   MapPin, CircleDollarSign, Rocket, Bolt,
-  Crown, Users, Layers, BarChart3, Cpu, Target,
+  Crown, Layers, BarChart3, Cpu, Target,
   Gem, Briefcase, Network,
 } from "lucide-react";
 import headerPartnershipsImg from "@/assets/header-partnerships.jpg";
@@ -53,7 +53,6 @@ const Partnerships: React.FC = () => {
         { icon: BadgeCheck, text: "Build a strong professional reputation" },
       ];
 
-  /* --- NEW: How Partnership Serves Both Parties --- */
   const ownerBenefits = isAr
     ? [
         { icon: Gem, title: "تعظيم قيمة الأرض", desc: "الأرض الخام لها سقف سعري محدود أما المشروع المطوّر فقيمته أعلى بمراحل والمالك شريك في كل هذه القيمة المضافة دون أن يدفع ريالاً واحداً من جيبه" },
@@ -78,7 +77,6 @@ const Partnerships: React.FC = () => {
         { icon: Target, title: "Ready Qualified Opportunities", desc: "Instead of months of traditional searching for suitable land developers find real available opportunities from serious owners seeking reliable development partners" },
       ];
 
-  /* --- NEW: Partnership Model Pillars (how SINA organizes it) --- */
   const modelPillars = isAr
     ? [
         { icon: Layers, title: "حوكمة من أول خطوة", desc: "كل شراكة تمر بمراحل منظمة ومحكومة رقمياً من التسجيل والتحقق وعرض الفرص وتقديم الطلبات وحتى التوقيع النهائي" },
@@ -110,35 +108,39 @@ const Partnerships: React.FC = () => {
       />
 
       {/* Two Blocks - Owner & Developer */}
-      <section className="py-16 lg:py-24 bg-white" dir={isAr ? "rtl" : "ltr"}>
-        <div className="container">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4">
+      <section className="relative py-20 lg:py-28 bg-gradient-to-b from-white to-[#FAFBFC] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+        <div className="absolute -top-40 end-[-140px] w-[520px] h-[520px] rounded-full bg-[#C2A86B]/[0.06] blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 start-[-140px] w-[520px] h-[520px] rounded-full bg-[#2B4C66]/[0.06] blur-3xl pointer-events-none" />
+        <div className="container relative">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
               {isAr ? "اختر مسارك في الشراكة التطويرية" : "Choose Your Partnership Path"}
             </h2>
-            <p className="text-[15px] text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
               {isAr
                 ? "سواء كنت مالك أرض تبحث عن شريك تطوير موثوق أو مطوراً عقارياً يبحث عن فرص حقيقية اكتشف كيف يمكن لسينا مساعدتك"
                 : "Whether youre a landowner seeking a reliable development partner or a real estate developer looking for real opportunities, discover how SINA can help you"}
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto">
             {/* Landowner Block */}
             <div
               onClick={() => navigate("/partnerships/owners")}
-              className="group relative bg-white rounded-3xl border-2 border-gray-100 hover:border-[#2B4C66]/30 p-10 md:p-12 cursor-pointer transition-all duration-500 hover:shadow-2xl hover:shadow-[#2B4C66]/10"
+              className="group relative bg-white rounded-3xl ring-1 ring-slate-200/70 hover:ring-[#C2A86B]/40 p-10 md:p-12 cursor-pointer transition-all duration-500 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.18)] hover:shadow-[0_40px_100px_-35px_rgba(194,168,107,0.35)] hover:-translate-y-1"
             >
               <div className="absolute top-6 end-6">
-                <Arrow className="w-5 h-5 text-gray-300 group-hover:text-[#2B4C66] transition-all duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                <Arrow className="w-5 h-5 text-slate-300 group-hover:text-[#C2A86B] transition-all duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
               </div>
 
-              <Landmark className="w-10 h-10 text-[#2B4C66] mb-6" strokeWidth={1.5} />
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D7C084] to-[#A88A4A] shadow-lg shadow-[#C2A86B]/25 mb-6">
+                <Landmark className="w-6 h-6 text-white" strokeWidth={1.75} />
+              </div>
 
-              <h3 className="text-2xl font-bold text-[#1E374B] mb-3">
+              <h3 className="text-2xl md:text-[28px] font-bold text-[#1E374B] mb-3 tracking-tight leading-[1.15]">
                 {isAr ? "لملاك الأراضي" : "For Landowners"}
               </h3>
-              <p className="text-[14px] text-gray-500 leading-relaxed mb-8">
+              <p className="text-[14px] md:text-[15px] text-slate-600 leading-relaxed mb-8">
                 {isAr
                   ? "حوّل أرضك إلى مشروع استثماري مربح بعوائد مضاعفة مع حماية كاملة لحقوقك وخصوصيتك وتحكم تام بكل قراراتك"
                   : "Transform your land into a profitable investment with multiplied returns, complete protection of your rights and privacy, and full control over every decision"}
@@ -147,13 +149,15 @@ const Partnerships: React.FC = () => {
               <div className="space-y-3.5 mb-10">
                 {ownerHighlights.map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <item.icon className="w-5 h-5 text-[#2B4C66]/70 shrink-0" strokeWidth={1.5} />
-                    <span className="text-[13px] text-gray-600">{item.text}</span>
+                    <div className="w-8 h-8 rounded-lg bg-[#C2A86B]/10 inline-flex items-center justify-center shrink-0">
+                      <item.icon className="w-4 h-4 text-[#A88A4A]" strokeWidth={1.75} />
+                    </div>
+                    <span className="text-[13px] text-slate-700">{item.text}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="inline-flex items-center gap-2.5 h-12 px-8 bg-[#2B4C66] text-white text-[14px] font-semibold rounded-xl group-hover:bg-[#1E374B] shadow-lg shadow-[#2B4C66]/15 transition-all duration-300">
+              <div className="inline-flex items-center gap-2.5 h-12 px-8 bg-gradient-to-br from-[#D7C084] to-[#A88A4A] group-hover:from-[#A88A4A] group-hover:to-[#8A6F3A] text-white text-[14px] font-bold rounded-xl shadow-lg shadow-[#C2A86B]/25 transition-all duration-300">
                 {isAr ? "اكتشف شراكات الملاك" : "Explore Owner Partnerships"}
                 <Arrow className="w-4 h-4" />
               </div>
@@ -162,18 +166,20 @@ const Partnerships: React.FC = () => {
             {/* Developer Block */}
             <div
               onClick={() => navigate("/partnerships/developers")}
-              className="group relative bg-white rounded-3xl border-2 border-gray-100 hover:border-emerald-300 p-10 md:p-12 cursor-pointer transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-600/10"
+              className="group relative bg-white rounded-3xl ring-1 ring-slate-200/70 hover:ring-[#2B4C66]/30 p-10 md:p-12 cursor-pointer transition-all duration-500 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.18)] hover:shadow-[0_40px_100px_-35px_rgba(43,76,102,0.3)] hover:-translate-y-1"
             >
               <div className="absolute top-6 end-6">
-                <Arrow className="w-5 h-5 text-gray-300 group-hover:text-emerald-600 transition-all duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                <Arrow className="w-5 h-5 text-slate-300 group-hover:text-[#2B4C66] transition-all duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
               </div>
 
-              <Building2 className="w-10 h-10 text-emerald-600 mb-6" strokeWidth={1.5} />
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-lg shadow-[#2B4C66]/25 mb-6">
+                <Building2 className="w-6 h-6 text-white" strokeWidth={1.75} />
+              </div>
 
-              <h3 className="text-2xl font-bold text-[#1E374B] mb-3">
+              <h3 className="text-2xl md:text-[28px] font-bold text-[#1E374B] mb-3 tracking-tight leading-[1.15]">
                 {isAr ? "للمطورين العقاريين" : "For Real Estate Developers"}
               </h3>
-              <p className="text-[14px] text-gray-500 leading-relaxed mb-8">
+              <p className="text-[14px] md:text-[15px] text-slate-600 leading-relaxed mb-8">
                 {isAr
                   ? "نفّذ مشاريع أكثر بتكلفة أقل مع وصول مباشر لأراضي مؤهلة وملاك يبحثون عن مطورين موثوقين وأدوات رقمية متقدمة"
                   : "Execute more projects at lower cost with direct access to qualified lands, owners seeking reliable developers, and advanced digital tools"}
@@ -182,13 +188,15 @@ const Partnerships: React.FC = () => {
               <div className="space-y-3.5 mb-10">
                 {devHighlights.map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <item.icon className="w-5 h-5 text-emerald-600/70 shrink-0" strokeWidth={1.5} />
-                    <span className="text-[13px] text-gray-600">{item.text}</span>
+                    <div className="w-8 h-8 rounded-lg bg-[#2B4C66]/10 inline-flex items-center justify-center shrink-0">
+                      <item.icon className="w-4 h-4 text-[#2B4C66]" strokeWidth={1.75} />
+                    </div>
+                    <span className="text-[13px] text-slate-700">{item.text}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="inline-flex items-center gap-2.5 h-12 px-8 bg-emerald-600 text-white text-[14px] font-semibold rounded-xl group-hover:bg-emerald-700 shadow-lg shadow-emerald-600/15 transition-all duration-300">
+              <div className="inline-flex items-center gap-2.5 h-12 px-8 bg-gradient-to-br from-[#2B4C66] to-[#1E374B] group-hover:from-[#1E374B] group-hover:to-[#0F1F2E] text-white text-[14px] font-bold rounded-xl shadow-lg shadow-[#2B4C66]/25 transition-all duration-300">
                 {isAr ? "اكتشف شراكات المطورين" : "Explore Developer Partnerships"}
                 <Arrow className="w-4 h-4" />
               </div>
@@ -197,34 +205,38 @@ const Partnerships: React.FC = () => {
         </div>
       </section>
 
-      {/* NEW: What Each Party Gains — Side by Side */}
-      <section className="py-16 lg:py-20 bg-[#F8FAFB]" dir={isAr ? "rtl" : "ltr"}>
-        <div className="container">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4">
+      {/* What Each Party Gains */}
+      <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+        <div className="container relative">
+          <div className="text-center mb-14 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
               {isAr ? "ماذا يكسب كل طرف من الشراكة التطويرية" : "What Each Party Gains From Development Partnerships"}
             </h2>
-            <p className="text-[15px] text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
               {isAr
                 ? "الشراكة التطويرية ليست مجرد اتفاق بل نموذج يحقق مصلحة حقيقية لكل من المالك والمطور في آن واحد"
                 : "Development partnerships arent just agreements but a model that achieves real benefit for both landowner and developer simultaneously"}
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-10 max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto">
             {/* Owner Side */}
-            <div>
-              <div className="flex items-center gap-3 mb-8">
-                <Landmark className="w-6 h-6 text-[#2B4C66]" strokeWidth={1.5} />
-                <h3 className="text-xl font-bold text-[#1E374B]">{isAr ? "المالك يحصل على" : "The Owner Gets"}</h3>
+            <div className="bg-white rounded-3xl p-8 md:p-10 ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.15)]">
+              <div className="flex items-center gap-3 mb-8 pb-6 border-b border-slate-100">
+                <div className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-[#D7C084] to-[#A88A4A] shadow-md shadow-[#C2A86B]/25">
+                  <Landmark className="w-5 h-5 text-white" strokeWidth={1.75} />
+                </div>
+                <h3 className="text-xl font-bold text-[#1E374B] tracking-tight">{isAr ? "المالك يحصل على" : "The Owner Gets"}</h3>
               </div>
               <div className="space-y-6">
                 {ownerBenefits.map((item, i) => (
                   <div key={i} className="flex gap-4">
-                    <item.icon className="w-6 h-6 text-[#C2A86B] shrink-0 mt-0.5" strokeWidth={1.5} />
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#C2A86B]/10 shrink-0">
+                      <item.icon className="w-5 h-5 text-[#A88A4A]" strokeWidth={1.75} />
+                    </div>
                     <div>
-                      <h4 className="text-[15px] font-semibold text-[#1E374B] mb-1.5">{item.title}</h4>
-                      <p className="text-[13px] text-gray-500 leading-[1.9]">{item.desc}</p>
+                      <h4 className="text-[15px] font-bold text-[#1E374B] mb-1.5 tracking-tight">{item.title}</h4>
+                      <p className="text-[13px] text-slate-500 leading-[1.9]">{item.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -232,18 +244,22 @@ const Partnerships: React.FC = () => {
             </div>
 
             {/* Developer Side */}
-            <div>
-              <div className="flex items-center gap-3 mb-8">
-                <Building2 className="w-6 h-6 text-emerald-600" strokeWidth={1.5} />
-                <h3 className="text-xl font-bold text-[#1E374B]">{isAr ? "المطور يحصل على" : "The Developer Gets"}</h3>
+            <div className="bg-white rounded-3xl p-8 md:p-10 ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.15)]">
+              <div className="flex items-center gap-3 mb-8 pb-6 border-b border-slate-100">
+                <div className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-md shadow-[#2B4C66]/25">
+                  <Building2 className="w-5 h-5 text-white" strokeWidth={1.75} />
+                </div>
+                <h3 className="text-xl font-bold text-[#1E374B] tracking-tight">{isAr ? "المطور يحصل على" : "The Developer Gets"}</h3>
               </div>
               <div className="space-y-6">
                 {devBenefits.map((item, i) => (
                   <div key={i} className="flex gap-4">
-                    <item.icon className="w-6 h-6 text-emerald-500 shrink-0 mt-0.5" strokeWidth={1.5} />
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#2B4C66]/10 shrink-0">
+                      <item.icon className="w-5 h-5 text-[#2B4C66]" strokeWidth={1.75} />
+                    </div>
                     <div>
-                      <h4 className="text-[15px] font-semibold text-[#1E374B] mb-1.5">{item.title}</h4>
-                      <p className="text-[13px] text-gray-500 leading-[1.9]">{item.desc}</p>
+                      <h4 className="text-[15px] font-bold text-[#1E374B] mb-1.5 tracking-tight">{item.title}</h4>
+                      <p className="text-[13px] text-slate-500 leading-[1.9]">{item.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -253,61 +269,66 @@ const Partnerships: React.FC = () => {
         </div>
       </section>
 
-      {/* NEW: How SINA Organizes Partnerships (Model Pillars) */}
-      <section className="py-16 lg:py-20 bg-white" dir={isAr ? "rtl" : "ltr"}>
-        <div className="container">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4">
+      {/* How SINA Organizes Partnerships */}
+      <section className="relative py-20 lg:py-24 bg-white overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+        <div className="absolute top-1/4 end-[-140px] w-[440px] h-[440px] rounded-full bg-[#2B4C66]/[0.05] blur-3xl pointer-events-none" />
+        <div className="container relative">
+          <div className="text-center mb-14 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
               {isAr ? "كيف تنظّم سينا الشراكة بين الطرفين" : "How SINA Organizes Partnerships Between Both Parties"}
             </h2>
-            <p className="text-[15px] text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
               {isAr
                 ? "منظومة حوكمة رقمية متكاملة تحمي المالك والمطور وتنظم كل مرحلة من مراحل الشراكة بشفافية كاملة"
                 : "A comprehensive digital governance ecosystem that protects both owner and developer and organizes every partnership stage with complete transparency"}
             </p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
             {modelPillars.map((item, i) => (
-              <div key={i} className="bg-[#F8FAFB] rounded-2xl p-8 border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300">
-                <item.icon className="w-7 h-7 text-[#2B4C66] mb-5" strokeWidth={1.5} />
-                <h3 className="text-[16px] font-semibold text-[#1E374B] mb-3">{item.title}</h3>
-                <p className="text-[13px] text-gray-500 leading-[1.9]">{item.desc}</p>
+              <div key={i} className="group relative bg-gradient-to-b from-white to-[#FAFBFC] rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#2B4C66]/25 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(43,76,102,0.25)] transition-all duration-500 hover:-translate-y-1">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-md shadow-[#2B4C66]/25 mb-5">
+                  <item.icon className="w-5 h-5 text-white" strokeWidth={1.75} />
+                </div>
+                <h3 className="text-[16px] font-bold text-[#1E374B] mb-2.5 tracking-tight">{item.title}</h3>
+                <p className="text-[13px] text-slate-500 leading-[1.9]">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Comparison - Refreshed */}
-      <section className="py-16 lg:py-20 bg-[#F8FAFB]" dir={isAr ? "rtl" : "ltr"}>
-        <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-5 text-center">
-            {isAr ? "لماذا الشراكة وليس البيع" : "Why Partnership Not Selling"}
-          </h2>
-          <p className="text-[15px] text-gray-500 mb-12 text-center max-w-2xl mx-auto leading-relaxed">
-            {isAr
-              ? "مقارنة واضحة توضح لماذا يتجه أصحاب الأراضي الأذكياء نحو الشراكة التطويرية بدلاً من البيع التقليدي"
-              : "A clear comparison showing why smart landowners are choosing development partnerships over traditional selling"}
-          </p>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl p-8 border border-gray-200">
-              <h3 className="text-lg font-bold text-gray-400 mb-6">{isAr ? "البيع المباشر" : "Direct Sale"}</h3>
+      {/* Comparison */}
+      <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+        <div className="container relative">
+          <div className="text-center mb-12 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
+              {isAr ? "لماذا الشراكة وليس البيع" : "Why Partnership Not Selling"}
+            </h2>
+            <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
+              {isAr
+                ? "مقارنة واضحة توضح لماذا يتجه أصحاب الأراضي الأذكياء نحو الشراكة التطويرية بدلاً من البيع التقليدي"
+                : "A clear comparison showing why smart landowners are choosing development partnerships over traditional selling"}
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div className="bg-gradient-to-b from-slate-50 to-slate-100/60 rounded-2xl p-8 ring-1 ring-slate-200">
+              <h3 className="text-lg font-bold text-slate-400 mb-6 tracking-tight">{isAr ? "البيع المباشر" : "Direct Sale"}</h3>
               <ul className="space-y-4">
                 {(isAr
                   ? ["تحصل على سعر الأرض الخام فقط ولا تستفيد من أي قيمة مضافة", "تفقد الملكية بالكامل ولا يمكنك الاستفادة من ارتفاع الأسعار مستقبلاً", "قد تبيع بأقل من القيمة الفعلية بسبب ضغوط السوق أو التفاوض", "لا تشارك في قرارات التطوير ولا تعرف ماذا سيحدث بأرضك بعد البيع", "المشتري قد يتركها شاغرة لسنوات دون تطوير فعلي"]
                   : ["You receive only the raw land price with no benefit from added value", "You lose ownership entirely and cannot benefit from future price increases", "You may sell below actual value due to market pressure or negotiation", "You have no participation in development decisions and no knowledge of what happens to your land", "The buyer may leave it vacant for years without actual development"]
                 ).map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-[14px] text-gray-500">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-300 mt-2 shrink-0" />
+                  <li key={i} className="flex items-start gap-3 text-[14px] text-slate-500">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-2 shrink-0" />
                     {item}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="bg-white rounded-2xl p-8 border-2 border-[#2B4C66] shadow-lg">
+            <div className="bg-white rounded-2xl p-8 ring-2 ring-[#C2A86B]/50 shadow-[0_20px_60px_-25px_rgba(194,168,107,0.35)]">
               <div className="flex items-center gap-2 mb-6">
-                <h3 className="text-lg font-bold text-[#2B4C66]">{isAr ? "الشراكة التطويرية" : "Development Partnership"}</h3>
-                <BadgeCheck className="w-5 h-5 text-[#2B4C66]" strokeWidth={1.5} />
+                <h3 className="text-lg font-bold text-[#1E374B] tracking-tight">{isAr ? "الشراكة التطويرية" : "Development Partnership"}</h3>
+                <BadgeCheck className="w-5 h-5 text-[#C2A86B]" strokeWidth={1.75} />
               </div>
               <ul className="space-y-4">
                 {(isAr
@@ -315,7 +336,7 @@ const Partnerships: React.FC = () => {
                   : ["You receive a share of the developed project worth multiples of the land price", "You retain partial ownership and share in project profits throughout its duration", "SINA organizes the process and protects your rights with clear contracts and comprehensive documentation", "You track every project stage with complete transparency through your dashboard", "Your land actually transforms into a real project serving the community and generating ongoing income"]
                 ).map((item, i) => (
                   <li key={i} className="flex items-start gap-3 text-[14px] text-[#1E374B]">
-                    <BadgeCheck className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" strokeWidth={1.5} />
+                    <BadgeCheck className="w-4 h-4 text-[#C2A86B] mt-0.5 shrink-0" strokeWidth={1.75} />
                     {item}
                   </li>
                 ))}
@@ -326,67 +347,66 @@ const Partnerships: React.FC = () => {
       </section>
 
       {/* White Land Fees Section */}
-      <section className="py-16 lg:py-20 bg-[#1E374B] relative overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-[#1E374B] via-[#1E374B] to-[#0F1F2E] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+        <div className="absolute -top-40 end-[-140px] w-[520px] h-[520px] rounded-full bg-[#C2A86B]/10 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-40 start-[-140px] w-[520px] h-[520px] rounded-full bg-[#2B4C66]/30 blur-3xl pointer-events-none" />
         <div className="container relative z-10">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
-              <span className="inline-block px-4 py-1.5 bg-[#C2A86B]/20 text-[#C2A86B] text-[12px] font-bold rounded-full mb-5 tracking-wider">
-                {isAr ? "الفرصة لن تنتظر" : "THE OPPORTUNITY WONT WAIT"}
-              </span>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-5">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-5 tracking-tight leading-[1.1]">
                 {isAr ? "رسوم الأراضي البيضاء تدفع نحو التطوير الآن" : "White Land Fees Are Driving Development Now"}
               </h2>
-              <p className="text-[16px] text-white/60 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-[15px] md:text-[16px] text-white/70 max-w-2xl mx-auto leading-relaxed">
                 {isAr
                   ? "نظام الرسوم على الأراضي البيضاء يهدف لتحفيز الملاك على تطوير أراضيهم والشراكة التطويرية هي الطريقة الأذكى للاستجابة لهذا التوجه وتحقيق عوائد مضاعفة بدلاً من تحمّل الرسوم"
                   : "The white land fee system aims to encourage owners to develop their lands and development partnership is the smartest way to respond to this direction and achieve multiplied returns instead of bearing the fees"}
               </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
-              <div className="bg-white/[0.06] backdrop-blur-sm rounded-xl p-7 border border-white/[0.08]">
-                <div className="text-[#C2A86B] text-2xl font-bold mb-3">2.5% - 10%</div>
-                <h3 className="text-[15px] font-semibold text-white mb-2">
+            <div className="grid md:grid-cols-3 gap-5 mb-10">
+              <div className="bg-white/[0.06] backdrop-blur-sm rounded-2xl p-7 ring-1 ring-white/10">
+                <div className="text-[#D7C084] text-2xl font-bold mb-3 tracking-tight">2.5% - 10%</div>
+                <h3 className="text-[15px] font-bold text-white mb-2 tracking-tight">
                   {isAr ? "رسوم سنوية على الأرض الشاغرة" : "Annual Fees on Vacant Land"}
                 </h3>
-                <p className="text-[13px] text-white/50 leading-[1.8]">
+                <p className="text-[13px] text-white/60 leading-[1.9]">
                   {isAr
                     ? "الرسوم تُفرض سنوياً على الأراضي غير المطورة داخل النطاق العمراني وتتصاعد مع الوقت مما يجعل التطوير أولوية اقتصادية للمالك"
                     : "Fees are imposed annually on undeveloped lands within urban boundaries and escalate over time making development an economic priority for the owner"}
                 </p>
               </div>
-              <div className="bg-white/[0.06] backdrop-blur-sm rounded-xl p-7 border border-white/[0.08]">
-                <div className="text-[#C2A86B] text-2xl font-bold mb-3">
+              <div className="bg-white/[0.06] backdrop-blur-sm rounded-2xl p-7 ring-1 ring-white/10">
+                <div className="text-[#D7C084] text-2xl font-bold mb-3 tracking-tight">
                   {isAr ? "توسّع مستمر" : "Expanding"}
                 </div>
-                <h3 className="text-[15px] font-semibold text-white mb-2">
+                <h3 className="text-[15px] font-bold text-white mb-2 tracking-tight">
                   {isAr ? "مدن ومناطق جديدة تُضاف باستمرار" : "New Cities and Regions Added Continuously"}
                 </h3>
-                <p className="text-[13px] text-white/50 leading-[1.8]">
+                <p className="text-[13px] text-white/60 leading-[1.9]">
                   {isAr
                     ? "البرنامج يتوسع على مراحل ليشمل مناطق جديدة والملاك الذين يبادرون بالتطوير قبل فرض الرسوم يتجنبون التكاليف ويحققون أعلى العوائد"
                     : "The program expands in phases to cover new regions and owners who take development initiative before fees are imposed avoid costs and achieve the highest returns"}
                 </p>
               </div>
-              <div className="bg-white/[0.06] backdrop-blur-sm rounded-xl p-7 border border-white/[0.08]">
-                <div className="text-[#C2A86B] text-2xl font-bold mb-3">
+              <div className="bg-white/[0.06] backdrop-blur-sm rounded-2xl p-7 ring-1 ring-white/10">
+                <div className="text-[#D7C084] text-2xl font-bold mb-3 tracking-tight">
                   {isAr ? "صفر تكلفة عليك" : "Zero Cost to You"}
                 </div>
-                <h3 className="text-[15px] font-semibold text-white mb-2">
+                <h3 className="text-[15px] font-bold text-white mb-2 tracking-tight">
                   {isAr ? "المطور يتحمل كل تكاليف التطوير" : "Developer Bears All Development Costs"}
                 </h3>
-                <p className="text-[13px] text-white/50 leading-[1.8]">
+                <p className="text-[13px] text-white/60 leading-[1.9]">
                   {isAr
                     ? "في الشراكة التطويرية المطور يتكفل بالتصميم والبناء والتسويق وأنت كمالك تساهم بالأرض فقط وتحصل على نسبتك من المشروع المطوّر"
                     : "In development partnerships the developer handles design construction and marketing while you as owner contribute only the land and receive your share of the developed project"}
                 </p>
               </div>
             </div>
-            <div className="bg-gradient-to-r from-[#C2A86B]/20 to-[#C2A86B]/5 rounded-2xl p-8 md:p-10 border border-[#C2A86B]/20">
-              <h3 className="text-xl font-bold text-white mb-3">
+            <div className="bg-gradient-to-br from-[#C2A86B]/20 via-[#C2A86B]/10 to-[#C2A86B]/5 rounded-2xl p-8 md:p-10 ring-1 ring-[#C2A86B]/25">
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-3 tracking-tight leading-[1.2]">
                 {isAr ? "المالك والمطور يربحان معاً" : "Owner and Developer Win Together"}
               </h3>
-              <p className="text-[14px] text-white/60 leading-[1.9]">
+              <p className="text-[14px] text-white/70 leading-[1.9]">
                 {isAr
                   ? "المالك يتحول من دافع رسوم إلى شريك في مشروع مربح والمطور يحصل على أراضي جاهزة دون تكلفة استحواذ والمجتمع يستفيد من مشاريع تنموية حقيقية تسهم في تحقيق رؤية المملكة 2030"
                   : "The owner transforms from a fee payer to a partner in a profitable project the developer gets ready lands without acquisition costs and the community benefits from real development projects contributing to the Kingdoms Vision 2030"}
@@ -397,12 +417,13 @@ const Partnerships: React.FC = () => {
       </section>
 
       {/* Dual CTA */}
-      <section className="py-16 lg:py-20 bg-[#F8FAFB] border-t border-gray-100" dir={isAr ? "rtl" : "ltr"}>
-        <div className="container text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4">
+      <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white border-t border-slate-100 overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+        <div className="absolute -top-20 start-1/2 -translate-x-1/2 w-[620px] h-[420px] rounded-full bg-[#2B4C66]/[0.05] blur-3xl pointer-events-none" />
+        <div className="container relative text-center">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-4 tracking-tight leading-[1.1]">
             {isAr ? "ابدأ شراكتك التطويرية الآن" : "Start Your Development Partnership Now"}
           </h2>
-          <p className="text-[15px] text-gray-500 mb-10 max-w-xl mx-auto">
+          <p className="text-[15px] md:text-[16px] text-slate-600 mb-10 max-w-xl mx-auto leading-relaxed">
             {isAr
               ? "سواء كنت مالك أرض أو مطور عقاري سينا المكان المناسب لبناء شراكات ناجحة ومربحة"
               : "Whether youre a landowner or a real estate developer SINA is the right place to build successful profitable partnerships"}
@@ -410,16 +431,16 @@ const Partnerships: React.FC = () => {
           <div className="flex flex-wrap justify-center gap-4">
             <button
               onClick={() => navigate("/auth/login?type=owner")}
-              className="inline-flex items-center gap-3 h-14 px-10 bg-[#2B4C66] text-white text-[15px] font-semibold rounded-xl hover:bg-[#1E374B] shadow-lg shadow-[#2B4C66]/20 transition-all duration-300"
+              className="inline-flex items-center gap-3 h-14 px-10 bg-gradient-to-br from-[#D7C084] to-[#A88A4A] hover:from-[#A88A4A] hover:to-[#8A6F3A] text-white text-[15px] font-bold rounded-xl shadow-lg shadow-[#C2A86B]/30 hover:shadow-xl hover:shadow-[#C2A86B]/40 transition-all duration-300 tracking-tight"
             >
-              <Landmark className="w-5 h-5" strokeWidth={1.5} />
+              <Landmark className="w-5 h-5" strokeWidth={1.75} />
               {isAr ? "دخول الملاك" : "Owner Login"}
             </button>
             <button
               onClick={() => navigate("/auth/login")}
-              className="inline-flex items-center gap-3 h-14 px-10 bg-emerald-600 text-white text-[15px] font-semibold rounded-xl hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 transition-all duration-300"
+              className="inline-flex items-center gap-3 h-14 px-10 bg-gradient-to-br from-[#2B4C66] to-[#1E374B] hover:from-[#1E374B] hover:to-[#0F1F2E] text-white text-[15px] font-bold rounded-xl shadow-lg shadow-[#2B4C66]/30 hover:shadow-xl hover:shadow-[#2B4C66]/40 transition-all duration-300 tracking-tight"
             >
-              <Building2 className="w-5 h-5" strokeWidth={1.5} />
+              <Building2 className="w-5 h-5" strokeWidth={1.75} />
               {isAr ? "دخول المطورين" : "Developer Login"}
             </button>
           </div>

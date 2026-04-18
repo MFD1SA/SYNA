@@ -3,7 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
-import { Loader2, CheckCircle2, MessageCircle, Clock, ShieldCheck, Headphones } from "lucide-react";
+import { Loader2, CheckCircle2, MessageCircle, Clock, ShieldCheck, Headphones, Send } from "lucide-react";
 import cityRiyadhImg from "@/assets/city-riyadh.jpg";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -33,7 +33,7 @@ const Contact: React.FC = () => {
     }
   };
 
-  const inputClass = "w-full h-12 px-5 bg-white border border-gray-200 rounded-xl text-[14px] text-[#1E374B] placeholder:text-gray-400 focus:outline-none focus:border-[#2B4C66] focus:ring-2 focus:ring-[#2B4C66]/10 transition-all duration-200";
+  const inputClass = "w-full h-12 px-5 bg-white border border-slate-200 rounded-xl text-[14px] text-[#1E374B] placeholder:text-slate-400 focus:outline-none focus:border-[#2B4C66] focus:ring-2 focus:ring-[#2B4C66]/10 transition-all duration-200";
 
   const whyContact = isAr
     ? [
@@ -60,14 +60,17 @@ const Contact: React.FC = () => {
       />
 
       {/* Why Contact Us */}
-      <section className="py-12 bg-white" dir={isAr ? "rtl" : "ltr"}>
-        <div className="container">
-          <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+      <section className="relative py-16 lg:py-20 bg-gradient-to-b from-white to-[#FAFBFC] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+        <div className="absolute -top-20 end-[-100px] w-[380px] h-[380px] rounded-full bg-[#C2A86B]/[0.06] blur-3xl pointer-events-none" />
+        <div className="container relative">
+          <div className="grid sm:grid-cols-3 gap-5 max-w-5xl mx-auto">
             {whyContact.map((item, i) => (
-              <div key={i} className="text-center">
-                <item.icon className="w-6 h-6 text-[#C2A86B] mx-auto mb-3" strokeWidth={1.5} />
-                <h3 className="text-[14px] font-semibold text-[#1E374B] mb-2">{item.title}</h3>
-                <p className="text-[13px] text-gray-500 leading-[1.8]">{item.desc}</p>
+              <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C2A86B]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.25)] transition-all duration-500 hover:-translate-y-1">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#D7C084] to-[#A88A4A] shadow-md shadow-[#C2A86B]/25 mb-4">
+                  <item.icon className="w-5 h-5 text-white" strokeWidth={1.75} />
+                </div>
+                <h3 className="text-[15px] font-bold text-[#1E374B] mb-2 tracking-tight">{item.title}</h3>
+                <p className="text-[13px] text-slate-500 leading-[1.9]">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -75,14 +78,15 @@ const Contact: React.FC = () => {
       </section>
 
       {/* Form + WhatsApp CTA */}
-      <section className="py-14 lg:py-16 bg-[#F8FAFB]" dir={isAr ? "rtl" : "ltr"}>
-        <div className="container">
+      <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+        <div className="absolute top-1/3 start-[-140px] w-[420px] h-[420px] rounded-full bg-[#2B4C66]/[0.06] blur-3xl pointer-events-none" />
+        <div className="container relative">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">
-              <h2 className="text-2xl md:text-3xl font-bold text-[#1E374B] mb-3">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-4 tracking-tight leading-[1.1]">
                 {isAr ? "أرسل لنا رسالتك" : "Send Us a Message"}
               </h2>
-              <p className="text-[14px] text-gray-500">
+              <p className="text-[15px] text-slate-600 leading-relaxed max-w-xl mx-auto">
                 {isAr
                   ? "سواء كان لديك استفسار عن المنصة أو تحتاج مساعدة في التسجيل أو ترغب في معرفة المزيد عن شراكات التطوير نحن هنا لمساعدتك"
                   : "Whether you have a question about the platform, need help registering, or want to learn more about development partnerships we are here to help"}
@@ -90,13 +94,13 @@ const Contact: React.FC = () => {
             </div>
 
             {/* WhatsApp CTA */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
+            <div className="bg-white rounded-2xl ring-1 ring-slate-200/70 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] p-6 mb-8">
               <div className="flex flex-col sm:flex-row items-center gap-4">
                 <div className="flex-1 text-center sm:text-start">
-                  <h3 className="text-[16px] font-semibold text-[#1E374B] mb-1">
+                  <h3 className="text-[16px] font-bold text-[#1E374B] mb-1 tracking-tight">
                     {isAr ? "تفضّل التواصل السريع؟" : "Prefer quick communication?"}
                   </h3>
-                  <p className="text-[13px] text-gray-500">
+                  <p className="text-[13px] text-slate-500 leading-relaxed">
                     {isAr ? "تواصل معنا مباشرة عبر الواتساب وسيرد عليك فريقنا في أسرع وقت" : "Contact us directly via WhatsApp and our team will respond as soon as possible"}
                   </p>
                 </div>
@@ -104,21 +108,23 @@ const Contact: React.FC = () => {
                   href="https://wa.me/966504566777"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 h-12 px-8 bg-[#25D366] hover:bg-[#1fba59] text-white text-[14px] font-bold rounded-xl shadow-lg shadow-[#25D366]/20 transition-all duration-300 shrink-0"
+                  className="inline-flex items-center gap-2.5 h-12 px-7 bg-gradient-to-br from-[#25D366] to-[#1fba59] hover:from-[#1fba59] hover:to-[#17964a] text-white text-[14px] font-bold rounded-xl shadow-lg shadow-[#25D366]/25 transition-all duration-300 shrink-0"
                 >
-                  <MessageCircle className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                  <MessageCircle className="w-[18px] h-[18px]" strokeWidth={1.75} />
                   {isAr ? "تواصل عبر الواتساب" : "Chat on WhatsApp"}
                 </a>
               </div>
             </div>
 
             {sent ? (
-              <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
-                <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-4" />
-                <p className="text-[18px] font-semibold text-[#1E374B]">{t.contactPage.success}</p>
+              <div className="text-center py-20 bg-white rounded-2xl ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.18)]">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-50 ring-8 ring-emerald-50/60 mb-5">
+                  <CheckCircle2 className="w-7 h-7 text-emerald-500" strokeWidth={2} />
+                </div>
+                <p className="text-[18px] font-bold text-[#1E374B] tracking-tight">{t.contactPage.success}</p>
               </div>
             ) : (
-              <div className="bg-white rounded-2xl border border-gray-100 p-8 md:p-10">
+              <div className="bg-white rounded-2xl ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.18)] p-8 md:p-10">
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
@@ -138,9 +144,9 @@ const Contact: React.FC = () => {
                     <label className="block text-[13px] font-semibold text-[#1E374B] mb-2">{t.contactPage.message}</label>
                     <textarea required rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className={`${inputClass} h-auto py-4 resize-none`} />
                   </div>
-                  {error && <p className="text-[13px] text-red-500 bg-red-50 px-4 py-3 rounded-lg">{error}</p>}
-                  <button type="submit" disabled={loading} className="w-full h-13 py-3.5 bg-[#2B4C66] text-white text-[15px] font-semibold rounded-xl hover:bg-[#1E374B] shadow-lg shadow-[#2B4C66]/15 transition-all duration-300 disabled:opacity-60 flex items-center justify-center gap-2">
-                    {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {error && <p className="text-[13px] text-red-600 bg-red-50 border border-red-100 px-4 py-3 rounded-lg">{error}</p>}
+                  <button type="submit" disabled={loading} className="w-full h-13 py-3.5 bg-gradient-to-br from-[#2B4C66] to-[#1E374B] hover:from-[#1E374B] hover:to-[#0F1F2E] text-white text-[15px] font-bold rounded-xl shadow-lg shadow-[#2B4C66]/25 transition-all duration-300 disabled:opacity-60 flex items-center justify-center gap-2 tracking-tight">
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" strokeWidth={2} />}
                     {loading ? t.contactPage.sending : t.contactPage.send}
                   </button>
                 </form>

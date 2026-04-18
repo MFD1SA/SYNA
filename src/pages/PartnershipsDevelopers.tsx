@@ -7,7 +7,7 @@ import InnerHero from "@/components/landing/InnerHero";
 import {
   MapPin, ClipboardList, Bolt, ArrowLeft, ArrowRight,
   BadgeCheck, CircleDollarSign, Rocket, Building2,
-  BarChart3, Briefcase, Network, Trophy, Cpu, Layers,
+  BarChart3, Briefcase, Network, Trophy, Cpu,
 } from "lucide-react";
 import headerPartnershipsImg from "@/assets/header-partnerships.jpg";
 
@@ -77,25 +77,30 @@ const PartnershipsDevelopers: React.FC = () => {
       />
 
       {/* Why Partnership for Developers */}
-      <section className="py-16 lg:py-20 bg-white" dir={isAr ? "rtl" : "ltr"}>
-        <div className="container">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4">
+      <section className="relative py-20 lg:py-24 bg-gradient-to-b from-white to-[#FAFBFC] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+        <div className="absolute -top-20 end-[-120px] w-[460px] h-[460px] rounded-full bg-[#2B4C66]/[0.06] blur-3xl pointer-events-none" />
+        <div className="container relative">
+          <div className="text-center mb-14 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
               {isAr ? "لماذا الشراكة التطويرية أفضل للمطور" : "Why Development Partnerships Are Better for Developers"}
             </h2>
-            <p className="text-[15px] text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
               {isAr
                 ? "وفّر تكاليف الاستحواذ وركّز ميزانيتك على التطوير والبناء مع فرص حقيقية ومتجددة"
                 : "Save acquisition costs and focus your budget on development and construction with real renewed opportunities"}
             </p>
           </div>
-          <div className="grid sm:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
             {devAdvantages.map((item, i) => (
-              <div key={i} className="flex gap-5">
-                <item.icon className="w-7 h-7 text-emerald-600 shrink-0 mt-1" strokeWidth={1.5} />
-                <div>
-                  <h3 className="text-[16px] font-semibold text-[#1E374B] mb-2">{item.title}</h3>
-                  <p className="text-[13px] text-gray-500 leading-[1.9]">{item.desc}</p>
+              <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#2B4C66]/25 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(43,76,102,0.25)] transition-all duration-500 hover:-translate-y-0.5">
+                <div className="flex gap-5">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-md shadow-[#2B4C66]/25 shrink-0">
+                    <item.icon className="w-5 h-5 text-white" strokeWidth={1.75} />
+                  </div>
+                  <div>
+                    <h3 className="text-[16px] font-bold text-[#1E374B] mb-2 tracking-tight">{item.title}</h3>
+                    <p className="text-[13px] text-slate-500 leading-[1.9]">{item.desc}</p>
+                  </div>
                 </div>
               </div>
             ))}
@@ -104,24 +109,27 @@ const PartnershipsDevelopers: React.FC = () => {
       </section>
 
       {/* Developer Features */}
-      <section className="py-16 lg:py-20 bg-[#F8FAFB]" dir={isAr ? "rtl" : "ltr"}>
-        <div className="container">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4">
+      <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+        <div className="absolute top-1/3 start-[-140px] w-[440px] h-[440px] rounded-full bg-[#2B4C66]/[0.06] blur-3xl pointer-events-none" />
+        <div className="container relative">
+          <div className="text-center mb-14 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
               {isAr ? "مميزات سينا للاستثمارات العقارية للمطورين" : "SINA Platform Features for Developers"}
             </h2>
-            <p className="text-[15px] text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
               {isAr
                 ? "أدوات رقمية متقدمة صُممت لتسهيل وصولك للفرص التطويرية وإدارة شراكاتك باحترافية"
                 : "Advanced digital tools designed to facilitate your access to development opportunities and manage your partnerships professionally"}
             </p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
             {devFeatures.map((v, i) => (
-              <div key={i} className="bg-white rounded-2xl p-8 border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300">
-                <v.icon className="w-7 h-7 text-emerald-600 mb-5" strokeWidth={1.5} />
-                <h3 className="text-[16px] font-semibold text-[#1E374B] mb-3">{v.title}</h3>
-                <p className="text-[13px] text-gray-500 leading-[1.9]">{v.desc}</p>
+              <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#2B4C66]/25 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(43,76,102,0.25)] transition-all duration-500 hover:-translate-y-1">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-md shadow-[#2B4C66]/25 mb-5">
+                  <v.icon className="w-5 h-5 text-white" strokeWidth={1.75} />
+                </div>
+                <h3 className="text-[16px] font-bold text-[#1E374B] mb-2.5 tracking-tight">{v.title}</h3>
+                <p className="text-[13px] text-slate-500 leading-[1.9]">{v.desc}</p>
               </div>
             ))}
           </div>
@@ -129,13 +137,13 @@ const PartnershipsDevelopers: React.FC = () => {
       </section>
 
       {/* Developer Journey */}
-      <section className="py-16 lg:py-20 bg-white" dir={isAr ? "rtl" : "ltr"}>
-        <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4">
+      <section className="relative py-20 lg:py-24 bg-white overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+        <div className="container relative">
+          <div className="text-center mb-12 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
               {isAr ? "رحلة المطور في سينا" : "The Developers Journey on SINA"}
             </h2>
-            <p className="text-[15px] text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
               {isAr
                 ? "أربع خطوات بسيطة من إنشاء حسابك حتى إتمام شراكتك التطويرية بنجاح"
                 : "Four simple steps from creating your account to successfully completing your development partnership"}
@@ -143,10 +151,10 @@ const PartnershipsDevelopers: React.FC = () => {
           </div>
           <div className="grid md:grid-cols-4 gap-5 max-w-6xl mx-auto">
             {devSteps.map((step, i) => (
-              <div key={i} className="relative bg-[#F8FAFB] rounded-xl p-7 border border-gray-100">
-                <span className="text-[32px] font-bold text-emerald-600/10 block mb-3">{step.num}</span>
-                <h4 className="text-[15px] font-semibold text-[#1E374B] mb-2">{step.title}</h4>
-                <p className="text-[13px] text-gray-500 leading-[1.8]">{step.desc}</p>
+              <div key={i} className="relative bg-gradient-to-b from-white to-[#FAFBFC] rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#2B4C66]/25 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(43,76,102,0.22)] transition-all duration-500">
+                <span className="block text-[40px] font-bold bg-gradient-to-br from-[#2B4C66]/20 to-[#2B4C66]/5 bg-clip-text text-transparent mb-3 tracking-tight leading-none">{step.num}</span>
+                <h4 className="text-[15px] font-bold text-[#1E374B] mb-2 tracking-tight">{step.title}</h4>
+                <p className="text-[13px] text-slate-500 leading-[1.9]">{step.desc}</p>
               </div>
             ))}
           </div>
@@ -154,31 +162,35 @@ const PartnershipsDevelopers: React.FC = () => {
       </section>
 
       {/* Growth Section */}
-      <section className="py-16 lg:py-20 bg-[#1E374B] relative overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-[#1E374B] via-[#1E374B] to-[#0F1F2E] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+        <div className="absolute -top-40 end-[-140px] w-[520px] h-[520px] rounded-full bg-[#C2A86B]/10 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-40 start-[-140px] w-[520px] h-[520px] rounded-full bg-[#2B4C66]/30 blur-3xl pointer-events-none" />
         <div className="container relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <BarChart3 className="w-10 h-10 text-emerald-400 mx-auto mb-6" strokeWidth={1.5} />
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-5">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 ring-1 ring-white/15 backdrop-blur-sm mb-6">
+              <BarChart3 className="w-6 h-6 text-[#C2A86B]" strokeWidth={1.75} />
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-5 tracking-tight leading-[1.1]">
               {isAr ? "ضاعف عدد مشاريعك سنوياً" : "Multiply Your Annual Projects"}
             </h2>
-            <p className="text-[16px] text-white/60 max-w-2xl mx-auto leading-relaxed mb-10">
+            <p className="text-[15px] md:text-[16px] text-white/70 max-w-2xl mx-auto leading-relaxed mb-12">
               {isAr
                 ? "بدلاً من استثمار كل ميزانيتك في شراء أرض واحدة يمكنك الدخول في عدة شراكات تطويرية وتنويع محفظتك العقارية وتحقيق عوائد من مشاريع متعددة في وقت واحد"
                 : "Instead of investing your entire budget in purchasing one land you can enter multiple development partnerships, diversify your real estate portfolio, and generate returns from multiple projects simultaneously"}
             </p>
-            <div className="grid sm:grid-cols-3 gap-6">
-              <div className="bg-white/[0.06] backdrop-blur-sm rounded-xl p-6 border border-white/[0.08]">
-                <div className="text-emerald-400 text-2xl font-bold mb-2">{isAr ? "مشاريع أكثر" : "More Projects"}</div>
-                <p className="text-[13px] text-white/50">{isAr ? "نفّذ عدة مشاريع بنفس الميزانية" : "Execute multiple projects with the same budget"}</p>
+            <div className="grid sm:grid-cols-3 gap-5">
+              <div className="bg-white/[0.06] backdrop-blur-sm rounded-2xl p-7 ring-1 ring-white/10">
+                <div className="text-[#D7C084] text-2xl font-bold mb-2 tracking-tight">{isAr ? "مشاريع أكثر" : "More Projects"}</div>
+                <p className="text-[13px] text-white/60 leading-relaxed">{isAr ? "نفّذ عدة مشاريع بنفس الميزانية" : "Execute multiple projects with the same budget"}</p>
               </div>
-              <div className="bg-white/[0.06] backdrop-blur-sm rounded-xl p-6 border border-white/[0.08]">
-                <div className="text-emerald-400 text-2xl font-bold mb-2">{isAr ? "تنويع أكبر" : "Greater Diversity"}</div>
-                <p className="text-[13px] text-white/50">{isAr ? "نوّع محفظتك العقارية وقلل المخاطر" : "Diversify your portfolio and reduce risks"}</p>
+              <div className="bg-white/[0.06] backdrop-blur-sm rounded-2xl p-7 ring-1 ring-white/10">
+                <div className="text-[#D7C084] text-2xl font-bold mb-2 tracking-tight">{isAr ? "تنويع أكبر" : "Greater Diversity"}</div>
+                <p className="text-[13px] text-white/60 leading-relaxed">{isAr ? "نوّع محفظتك العقارية وقلل المخاطر" : "Diversify your portfolio and reduce risks"}</p>
               </div>
-              <div className="bg-white/[0.06] backdrop-blur-sm rounded-xl p-6 border border-white/[0.08]">
-                <div className="text-emerald-400 text-2xl font-bold mb-2">{isAr ? "نمو أسرع" : "Faster Growth"}</div>
-                <p className="text-[13px] text-white/50">{isAr ? "حقق نمواً متسارعاً لشركتك" : "Achieve accelerated growth for your company"}</p>
+              <div className="bg-white/[0.06] backdrop-blur-sm rounded-2xl p-7 ring-1 ring-white/10">
+                <div className="text-[#D7C084] text-2xl font-bold mb-2 tracking-tight">{isAr ? "نمو أسرع" : "Faster Growth"}</div>
+                <p className="text-[13px] text-white/60 leading-relaxed">{isAr ? "حقق نمواً متسارعاً لشركتك" : "Achieve accelerated growth for your company"}</p>
               </div>
             </div>
           </div>
@@ -186,20 +198,23 @@ const PartnershipsDevelopers: React.FC = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-16 lg:py-20 bg-[#F8FAFB] border-t border-gray-100" dir={isAr ? "rtl" : "ltr"}>
-        <div className="container text-center">
-          <Building2 className="w-10 h-10 text-emerald-600 mx-auto mb-5" strokeWidth={1.5} />
-          <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4">
+      <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white border-t border-slate-100 overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+        <div className="absolute -top-20 start-1/2 -translate-x-1/2 w-[520px] h-[420px] rounded-full bg-[#2B4C66]/[0.06] blur-3xl pointer-events-none" />
+        <div className="container relative text-center">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2B4C66] to-[#1E374B] shadow-lg shadow-[#2B4C66]/25 mb-6 mx-auto">
+            <Building2 className="w-6 h-6 text-white" strokeWidth={1.75} />
+          </div>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-4 tracking-tight leading-[1.1]">
             {isAr ? "ابدأ رحلتك كمطور عقاري الآن" : "Start Your Journey as a Developer Now"}
           </h2>
-          <p className="text-[15px] text-gray-500 mb-10 max-w-xl mx-auto">
+          <p className="text-[15px] md:text-[16px] text-slate-600 mb-10 max-w-xl mx-auto leading-relaxed">
             {isAr
               ? "سجّل كمطور واكتشف فرص الشراكة التطويرية المتاحة عبر سينا للاستثمارات العقارية"
               : "Register as a developer and discover available development partnership opportunities through SINA"}
           </p>
           <button
             onClick={() => navigate("/auth/login")}
-            className="inline-flex items-center gap-3 h-14 px-12 bg-emerald-600 text-white text-[15px] font-semibold rounded-xl hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 transition-all duration-300"
+            className="inline-flex items-center gap-3 h-14 px-10 bg-gradient-to-br from-[#2B4C66] to-[#1E374B] hover:from-[#1E374B] hover:to-[#0F1F2E] text-white text-[15px] font-bold rounded-xl shadow-lg shadow-[#2B4C66]/30 hover:shadow-xl hover:shadow-[#2B4C66]/40 transition-all duration-300 tracking-tight"
           >
             {isAr ? "دخول المطورين" : "Developer Login"}
             <Arrow className="w-4 h-4" />
