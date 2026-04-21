@@ -50,7 +50,7 @@ export async function getClosing(requestId: string): Promise<DealClosing | null>
     .eq("deal_request_id", requestId)
     .maybeSingle();
   if (error) throw new Error(error.message);
-  return data as DealClosing | null;
+  return data as unknown as DealClosing | null;
 }
 
 /** Close deal as won (owner/admin) */
@@ -100,7 +100,7 @@ export async function closeDealWon(params: {
       });
     } catch (e) { console.warn("Email notification failed:", e); }
 
-    return { success: true, closing: closing as DealClosing };
+    return { success: true, closing: closing as unknown as DealClosing };
   } catch (err: any) {
     return { success: false, error: err.message };
   }
@@ -159,5 +159,5 @@ export async function getAllClosings(limit = 50): Promise<DealClosing[]> {
     .order("created_at", { ascending: false })
     .limit(limit);
   if (error) throw new Error(error.message);
-  return (data || []) as DealClosing[];
+  return (data || []) as unknown as DealClosing[];
 }

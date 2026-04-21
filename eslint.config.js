@@ -5,7 +5,12 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+  {
+    // Never lint the Vite/Vercel build output or the Supabase-generated
+    // types file — the latter is regenerated via `supabase gen types` and
+    // is wrapped by the codegen pipeline; editing it breaks the workflow.
+    ignores: ["dist", "src/integrations/supabase/types.ts"],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

@@ -59,13 +59,14 @@ const Opportunities: React.FC = () => {
   useEffect(() => {
     const fetch = async () => {
       const { data } = await supabase
-        .from("lands")
+        .from("lands" as any)
         .select("id, city, district, land_area_sqm, land_type, status")
         .in("status", ["active", "active_approved"])
         .order("created_at", { ascending: false });
       if (data) {
-        setLands(data);
-        const uniqueCities = [...new Set(data.map((l) => l.city))].filter(Boolean);
+        const rows = data as unknown as Land[];
+        setLands(rows);
+        const uniqueCities = [...new Set(rows.map((l) => l.city))].filter(Boolean);
         setCities(uniqueCities);
       }
       setLoading(false);

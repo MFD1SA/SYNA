@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit, clientIpFromRequest, rateLimited } from "../_shared/rate-limit.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -182,11 +183,18 @@ Deno.serve(async (req) => {
   }
 
   // Capture IP from request headers (server-side — reliable)
-  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
-    || req.headers.get("cf-connecting-ip")
-    || req.headers.get("x-real-ip")
-    || "unknown";
+  const clientIp = clientIpFromRequest(req);
   const userAgent = req.headers.get("user-agent") || "unknown";
+
+  // Rate limit BEFORE parsing body — reject floods cheaply.
+  //   - IP: 3 developer registrations / hour per IP (prevents scripted signup floods)
+  const rlClient = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } });
+  const ipGate = await checkRateLimit(rlClient, {
+    key: `register-developer:ip:${clientIp}`,
+    windowSeconds: 3600,
+    maxHits: 3,
+  });
+  if (!ipGate.allowed) return rateLimited(corsHeaders, 3600);
 
   try {
     const payload = await req.json();

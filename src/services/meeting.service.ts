@@ -43,7 +43,7 @@ export async function getMeetings(requestId: string): Promise<DealMeeting[]> {
     .eq("deal_request_id", requestId)
     .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
-  return (data || []) as DealMeeting[];
+  return (data || []) as unknown as DealMeeting[];
 }
 
 /** Get latest active meeting for a request */
@@ -57,7 +57,7 @@ export async function getActiveMeeting(requestId: string): Promise<DealMeeting |
     .limit(1)
     .maybeSingle();
   if (error) throw new Error(error.message);
-  return data as DealMeeting | null;
+  return data as unknown as DealMeeting | null;
 }
 
 /** Propose a meeting (owner/admin) */
@@ -96,7 +96,7 @@ export async function proposeMeeting(params: {
       console.warn("Phase transition note:", result.error);
     }
 
-    return { success: true, meeting: meeting as DealMeeting };
+    return { success: true, meeting: meeting as unknown as DealMeeting };
   } catch (err: any) {
     return { success: false, error: err.message };
   }
@@ -141,7 +141,7 @@ export async function requestReschedule(params: {
       .from("deal_request_meetings" as any)
       .select("reschedule_count")
       .eq("id", params.meetingId)
-      .single();
+      .single() as unknown as { data: { reschedule_count: number } | null };
 
     const { error: updateErr } = await supabase
       .from("deal_request_meetings" as any)

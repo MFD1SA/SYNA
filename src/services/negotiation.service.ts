@@ -56,7 +56,7 @@ export async function getRounds(requestId: string): Promise<NegotiationRound[]> 
     .eq("deal_request_id", requestId)
     .order("round_number", { ascending: true });
   if (error) throw new Error(error.message);
-  return (data || []) as NegotiationRound[];
+  return (data || []) as unknown as NegotiationRound[];
 }
 
 /** Create a new negotiation round (offer or counter-offer) */
@@ -113,7 +113,7 @@ export async function createRound(params: {
       });
     } catch (e) { console.warn("Email notification failed:", e); }
 
-    return { success: true, round: round as NegotiationRound };
+    return { success: true, round: round as unknown as NegotiationRound };
   } catch (err: any) {
     return { success: false, error: err.message };
   }

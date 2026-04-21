@@ -12,6 +12,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { buildCorsHeaders, esc, renderLuxuryEmail, sendEmail, SITE_URL } from "../_shared/email.ts";
 import { createNotifications, getAdminClient } from "../_shared/notifications.ts";
+import { checkRateLimit, rateLimited } from "../_shared/rate-limit.ts";
 
 interface Payload {
   land_id?: string;
@@ -73,6 +74,15 @@ serve(async (req) => {
     }
 
     const admin = getAdminClient();
+
+    // Per-user rate limit — fanout is expensive (one email per verified
+    // developer). 10 fanouts / hour / owner is well above real publishing.
+    const gate = await checkRateLimit(admin, {
+      key: `notify-new-opportunity:user:${user.id}`,
+      windowSeconds: 3600,
+      maxHits: 10,
+    });
+    if (!gate.allowed) return rateLimited(corsHeaders, 3600);
 
     // Load the land
     const { data: land, error: landErr } = await admin
@@ -156,7 +166,10 @@ serve(async (req) => {
           }),
         ),
       );
-      for (const r of results) r.ok ? sent++ : failed++;
+      for (const r of results) {
+        if (r.ok) sent++;
+        else failed++;
+      }
     }
 
     // In-app notifications for every developer user

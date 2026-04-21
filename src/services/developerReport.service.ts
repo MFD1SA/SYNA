@@ -90,7 +90,7 @@ export async function getReport(params: {
 
   const { data, error } = await query.maybeSingle();
   if (error) throw new Error(error.message);
-  return data as DeveloperReport | null;
+  return data as unknown as DeveloperReport | null;
 }
 
 /** Request generation of a new developer report via Edge Function */
@@ -122,7 +122,7 @@ export async function getAllReports(limit = 50): Promise<DeveloperReport[]> {
     .order("created_at", { ascending: false })
     .limit(limit);
   if (error) throw new Error(error.message);
-  return (data || []) as DeveloperReport[];
+  return (data || []) as unknown as DeveloperReport[];
 }
 
 /** Check if a valid (non-expired) cached report exists */

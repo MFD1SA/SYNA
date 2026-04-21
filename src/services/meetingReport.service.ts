@@ -99,7 +99,7 @@ export async function getReport(requestId: string): Promise<MeetingReport | null
     .limit(1)
     .maybeSingle();
   if (error) throw new Error(error.message);
-  return data as MeetingReport | null;
+  return data as unknown as MeetingReport | null;
 }
 
 /** Fetch approvals for a report */
@@ -110,7 +110,7 @@ export async function getApprovals(reportId: string): Promise<ReportApproval[]> 
     .eq("report_id", reportId)
     .order("decided_at", { ascending: true });
   if (error) throw new Error(error.message);
-  return (data || []) as ReportApproval[];
+  return (data || []) as unknown as ReportApproval[];
 }
 
 /** Create a meeting report (owner/admin) */
@@ -174,7 +174,7 @@ export async function createReport(params: {
       });
     } catch (e) { console.warn("Email notification failed:", e); }
 
-    return { success: true, report: report as MeetingReport };
+    return { success: true, report: report as unknown as MeetingReport };
   } catch (err: any) {
     return { success: false, error: err.message };
   }
@@ -270,7 +270,7 @@ export async function submitApproval(params: {
       .select("*")
       .eq("report_id", params.reportId);
 
-    const approvals = (allApprovals || []) as ReportApproval[];
+    const approvals = (allApprovals || []) as unknown as ReportApproval[];
     const hasReject = approvals.some(a => a.decision === "rejected");
     const hasChanges = approvals.some(a => a.decision === "changes_requested");
     const ownerApproved = approvals.some(a => a.role === "owner" && a.decision === "approved");

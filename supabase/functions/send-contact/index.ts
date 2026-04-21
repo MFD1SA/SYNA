@@ -17,6 +17,7 @@ import {
   SITE_URL,
 } from "../_shared/email.ts";
 import { createNotification } from "../_shared/notifications.ts";
+import { checkRateLimit, clientIpFromRequest, rateLimited } from "../_shared/rate-limit.ts";
 
 interface ContactPayload {
   name?: string;
@@ -71,6 +72,23 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
       { auth: { persistSession: false } },
     );
+
+    // Rate limit — two dimensions so one bad actor can't block legitimate neighbours:
+    //   - IP: 5 submissions / hour (blocks floods from a single host)
+    //   - email: 3 submissions / hour (blocks spamming one inbox even via proxies)
+    const clientIp = clientIpFromRequest(req);
+    const ipGate = await checkRateLimit(supabase, {
+      key: `send-contact:ip:${clientIp}`,
+      windowSeconds: 3600,
+      maxHits: 5,
+    });
+    if (!ipGate.allowed) return rateLimited(corsHeaders, 3600);
+    const emailGate = await checkRateLimit(supabase, {
+      key: `send-contact:email:${email.toLowerCase()}`,
+      windowSeconds: 3600,
+      maxHits: 3,
+    });
+    if (!emailGate.allowed) return rateLimited(corsHeaders, 3600);
     try {
       await supabase.from("contact_submissions").insert({
         name,

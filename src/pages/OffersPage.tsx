@@ -50,7 +50,7 @@ const OffersPage: React.FC = () => {
         const [offersData, landsRes] = await Promise.all([
           getActiveOffers(),
           supabase
-            .from("lands")
+            .from("lands" as any)
             .select("id, city, district, land_area_sqm, land_type, status, image_url")
             .in("status", ["active", "active_approved"])
             .order("created_at", { ascending: false }),
@@ -70,7 +70,7 @@ const OffersPage: React.FC = () => {
           link: `/offers/${o.id}`,
         }));
 
-        const landRows = (landsRes?.data || []) as Array<{
+        const landRows = (landsRes?.data || []) as unknown as Array<{
           id: string;
           city: string;
           district: string | null;

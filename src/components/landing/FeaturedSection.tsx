@@ -22,12 +22,12 @@ const FeaturedSection: React.FC = () => {
   useEffect(() => {
     const fetchLands = async () => {
       const { data } = await supabase
-        .from("lands")
+        .from("lands" as any)
         .select("id, city, district, land_area_sqm, land_type, status")
         .in("status", ["active", "active_approved"])
         .order("created_at", { ascending: false })
         .limit(3);
-      if (data) setLands(data);
+      if (data) setLands(data as unknown as FeaturedLand[]);
     };
     fetchLands();
   }, []);

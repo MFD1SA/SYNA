@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { clearUserTypeCache } from "@/hooks/useUserType";
+import { setSentryUser } from "@/lib/sentry";
 import type { User, Session } from "@supabase/supabase-js";
 
 interface AuthContextType {
@@ -41,6 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         setSession(data.session);
         setUser(data.session?.user ?? null);
+        setSentryUser(data.session?.user?.id ?? null);
         setLoading(false);
       } catch {
         if (cancelled) return;
@@ -59,10 +61,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (event === "SIGNED_OUT" || !newSession) {
         setSession(null);
         setUser(null);
+        setSentryUser(null);
       } else {
         // SIGNED_IN, TOKEN_REFRESHED, USER_UPDATED — always reflect new state
         setSession(newSession);
         setUser(newSession.user);
+        setSentryUser(newSession.user.id);
       }
       setLoading(false);
     });

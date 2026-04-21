@@ -62,7 +62,7 @@ const AdminSettings: React.FC = () => {
     supabase.from("profiles").select("full_name, avatar_url").eq("user_id", user.id).maybeSingle().then(({ data }) => {
       if (data?.full_name) setFullName(data.full_name);
       if ((data as any)?.avatar_url) setAvatarUrl((data as any).avatar_url);
-    }).catch(console.error);
+    }, console.error);
     // Load deadline settings from platform_content
     supabase.from("platform_content").select("*").eq("content_key", "opportunity_deadlines").maybeSingle().then(({ data }) => {
       if (data?.body_en) {
@@ -71,7 +71,7 @@ const AdminSettings: React.FC = () => {
           setDeadlines({ ...DEFAULT_DEADLINES, ...parsed });
         } catch {}
       }
-    }).catch(console.error);
+    }, console.error);
 
     supabase
       .from("admin_permissions")
@@ -90,10 +90,9 @@ const AdminSettings: React.FC = () => {
               setPrimaryAdminEmail(data.primary_admin_email);
             }
             setLoadingPrimaryAdmin(false);
-          }).catch(console.error);
+          }, console.error);
         }
-      })
-      .catch(console.error);
+      }, console.error);
   }, [user]);
 
   const handleSaveProfile = async () => {

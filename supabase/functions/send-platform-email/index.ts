@@ -118,7 +118,7 @@ async function buildEmailForEvent(
 
     case "study_approved":
     case "study_rejected":
-    case "study_changes_requested":
+    case "study_changes_requested": {
       if (devEmail) recipients.push({ email: devEmail, user_id: ctx.developers?.user_id });
       const studyStatus = eventType === "study_approved" ? "✅ مقبولة" : eventType === "study_rejected" ? "❌ مرفوضة" : "📝 تعديلات مطلوبة";
       return {
@@ -130,6 +130,7 @@ async function buildEmailForEvent(
            <a href="${publicSiteUrl}/crm/my-requests" class="btn">عرض التفاصيل</a>`),
         recipients,
       };
+    }
 
     // ── Meeting events ──
     case "meeting_proposed":
@@ -268,7 +269,7 @@ async function buildEmailForEvent(
       };
 
     case "request_rejected":
-    case "request_cancelled":
+    case "request_cancelled": {
       if (devEmail) recipients.push({ email: devEmail, user_id: ctx.developers?.user_id });
       const statusText = eventType === "request_rejected" ? "تم رفض طلبك" : "تم إلغاء الطلب";
       return {
@@ -278,6 +279,7 @@ async function buildEmailForEvent(
            <p style="color:#475569;font-size:14px;">${statusText} بخصوص أرض ${location}.</p>`),
         recipients,
       };
+    }
 
     // ── Negotiation events ──
     case "negotiation_new_round":

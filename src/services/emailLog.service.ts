@@ -92,7 +92,7 @@ export async function getEmailLogs(params?: {
 
   const { data, error } = await query;
   if (error) throw new Error(error.message);
-  return (data || []) as EmailLogEntry[];
+  return (data || []) as unknown as EmailLogEntry[];
 }
 
 /** Get email stats for admin dashboard */
@@ -106,7 +106,7 @@ export async function getEmailStats(): Promise<{
     .from("email_log" as any)
     .select("status");
   if (error) throw new Error(error.message);
-  const entries = (data || []) as Array<{ status: string }>;
+  const entries = (data || []) as unknown as Array<{ status: string }>;
   return {
     total: entries.length,
     sent: entries.filter(e => e.status === "sent").length,

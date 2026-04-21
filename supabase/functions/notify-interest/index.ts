@@ -8,6 +8,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { buildCorsHeaders, renderLuxuryEmail, sendEmail, SITE_URL } from "../_shared/email.ts";
 import { createNotification, getAdminClient } from "../_shared/notifications.ts";
+import { checkRateLimit, rateLimited } from "../_shared/rate-limit.ts";
 
 interface Payload {
   deal_request_id?: string;
@@ -55,6 +56,15 @@ serve(async (req) => {
     }
 
     const admin = getAdminClient();
+
+    // Per-user rate limit — prevents a single developer from mass-pinging
+    // owners. 20 notifications / hour is generous for genuine exploration.
+    const gate = await checkRateLimit(admin, {
+      key: `notify-interest:user:${user.id}`,
+      windowSeconds: 3600,
+      maxHits: 20,
+    });
+    if (!gate.allowed) return rateLimited(corsHeaders, 3600);
 
     // Load the request, land, developer
     const { data: request, error: reqErr } = await admin

@@ -59,7 +59,7 @@ export async function getStudies(requestId: string): Promise<DealStudy[]> {
     .eq("deal_request_id", requestId)
     .order("version", { ascending: false });
   if (error) throw new Error(error.message);
-  return (data || []) as DealStudy[];
+  return (data || []) as unknown as DealStudy[];
 }
 
 /**
@@ -154,7 +154,7 @@ export async function uploadStudy(params: {
       await transitionDealPhase(params.requestId, "study_resubmitted");
     }
 
-    return { success: true, study: study as DealStudy };
+    return { success: true, study: study as unknown as DealStudy };
   } catch (err: any) {
     return { success: false, error: err.message };
   }

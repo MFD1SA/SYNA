@@ -13,6 +13,7 @@
 // invite link instead of recreating the user. Existing role rows are kept.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit, rateLimited } from "../_shared/rate-limit.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -142,6 +143,16 @@ Deno.serve(async (req) => {
     // High-control gate (admin/supervisor/specialist)
     const { data: hcResult } = await adminClient.rpc("is_high_control", { _user_id: caller.id });
     if (!hcResult) throw new Error("High control access required");
+
+    // Per-admin rate limit — even privileged users shouldn't blast invites.
+    // 30 invites / hour / admin covers real operational use; mass imports
+    // should be batched separately.
+    const inviteGate = await checkRateLimit(adminClient, {
+      key: `invite-owner:admin:${caller.id}`,
+      windowSeconds: 3600,
+      maxHits: 30,
+    });
+    if (!inviteGate.allowed) return rateLimited(corsHeaders, 3600);
 
     const body = await req.json();
     const email = String(body.email || "").trim().toLowerCase();

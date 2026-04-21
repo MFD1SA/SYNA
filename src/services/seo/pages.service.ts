@@ -121,7 +121,7 @@ export async function getSeoOverview(): Promise<SeoOverviewCounts> {
     "id,status,canonical_url,schema_json,title,locale"
   );
   if (error) throw new Error(error.message);
-  const rows = (data ?? []) as Array<{
+  const rows = (data ?? []) as unknown as Array<{
     status: SeoPageStatus;
     canonical_url: string | null;
     schema_json: Record<string, unknown> | null;

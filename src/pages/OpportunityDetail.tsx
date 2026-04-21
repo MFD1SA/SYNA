@@ -68,8 +68,7 @@ const OpportunityDetail: React.FC = () => {
       .then(({ data }) => {
         setLand(data);
         setLoading(false);
-      })
-      .catch(console.error);
+      }, console.error);
   }, [id]);
 
   if (loading) {
