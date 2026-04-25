@@ -6,8 +6,110 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import {
   Globe, Loader2, Building2, ExternalLink, AreaChart, X, CheckCircle2, XCircle,
-  Share2, FileText, ShieldCheck, Gauge, Image as ImageIcon,
+  Share2, FileText, ShieldCheck, Gauge, Image as ImageIcon, AlertTriangle,
 } from "lucide-react";
+
+/**
+ * Translate raw edge-function error/details into a human-readable
+ * bilingual diagnosis. Keeps the gory technical string available for
+ * support but never shows it to the user up front.
+ *
+ * Categories we recognise:
+ *   - dns         → domain doesn't resolve (most common; means the
+ *                   user typed a non-existent site)
+ *   - timeout     → site didn't answer within our 10s budget
+ *   - refused     → connection actively refused / TLS handshake failed
+ *   - http_error  → site answered but returned 4xx/5xx
+ *   - other       → fall through with the raw detail trimmed
+ */
+type FailureKind = "dns" | "timeout" | "refused" | "http_error" | "other";
+interface FailureDx {
+  kind: FailureKind;
+  title_ar: string; title_en: string;
+  hint_ar: string;  hint_en: string;
+  technical: string;       // raw detail for the "see details" disclosure
+  attempted?: string[];    // URLs the function tried
+}
+
+function classifyFailure(
+  rawError: string | undefined,
+  details: string | undefined,
+  status: number | undefined,
+  attempted: string[] | undefined,
+): FailureDx {
+  const blob = `${rawError ?? ""} ${details ?? ""}`.toLowerCase();
+  const technical = (details && details.length > 0 ? details : (rawError || "")).slice(0, 300);
+
+  if (status && status >= 400) {
+    return {
+      kind: "http_error",
+      title_ar: `الموقع ردّ بخطأ (${status})`,
+      title_en: `Site responded with error (${status})`,
+      hint_ar: "الموقع موجود لكنه أعاد رمز خطأ — قد يكون رابطك يُعيد التوجيه إلى صفحة محذوفة أو محمية.",
+      hint_en: "The site responded but with an error code — your URL may redirect to a deleted or protected page.",
+      technical, attempted,
+    };
+  }
+
+  if (
+    blob.includes("dns error") ||
+    blob.includes("name or service not known") ||
+    blob.includes("could not resolve") ||
+    blob.includes("getaddrinfo")
+  ) {
+    return {
+      kind: "dns",
+      title_ar: "هذا النطاق غير موجود",
+      title_en: "Domain does not exist",
+      hint_ar: "تحقّق من إملاء عنوان الموقع — يبدو أن النطاق غير مسجَّل في الإنترنت أصلاً. جرّبه يدوياً في المتصفّح للتأكّد.",
+      hint_en: "Double-check the spelling — this domain is not registered. Open it in a browser to confirm.",
+      technical, attempted,
+    };
+  }
+
+  if (
+    blob.includes("aborterror") ||
+    blob.includes("timeout") ||
+    blob.includes("timed out") ||
+    blob.includes("the signal has been aborted")
+  ) {
+    return {
+      kind: "timeout",
+      title_ar: "انتهت مهلة الاتصال",
+      title_en: "Connection timed out",
+      hint_ar: "الموقع لم يستجب خلال 10 ثوانٍ — قد يكون بطيئاً أو يحجب الزيارات الآلية (firewall / Cloudflare).",
+      hint_en: "Site did not respond within 10 seconds — it may be slow or blocking automated requests (firewall / Cloudflare).",
+      technical, attempted,
+    };
+  }
+
+  if (
+    blob.includes("connection refused") ||
+    blob.includes("refused") ||
+    blob.includes("ssl") ||
+    blob.includes("tls") ||
+    blob.includes("certificate") ||
+    blob.includes("handshake")
+  ) {
+    return {
+      kind: "refused",
+      title_ar: "الموقع رفض الاتصال",
+      title_en: "Site refused connection",
+      hint_ar: "ربما تكون شهادة الـ SSL منتهية أو غير صالحة، أو أن الخادم نفسه رفض الاتصال. جرّب فتحه في المتصفّح.",
+      hint_en: "The SSL certificate may be invalid, or the server refused the connection. Try opening it in a browser first.",
+      technical, attempted,
+    };
+  }
+
+  return {
+    kind: "other",
+    title_ar: "تعذّر الوصول إلى الموقع",
+    title_en: "Could not reach the website",
+    hint_ar: "حدث خطأ غير متوقَّع أثناء محاولة الوصول. تواصل مع الدعم إذا تكرّر.",
+    hint_en: "An unexpected error occurred while reaching the site. Contact support if this persists.",
+    technical, attempted,
+  };
+}
 
 /**
  * Factual website snapshot — data pulled directly from the developer's
@@ -58,6 +160,11 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
   const [url, setUrl] = useState(autoUrl || "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  // When the analysis itself fails, we render an inline diagnostic card
+  // (friendly, bilingual, with a "show technical detail" disclosure)
+  // instead of leaking raw `TypeError: dns error: ...` to the user.
+  const [failure, setFailure] = useState<FailureDx | null>(null);
+  const [showTechnical, setShowTechnical] = useState(false);
 
   // Mounted flag — this component is rendered inside an expandable
   // panel in OwnerDashboard. If the owner collapses the panel (or
@@ -123,24 +230,63 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
 
     setLoading(true);
     setResult(null);
+    setFailure(null);
+    setShowTechnical(false);
     try {
       const { data, error } = await supabase.functions.invoke("analyze-developer-website", {
         body: { website: cleaned, developer_id: developerId },
       });
-      if (error) throw error;
-      if (!data?.success) {
-        // Surface the edge-function's `details` string so the user
-        // can tell DNS failure from TLS handshake from 404, etc.
-        const detailLine = (data?.details && String(data.details).slice(0, 220)) || "";
-        const errMsg = data?.error || "Analysis failed";
-        throw new Error(detailLine ? `${errMsg} — ${detailLine}` : errMsg);
+
+      // Network-level / function-invocation error (function unreachable,
+      // 5xx from the edge runtime, etc). These don't carry the structured
+      // `success: false` envelope, so classify the raw message.
+      if (error) {
+        if (!mountedRef.current) return;
+        const dx = classifyFailure(error.message || "Function invocation failed", undefined, undefined, undefined);
+        setFailure(dx);
+        toast({
+          variant: "destructive",
+          title: isAr ? dx.title_ar : dx.title_en,
+          description: isAr ? dx.hint_ar : dx.hint_en,
+        });
+        return;
       }
+
+      // Structured failure envelope from our edge function — translate
+      // the raw cause into a friendly diagnosis and render an inline
+      // card so the admin can read it calmly (and copy the technical
+      // detail if support asks).
+      if (!data?.success) {
+        if (!mountedRef.current) return;
+        const dx = classifyFailure(
+          data?.error,
+          data?.details,
+          typeof data?.status === "number" ? data.status : undefined,
+          Array.isArray(data?.attempted) ? data.attempted : undefined,
+        );
+        setFailure(dx);
+        toast({
+          variant: "destructive",
+          title: isAr ? dx.title_ar : dx.title_en,
+          description: isAr ? dx.hint_ar : dx.hint_en,
+        });
+        return;
+      }
+
       if (!mountedRef.current) return;
       setResult(data.result as AnalysisResult);
     } catch (e: unknown) {
       if (!mountedRef.current) return;
+      // Defensive catch — anything that escapes the structured paths
+      // above. Still classified through the same friendly mapper.
       const msg = e instanceof Error ? e.message : String(e);
-      toast({ variant: "destructive", title: isAr ? "خطأ في التحليل" : "Analysis Error", description: msg });
+      const dx = classifyFailure(msg, undefined, undefined, undefined);
+      setFailure(dx);
+      toast({
+        variant: "destructive",
+        title: isAr ? dx.title_ar : dx.title_en,
+        description: isAr ? dx.hint_ar : dx.hint_en,
+      });
     } finally {
       if (mountedRef.current) setLoading(false);
     }
@@ -184,6 +330,71 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
         <div className="flex flex-col items-center justify-center py-8 gap-2 rounded-xl border border-border/50 bg-card/60">
           <Loader2 className="h-7 w-7 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground">{isAr ? "جاري تحليل الموقع..." : "Analyzing website..."}</p>
+        </div>
+      )}
+
+      {/* Failure card — friendly, bilingual, with a collapsible
+          "technical detail" so support can still read the raw error. */}
+      {failure && !loading && (
+        <div className="rounded-2xl border border-amber-300/60 bg-amber-50/60 dark:border-amber-400/30 dark:bg-amber-500/10 p-5">
+          <div className="flex items-start gap-3">
+            <div className="shrink-0 h-10 w-10 rounded-xl bg-amber-100 dark:bg-amber-500/20 border border-amber-300/60 dark:border-amber-400/30 flex items-center justify-center">
+              <AlertTriangle className="h-5 w-5 text-amber-700 dark:text-amber-300" strokeWidth={1.6} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-sm font-semibold text-amber-900 dark:text-amber-100">
+                {isAr ? failure.title_ar : failure.title_en}
+              </h4>
+              <p className="text-[13px] text-amber-800/90 dark:text-amber-100/80 mt-1 leading-relaxed">
+                {isAr ? failure.hint_ar : failure.hint_en}
+              </p>
+
+              {failure.attempted && failure.attempted.length > 0 && (
+                <div className="mt-3 text-[11px] text-amber-800/80 dark:text-amber-100/70" dir="ltr">
+                  <span className="font-semibold">
+                    {isAr ? "الروابط التي تمّت تجربتها:" : "URLs attempted:"}
+                  </span>
+                  <ul className="mt-1 space-y-0.5">
+                    {failure.attempted.map((u, i) => (
+                      <li key={i} className="font-mono break-all">• {u}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="mt-3 flex items-center gap-3">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-[11px] text-amber-800 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-500/20"
+                  onClick={() => setShowTechnical((v) => !v)}
+                >
+                  {showTechnical
+                    ? (isAr ? "إخفاء التفاصيل التقنية" : "Hide technical detail")
+                    : (isAr ? "عرض التفاصيل التقنية" : "Show technical detail")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-[11px] text-amber-800 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-500/20"
+                  onClick={() => setFailure(null)}
+                >
+                  {isAr ? "إغلاق" : "Dismiss"}
+                </Button>
+              </div>
+
+              {showTechnical && failure.technical && (
+                <pre
+                  className="mt-2 text-[10.5px] font-mono bg-amber-100/60 dark:bg-amber-500/15 border border-amber-300/40 dark:border-amber-400/20 rounded-lg p-2.5 whitespace-pre-wrap break-all text-amber-900/90 dark:text-amber-100/90 max-h-32 overflow-y-auto"
+                  dir="ltr"
+                >
+                  {failure.technical}
+                </pre>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
