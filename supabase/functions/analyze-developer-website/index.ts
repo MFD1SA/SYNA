@@ -143,17 +143,22 @@ function detectSocials(html: string): { platform: string; url: string }[] {
     ["pinterest", /https?:\/\/(?:www\.)?pinterest\.com\/[A-Za-z0-9_.-]{1,40}/gi],
   ];
   const out: { platform: string; url: string }[] = [];
-  const seen = new Set<string>();
+  // One slot per platform — sites often have multiple instagram/facebook
+  // links (corporate + project + region). For the business-intelligence
+  // report we just need the *presence* of each network, not every URL.
+  const seenPlatform = new Set<string>();
   for (const [platform, re] of patterns) {
     const ms = html.match(re);
     if (!ms) continue;
     for (const u of ms) {
+      if (seenPlatform.has(platform)) break;
       const clean = u.replace(/[)\.,;]+$/, "");
-      const key = `${platform}:${clean.toLowerCase()}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
+      // Filter generic share/intent URLs that slipped past the regex
+      if (/\b(share|sharer|intent|dialog\b)/i.test(clean)) continue;
+      seenPlatform.add(platform);
       out.push({ platform, url: clean });
-      if (out.length >= 16) return out;
+      if (out.length >= 9) return out;
+      break;
     }
   }
   return out;
