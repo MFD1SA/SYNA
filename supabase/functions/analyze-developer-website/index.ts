@@ -269,37 +269,67 @@ function detectLanguageLinks(links: string[], originHost: string): string[] {
 
 // ─── Project deep-extraction ─────────────────────────────────────────
 // Given the projects-listing page HTML, find candidate sub-page URLs
-// that look like individual project pages (children of the listing
-// path on the same host). Skip pagination, filters and downloads.
+// that look like individual project pages.
+//
+// Strategy: prefer same-host links that are CHILDREN of the listing
+// path (e.g. /projects/X under /projects/). If that yields nothing —
+// common on SPAs that mount their grid under a different language
+// prefix or move to a different "developments/properties" root —
+// fall back to scanning all same-host links for paths matching a
+// project-noun + slug shape.
+const PROJECT_NOUNS = "projects?|portfolio|portfolios|works?|properties|developments?|residences?|communities|listings?|estates?";
+const PROJECT_NOUN_RE = new RegExp(`^/(?:[a-z]{2}/)?(?:${PROJECT_NOUNS})/[a-z0-9\\-_%]{4,80}/?$`, "i");
+
 function extractProjectSubpageUrls(html: string, listingUrl: string, originHost: string): string[] {
   const links = extractLinks(html, listingUrl);
   const listingPath = new URL(listingUrl).pathname.replace(/\/+$/, "");
   const out: string[] = [];
   const seen = new Set<string>();
+
+  const accept = (u: URL): string | null => {
+    if (u.host !== originHost) return null;
+    const path = u.pathname.replace(/\/+$/, "");
+    // Skip pagination / category / filter / search / non-html
+    if (/\/(page|category|tag|filter|search)(\/|$)/i.test(path)) return null;
+    if (u.search && /[?&](page|sort|filter|category)=/i.test(u.search)) return null;
+    if (/\.(pdf|jpg|jpeg|png|gif|zip|doc|docx|xls|xlsx|svg|webp)$/i.test(path)) return null;
+    const clean = u.origin + path;
+    if (seen.has(clean)) return null;
+    return clean;
+  };
+
+  // Pass 1: children of the listing path (preferred)
   for (const l of links) {
     try {
       const u = new URL(l);
-      if (u.host !== originHost) continue;
+      const clean = accept(u);
+      if (!clean) continue;
       const path = u.pathname.replace(/\/+$/, "");
-      // Must be a CHILD of the listing path
       if (!path.startsWith(listingPath + "/") || path === listingPath) continue;
-      // Skip pagination / category / filter links
-      if (/\/(page|category|tag|filter|search)(\/|$)/i.test(path)) continue;
-      if (u.search && /[?&](page|sort|filter|category)=/i.test(u.search)) continue;
-      // Skip downloads
-      if (/\.(pdf|jpg|jpeg|png|gif|zip|doc|docx|xls|xlsx)$/i.test(path)) continue;
-      // Path depth: must be at least one segment deeper than listing
       const listingDepth = listingPath.split("/").filter(Boolean).length;
       const pathDepth = path.split("/").filter(Boolean).length;
       if (pathDepth <= listingDepth) continue;
-      // Strip fragments
-      const clean = u.origin + u.pathname.replace(/\/+$/, "");
-      if (seen.has(clean)) continue;
       seen.add(clean);
       out.push(clean);
-      if (out.length >= 8) break;
+      if (out.length >= 8) return out;
     } catch { /* */ }
   }
+
+  // Pass 2: noun + slug shape anywhere on same host
+  if (out.length === 0) {
+    for (const l of links) {
+      try {
+        const u = new URL(l);
+        const clean = accept(u);
+        if (!clean) continue;
+        if (!PROJECT_NOUN_RE.test(u.pathname)) continue;
+        seen.add(clean);
+        out.push(clean);
+        if (out.length >= 8) break;
+      } catch { /* */ }
+    }
+  }
+
   return out;
 }
 
@@ -349,6 +379,67 @@ function parseProjectPage(html: string, pageUrl: string): ProjectCard | null {
   }
 
   return { title, summary, image_url, location, url: pageUrl };
+}
+
+// ─── Textual date parsing (English + Arabic month names) ────────────
+// Recognizes shapes like:
+//   "September 24, 2025"    → 2025-09-24
+//   "24 September 2025"     → 2025-09-24
+//   "سبتمبر 24, 2025"        → 2025-09-24
+//   "24 سبتمبر 2025"         → 2025-09-24
+// Returns YYYY-MM-DD or undefined.
+const MONTH_INDEX: Record<string, number> = (() => {
+  const m: Record<string, number> = {};
+  const en: [string[], number][] = [
+    [["jan", "january"], 1], [["feb", "february"], 2], [["mar", "march"], 3],
+    [["apr", "april"], 4], [["may"], 5], [["jun", "june"], 6],
+    [["jul", "july"], 7], [["aug", "august"], 8], [["sep", "sept", "september"], 9],
+    [["oct", "october"], 10], [["nov", "november"], 11], [["dec", "december"], 12],
+  ];
+  for (const [keys, idx] of en) for (const k of keys) m[k] = idx;
+  // Arabic Gregorian (Levant + Gulf forms)
+  const ar: [string[], number][] = [
+    [["يناير", "كانون الثاني"], 1],
+    [["فبراير", "شباط"], 2],
+    [["مارس", "آذار", "اذار"], 3],
+    [["أبريل", "ابريل", "نيسان"], 4],
+    [["مايو", "أيار", "ايار"], 5],
+    [["يونيو", "حزيران"], 6],
+    [["يوليو", "تموز"], 7],
+    [["أغسطس", "اغسطس", "آب"], 8],
+    [["سبتمبر", "أيلول", "ايلول"], 9],
+    [["أكتوبر", "اكتوبر", "تشرين الأول", "تشرين الاول"], 10],
+    [["نوفمبر", "تشرين الثاني"], 11],
+    [["ديسمبر", "كانون الأول", "كانون الاول"], 12],
+  ];
+  for (const [keys, idx] of ar) for (const k of keys) m[k] = idx;
+  return m;
+})();
+
+function parseTextualDate(text: string): string | undefined {
+  const lc = text.toLowerCase();
+  // Build alternation of all month names (sorted longest-first to avoid prefix issues)
+  const names = Object.keys(MONTH_INDEX).sort((a, b) => b.length - a.length);
+  // Pattern A: MonthName DD, YYYY  (e.g. "September 24, 2025" / "سبتمبر 24, 2025")
+  for (const name of names) {
+    const idx = MONTH_INDEX[name];
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const reA = new RegExp(`${escaped}\\s+(\\d{1,2})\\s*[,،]?\\s*(20\\d{2})`, "i");
+    const ma = lc.match(reA);
+    if (ma) {
+      const day = parseInt(ma[1], 10);
+      const yr = parseInt(ma[2], 10);
+      if (day >= 1 && day <= 31) return `${yr}-${String(idx).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    }
+    const reB = new RegExp(`(\\d{1,2})\\s+${escaped}\\s+(20\\d{2})`, "i");
+    const mb = lc.match(reB);
+    if (mb) {
+      const day = parseInt(mb[1], 10);
+      const yr = parseInt(mb[2], 10);
+      if (day >= 1 && day <= 31) return `${yr}-${String(idx).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    }
+  }
+  return undefined;
 }
 
 // ─── News card extraction ────────────────────────────────────────────
@@ -434,10 +525,12 @@ function parseCardBlock(block: string, baseUrl: string, originHost: string): New
     const isoM = txt.match(/\b(20\d{2})[-./](\d{1,2})[-./](\d{1,2})\b/);
     if (isoM) {
       date = `${isoM[1]}-${isoM[2].padStart(2, "0")}-${isoM[3].padStart(2, "0")}`;
-    } else {
+    }
+    if (!date) {
       const dmyM = txt.match(/\b(\d{1,2})[-./](\d{1,2})[-./](20\d{2})\b/);
       if (dmyM) date = `${dmyM[3]}-${dmyM[2].padStart(2, "0")}-${dmyM[1].padStart(2, "0")}`;
     }
+    if (!date) date = parseTextualDate(txt);
   }
 
   // Summary: first <p>
@@ -807,10 +900,25 @@ Deno.serve(async (req) => {
       latency_ms?: number;
       error?: string;
     }
+    // Per-category byte caps. Listing pages for projects and news are
+    // often heavy (lots of cards, lazy-loaded media). On real-estate
+    // sites the first <article> can sit past 300 KB into the document
+    // (e.g. retal.com.sa/blog), so cap them at 800 KB. About / contact
+    // / careers / events stay tight.
+    const SUBPAGE_CAP: Partial<Record<Category, number>> = {
+      projects: 800_000,
+      news: 800_000,
+      events: 400_000,
+      about: 350_000,
+      contact: 250_000,
+      careers: 250_000,
+    };
+
     const subResults: SubPage[] = await Promise.all(
       subPicks.map(async (p): Promise<SubPage> => {
         try {
-          const r = await tryFetch(p.url, 6_000, 250_000);
+          const cap = SUBPAGE_CAP[p.category] ?? 300_000;
+          const r = await tryFetch(p.url, 7_000, cap);
           return { ...p, ok: r.status >= 200 && r.status < 400, status: r.status, html: r.html, latency_ms: r.latency_ms };
         } catch (e) {
           return { ...p, ok: false, error: e instanceof Error ? e.message : String(e) };
