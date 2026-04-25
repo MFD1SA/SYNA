@@ -1,20 +1,29 @@
 // ═══════════════════════════════════════════════════════════════════════
-// SINA — Developer Business Intelligence Analyzer (v6)
+// SINA — Developer Business Intelligence Analyzer (v8)
 // ═══════════════════════════════════════════════════════════════════════
-// Builds an admin/owner-facing business intelligence report on a real-
-// estate developer by crawling the developer's own website. We fetch
-// the homepage, classify outbound links by category (projects, news,
-// events, careers, about, contact, locations, languages) and then
-// fetch the most relevant sub-page in each category to extract real
-// titles, images and structured data.
+// Goal: business intelligence on a real-estate developer — what projects
+// they ship, what news they publish, what social channels they're active
+// on. NOT a website/SEO audit.
+//
+// v8 (this version) shifts the focus to CONTENT:
+//   • Score is 100% content-driven (no HTTPS / Schema / Mobile checks)
+//   • Visits individual project pages to extract per-project detail
+//     (title, image, summary, location)
+//   • Parses news listings into article cards (image, date, summary)
+//   • Visits each social-media profile to enrich with display name,
+//     avatar, bio, and (where the platform allows public read) follower
+//     count and recent posts. No API keys needed.
 //
 // What we DO NOT do:
-//   - No external AI inference (no hallucinated "facts")
-//   - No third-party news/SEO API (cost + privacy)
-//   - No social-platform scraping (terms-of-service hostile)
+//   • No external AI inference (no hallucinated "facts")
+//   • No third-party news/SEO API
+//   • No paid social-platform API — public anonymous fetches only
 //
-// Everything reported is grounded in HTML the developer themselves
-// chose to publish.
+// History:
+//   v6: BI overhaul — projects/news/events/about sub-page crawl
+//   v7: dedupe social platforms by network (instagram only once)
+//   v8: deep project pages + news cards + social profile enrichment +
+//       content-only scoring (this version)
 //
 // Response shape is consumed by `src/components/owner/DevWebsiteAnalysis.tsx`.
 // ═══════════════════════════════════════════════════════════════════════
@@ -43,7 +52,7 @@ const browserHeaders: HeadersInit = {
   "Sec-Fetch-Site": "none",
 };
 
-// ─── Helpers ─────────────────────────────────────────────────────────
+// ─── Generic helpers ────────────────────────────────────────────────
 function normalizeUrl(raw: string): string {
   let url = raw.trim();
   if (!/^https?:\/\//i.test(url)) url = "https://" + url;
@@ -97,7 +106,6 @@ function extractLinks(html: string, baseUrl: string): string[] {
   return out;
 }
 
-/** Extract text content of every <h1>, <h2>, <h3> element. Up to `cap`. */
 function extractHeadings(html: string, level: 1 | 2 | 3, cap = 25): string[] {
   const re = new RegExp(`<h${level}\\b[^>]*>([\\s\\S]*?)<\\/h${level}>`, "gi");
   const out: string[] = [];
@@ -109,7 +117,6 @@ function extractHeadings(html: string, level: 1 | 2 | 3, cap = 25): string[] {
   return out;
 }
 
-/** Extract <img src> URLs (absolute), capped at `cap`. */
 function extractImages(html: string, baseUrl: string, cap = 10): string[] {
   const out: string[] = [];
   const seen = new Set<string>();
@@ -121,7 +128,6 @@ function extractImages(html: string, baseUrl: string, cap = 10): string[] {
     try {
       const abs = new URL(src, baseUrl).toString();
       if (seen.has(abs)) continue;
-      // Skip tiny icons / pixels (best-effort heuristic on filename)
       if (/(?:logo|icon|favicon|sprite|placeholder|pixel|spinner|loader)/i.test(abs)) continue;
       seen.add(abs);
       out.push(abs);
@@ -143,9 +149,6 @@ function detectSocials(html: string): { platform: string; url: string }[] {
     ["pinterest", /https?:\/\/(?:www\.)?pinterest\.com\/[A-Za-z0-9_.-]{1,40}/gi],
   ];
   const out: { platform: string; url: string }[] = [];
-  // One slot per platform — sites often have multiple instagram/facebook
-  // links (corporate + project + region). For the business-intelligence
-  // report we just need the *presence* of each network, not every URL.
   const seenPlatform = new Set<string>();
   for (const [platform, re] of patterns) {
     const ms = html.match(re);
@@ -153,7 +156,6 @@ function detectSocials(html: string): { platform: string; url: string }[] {
     for (const u of ms) {
       if (seenPlatform.has(platform)) break;
       const clean = u.replace(/[)\.,;]+$/, "");
-      // Filter generic share/intent URLs that slipped past the regex
       if (/\b(share|sharer|intent|dialog\b)/i.test(clean)) continue;
       seenPlatform.add(platform);
       out.push({ platform, url: clean });
@@ -253,7 +255,6 @@ function detectLanguageLinks(links: string[], originHost: string): string[] {
     try {
       const u = new URL(l);
       if (u.host !== originHost) continue;
-      // Check for /lang/ or /lang at top level, or ?lang= query param.
       const seg = u.pathname.split("/").filter(Boolean)[0];
       if (seg && LANG_CODES.includes(seg.toLowerCase())) langs.add(seg.toLowerCase());
       const q = u.searchParams.get("lang") || u.searchParams.get("locale") || u.searchParams.get("hl");
@@ -264,6 +265,314 @@ function detectLanguageLinks(links: string[], originHost: string): string[] {
     } catch { /* */ }
   }
   return [...langs];
+}
+
+// ─── Project deep-extraction ─────────────────────────────────────────
+// Given the projects-listing page HTML, find candidate sub-page URLs
+// that look like individual project pages (children of the listing
+// path on the same host). Skip pagination, filters and downloads.
+function extractProjectSubpageUrls(html: string, listingUrl: string, originHost: string): string[] {
+  const links = extractLinks(html, listingUrl);
+  const listingPath = new URL(listingUrl).pathname.replace(/\/+$/, "");
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const l of links) {
+    try {
+      const u = new URL(l);
+      if (u.host !== originHost) continue;
+      const path = u.pathname.replace(/\/+$/, "");
+      // Must be a CHILD of the listing path
+      if (!path.startsWith(listingPath + "/") || path === listingPath) continue;
+      // Skip pagination / category / filter links
+      if (/\/(page|category|tag|filter|search)(\/|$)/i.test(path)) continue;
+      if (u.search && /[?&](page|sort|filter|category)=/i.test(u.search)) continue;
+      // Skip downloads
+      if (/\.(pdf|jpg|jpeg|png|gif|zip|doc|docx|xls|xlsx)$/i.test(path)) continue;
+      // Path depth: must be at least one segment deeper than listing
+      const listingDepth = listingPath.split("/").filter(Boolean).length;
+      const pathDepth = path.split("/").filter(Boolean).length;
+      if (pathDepth <= listingDepth) continue;
+      // Strip fragments
+      const clean = u.origin + u.pathname.replace(/\/+$/, "");
+      if (seen.has(clean)) continue;
+      seen.add(clean);
+      out.push(clean);
+      if (out.length >= 8) break;
+    } catch { /* */ }
+  }
+  return out;
+}
+
+interface ProjectCard {
+  title: string;
+  summary: string;
+  image_url: string;
+  location: string;
+  url: string;
+}
+
+function parseProjectPage(html: string, pageUrl: string): ProjectCard | null {
+  const ogTitle = extractMeta(html, /<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
+  const ogImage = extractMeta(html, /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
+  const ogDesc = extractMeta(html, /<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
+  const metaDesc = extractMeta(html, /<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
+  const docTitle = extractMeta(html, /<title[^>]*>([\s\S]*?)<\/title>/i);
+  const h1 = extractHeadings(html, 1, 1)[0] || "";
+
+  let title = h1 || stripTags(ogTitle) || stripTags(docTitle) || "";
+  // Strip site-name suffixes: "Project X | Acme" → "Project X"
+  title = title.replace(/\s*[\|\-–—]\s*[^|\-–—]{2,80}$/, "").trim().slice(0, 180);
+  if (!title || title.length < 4) return null;
+
+  let summary = stripTags(ogDesc) || stripTags(metaDesc) || "";
+  if (!summary || summary.length < 60) {
+    const m = html.match(/<p\b[^>]*>([\s\S]{60,800}?)<\/p>/i);
+    if (m) summary = stripTags(m[1]);
+  }
+  summary = summary.slice(0, 280);
+
+  let image_url = "";
+  if (ogImage && !ogImage.startsWith("data:")) {
+    try { image_url = new URL(ogImage, pageUrl).toString(); } catch { /* */ }
+  }
+  if (!image_url) {
+    const imgs = extractImages(html, pageUrl, 1);
+    image_url = imgs[0] || "";
+  }
+
+  // Best-effort location extraction from the page text
+  let location = "";
+  const locMatch =
+    html.match(/(?:located in|location\s*[:\-]\s*|في\s+مدينة\s+|بحي\s+|بمدينة\s+)\s*([\u0600-\u06FFa-zA-Z\s,]{3,60})/i);
+  if (locMatch) {
+    location = stripTags(locMatch[1]).replace(/[,.\s]+$/, "").slice(0, 80);
+  }
+
+  return { title, summary, image_url, location, url: pageUrl };
+}
+
+// ─── News card extraction ────────────────────────────────────────────
+interface NewsCard {
+  title: string;
+  date?: string;
+  summary: string;
+  image_url: string;
+  url: string;
+}
+
+// Parse a news listing page for article cards. Strategy: locate <article>
+// blocks first (most reliable), then fall back to divs/lis/sections with
+// post|news|article|card|blog|entry in their class name.
+function extractNewsCards(html: string, listingUrl: string, originHost: string): NewsCard[] {
+  const out: NewsCard[] = [];
+  const seenUrls = new Set<string>();
+
+  const collect = (re: RegExp) => {
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(html)) !== null && out.length < 10) {
+      const card = parseCardBlock(m[1], listingUrl, originHost);
+      if (card && !seenUrls.has(card.url)) {
+        seenUrls.add(card.url);
+        out.push(card);
+      }
+    }
+  };
+
+  // 1) <article> blocks
+  collect(/<article\b[^>]*>([\s\S]{50,8000}?)<\/article>/gi);
+
+  // 2) div/li/section with post|news|article|card|blog|entry class
+  if (out.length < 4) {
+    collect(/<(?:div|li|section)\b[^>]*class=["'][^"']*(?:post|news|article|card|blog|entry|item)[^"']*["'][^>]*>([\s\S]{100,5000}?)<\/(?:div|li|section)>/gi);
+  }
+
+  return out;
+}
+
+function parseCardBlock(block: string, baseUrl: string, originHost: string): NewsCard | null {
+  // Title: first heading
+  const titleM = block.match(/<h[1-4]\b[^>]*>([\s\S]{4,400}?)<\/h[1-4]>/i);
+  const title = titleM ? stripTags(titleM[1]).slice(0, 200) : "";
+  if (!title || title.length < 6) return null;
+
+  // URL: first internal <a>
+  let url = "";
+  const aRe = /<a\b[^>]*\bhref\s*=\s*["']([^"']+)["'][^>]*>/gi;
+  let am: RegExpExecArray | null;
+  while ((am = aRe.exec(block)) !== null) {
+    if (am[1].startsWith("#") || am[1].startsWith("mailto:") || am[1].startsWith("tel:")) continue;
+    try {
+      const u = new URL(am[1], baseUrl);
+      if (u.host === originHost) {
+        url = u.toString();
+        break;
+      }
+    } catch { /* */ }
+  }
+  if (!url) return null;
+
+  // Image: first img, skipping logos/icons
+  let image_url = "";
+  const imgRe = /<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/gi;
+  let im: RegExpExecArray | null;
+  while ((im = imgRe.exec(block)) !== null) {
+    const src = im[1];
+    if (!src || src.startsWith("data:")) continue;
+    if (/(?:logo|icon|favicon|sprite|placeholder|pixel|spinner|loader)/i.test(src)) continue;
+    try {
+      image_url = new URL(src, baseUrl).toString();
+      break;
+    } catch { /* */ }
+  }
+
+  // Date: <time datetime>, then body text patterns
+  let date: string | undefined;
+  const timeM = block.match(/<time[^>]+datetime=["']([^"']+)["']/i);
+  if (timeM) date = timeM[1].slice(0, 10);
+  if (!date) {
+    const txt = stripTags(block);
+    const isoM = txt.match(/\b(20\d{2})[-./](\d{1,2})[-./](\d{1,2})\b/);
+    if (isoM) {
+      date = `${isoM[1]}-${isoM[2].padStart(2, "0")}-${isoM[3].padStart(2, "0")}`;
+    } else {
+      const dmyM = txt.match(/\b(\d{1,2})[-./](\d{1,2})[-./](20\d{2})\b/);
+      if (dmyM) date = `${dmyM[3]}-${dmyM[2].padStart(2, "0")}-${dmyM[1].padStart(2, "0")}`;
+    }
+  }
+
+  // Summary: first <p>
+  let summary = "";
+  const pM = block.match(/<p\b[^>]*>([\s\S]{20,800}?)<\/p>/i);
+  if (pM) summary = stripTags(pM[1]).slice(0, 220);
+
+  return { title, url, image_url, date, summary };
+}
+
+// ─── Social profile enrichment ───────────────────────────────────────
+interface SocialProfile {
+  display_name?: string;
+  avatar_url?: string;
+  bio?: string;
+  followers?: number;
+  followers_text?: string;
+  videos_count?: number;
+  recent_items?: Array<{ title: string; thumbnail_url?: string; published_at?: string }>;
+}
+
+interface EnrichedSocial {
+  platform: string;
+  url: string;
+  accessible: boolean;
+  profile: SocialProfile | null;
+}
+
+function parseAbbreviatedNumber(s: string): number | null {
+  const m = s.replace(/[, ]/g, "").match(/^(\d+(?:\.\d+)?)\s*([KMB])?$/i);
+  if (!m) return null;
+  const v = parseFloat(m[1]);
+  const unit = (m[2] || "").toUpperCase();
+  if (!isFinite(v)) return null;
+  const mul = unit === "K" ? 1000 : unit === "M" ? 1_000_000 : unit === "B" ? 1_000_000_000 : 1;
+  return Math.round(v * mul);
+}
+
+async function enrichSocialProfile(item: { platform: string; url: string }): Promise<EnrichedSocial> {
+  // wa.me / WhatsApp doesn't have a profile page worth fetching — it
+  // immediately bounces to a chat-start screen. Just record the link.
+  if (item.platform === "whatsapp") {
+    return { platform: item.platform, url: item.url, accessible: false, profile: null };
+  }
+
+  let html = "";
+  let ok = false;
+  try {
+    const r = await tryFetch(item.url, 5_000, 250_000);
+    if (r.status >= 200 && r.status < 400 && r.html.length > 1000) {
+      html = r.html;
+      ok = true;
+    }
+  } catch { /* swallow */ }
+
+  if (!ok || !html) {
+    return { platform: item.platform, url: item.url, accessible: false, profile: null };
+  }
+
+  const profile: SocialProfile = {};
+
+  // Universal: og:title / og:image / og:description
+  const ogTitle = extractMeta(html, /<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
+  const ogImage = extractMeta(html, /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
+  const ogDesc = extractMeta(html, /<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
+  if (ogTitle) profile.display_name = stripTags(ogTitle).slice(0, 120).replace(/\s*[\|\-–—]\s*(youtube|facebook|tiktok|instagram|linkedin|twitter|x|pinterest|snapchat).*$/i, "").trim();
+  if (ogImage && !ogImage.startsWith("data:")) profile.avatar_url = ogImage;
+  if (ogDesc) profile.bio = stripTags(ogDesc).slice(0, 280);
+
+  // ── Platform-specific enrichments ────────────────────────────────
+  if (item.platform === "youtube") {
+    // Subscribers (e.g. "1.2M subscribers", "1,234 subscribers")
+    const patterns = [
+      /"subscriberCountText"\s*:\s*\{\s*"simpleText"\s*:\s*"([^"]+)"/,
+      /"subscriberCountText"\s*:\s*\{\s*"runs"\s*:\s*\[\s*\{\s*"text"\s*:\s*"([^"]+)"/,
+      /"subscriberCountText"\s*:\s*\{\s*"accessibility"[\s\S]{0,200}?"simpleText"\s*:\s*"([^"]+)"/,
+    ];
+    for (const pat of patterns) {
+      const sm = html.match(pat);
+      if (sm) {
+        const txt = sm[1];
+        profile.followers_text = txt;
+        const nm = txt.match(/(\d+(?:[.,]\d+)?\s*[KMB]?)/i);
+        if (nm) {
+          const n = parseAbbreviatedNumber(nm[1].replace(",", "."));
+          if (n !== null) profile.followers = n;
+        }
+        break;
+      }
+    }
+    // Recent video titles via ytInitialData (best effort)
+    const recent: Array<{ title: string; thumbnail_url?: string }> = [];
+    const tRe = /"videoRenderer"\s*:\s*\{[\s\S]{0,600}?"title"\s*:\s*\{\s*(?:"runs"\s*:\s*\[\s*\{\s*"text"\s*:\s*"([^"]{4,180})"|"simpleText"\s*:\s*"([^"]{4,180})")/g;
+    let tm: RegExpExecArray | null;
+    while ((tm = tRe.exec(html)) !== null && recent.length < 5) {
+      const title = (tm[1] || tm[2] || "").trim();
+      if (title) recent.push({ title: title.slice(0, 180) });
+    }
+    if (recent.length > 0) profile.recent_items = recent;
+    // Total video count
+    const vm = html.match(/"videosCountText"\s*:\s*\{\s*"runs"\s*:\s*\[\s*\{\s*"text"\s*:\s*"([\d,.]+)"/);
+    if (vm) {
+      const n = parseInt(vm[1].replace(/[,.]/g, ""), 10);
+      if (isFinite(n)) profile.videos_count = n;
+    }
+  }
+
+  if (item.platform === "tiktok") {
+    // TikTok SSRs SIGI_STATE with followerCount
+    const fM = html.match(/"followerCount"\s*:\s*(\d+)/);
+    if (fM) profile.followers = parseInt(fM[1], 10);
+  }
+
+  if (item.platform === "pinterest") {
+    const fM = html.match(/"follower_count"\s*:\s*(\d+)/);
+    if (fM) profile.followers = parseInt(fM[1], 10);
+  }
+
+  if (item.platform === "linkedin") {
+    // LinkedIn occasionally exposes follower count in body text
+    const fM = html.match(/(\d+(?:,\d+)*)\s+followers/i);
+    if (fM) {
+      const n = parseInt(fM[1].replace(/,/g, ""), 10);
+      if (isFinite(n)) profile.followers = n;
+    }
+  }
+
+  // Accessibility: at least one of (display_name, avatar_url, bio, followers)
+  const accessible = !!(profile.display_name || profile.avatar_url || profile.bio || profile.followers);
+  return {
+    platform: item.platform,
+    url: item.url,
+    accessible,
+    profile: accessible ? profile : null,
+  };
 }
 
 // ─── Fetch helpers ───────────────────────────────────────────────────
@@ -320,7 +629,6 @@ async function fetchHomepage(normalized: string): Promise<{
       if (r.status >= 200 && r.status < 400) {
         return { ok: true, status: r.status, html: r.html, latency_ms: r.latency_ms, finalUrl: r.finalUrl, attempted: candidates };
       }
-      // Soft-failure HTTP — keep last but try next candidate too.
       lastErr = `HTTP ${r.status}`;
     } catch (e) {
       lastErr = e;
@@ -333,7 +641,7 @@ async function fetchHomepage(normalized: string): Promise<{
   };
 }
 
-// ─── Scoring (business-focused, NOT SEO-focused) ─────────────────────
+// ─── Content scoring (100% content, NO technical signals) ────────────
 interface ScoreSignal {
   label_ar: string;
   label_en: string;
@@ -342,37 +650,60 @@ interface ScoreSignal {
   value?: string;
 }
 
-function computeBusinessScore(input: {
+function computeContentScore(input: {
+  projectsCount: number;
+  detailedProjectsCount: number;
+  newsCount: number;
+  recentNewsCount: number;
+  socialsCount: number;
+  accessibleSocialCount: number;
   hasLogo: boolean;
   hasDescription: boolean;
-  hasOrganizationLd: boolean;
-  hasFoundedYear: boolean;
-  projectsCount: number;
-  newsCount: number;
-  eventsCount: number;
-  socialsCount: number;
-  hasCareersPage: boolean;
-  languagesCount: number;
-  officeLocationsCount: number;
-  hasContactPage: boolean;
   hasAboutPage: boolean;
-  https: boolean;
-  recentNewsCount: number;
+  hasOrgLd: boolean;
+  eventsCount: number;
+  hasCareers: boolean;
+  officeCount: number;
+  languagesCount: number;
 }): { score: number; band: "weak" | "fair" | "strong" | "excellent"; signals: ScoreSignal[] } {
   const signals: ScoreSignal[] = [
-    { label_ar: "هوية الشركة موثَّقة (شعار + وصف)", label_en: "Verified company identity (logo + description)", weight: 10, passed: input.hasLogo && input.hasDescription },
-    { label_ar: "بيانات منظَّمة عن الشركة (Schema.org)", label_en: "Structured organization data", weight: 8, passed: input.hasOrganizationLd },
-    { label_ar: "سنة تأسيس مُعلنة", label_en: "Founding year published", weight: 4, passed: input.hasFoundedYear },
-    { label_ar: "محفظة مشاريع منشورة", label_en: "Published project portfolio", weight: 14, passed: input.projectsCount > 0, value: String(input.projectsCount) },
-    { label_ar: "نشاط إعلامي وأخبار", label_en: "Active newsroom / press", weight: 12, passed: input.newsCount > 0, value: String(input.newsCount) },
-    { label_ar: "أخبار حديثة (آخر 12 شهر)", label_en: "Recent news (last 12 months)", weight: 6, passed: input.recentNewsCount > 0, value: String(input.recentNewsCount) },
-    { label_ar: "فعاليات أو مؤتمرات", label_en: "Events / conferences", weight: 4, passed: input.eventsCount > 0, value: String(input.eventsCount) },
-    { label_ar: "حضور قوي في التواصل (≥3 منصات)", label_en: "Strong social presence (≥3 platforms)", weight: 10, passed: input.socialsCount >= 3, value: String(input.socialsCount) },
-    { label_ar: "صفحة وظائف (مؤشر نمو)", label_en: "Careers page (growth signal)", weight: 6, passed: input.hasCareersPage },
-    { label_ar: "تعدُّد لغات الموقع", label_en: "Multi-language site", weight: 6, passed: input.languagesCount >= 2, value: String(input.languagesCount) },
-    { label_ar: "مكاتب أو عناوين متعدِّدة", label_en: "Multiple office locations", weight: 6, passed: input.officeLocationsCount >= 2, value: String(input.officeLocationsCount) },
-    { label_ar: "صفحات اتصال + من نحن", label_en: "Contact + About pages", weight: 6, passed: input.hasContactPage && input.hasAboutPage },
-    { label_ar: "اتصال مشفَّر (HTTPS)", label_en: "Secure connection (HTTPS)", weight: 8, passed: input.https },
+    // Projects (25 pts)
+    { label_ar: "محفظة مشاريع منشورة", label_en: "Published project portfolio",
+      weight: 14, passed: input.projectsCount > 0, value: String(input.projectsCount) },
+    { label_ar: "تفاصيل ≥ ٣ مشاريع موثَّقة", label_en: "Detail on 3+ projects",
+      weight: 11, passed: input.detailedProjectsCount >= 3, value: String(input.detailedProjectsCount) },
+
+    // News (20 pts)
+    { label_ar: "نشاط إعلامي وأخبار", label_en: "Active newsroom",
+      weight: 10, passed: input.newsCount > 0, value: String(input.newsCount) },
+    { label_ar: "≥ خبران في آخر ١٢ شهر", label_en: "2+ news items in last 12 months",
+      weight: 10, passed: input.recentNewsCount >= 2, value: String(input.recentNewsCount) },
+
+    // Social (20 pts)
+    { label_ar: "حضور قوي في التواصل (≥ ٣ منصات)", label_en: "Strong social presence (≥3 platforms)",
+      weight: 12, passed: input.socialsCount >= 3, value: String(input.socialsCount) },
+    { label_ar: "حسابات سوشيال متاحة للقراءة", label_en: "Public-readable social accounts",
+      weight: 8, passed: input.accessibleSocialCount >= 2, value: String(input.accessibleSocialCount) },
+
+    // Narrative (15 pts)
+    { label_ar: "هوية موثَّقة (شعار + وصف)", label_en: "Verified identity (logo + description)",
+      weight: 8, passed: input.hasLogo && input.hasDescription },
+    { label_ar: "صفحة من نحن", label_en: "About page",
+      weight: 4, passed: input.hasAboutPage },
+    { label_ar: "بيانات منظَّمة عن المنشأة", label_en: "Structured organization data",
+      weight: 3, passed: input.hasOrgLd },
+
+    // Events / Growth (10 pts)
+    { label_ar: "فعاليات / مؤتمرات", label_en: "Events / conferences",
+      weight: 5, passed: input.eventsCount > 0, value: String(input.eventsCount) },
+    { label_ar: "صفحة وظائف نشطة", label_en: "Active careers page",
+      weight: 5, passed: input.hasCareers },
+
+    // Expansion (10 pts)
+    { label_ar: "مكاتب أو فروع متعدِّدة", label_en: "Multiple offices",
+      weight: 5, passed: input.officeCount >= 2, value: String(input.officeCount) },
+    { label_ar: "حضور دولي (متعدد اللغات)", label_en: "International (multi-language)",
+      weight: 5, passed: input.languagesCount >= 2, value: String(input.languagesCount) },
   ];
   const earned = signals.filter((s) => s.passed).reduce((a, s) => a + s.weight, 0);
   const max = signals.reduce((a, s) => a + s.weight, 0);
@@ -430,29 +761,23 @@ Deno.serve(async (req) => {
     const homeUrl = home.finalUrl!;
     const originHost = new URL(homeUrl).host;
 
-    // ── Step 2: parse homepage for structured signals ────────────────
+    // ── Step 2: parse homepage ──────────────────────────────────────
     const title = extractMeta(homeHtml, /<title[^>]*>([\s\S]*?)<\/title>/i);
     const description = extractMeta(homeHtml, /<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)
       || extractMeta(homeHtml, /<meta[^>]+content=["']([^"']+)["'][^>]+name=["']description["']/i);
     const ogTitle = extractMeta(homeHtml, /<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
     const ogDescription = extractMeta(homeHtml, /<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
     const ogImage = extractMeta(homeHtml, /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
-    const canonical = extractMeta(homeHtml, /<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)["']/i);
-    const viewport = extractMeta(homeHtml, /<meta[^>]+name=["']viewport["'][^>]+content=["']([^"']+)["']/i);
     const langMatch = homeHtml.match(/<html[^>]+lang=["']([^"']+)["']/i);
     const htmlLang = langMatch ? langMatch[1] : "";
-    const h1Count = countMatches(homeHtml, /<h1[\s>]/gi);
-    const h2Count = countMatches(homeHtml, /<h2[\s>]/gi);
-    const h3Count = countMatches(homeHtml, /<h3[\s>]/gi);
 
     const homeLinks = extractLinks(homeHtml, homeUrl);
-    const homeImages = extractImages(homeHtml, homeUrl, 8);
     const socials = detectSocials(homeHtml);
     const ldBlocks = parseJsonLdBlocks(homeHtml);
     const orgNodes = ldNodesByType(ldBlocks, ["Organization", "Corporation", "LocalBusiness", "RealEstateAgent"]);
     const organization = orgNodes[0] ?? null;
 
-    // ── Step 3: classify links into categories ───────────────────────
+    // ── Step 3: classify links ─────────────────────────────────────
     const buckets: Record<Category, string[]> = {
       projects: [], news: [], events: [], careers: [], about: [], contact: [], privacy: [],
     };
@@ -465,11 +790,7 @@ Deno.serve(async (req) => {
       languages.push(htmlLang.slice(0, 2).toLowerCase());
     }
 
-    // ── Step 4: fetch top-priority sub-pages in parallel ─────────────
-    // Pick the first link in each category as our representative page.
-    // We keep this conservative (≤6 sub-pages, 6s timeout each) so the
-    // total function execution stays under ~10s even when several sites
-    // are sluggish.
+    // ── Step 4: fetch top-priority sub-pages in parallel ────────────
     const subPickOrder: Category[] = ["projects", "news", "about", "contact", "events", "careers"];
     const subPicks: Array<{ category: Category; url: string }> = [];
     for (const cat of subPickOrder) {
@@ -502,42 +823,67 @@ Deno.serve(async (req) => {
       if (r.ok && r.html) subByCat[r.category] = r;
     }
 
-    // ── Step 5: derive business intelligence from each sub-page ──────
-    // Projects
-    const projectsPage = subByCat.projects;
-    const projectTitlesFromPage = projectsPage ? [...extractHeadings(projectsPage.html!, 2, 12), ...extractHeadings(projectsPage.html!, 3, 12)] : [];
-    const projectTitlesFromHome = [...extractHeadings(homeHtml, 2, 8), ...extractHeadings(homeHtml, 3, 8)];
-    const projectImages = projectsPage ? extractImages(projectsPage.html!, projectsPage.url, 8) : [];
-    // De-duplicate + first-letter-upper sample of 6
-    const uniqueProjectTitles = Array.from(new Set([...projectTitlesFromPage, ...projectTitlesFromHome]))
-      .filter((t) => t.length >= 4 && t.length <= 120)
-      .slice(0, 8);
+    // ── Step 4.5: deep extraction (projects + socials in parallel) ──
+    // 4.5a: walk into individual project sub-pages for per-project detail
+    const projectSubpageUrls = subByCat.projects?.html
+      ? extractProjectSubpageUrls(subByCat.projects.html, subByCat.projects.url, originHost)
+      : [];
+    const projectPicks = projectSubpageUrls.slice(0, 4);
 
-    // News
-    const newsPage = subByCat.news;
-    const newsLd = ldNodesByType(parseJsonLdBlocks(newsPage?.html ?? ""), ["NewsArticle", "BlogPosting", "Article"]);
-    const newsHeadingsFromPage = newsPage ? [...extractHeadings(newsPage.html!, 2, 15), ...extractHeadings(newsPage.html!, 3, 15)] : [];
-    interface NewsItem { title: string; date?: string }
-    const recentTitles: NewsItem[] = [];
-    for (const n of newsLd) {
-      const headline = (n as { headline?: string; name?: string }).headline || (n as { headline?: string; name?: string }).name;
-      const date = (n as { datePublished?: string; dateCreated?: string }).datePublished
-        || (n as { datePublished?: string; dateCreated?: string }).dateCreated;
-      if (typeof headline === "string" && headline.length > 4) {
-        recentTitles.push({ title: headline.slice(0, 200), date: typeof date === "string" ? date.slice(0, 10) : undefined });
-      }
-      if (recentTitles.length >= 6) break;
-    }
-    if (recentTitles.length === 0) {
-      // Fall back to extracting <time> tags adjacent to headings
-      for (const h of newsHeadingsFromPage.slice(0, 6)) recentTitles.push({ title: h });
-    }
+    const [projectFetches, enrichedSocials] = await Promise.all([
+      Promise.all(projectPicks.map(async (u): Promise<ProjectCard | null> => {
+        try {
+          const r = await tryFetch(u, 4_000, 200_000);
+          if (r.status >= 200 && r.status < 400 && r.html) {
+            return parseProjectPage(r.html, u);
+          }
+        } catch { /* */ }
+        return null;
+      })),
+      Promise.all(socials.slice(0, 6).map(enrichSocialProfile)),
+    ]);
+
+    const detailedProjects: ProjectCard[] = projectFetches.filter((p): p is ProjectCard => !!p);
+
+    // 4.5b: parse news listing into article cards
+    const newsArticles: NewsCard[] = subByCat.news?.html
+      ? extractNewsCards(subByCat.news.html, subByCat.news.url, originHost)
+      : [];
+
+    // ── Step 5: derive higher-level signals ─────────────────────────
+    // News dates → "recent in last 12 months" count
     const cutoff = Date.now() - 365 * 24 * 60 * 60 * 1000;
-    const recentCount = recentTitles.filter((n) => {
-      if (!n.date) return false;
-      const t = Date.parse(n.date);
-      return Number.isFinite(t) && t >= cutoff;
-    }).length;
+    let recentCount = 0;
+    for (const a of newsArticles) {
+      if (!a.date) continue;
+      const t = Date.parse(a.date);
+      if (Number.isFinite(t) && t >= cutoff) recentCount += 1;
+    }
+    // Fallback: also count JSON-LD news articles with recent dates
+    if (newsArticles.length === 0 && subByCat.news?.html) {
+      const newsLd = ldNodesByType(parseJsonLdBlocks(subByCat.news.html), ["NewsArticle", "BlogPosting", "Article"]);
+      for (const n of newsLd) {
+        const date = (n as { datePublished?: string; dateCreated?: string }).datePublished
+          || (n as { datePublished?: string; dateCreated?: string }).dateCreated;
+        const headline = (n as { headline?: string; name?: string }).headline
+          || (n as { headline?: string; name?: string }).name;
+        if (typeof headline === "string" && headline.length > 4) {
+          const dateStr = typeof date === "string" ? date.slice(0, 10) : undefined;
+          newsArticles.push({
+            title: headline.slice(0, 200),
+            date: dateStr,
+            summary: "",
+            image_url: "",
+            url: subByCat.news!.url,
+          });
+          if (dateStr) {
+            const t = Date.parse(dateStr);
+            if (Number.isFinite(t) && t >= cutoff) recentCount += 1;
+          }
+        }
+        if (newsArticles.length >= 6) break;
+      }
+    }
 
     // Events
     const eventsPage = subByCat.events;
@@ -552,18 +898,17 @@ Deno.serve(async (req) => {
       for (const h of extractHeadings(eventsPage.html!, 2, 8)) eventTitles.push(h);
     }
 
-    // About / company
+    // About page
     const aboutPage = subByCat.about;
     const aboutDescription = aboutPage
       ? extractMeta(aboutPage.html!, /<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)
         || (() => {
-            // Pull the first sizeable <p> from the about page
             const m = aboutPage.html!.match(/<p\b[^>]*>([\s\S]{60,1200}?)<\/p>/i);
             return m ? stripTags(m[1]).slice(0, 600) : "";
           })()
       : "";
 
-    // Organization data extraction
+    // Organization data
     const orgName = (organization?.name as string)
       ?? (organization?.legalName as string)
       ?? (developerName || stripTags(title) || originHost);
@@ -576,7 +921,7 @@ Deno.serve(async (req) => {
     const orgLegalName = (organization?.legalName as string) || "";
     const orgTagline = ogTitle || stripTags(title);
 
-    // Headquarters / multiple addresses
+    // Addresses / multi-office
     interface AddrRow { country?: string; city?: string; full?: string }
     const addresses: AddrRow[] = [];
     const addrField = organization?.address;
@@ -593,7 +938,6 @@ Deno.serve(async (req) => {
         addresses.push({ full: a });
       }
     }
-    // De-duplicate
     const seenAddr = new Set<string>();
     const uniqueAddresses = addresses.filter((a) => {
       const key = (a.full || `${a.city ?? ""}-${a.country ?? ""}`).toLowerCase();
@@ -605,38 +949,35 @@ Deno.serve(async (req) => {
       || [uniqueAddresses[0]?.city, uniqueAddresses[0]?.country].filter(Boolean).join(", ")
       || "";
 
-    // ── Step 6: build trust signals ─────────────────────────────────
+    // ── Step 6: trust signals (CONTENT-relevant only) ───────────────
     const trust = {
-      https,
-      has_privacy_page: buckets.privacy.length > 0,
       has_about_page: buckets.about.length > 0,
       has_contact_page: buckets.contact.length > 0,
       has_organization_schema: !!organization,
       has_logo: !!orgLogo,
       has_clear_description: !!orgDescription && orgDescription.length >= 60,
-      mobile_optimized: !!viewport,
     };
 
-    // ── Step 7: composite score ─────────────────────────────────────
-    const scoring = computeBusinessScore({
+    // ── Step 7: composite content score ─────────────────────────────
+    const accessibleSocialCount = enrichedSocials.filter((s) => s.accessible).length;
+    const scoring = computeContentScore({
+      projectsCount: buckets.projects.length,
+      detailedProjectsCount: detailedProjects.length,
+      newsCount: buckets.news.length,
+      recentNewsCount: recentCount,
+      socialsCount: socials.length,
+      accessibleSocialCount,
       hasLogo: !!orgLogo,
       hasDescription: !!orgDescription,
-      hasOrganizationLd: !!organization,
-      hasFoundedYear: !!orgFounded,
-      projectsCount: buckets.projects.length,
-      newsCount: buckets.news.length,
-      eventsCount: buckets.events.length,
-      socialsCount: socials.length,
-      hasCareersPage: buckets.careers.length > 0,
-      languagesCount: languages.length,
-      officeLocationsCount: uniqueAddresses.length,
-      hasContactPage: buckets.contact.length > 0,
       hasAboutPage: buckets.about.length > 0,
-      https,
-      recentNewsCount: recentCount,
+      hasOrgLd: !!organization,
+      eventsCount: buckets.events.length,
+      hasCareers: buckets.careers.length > 0,
+      officeCount: uniqueAddresses.length,
+      languagesCount: languages.length,
     });
 
-    // ── Step 8: build response ──────────────────────────────────────
+    // ── Step 8: response shape (content-first) ──────────────────────
     const result = {
       website: homeUrl,
       developer_name: developerName || undefined,
@@ -654,36 +995,36 @@ Deno.serve(async (req) => {
         headquarters,
       },
 
-      portfolio: {
+      projects: {
         pages_found: buckets.projects.length,
-        sample_titles: uniqueProjectTitles,
-        sample_images: projectImages.slice(0, 6),
         has_dedicated_section: buckets.projects.length > 0,
-        first_page_url: buckets.projects[0] || "",
+        listing_url: buckets.projects[0] || "",
+        detailed_items: detailedProjects,
       },
 
       news: {
         pages_found: buckets.news.length,
-        recent_items: recentTitles,
-        recent_in_last_year: recentCount,
         has_section: buckets.news.length > 0,
-        first_page_url: buckets.news[0] || "",
+        listing_url: buckets.news[0] || "",
+        recent_in_last_year: recentCount,
+        articles: newsArticles,
       },
 
       events: {
         pages_found: buckets.events.length,
         sample_titles: eventTitles,
-        first_page_url: buckets.events[0] || "",
+        listing_url: buckets.events[0] || "",
       },
 
       careers: {
         has_careers_page: buckets.careers.length > 0,
-        first_page_url: buckets.careers[0] || "",
+        listing_url: buckets.careers[0] || "",
       },
 
       social_presence: {
-        platforms: socials,
         count: socials.length,
+        accessible_count: accessibleSocialCount,
+        platforms: enrichedSocials,
       },
 
       expansion: {
@@ -699,28 +1040,20 @@ Deno.serve(async (req) => {
       score_band: scoring.band,
       score_breakdown: scoring.signals,
 
-      technical: {
+      // Internal-only diagnostics — not rendered in the UI by default.
+      _debug: {
         https,
         page_size_bytes: homeHtml.length,
-        latency_ms: home.latency_ms,
+        home_latency_ms: home.latency_ms,
         http_status: home.status,
         page_title: stripTags(title),
         meta_description: description,
-        og_title: ogTitle,
-        og_description: ogDescription,
-        og_image: ogImage,
-        canonical_url: canonical,
         html_lang: htmlLang,
-        viewport,
-        heading_counts: { h1: h1Count, h2: h2Count, h3: h3Count },
+        crawled_pages: subResults.map((r) => ({
+          url: r.url, status: r.status ?? 0, category: r.category, ok: r.ok, latency_ms: r.latency_ms ?? 0,
+        })),
+        project_subpages_attempted: projectPicks.length,
       },
-
-      crawled_pages: subResults.map((r) => ({
-        url: r.url, status: r.status ?? 0, category: r.category, ok: r.ok, latency_ms: r.latency_ms,
-      })),
-
-      organization_ld: organization,
-      homepage_images: homeImages,
     };
 
     if (developerId) {

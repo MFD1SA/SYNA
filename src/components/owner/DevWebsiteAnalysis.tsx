@@ -6,13 +6,15 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import {
   Globe, Loader2, Building2, ExternalLink, AreaChart, X, CheckCircle2, XCircle,
-  Share2, FileText, ShieldCheck, Gauge, Image as ImageIcon, AlertTriangle,
-  Briefcase, Newspaper, CalendarDays, Languages as LanguagesIcon, MapPin,
-  TrendingUp, Trophy, Users, ChevronDown, ChevronUp, Sparkles, Calendar,
+  Share2, ShieldCheck, Gauge, AlertTriangle, Briefcase, Newspaper, CalendarDays,
+  Languages as LanguagesIcon, MapPin, TrendingUp, Trophy, Users, Sparkles,
+  Calendar, MessageCircle, PlayCircle, Lock, Image as ImageIcon,
 } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════════════════════
-   Failure-classification helpers
+   v8 — content-focused business intelligence
+   Renders projects/news/social/expansion data extracted directly from
+   the developer's website. No domain/SEO technicals are shown.
    ─────────────────────────────────────────────────────────────────── */
 
 type FailureKind = "dns" | "timeout" | "refused" | "http_error" | "other";
@@ -43,69 +45,48 @@ function classifyFailure(
       technical, attempted,
     };
   }
-
-  if (
-    blob.includes("dns error") ||
-    blob.includes("name or service not known") ||
-    blob.includes("could not resolve") ||
-    blob.includes("getaddrinfo")
-  ) {
+  if (blob.includes("dns error") || blob.includes("name or service not known") || blob.includes("could not resolve") || blob.includes("getaddrinfo")) {
     return {
       kind: "dns",
       title_ar: "هذا النطاق غير موجود",
       title_en: "Domain does not exist",
-      hint_ar: "تحقّق من إملاء عنوان الموقع — يبدو أن النطاق غير مسجَّل في الإنترنت أصلاً. جرّبه يدوياً في المتصفّح للتأكّد.",
-      hint_en: "Double-check the spelling — this domain is not registered. Open it in a browser to confirm.",
+      hint_ar: "تحقّق من إملاء عنوان الموقع — يبدو أن النطاق غير مسجَّل في الإنترنت أصلاً.",
+      hint_en: "Double-check the spelling — this domain is not registered.",
       technical, attempted,
     };
   }
-
-  if (
-    blob.includes("aborterror") ||
-    blob.includes("timeout") ||
-    blob.includes("timed out") ||
-    blob.includes("the signal has been aborted")
-  ) {
+  if (blob.includes("aborterror") || blob.includes("timeout") || blob.includes("timed out") || blob.includes("the signal has been aborted")) {
     return {
       kind: "timeout",
       title_ar: "انتهت مهلة الاتصال",
       title_en: "Connection timed out",
-      hint_ar: "الموقع لم يستجب خلال 10 ثوانٍ — قد يكون بطيئاً أو يحجب الزيارات الآلية (firewall / Cloudflare).",
-      hint_en: "Site did not respond within 10 seconds — it may be slow or blocking automated requests (firewall / Cloudflare).",
+      hint_ar: "الموقع لم يستجب خلال ١٠ ثوانٍ — قد يكون بطيئاً أو يحجب الزيارات الآلية.",
+      hint_en: "Site did not respond within 10 seconds — it may be slow or blocking automated requests.",
       technical, attempted,
     };
   }
-
-  if (
-    blob.includes("connection refused") ||
-    blob.includes("refused") ||
-    blob.includes("ssl") ||
-    blob.includes("tls") ||
-    blob.includes("certificate") ||
-    blob.includes("handshake")
-  ) {
+  if (blob.includes("connection refused") || blob.includes("refused") || blob.includes("ssl") || blob.includes("tls") || blob.includes("certificate") || blob.includes("handshake")) {
     return {
       kind: "refused",
       title_ar: "الموقع رفض الاتصال",
       title_en: "Site refused connection",
-      hint_ar: "ربما تكون شهادة الـ SSL منتهية أو غير صالحة، أو أن الخادم نفسه رفض الاتصال. جرّب فتحه في المتصفّح.",
-      hint_en: "The SSL certificate may be invalid, or the server refused the connection. Try opening it in a browser first.",
+      hint_ar: "ربما تكون شهادة الـ SSL منتهية أو غير صالحة. جرّب فتحه في المتصفّح.",
+      hint_en: "The SSL certificate may be invalid. Try opening it in a browser first.",
       technical, attempted,
     };
   }
-
   return {
     kind: "other",
     title_ar: "تعذّر الوصول إلى الموقع",
     title_en: "Could not reach the website",
-    hint_ar: "حدث خطأ غير متوقَّع أثناء محاولة الوصول. تواصل مع الدعم إذا تكرّر.",
-    hint_en: "An unexpected error occurred while reaching the site. Contact support if this persists.",
+    hint_ar: "حدث خطأ غير متوقَّع. تواصل مع الدعم إذا تكرّر.",
+    hint_en: "An unexpected error occurred. Contact support if this persists.",
     technical, attempted,
   };
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   v6 business-intelligence response shape
+   Response shape (matches v8 edge function)
    ─────────────────────────────────────────────────────────────────── */
 
 interface ScoreSignal {
@@ -116,15 +97,45 @@ interface ScoreSignal {
   value?: string;
 }
 
-interface NewsItem { title: string; date?: string }
-interface SocialPlatform { platform: string; url: string }
+interface ProjectCard {
+  title: string;
+  summary: string;
+  image_url: string;
+  location: string;
+  url: string;
+}
+
+interface NewsArticle {
+  title: string;
+  date?: string;
+  summary: string;
+  image_url: string;
+  url: string;
+}
+
+interface SocialProfile {
+  display_name?: string;
+  avatar_url?: string;
+  bio?: string;
+  followers?: number;
+  followers_text?: string;
+  videos_count?: number;
+  recent_items?: Array<{ title: string; thumbnail_url?: string; published_at?: string }>;
+}
+
+interface SocialPlatform {
+  platform: string;
+  url: string;
+  accessible: boolean;
+  profile: SocialProfile | null;
+}
+
 interface AddressRow { country?: string; city?: string; full?: string }
 
 interface AnalysisResult {
   website: string;
   developer_name?: string;
   fetched_at: string;
-  total_latency_ms: number;
 
   company: {
     name: string;
@@ -137,36 +148,36 @@ interface AnalysisResult {
     headquarters: string;
   };
 
-  portfolio: {
+  projects: {
     pages_found: number;
-    sample_titles: string[];
-    sample_images: string[];
     has_dedicated_section: boolean;
-    first_page_url: string;
+    listing_url: string;
+    detailed_items: ProjectCard[];
   };
 
   news: {
     pages_found: number;
-    recent_items: NewsItem[];
-    recent_in_last_year: number;
     has_section: boolean;
-    first_page_url: string;
+    listing_url: string;
+    recent_in_last_year: number;
+    articles: NewsArticle[];
   };
 
   events: {
     pages_found: number;
     sample_titles: string[];
-    first_page_url: string;
+    listing_url: string;
   };
 
   careers: {
     has_careers_page: boolean;
-    first_page_url: string;
+    listing_url: string;
   };
 
   social_presence: {
-    platforms: SocialPlatform[];
     count: number;
+    accessible_count: number;
+    platforms: SocialPlatform[];
   };
 
   expansion: {
@@ -177,39 +188,16 @@ interface AnalysisResult {
   };
 
   trust_signals: {
-    https: boolean;
-    has_privacy_page: boolean;
     has_about_page: boolean;
     has_contact_page: boolean;
     has_organization_schema: boolean;
     has_logo: boolean;
     has_clear_description: boolean;
-    mobile_optimized: boolean;
   };
 
   score: number;
   score_band: "weak" | "fair" | "strong" | "excellent";
   score_breakdown: ScoreSignal[];
-
-  technical: {
-    https: boolean;
-    page_size_bytes: number;
-    latency_ms: number;
-    http_status: number;
-    page_title: string;
-    meta_description: string;
-    og_title: string;
-    og_description: string;
-    og_image: string;
-    canonical_url: string;
-    html_lang: string;
-    viewport: string;
-    heading_counts: { h1: number; h2: number; h3: number };
-  };
-
-  crawled_pages: { url: string; status: number; category: string; ok: boolean; latency_ms: number }[];
-  organization_ld: Record<string, unknown> | null;
-  homepage_images: string[];
 }
 
 interface Props { developerName: string; developerId: string; isAr: boolean; autoUrl?: string; }
@@ -221,7 +209,6 @@ const bandStyles: Record<AnalysisResult["score_band"], { ar: string; en: string;
   excellent: { ar: "ممتاز", en: "Excellent", cls: "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-100 dark:border-emerald-400/40", ring: "ring-emerald-400/50" },
 };
 
-/** Friendly localized platform names */
 const platformLabel: Record<string, { ar: string; en: string }> = {
   twitter:   { ar: "تويتر / X",  en: "X (Twitter)" },
   linkedin:  { ar: "لينكدإن",    en: "LinkedIn" },
@@ -234,6 +221,25 @@ const platformLabel: Record<string, { ar: string; en: string }> = {
   pinterest: { ar: "بنترست",     en: "Pinterest" },
 };
 
+// Per-platform brand tint for the social card chrome.
+const platformTint: Record<string, string> = {
+  twitter:   "bg-black text-white",
+  linkedin:  "bg-[#0A66C2] text-white",
+  instagram: "bg-gradient-to-br from-[#FFDC80] via-[#E1306C] to-[#5851DB] text-white",
+  facebook:  "bg-[#1877F2] text-white",
+  youtube:   "bg-[#FF0000] text-white",
+  tiktok:    "bg-black text-white",
+  snapchat:  "bg-[#FFFC00] text-black",
+  whatsapp:  "bg-[#25D366] text-white",
+  pinterest: "bg-[#E60023] text-white",
+};
+
+function formatFollowers(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return String(n);
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    Component
    ─────────────────────────────────────────────────────────────────── */
@@ -245,7 +251,6 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [failure, setFailure] = useState<FailureDx | null>(null);
   const [showTechnical, setShowTechnical] = useState(false);
-  const [showTechSection, setShowTechSection] = useState(false);
 
   const mountedRef = useRef(true);
   useEffect(() => {
@@ -294,7 +299,6 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
     setResult(null);
     setFailure(null);
     setShowTechnical(false);
-    setShowTechSection(false);
     try {
       const { data, error } = await supabase.functions.invoke("analyze-developer-website", {
         body: { website: cleaned, developer_id: developerId },
@@ -304,11 +308,7 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
         if (!mountedRef.current) return;
         const dx = classifyFailure(error.message || "Function invocation failed", undefined, undefined, undefined);
         setFailure(dx);
-        toast({
-          variant: "destructive",
-          title: isAr ? dx.title_ar : dx.title_en,
-          description: isAr ? dx.hint_ar : dx.hint_en,
-        });
+        toast({ variant: "destructive", title: isAr ? dx.title_ar : dx.title_en, description: isAr ? dx.hint_ar : dx.hint_en });
         return;
       }
 
@@ -321,11 +321,7 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
           Array.isArray(data?.attempted) ? data.attempted : undefined,
         );
         setFailure(dx);
-        toast({
-          variant: "destructive",
-          title: isAr ? dx.title_ar : dx.title_en,
-          description: isAr ? dx.hint_ar : dx.hint_en,
-        });
+        toast({ variant: "destructive", title: isAr ? dx.title_ar : dx.title_en, description: isAr ? dx.hint_ar : dx.hint_en });
         return;
       }
 
@@ -336,11 +332,7 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
       const msg = e instanceof Error ? e.message : String(e);
       const dx = classifyFailure(msg, undefined, undefined, undefined);
       setFailure(dx);
-      toast({
-        variant: "destructive",
-        title: isAr ? dx.title_ar : dx.title_en,
-        description: isAr ? dx.hint_ar : dx.hint_en,
-      });
+      toast({ variant: "destructive", title: isAr ? dx.title_ar : dx.title_en, description: isAr ? dx.hint_ar : dx.hint_en });
     } finally {
       if (mountedRef.current) setLoading(false);
     }
@@ -376,12 +368,12 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
         <div className="flex flex-col items-center justify-center py-12 gap-3 rounded-2xl border border-border/50 bg-card/60">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <p className="text-sm font-medium text-foreground">
-            {isAr ? "نُحلِّل موقع المطوِّر..." : "Analysing developer website..."}
+            {isAr ? "نُحلِّل المحتوى..." : "Analysing content..."}
           </p>
           <p className="text-[11px] text-muted-foreground max-w-sm text-center">
             {isAr
-              ? "نزور صفحات المشاريع والأخبار والفعاليات ونجمع بيانات الشركة وحساباتها — قد يستغرق ذلك حتى ١٥ ثانية."
-              : "Visiting project, news and event pages, then assembling company data — may take up to 15s."}
+              ? "نزور صفحات المشاريع والأخبار، ونثري حسابات السوشيال ميديا — قد يستغرق ذلك حتى ٢٠ ثانية."
+              : "Visiting project, news pages and enriching social profiles — may take up to 20s."}
           </p>
         </div>
       )}
@@ -400,48 +392,28 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
               <p className="text-[13px] text-amber-800/90 dark:text-amber-100/80 mt-1 leading-relaxed">
                 {isAr ? failure.hint_ar : failure.hint_en}
               </p>
-
               {failure.attempted && failure.attempted.length > 0 && (
                 <div className="mt-3 text-[11px] text-amber-800/80 dark:text-amber-100/70" dir="ltr">
-                  <span className="font-semibold">
-                    {isAr ? "الروابط التي تمّت تجربتها:" : "URLs attempted:"}
-                  </span>
+                  <span className="font-semibold">{isAr ? "الروابط التي تمّت تجربتها:" : "URLs attempted:"}</span>
                   <ul className="mt-1 space-y-0.5">
-                    {failure.attempted.map((u, i) => (
-                      <li key={i} className="font-mono break-all">• {u}</li>
-                    ))}
+                    {failure.attempted.map((u, i) => (<li key={i} className="font-mono break-all">• {u}</li>))}
                   </ul>
                 </div>
               )}
-
               <div className="mt-3 flex items-center gap-3">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
+                <Button type="button" variant="ghost" size="sm"
                   className="h-7 px-2 text-[11px] text-amber-800 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-500/20"
-                  onClick={() => setShowTechnical((v) => !v)}
-                >
-                  {showTechnical
-                    ? (isAr ? "إخفاء التفاصيل التقنية" : "Hide technical detail")
-                    : (isAr ? "عرض التفاصيل التقنية" : "Show technical detail")}
+                  onClick={() => setShowTechnical((v) => !v)}>
+                  {showTechnical ? (isAr ? "إخفاء التفاصيل التقنية" : "Hide technical detail") : (isAr ? "عرض التفاصيل التقنية" : "Show technical detail")}
                 </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
+                <Button type="button" variant="ghost" size="sm"
                   className="h-7 px-2 text-[11px] text-amber-800 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-500/20"
-                  onClick={() => setFailure(null)}
-                >
+                  onClick={() => setFailure(null)}>
                   {isAr ? "إغلاق" : "Dismiss"}
                 </Button>
               </div>
-
               {showTechnical && failure.technical && (
-                <pre
-                  className="mt-2 text-[10.5px] font-mono bg-amber-100/60 dark:bg-amber-500/15 border border-amber-300/40 dark:border-amber-400/20 rounded-lg p-2.5 whitespace-pre-wrap break-all text-amber-900/90 dark:text-amber-100/90 max-h-32 overflow-y-auto"
-                  dir="ltr"
-                >
+                <pre className="mt-2 text-[10.5px] font-mono bg-amber-100/60 dark:bg-amber-500/15 border border-amber-300/40 dark:border-amber-400/20 rounded-lg p-2.5 whitespace-pre-wrap break-all text-amber-900/90 dark:text-amber-100/90 max-h-32 overflow-y-auto" dir="ltr">
                   {failure.technical}
                 </pre>
               )}
@@ -453,7 +425,7 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
       {/* Result */}
       {result && !loading && (
         <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
-          {/* ─── Hero band ─────────────────────────────────────────── */}
+          {/* Hero band */}
           <div className="relative p-5 md:p-6 border-b border-border/50 bg-gradient-to-br from-primary/5 via-background to-background">
             <div className="absolute top-3 end-3">
               <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => setResult(null)}>
@@ -461,21 +433,14 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
               </Button>
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pe-10">
-              {/* Logo */}
               <div className={`shrink-0 h-16 w-16 rounded-2xl bg-background border border-border flex items-center justify-center overflow-hidden ring-2 ring-offset-2 ring-offset-background ${bandStyles[result.score_band].ring}`}>
                 {result.company.logo_url ? (
-                  <img
-                    src={result.company.logo_url}
-                    alt={result.company.name}
-                    className="h-full w-full object-contain p-2"
-                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                  />
+                  <img src={result.company.logo_url} alt={result.company.name} className="h-full w-full object-contain p-2"
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                 ) : (
                   <Building2 className="h-7 w-7 text-primary" strokeWidth={1.5} />
                 )}
               </div>
-
-              {/* Identity */}
               <div className="min-w-0 flex-1">
                 <h3 className="text-lg md:text-xl font-bold text-foreground truncate">
                   {result.company.name || result.developer_name || developerName}
@@ -491,8 +456,6 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
                   {result.website} <ExternalLink className="h-3 w-3" />
                 </a>
               </div>
-
-              {/* Score */}
               <div className="shrink-0 flex flex-col items-center gap-1.5">
                 <div className={`flex items-baseline gap-0.5 px-3 py-2 rounded-xl border ${bandStyles[result.score_band].cls}`} dir="ltr">
                   <span className="text-3xl font-extrabold tabular-nums">{result.score}</span>
@@ -505,29 +468,33 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
             </div>
           </div>
 
-          {/* ─── Stats row (5 KPIs) ────────────────────────────────── */}
+          {/* KPIs (5 content metrics) */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-border/40 border-b border-border/50">
             <Kpi
               icon={<Briefcase className="h-4 w-4" />}
               label={isAr ? "المشاريع" : "Projects"}
-              value={result.portfolio.pages_found}
-              sub={result.portfolio.has_dedicated_section ? (isAr ? "قسم مخصَّص" : "dedicated section") : (isAr ? "غير منشور" : "not published")}
-              tone={result.portfolio.pages_found > 0 ? "good" : "muted"}
+              value={result.projects.pages_found}
+              sub={result.projects.detailed_items.length > 0
+                ? (isAr ? `${result.projects.detailed_items.length} موثَّق` : `${result.projects.detailed_items.length} documented`)
+                : (isAr ? "غير منشور" : "not published")}
+              tone={result.projects.detailed_items.length >= 3 ? "good" : result.projects.pages_found > 0 ? "fair" : "muted"}
             />
             <Kpi
               icon={<Newspaper className="h-4 w-4" />}
-              label={isAr ? "أخبار وإعلانات" : "News & Press"}
-              value={result.news.pages_found}
+              label={isAr ? "الأخبار" : "News"}
+              value={result.news.articles.length}
               sub={result.news.recent_in_last_year > 0
                 ? (isAr ? `${result.news.recent_in_last_year} حديثة` : `${result.news.recent_in_last_year} recent`)
                 : (isAr ? "—" : "—")}
-              tone={result.news.pages_found > 0 ? "good" : "muted"}
+              tone={result.news.recent_in_last_year >= 2 ? "good" : result.news.articles.length > 0 ? "fair" : "muted"}
             />
             <Kpi
               icon={<Share2 className="h-4 w-4" />}
-              label={isAr ? "السوشيال ميديا" : "Social Media"}
+              label={isAr ? "السوشيال" : "Social"}
               value={result.social_presence.count}
-              sub={isAr ? "منصة" : "platforms"}
+              sub={result.social_presence.accessible_count > 0
+                ? (isAr ? `${result.social_presence.accessible_count} متاحة` : `${result.social_presence.accessible_count} readable`)
+                : (isAr ? "روابط فقط" : "links only")}
               tone={result.social_presence.count >= 3 ? "good" : result.social_presence.count > 0 ? "fair" : "muted"}
             />
             <Kpi
@@ -547,84 +514,63 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
           </div>
 
           <div className="p-5 md:p-6 space-y-6">
-            {/* ─── About / company profile ────────────────────────────── */}
+            {/* About */}
             {(result.company.description || result.company.founded || result.company.headquarters || result.company.industry) && (
-              <Section
-                title={isAr ? "نبذة عن الشركة" : "About the Company"}
-                icon={<Building2 className="h-3.5 w-3.5" />}
-              >
+              <Section title={isAr ? "نبذة عن الشركة" : "About the Company"} icon={<Building2 className="h-3.5 w-3.5" />}>
                 {result.company.description && (
-                  <p className="text-[13.5px] text-foreground leading-relaxed mb-3">
-                    {result.company.description}
-                  </p>
+                  <p className="text-[13.5px] text-foreground leading-relaxed mb-3">{result.company.description}</p>
                 )}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
                   {result.company.founded && (
-                    <DataRow icon={<Calendar className="h-3.5 w-3.5" />}
-                      label={isAr ? "سنة التأسيس" : "Founded"}
-                      value={result.company.founded} />
+                    <DataRow icon={<Calendar className="h-3.5 w-3.5" />} label={isAr ? "سنة التأسيس" : "Founded"} value={result.company.founded} />
                   )}
                   {result.company.headquarters && (
-                    <DataRow icon={<MapPin className="h-3.5 w-3.5" />}
-                      label={isAr ? "المقر الرئيسي" : "Headquarters"}
-                      value={result.company.headquarters} />
+                    <DataRow icon={<MapPin className="h-3.5 w-3.5" />} label={isAr ? "المقر الرئيسي" : "Headquarters"} value={result.company.headquarters} />
                   )}
                   {result.company.industry && (
-                    <DataRow icon={<Briefcase className="h-3.5 w-3.5" />}
-                      label={isAr ? "المجال" : "Industry"}
-                      value={result.company.industry} />
+                    <DataRow icon={<Briefcase className="h-3.5 w-3.5" />} label={isAr ? "المجال" : "Industry"} value={result.company.industry} />
                   )}
                 </div>
               </Section>
             )}
 
-            {/* ─── Portfolio ─────────────────────────────────────────── */}
-            {(result.portfolio.has_dedicated_section || result.portfolio.sample_titles.length > 0 || result.portfolio.sample_images.length > 0) && (
+            {/* Projects — detailed cards */}
+            {(result.projects.has_dedicated_section || result.projects.detailed_items.length > 0) && (
               <Section
                 title={isAr ? "محفظة المشاريع" : "Project Portfolio"}
                 icon={<Briefcase className="h-3.5 w-3.5" />}
-                badge={result.portfolio.pages_found > 0 ? `${result.portfolio.pages_found}` : undefined}
-                action={result.portfolio.first_page_url ? (
-                  <a href={result.portfolio.first_page_url} target="_blank" rel="noopener noreferrer"
+                badge={result.projects.pages_found > 0 ? `${result.projects.pages_found}` : undefined}
+                action={result.projects.listing_url ? (
+                  <a href={result.projects.listing_url} target="_blank" rel="noopener noreferrer"
                     className="text-[11px] text-primary hover:underline inline-flex items-center gap-1">
                     {isAr ? "زيارة قسم المشاريع" : "Visit projects"} <ExternalLink className="h-3 w-3" />
                   </a>
                 ) : undefined}
               >
-                {result.portfolio.sample_titles.length > 0 ? (
-                  <ul className="grid sm:grid-cols-2 gap-1.5 mb-3">
-                    {result.portfolio.sample_titles.map((t, i) => (
-                      <li key={i} className="flex items-start gap-2 text-[13px] text-foreground rounded-lg border border-border/40 bg-background/50 px-2.5 py-1.5">
-                        <Trophy className="h-3.5 w-3.5 text-amber-500 mt-0.5 shrink-0" />
-                        <span className="line-clamp-2">{t}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-[12.5px] text-muted-foreground mb-3">
-                    {isAr ? "وُجد قسم مشاريع لكن العناوين غير قابلة للقراءة آلياً." : "Portfolio section detected but titles not machine-readable."}
-                  </p>
-                )}
-                {result.portfolio.sample_images.length > 0 && (
-                  <div className="flex gap-2 overflow-x-auto py-1">
-                    {result.portfolio.sample_images.map((src, i) => (
-                      <img key={i} src={src} alt=""
-                        className="h-20 w-32 object-cover rounded-lg border border-border/40 shrink-0 bg-muted"
-                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+                {result.projects.detailed_items.length > 0 ? (
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {result.projects.detailed_items.map((p, i) => (
+                      <ProjectCardView key={i} project={p} isAr={isAr} />
                     ))}
                   </div>
+                ) : (
+                  <p className="text-[12.5px] text-muted-foreground">
+                    {isAr
+                      ? "وُجد قسم مشاريع لكن لم نتمكن من قراءة تفاصيل المشاريع الفردية آلياً."
+                      : "Portfolio section detected but per-project details could not be machine-read."}
+                  </p>
                 )}
               </Section>
             )}
 
-            {/* ─── News & Press ─────────────────────────────────────── */}
-            {(result.news.has_section || result.news.recent_items.length > 0) && (
+            {/* News — detailed cards */}
+            {(result.news.has_section || result.news.articles.length > 0) && (
               <Section
                 title={isAr ? "الأخبار والنشاط الإعلامي" : "News & Press Activity"}
                 icon={<Newspaper className="h-3.5 w-3.5" />}
                 badge={result.news.pages_found > 0 ? `${result.news.pages_found}` : undefined}
-                action={result.news.first_page_url ? (
-                  <a href={result.news.first_page_url} target="_blank" rel="noopener noreferrer"
+                action={result.news.listing_url ? (
+                  <a href={result.news.listing_url} target="_blank" rel="noopener noreferrer"
                     className="text-[11px] text-primary hover:underline inline-flex items-center gap-1">
                     {isAr ? "قسم الأخبار" : "Newsroom"} <ExternalLink className="h-3 w-3" />
                   </a>
@@ -638,22 +584,12 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
                       : `${result.news.recent_in_last_year} item${result.news.recent_in_last_year === 1 ? "" : "s"} published in last 12 months`}
                   </div>
                 )}
-                {result.news.recent_items.length > 0 ? (
-                  <ul className="space-y-1.5">
-                    {result.news.recent_items.map((item, i) => (
-                      <li key={i} className="flex items-start gap-3 rounded-lg border border-border/40 bg-background/50 px-3 py-2">
-                        <div className="shrink-0 h-7 w-7 rounded-md bg-primary/10 text-primary flex items-center justify-center mt-0.5">
-                          <Newspaper className="h-3.5 w-3.5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[13px] text-foreground line-clamp-2 leading-snug">{item.title}</p>
-                          {item.date && (
-                            <p className="text-[10.5px] text-muted-foreground mt-0.5 tabular-nums" dir="ltr">{item.date}</p>
-                          )}
-                        </div>
-                      </li>
+                {result.news.articles.length > 0 ? (
+                  <div className="space-y-2">
+                    {result.news.articles.slice(0, 8).map((a, i) => (
+                      <NewsCardView key={i} article={a} isAr={isAr} />
                     ))}
-                  </ul>
+                  </div>
                 ) : (
                   <p className="text-[12.5px] text-muted-foreground">
                     {isAr ? "وُجد قسم الأخبار لكن لم نستخرج عناوين جاهزة." : "News section found but headlines could not be extracted."}
@@ -662,14 +598,14 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
               </Section>
             )}
 
-            {/* ─── Events ───────────────────────────────────────────── */}
+            {/* Events */}
             {(result.events.pages_found > 0 || result.events.sample_titles.length > 0) && (
               <Section
                 title={isAr ? "الفعاليات والاجتماعات" : "Events & Meetings"}
                 icon={<CalendarDays className="h-3.5 w-3.5" />}
                 badge={result.events.pages_found > 0 ? `${result.events.pages_found}` : undefined}
-                action={result.events.first_page_url ? (
-                  <a href={result.events.first_page_url} target="_blank" rel="noopener noreferrer"
+                action={result.events.listing_url ? (
+                  <a href={result.events.listing_url} target="_blank" rel="noopener noreferrer"
                     className="text-[11px] text-primary hover:underline inline-flex items-center gap-1">
                     {isAr ? "زيارة الفعاليات" : "Visit events"} <ExternalLink className="h-3 w-3" />
                   </a>
@@ -692,40 +628,38 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
               </Section>
             )}
 
-            {/* ─── Social presence ──────────────────────────────────── */}
+            {/* Social — enriched cards */}
             {result.social_presence.platforms.length > 0 && (
               <Section
                 title={isAr ? "حسابات التواصل الاجتماعي" : "Social Media Accounts"}
                 icon={<Share2 className="h-3.5 w-3.5" />}
                 badge={`${result.social_presence.count}`}
               >
-                <div className="flex flex-wrap gap-2">
-                  {result.social_presence.platforms.map((s, i) => {
-                    const lbl = platformLabel[s.platform];
-                    return (
-                      <a key={i} href={s.url} target="_blank" rel="noopener noreferrer"
-                        className="group inline-flex items-center gap-2 text-[12.5px] rounded-xl border border-border bg-background hover:bg-primary/5 hover:border-primary/30 px-3 py-1.5 transition-colors">
-                        <Share2 className="h-3.5 w-3.5 text-primary" />
-                        <span className="font-medium">{lbl ? (isAr ? lbl.ar : lbl.en) : s.platform}</span>
-                        <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </a>
-                    );
-                  })}
+                {result.social_presence.accessible_count < result.social_presence.count && (
+                  <p className="text-[11.5px] text-muted-foreground mb-3 flex items-start gap-1.5">
+                    <Lock className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                    <span>
+                      {isAr
+                        ? "بعض المنصّات (مثل تويتر/X وإنستغرام وفيسبوك) تحجب القراءة الآلية للزوّار غير المسجَّلين، فيظهر الرابط فقط."
+                        : "Some platforms (e.g. X/Twitter, Instagram, Facebook) block anonymous bots, so we show the link only."}
+                    </span>
+                  </p>
+                )}
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {result.social_presence.platforms.map((s, i) => (
+                    <SocialCard key={i} platform={s} isAr={isAr} />
+                  ))}
                 </div>
               </Section>
             )}
 
-            {/* ─── Expansion / growth ───────────────────────────────── */}
+            {/* Expansion */}
             {(result.expansion.addresses.length > 0
               || result.expansion.languages_supported.length > 0
               || result.careers.has_careers_page
               || result.expansion.international) && (
-              <Section
-                title={isAr ? "التوسُّع والنمو" : "Expansion & Growth"}
-                icon={<TrendingUp className="h-3.5 w-3.5" />}
-              >
+              <Section title={isAr ? "التوسُّع والنمو" : "Expansion & Growth"} icon={<TrendingUp className="h-3.5 w-3.5" />}>
                 <div className="grid md:grid-cols-2 gap-3">
-                  {/* Locations */}
                   {result.expansion.addresses.length > 0 && (
                     <div className="rounded-xl border border-border/40 bg-background/50 p-3">
                       <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-muted-foreground mb-2">
@@ -742,8 +676,6 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
                       </ul>
                     </div>
                   )}
-
-                  {/* Languages */}
                   {result.expansion.languages_supported.length > 0 && (
                     <div className="rounded-xl border border-border/40 bg-background/50 p-3">
                       <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-muted-foreground mb-2">
@@ -752,15 +684,11 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {result.expansion.languages_supported.map((l, i) => (
-                          <span key={i} className="text-[11px] font-mono uppercase rounded-md border border-border bg-background px-2 py-0.5">
-                            {l}
-                          </span>
+                          <span key={i} className="text-[11px] font-mono uppercase rounded-md border border-border bg-background px-2 py-0.5">{l}</span>
                         ))}
                       </div>
                     </div>
                   )}
-
-                  {/* Careers */}
                   {result.careers.has_careers_page && (
                     <div className="rounded-xl border border-emerald-200/60 dark:border-emerald-400/30 bg-emerald-50/60 dark:bg-emerald-500/10 p-3">
                       <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-emerald-700 dark:text-emerald-300 mb-1">
@@ -770,16 +698,14 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
                       <p className="text-[12px] text-emerald-800/90 dark:text-emerald-100/80">
                         {isAr ? "مؤشِّر إيجابي على نمو الفريق والشركة." : "Positive signal of team & company growth."}
                       </p>
-                      {result.careers.first_page_url && (
-                        <a href={result.careers.first_page_url} target="_blank" rel="noopener noreferrer"
+                      {result.careers.listing_url && (
+                        <a href={result.careers.listing_url} target="_blank" rel="noopener noreferrer"
                           className="text-[11px] text-emerald-700 dark:text-emerald-200 hover:underline inline-flex items-center gap-1 mt-1">
                           {isAr ? "عرض صفحة الوظائف" : "View careers page"} <ExternalLink className="h-3 w-3" />
                         </a>
                       )}
                     </div>
                   )}
-
-                  {/* International marker */}
                   {result.expansion.international && (
                     <div className="rounded-xl border border-blue-200/60 dark:border-blue-400/30 bg-blue-50/60 dark:bg-blue-500/10 p-3">
                       <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-blue-700 dark:text-blue-300 mb-1">
@@ -795,28 +721,19 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
               </Section>
             )}
 
-            {/* ─── Trust signals ────────────────────────────────────── */}
-            <Section
-              title={isAr ? "مؤشِّرات الثقة" : "Trust Signals"}
-              icon={<ShieldCheck className="h-3.5 w-3.5" />}
-            >
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                <Trust label={isAr ? "اتصال آمن (HTTPS)" : "Secure connection (HTTPS)"} ok={result.trust_signals.https} />
-                <Trust label={isAr ? "بيانات منظَّمة Schema.org" : "Schema.org structured data"} ok={result.trust_signals.has_organization_schema} />
+            {/* Trust signals (content-relevant only) */}
+            <Section title={isAr ? "مؤشِّرات الثقة" : "Trust Signals"} icon={<ShieldCheck className="h-3.5 w-3.5" />}>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 <Trust label={isAr ? "شعار الشركة" : "Company logo"} ok={result.trust_signals.has_logo} />
                 <Trust label={isAr ? "وصف واضح للشركة" : "Clear company description"} ok={result.trust_signals.has_clear_description} />
                 <Trust label={isAr ? "صفحة من نحن" : "About page"} ok={result.trust_signals.has_about_page} />
                 <Trust label={isAr ? "صفحة اتصال" : "Contact page"} ok={result.trust_signals.has_contact_page} />
-                <Trust label={isAr ? "سياسة الخصوصية" : "Privacy policy"} ok={result.trust_signals.has_privacy_page} />
-                <Trust label={isAr ? "متوافق مع الجوال" : "Mobile-optimised"} ok={result.trust_signals.mobile_optimized} />
+                <Trust label={isAr ? "بيانات منظَّمة موثَّقة" : "Verified structured data"} ok={result.trust_signals.has_organization_schema} />
               </div>
             </Section>
 
-            {/* ─── Score breakdown ──────────────────────────────────── */}
-            <Section
-              title={isAr ? "كيف احتُسبت الدرجة؟" : "How the score was computed"}
-              icon={<Gauge className="h-3.5 w-3.5" />}
-            >
+            {/* Score breakdown */}
+            <Section title={isAr ? "كيف احتُسبت الدرجة؟" : "How the score was computed"} icon={<Gauge className="h-3.5 w-3.5" />}>
               <div className="grid sm:grid-cols-2 gap-1.5">
                 {result.score_breakdown.map((s, i) => (
                   <div key={i} className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${
@@ -841,38 +758,10 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
               </div>
             </Section>
 
-            {/* ─── Technical details (collapsed by default) ─────────── */}
-            <div>
-              <button
-                type="button"
-                onClick={() => setShowTechSection((v) => !v)}
-                className="w-full flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors py-2 border-t border-border/30"
-              >
-                <span className="flex items-center gap-2">
-                  <FileText className="h-3.5 w-3.5" />
-                  {isAr ? "تفاصيل تقنية إضافية" : "Additional Technical Detail"}
-                </span>
-                {showTechSection ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-              </button>
-              {showTechSection && (
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-3">
-                  <Tech label={isAr ? "الحالة" : "HTTP status"}      value={`${result.technical.http_status}`} good={result.technical.http_status >= 200 && result.technical.http_status < 400} />
-                  <Tech label={isAr ? "زمن الاستجابة" : "Response"}    value={`${result.technical.latency_ms}ms`} good={result.technical.latency_ms < 3500} />
-                  <Tech label={isAr ? "حجم الصفحة" : "Page size"}      value={`${(result.technical.page_size_bytes / 1024).toFixed(0)} KB`} />
-                  <Tech label={isAr ? "إجمالي زمن التحليل" : "Analysis duration"} value={`${(result.total_latency_ms / 1000).toFixed(1)}s`} />
-                  <Tech label={isAr ? "لغة الصفحة" : "HTML lang"}      value={result.technical.html_lang || "—"} />
-                  <Tech label="Canonical"                              value={result.technical.canonical_url || "—"} />
-                  <Tech label="H1 / H2 / H3"                           value={`${result.technical.heading_counts.h1} / ${result.technical.heading_counts.h2} / ${result.technical.heading_counts.h3}`} />
-                  <Tech label={isAr ? "صفحات تمّ زيارتها" : "Pages crawled"} value={`${result.crawled_pages.length}`} />
-                </div>
-              )}
-            </div>
-
-            {/* ─── Footer ───────────────────────────────────────────── */}
             <p className="text-[10.5px] text-muted-foreground text-center pt-3 border-t border-border/30">
               {isAr
-                ? `تمّ التحليل في ${new Date(result.fetched_at).toLocaleString("ar-SA-u-nu-latn")} • بيانات مستخرجة مباشرةً من الموقع — بلا توصيات وبلا ذكاء اصطناعي`
-                : `Analysed at ${new Date(result.fetched_at).toLocaleString("en-US")} • Data extracted directly from the website — no AI, no recommendations`}
+                ? `تمّ التحليل في ${new Date(result.fetched_at).toLocaleString("ar-SA-u-nu-latn")} • محتوى مستخرج مباشرةً من الموقع وحسابات السوشيال ميديا — بلا ذكاء اصطناعي`
+                : `Analysed at ${new Date(result.fetched_at).toLocaleString("en-US")} • Content extracted directly from the website & social profiles — no AI`}
             </p>
           </div>
         </div>
@@ -882,7 +771,7 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   Small presentation atoms
+   Sub-components
    ─────────────────────────────────────────────────────────────────── */
 
 const Section: React.FC<{
@@ -957,11 +846,190 @@ const Trust: React.FC<{ label: string; ok: boolean }> = ({ label, ok }) => (
   </div>
 );
 
-const Tech: React.FC<{ label: string; value: string; good?: boolean }> = ({ label, value, good }) => (
-  <div className="rounded-lg border border-border/40 bg-background/40 px-2.5 py-1.5">
-    <p className="text-[9.5px] uppercase tracking-wider text-muted-foreground">{label}</p>
-    <p className={`text-[11.5px] font-mono mt-0.5 truncate ${good === false ? "text-muted-foreground" : "text-foreground"}`} dir="ltr" title={value}>{value}</p>
-  </div>
+const ProjectCardView: React.FC<{ project: ProjectCard; isAr: boolean }> = ({ project, isAr }) => (
+  <a
+    href={project.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="group flex flex-col rounded-xl border border-border/40 bg-background/50 hover:bg-primary/5 hover:border-primary/30 overflow-hidden transition-colors"
+  >
+    {project.image_url ? (
+      <div className="relative h-36 w-full bg-muted overflow-hidden">
+        <img
+          src={project.image_url}
+          alt={project.title}
+          loading="lazy"
+          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+          onError={(e) => {
+            const img = e.currentTarget as HTMLImageElement;
+            img.style.display = "none";
+            const sib = img.nextElementSibling as HTMLElement | null;
+            if (sib) sib.style.display = "flex";
+          }}
+        />
+        <div className="hidden absolute inset-0 items-center justify-center bg-muted">
+          <ImageIcon className="h-8 w-8 text-muted-foreground/40" />
+        </div>
+      </div>
+    ) : (
+      <div className="h-36 w-full bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center">
+        <Trophy className="h-9 w-9 text-amber-500/60" />
+      </div>
+    )}
+    <div className="p-3 flex-1 flex flex-col gap-1.5">
+      <h6 className="text-[13.5px] font-semibold text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+        {project.title}
+      </h6>
+      {project.location && (
+        <p className="text-[11px] text-muted-foreground inline-flex items-center gap-1">
+          <MapPin className="h-3 w-3" /> {project.location}
+        </p>
+      )}
+      {project.summary && (
+        <p className="text-[12px] text-muted-foreground line-clamp-3 leading-snug">{project.summary}</p>
+      )}
+      <span className="mt-auto text-[10.5px] text-primary inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        {isAr ? "زيارة المشروع" : "Visit project"} <ExternalLink className="h-3 w-3" />
+      </span>
+    </div>
+  </a>
 );
+
+const NewsCardView: React.FC<{ article: NewsArticle; isAr: boolean }> = ({ article, isAr }) => (
+  <a
+    href={article.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="group flex items-stretch gap-3 rounded-lg border border-border/40 bg-background/50 hover:bg-primary/5 hover:border-primary/30 overflow-hidden transition-colors"
+  >
+    {article.image_url ? (
+      <div className="shrink-0 w-24 sm:w-32 bg-muted overflow-hidden">
+        <img
+          src={article.image_url}
+          alt=""
+          loading="lazy"
+          className="h-full w-full object-cover"
+          onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }}
+        />
+      </div>
+    ) : (
+      <div className="shrink-0 w-12 sm:w-14 bg-primary/10 flex items-center justify-center">
+        <Newspaper className="h-5 w-5 text-primary" />
+      </div>
+    )}
+    <div className="py-2 pe-3 flex-1 min-w-0 flex flex-col gap-1">
+      <p className="text-[13px] font-semibold text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+        {article.title}
+      </p>
+      {article.summary && (
+        <p className="text-[11.5px] text-muted-foreground line-clamp-2 leading-snug">{article.summary}</p>
+      )}
+      <div className="flex items-center gap-2 text-[10.5px] text-muted-foreground">
+        {article.date && (
+          <span className="tabular-nums" dir="ltr">{article.date}</span>
+        )}
+        {article.date && <span className="opacity-40">•</span>}
+        <span className="inline-flex items-center gap-1">
+          {isAr ? "قراءة الخبر" : "Read"} <ExternalLink className="h-3 w-3" />
+        </span>
+      </div>
+    </div>
+  </a>
+);
+
+const SocialCard: React.FC<{ platform: SocialPlatform; isAr: boolean }> = ({ platform, isAr }) => {
+  const lbl = platformLabel[platform.platform] || { ar: platform.platform, en: platform.platform };
+  const tint = platformTint[platform.platform] || "bg-primary/10 text-primary";
+  const profile = platform.profile;
+
+  return (
+    <a
+      href={platform.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex flex-col rounded-xl border border-border/40 bg-background/50 hover:border-primary/30 overflow-hidden transition-colors"
+    >
+      {/* Header strip with platform color */}
+      <div className={`flex items-center justify-between gap-2 px-3 py-2 ${tint}`}>
+        <span className="inline-flex items-center gap-2 text-[12.5px] font-bold">
+          <Share2 className="h-3.5 w-3.5" />
+          {isAr ? lbl.ar : lbl.en}
+        </span>
+        {!platform.accessible && (
+          <span className="inline-flex items-center gap-1 text-[10px] font-medium opacity-90">
+            <Lock className="h-3 w-3" />
+            {isAr ? "محمي" : "Protected"}
+          </span>
+        )}
+      </div>
+
+      {/* Body */}
+      <div className="flex items-start gap-3 p-3">
+        {profile?.avatar_url ? (
+          <img
+            src={profile.avatar_url}
+            alt=""
+            loading="lazy"
+            className="shrink-0 h-12 w-12 rounded-full object-cover bg-muted border border-border/40"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+          />
+        ) : (
+          <div className="shrink-0 h-12 w-12 rounded-full bg-muted/60 border border-border/40 flex items-center justify-center">
+            <Share2 className="h-5 w-5 text-muted-foreground/50" />
+          </div>
+        )}
+        <div className="flex-1 min-w-0">
+          {profile?.display_name ? (
+            <p className="text-[13px] font-semibold text-foreground truncate">{profile.display_name}</p>
+          ) : (
+            <p className="text-[13px] font-semibold text-foreground truncate" dir="ltr">{platform.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}</p>
+          )}
+          {profile?.bio && (
+            <p className="text-[11.5px] text-muted-foreground line-clamp-2 leading-snug mt-0.5">{profile.bio}</p>
+          )}
+          <div className="flex items-center gap-2 mt-1.5 text-[10.5px] text-muted-foreground">
+            {profile?.followers && (
+              <span className="inline-flex items-center gap-1 font-semibold text-foreground tabular-nums" dir="ltr">
+                <Users className="h-3 w-3" />
+                {profile.followers_text || formatFollowers(profile.followers)}
+                <span className="font-normal text-muted-foreground">{isAr ? " متابع" : " followers"}</span>
+              </span>
+            )}
+            {profile?.videos_count && (
+              <span className="inline-flex items-center gap-1 tabular-nums" dir="ltr">
+                <PlayCircle className="h-3 w-3" />
+                {profile.videos_count}
+                <span>{isAr ? " فيديو" : " videos"}</span>
+              </span>
+            )}
+            {!profile && (
+              <span className="inline-flex items-center gap-1">
+                <ExternalLink className="h-3 w-3" />
+                {isAr ? "زيارة الحساب" : "Visit profile"}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent items (e.g. YouTube videos) */}
+      {profile?.recent_items && profile.recent_items.length > 0 && (
+        <div className="border-t border-border/30 px-3 py-2 bg-muted/20">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5 font-bold">
+            {isAr ? "آخر المنشورات" : "Recent posts"}
+          </p>
+          <ul className="space-y-1">
+            {profile.recent_items.slice(0, 3).map((it, i) => (
+              <li key={i} className="text-[11.5px] text-foreground/90 line-clamp-1 flex items-start gap-1.5">
+                <MessageCircle className="h-3 w-3 text-muted-foreground/60 mt-0.5 shrink-0" />
+                <span className="line-clamp-1">{it.title}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </a>
+  );
+};
 
 export default DevWebsiteAnalysis;
