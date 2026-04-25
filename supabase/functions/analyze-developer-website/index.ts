@@ -167,41 +167,91 @@ Deno.serve(async (req) => {
     const urlObj = new URL(normalized);
     const https = urlObj.protocol === "https:";
 
-    // Fetch with a conservative 10s timeout
-    const ac = new AbortController();
-    const timer = setTimeout(() => ac.abort(), 10_000);
+    // Fetch with a conservative 10s timeout per attempt. Many sites
+    // refuse non-browser User-Agents (Cloudflare bot challenge, WAFs)
+    // so we send a realistic Chrome UA + the headers a normal browser
+    // would. We also retry once with `www.` prefix if the bare host
+    // fails — many small business sites only resolve under www.
+    const browserHeaders: HeadersInit = {
+      "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+      "Accept-Language": "ar,en;q=0.9",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Cache-Control": "no-cache",
+      "Pragma": "no-cache",
+      "Sec-Fetch-Dest": "document",
+      "Sec-Fetch-Mode": "navigate",
+      "Sec-Fetch-Site": "none",
+    };
+
+    /** Single fetch attempt — captures body up to 400 KB. */
+    async function tryFetch(targetUrl: string): Promise<{ status: number; html: string }> {
+      const ac = new AbortController();
+      const timer = setTimeout(() => ac.abort(), 10_000);
+      try {
+        const res = await fetch(targetUrl, {
+          signal: ac.signal,
+          redirect: "follow",
+          headers: browserHeaders,
+        });
+        let body = "";
+        const reader = res.body?.getReader();
+        const decoder = new TextDecoder();
+        if (reader) {
+          let total = 0;
+          while (total < 400_000) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            body += decoder.decode(value, { stream: true });
+            total += value.byteLength;
+          }
+        }
+        return { status: res.status, html: body };
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
     let status = 0;
     let html = "";
     let reachable = false;
-    try {
-      const res = await fetch(normalized, {
-        signal: ac.signal,
-        redirect: "follow",
-        headers: { "User-Agent": "SINA-Analyzer/1.0 (+https://cidoma.com)" },
-      });
-      status = res.status;
-      reachable = true;
-      const reader = res.body?.getReader();
-      const decoder = new TextDecoder();
-      if (reader) {
-        let total = 0;
-        while (total < 400_000) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          html += decoder.decode(value, { stream: true });
-          total += value.byteLength;
-        }
+    let lastErr: unknown = null;
+    let finalUrl = normalized;
+
+    // Build a list of candidate URLs to try in order: as-given, then
+    // the same host with `www.` if not already present.
+    const candidates: string[] = [normalized];
+    if (!urlObj.hostname.startsWith("www.")) {
+      const alt = new URL(normalized);
+      alt.hostname = "www." + alt.hostname;
+      candidates.push(alt.toString().replace(/\/+$/, ""));
+    }
+
+    for (const candidate of candidates) {
+      try {
+        const r = await tryFetch(candidate);
+        status = r.status;
+        html = r.html;
+        reachable = true;
+        finalUrl = candidate;
+        break;
+      } catch (err) {
+        lastErr = err;
       }
-    } catch (err) {
-      clearTimeout(timer);
+    }
+
+    if (!reachable) {
+      const errStr = lastErr instanceof Error
+        ? `${lastErr.name}: ${lastErr.message}`
+        : String(lastErr);
       return new Response(JSON.stringify({
         success: false,
         error: "Could not reach website",
-        details: String(err),
+        details: errStr,
         website: normalized,
+        attempted: candidates,
       }), { status: 200, headers: { ...CORS, "Content-Type": "application/json" } });
     }
-    clearTimeout(timer);
 
     const latencyMs = Date.now() - started;
 
@@ -240,7 +290,7 @@ Deno.serve(async (req) => {
     });
 
     const result = {
-      website: normalized,
+      website: finalUrl,
       developer_name: developerName || undefined,
       fetched_at: new Date().toISOString(),
       reachable,

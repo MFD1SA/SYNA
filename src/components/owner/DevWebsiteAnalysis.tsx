@@ -80,19 +80,61 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
       });
   }, [developerId, autoUrl, url]);
 
+  /* Normalise the URL the user typed before sending it to the edge
+   * function. Accepts forms like:
+   *   "waheejs.com"           → "https://waheejs.com"
+   *   "www.waheejs.com"       → "https://www.waheejs.com"
+   *   "http://waheejs.com"    → unchanged (user explicitly chose http)
+   *   "https://waheejs.com/"  → "https://waheejs.com" (trailing slash dropped)
+   * Returns null if the value can't be parsed into a valid URL. */
+  const normaliseUrl = (raw: string): string | null => {
+    let v = raw.trim();
+    if (!v) return null;
+    // Strip wrapping quotes a user might paste from a CSV
+    v = v.replace(/^['"]+|['"]+$/g, "");
+    // Auto-prefix protocol if missing
+    if (!/^https?:\/\//i.test(v)) v = "https://" + v;
+    try {
+      const u = new URL(v);
+      // Reject obviously invalid hostnames (no dot)
+      if (!u.hostname || !u.hostname.includes(".")) return null;
+      return u.toString().replace(/\/+$/, "");
+    } catch {
+      return null;
+    }
+  };
+
   const analyze = async () => {
-    if (!url.trim()) {
-      toast({ variant: "destructive", title: isAr ? "أدخل رابط الموقع" : "Enter website URL" });
+    const cleaned = normaliseUrl(url);
+    if (!cleaned) {
+      toast({
+        variant: "destructive",
+        title: isAr ? "رابط غير صالح" : "Invalid URL",
+        description: isAr
+          ? "يرجى إدخال رابط مثل example.com أو https://example.com"
+          : "Enter a URL like example.com or https://example.com",
+      });
       return;
     }
+    // Reflect the cleaned URL back to the input so the user sees the
+    // exact value being analysed (and the next click won't keep
+    // re-prefixing).
+    if (cleaned !== url) setUrl(cleaned);
+
     setLoading(true);
     setResult(null);
     try {
       const { data, error } = await supabase.functions.invoke("analyze-developer-website", {
-        body: { website: url, developer_id: developerId },
+        body: { website: cleaned, developer_id: developerId },
       });
       if (error) throw error;
-      if (!data?.success) throw new Error(data?.error || "Analysis failed");
+      if (!data?.success) {
+        // Surface the edge-function's `details` string so the user
+        // can tell DNS failure from TLS handshake from 404, etc.
+        const detailLine = (data?.details && String(data.details).slice(0, 220)) || "";
+        const errMsg = data?.error || "Analysis failed";
+        throw new Error(detailLine ? `${errMsg} — ${detailLine}` : errMsg);
+      }
       if (!mountedRef.current) return;
       setResult(data.result as AnalysisResult);
     } catch (e: unknown) {
@@ -115,8 +157,15 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
         <div className="relative flex-1">
           <Globe className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            type="url"
-            placeholder={isAr ? "أدخل رابط موقع المطور..." : "Enter developer website URL..."}
+            // type="text" so the browser does not pop the native
+            // "please enter a URL" tooltip when the user types a bare
+            // domain like "waheejs.com". We do our own validation +
+            // protocol auto-prefix in `normaliseUrl`.
+            type="text"
+            inputMode="url"
+            autoComplete="url"
+            spellCheck={false}
+            placeholder={isAr ? "مثال: example.com أو https://example.com" : "e.g. example.com or https://example.com"}
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             className="ps-9 text-sm rounded-xl h-11"

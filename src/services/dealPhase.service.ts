@@ -125,17 +125,28 @@ export function isTerminalPhase(phase: DealPhase | string | null | undefined): b
  *   2) give a friendlier error message than the generic server rejection
  *   3) let callers disable buttons up-front
  *
- * Any check that would have to duplicate the server-side graph is left
- * to the server so we don't drift. This function ONLY checks:
- *   - request exists
- *   - current phase is not terminal
- *   - if `targetPhase` is terminal, require a reason (matches server behavior)
+ * Returns:
+ *   - { ok: true, alreadyAtTarget: true } — phase already matches target.
+ *     The wrapper returns success without invoking the edge function.
+ *     This makes the call idempotent — important because some flows
+ *     (notably owner NDA acceptance) trigger an auto-transition inside
+ *     a different edge function, then re-call transitionDealPhase as a
+ *     defensive backstop. The first transition wins, the second should
+ *     not error.
+ *   - { ok: true, alreadyAtTarget: false } — proceed with edge call.
+ *   - { ok: false } — hard fail (closed deal, missing record, etc.).
+ *
+ * Notes on what this function intentionally does NOT enforce:
+ *   - "Reason required for terminal transitions" used to live here, but
+ *     the server treats reason as optional and several UI dialogs label
+ *     it as optional. Enforcing it client-side surfaced spurious errors
+ *     on legitimate reject-without-reason flows. Now: pass through.
  */
 export async function checkTransitionPrerequisites(
   requestId: string,
   targetPhase: DealPhase,
-  reason?: string,
-): Promise<{ ok: true } | { ok: false; error: string }> {
+  _reason?: string,
+): Promise<{ ok: true; alreadyAtTarget: boolean } | { ok: false; error: string }> {
   if (!requestId) return { ok: false, error: "Request ID is required" };
 
   const { data, error } = await supabase
@@ -149,33 +160,28 @@ export async function checkTransitionPrerequisites(
 
   const current = data.current_phase as DealPhase | null;
 
-  // Already terminal → nothing can change.
+  // Already terminal → nothing can change. Exception: re-asserting the
+  // same terminal state is treated as a no-op (handles the case where a
+  // sibling flow already drove us there).
   if (isTerminalPhase(current)) {
+    if (current === targetPhase) {
+      return { ok: true, alreadyAtTarget: true };
+    }
     return {
       ok: false,
       error: `Cannot transition a closed deal (current phase: ${current}).`,
     };
   }
 
-  // Redundant transition (same → same) is a no-op. Block to avoid
-  // accidental audit-log noise and double-counted timestamps.
+  // Idempotent: caller asked for the phase we're already in. This is
+  // legal — accept-nda auto-transitions to nda_both_accepted and then
+  // OwnerRequests calls transitionDealPhase again as a backstop; we
+  // must not error or audit-double on that pattern.
   if (current === targetPhase) {
-    return {
-      ok: false,
-      error: `Deal is already in phase "${targetPhase}".`,
-    };
+    return { ok: true, alreadyAtTarget: true };
   }
 
-  // Terminal transitions should carry a reason for the audit trail.
-  // The server enforces this too, but catching it early avoids the round trip.
-  if ((targetPhase === "closed_lost" || targetPhase === "cancelled") && !reason?.trim()) {
-    return {
-      ok: false,
-      error: "A reason is required when closing or cancelling a deal.",
-    };
-  }
-
-  return { ok: true };
+  return { ok: true, alreadyAtTarget: false };
 }
 
 export async function transitionDealPhase(
@@ -192,6 +198,17 @@ export async function transitionDealPhase(
   // P1.5 — pre-flight guard.
   const pre = await checkTransitionPrerequisites(requestId, targetPhase, reason);
   if (!pre.ok) return { success: false, error: pre.error };
+
+  // Idempotent short-circuit: deal is already at the requested phase.
+  // Treat as success without round-tripping the edge function so the
+  // caller's optimistic UI update commits cleanly.
+  if (pre.alreadyAtTarget) {
+    return {
+      success: true,
+      from_phase: targetPhase,
+      to_phase: targetPhase,
+    };
+  }
 
   const { data, error } = await supabase.functions.invoke("transition-deal-phase", {
     body: { request_id: requestId, target_phase: targetPhase, reason: reason || null },
