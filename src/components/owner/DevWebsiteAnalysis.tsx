@@ -7,28 +7,21 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Globe, Loader2, Building2, ExternalLink, AreaChart, X, CheckCircle2, XCircle,
   Share2, FileText, ShieldCheck, Gauge, Image as ImageIcon, AlertTriangle,
+  Briefcase, Newspaper, CalendarDays, Languages as LanguagesIcon, MapPin,
+  TrendingUp, Trophy, Users, ChevronDown, ChevronUp, Sparkles, Calendar,
 } from "lucide-react";
 
-/**
- * Translate raw edge-function error/details into a human-readable
- * bilingual diagnosis. Keeps the gory technical string available for
- * support but never shows it to the user up front.
- *
- * Categories we recognise:
- *   - dns         → domain doesn't resolve (most common; means the
- *                   user typed a non-existent site)
- *   - timeout     → site didn't answer within our 10s budget
- *   - refused     → connection actively refused / TLS handshake failed
- *   - http_error  → site answered but returned 4xx/5xx
- *   - other       → fall through with the raw detail trimmed
- */
+/* ═══════════════════════════════════════════════════════════════════
+   Failure-classification helpers
+   ─────────────────────────────────────────────────────────────────── */
+
 type FailureKind = "dns" | "timeout" | "refused" | "http_error" | "other";
 interface FailureDx {
   kind: FailureKind;
   title_ar: string; title_en: string;
   hint_ar: string;  hint_en: string;
-  technical: string;       // raw detail for the "see details" disclosure
-  attempted?: string[];    // URLs the function tried
+  technical: string;
+  attempted?: string[];
 }
 
 function classifyFailure(
@@ -111,67 +104,149 @@ function classifyFailure(
   };
 }
 
-/**
- * Factual website snapshot — data pulled directly from the developer's
- * public HTML (meta tags, Open Graph, schema.org JSON-LD, social links,
- * heading counts, response time). Zero AI opinions, zero recommendations.
- */
-interface Snapshot {
-  page_title: string;
-  meta_description: string;
-  og_title: string;
-  og_description: string;
-  og_image: string;
-  canonical_url: string;
-  html_lang: string;
-  heading_counts: { h1: number; h2: number; h3: number };
-  image_count: number;
-  script_count: number;
+/* ═══════════════════════════════════════════════════════════════════
+   v6 business-intelligence response shape
+   ─────────────────────────────────────────────────────────────────── */
+
+interface ScoreSignal {
+  label_ar: string;
+  label_en: string;
+  weight: number;
+  passed: boolean;
+  value?: string;
 }
-interface Signal { label_ar: string; label_en: string; weight: number; passed: boolean; value?: string }
+
+interface NewsItem { title: string; date?: string }
+interface SocialPlatform { platform: string; url: string }
+interface AddressRow { country?: string; city?: string; full?: string }
+
 interface AnalysisResult {
   website: string;
   developer_name?: string;
   fetched_at: string;
-  reachable: boolean;
-  status: number;
-  https: boolean;
-  latency_ms: number;
-  size_bytes: number;
-  snapshot: Snapshot;
-  organization_ld: Record<string, unknown> | null;
-  social_links: { platform: string; url: string }[];
+  total_latency_ms: number;
+
+  company: {
+    name: string;
+    legal_name: string;
+    tagline: string;
+    description: string;
+    logo_url: string;
+    founded: string;
+    industry: string;
+    headquarters: string;
+  };
+
+  portfolio: {
+    pages_found: number;
+    sample_titles: string[];
+    sample_images: string[];
+    has_dedicated_section: boolean;
+    first_page_url: string;
+  };
+
+  news: {
+    pages_found: number;
+    recent_items: NewsItem[];
+    recent_in_last_year: number;
+    has_section: boolean;
+    first_page_url: string;
+  };
+
+  events: {
+    pages_found: number;
+    sample_titles: string[];
+    first_page_url: string;
+  };
+
+  careers: {
+    has_careers_page: boolean;
+    first_page_url: string;
+  };
+
+  social_presence: {
+    platforms: SocialPlatform[];
+    count: number;
+  };
+
+  expansion: {
+    office_locations_count: number;
+    addresses: AddressRow[];
+    languages_supported: string[];
+    international: boolean;
+  };
+
+  trust_signals: {
+    https: boolean;
+    has_privacy_page: boolean;
+    has_about_page: boolean;
+    has_contact_page: boolean;
+    has_organization_schema: boolean;
+    has_logo: boolean;
+    has_clear_description: boolean;
+    mobile_optimized: boolean;
+  };
+
   score: number;
   score_band: "weak" | "fair" | "strong" | "excellent";
-  score_signals: Signal[];
+  score_breakdown: ScoreSignal[];
+
+  technical: {
+    https: boolean;
+    page_size_bytes: number;
+    latency_ms: number;
+    http_status: number;
+    page_title: string;
+    meta_description: string;
+    og_title: string;
+    og_description: string;
+    og_image: string;
+    canonical_url: string;
+    html_lang: string;
+    viewport: string;
+    heading_counts: { h1: number; h2: number; h3: number };
+  };
+
+  crawled_pages: { url: string; status: number; category: string; ok: boolean; latency_ms: number }[];
+  organization_ld: Record<string, unknown> | null;
+  homepage_images: string[];
 }
 
 interface Props { developerName: string; developerId: string; isAr: boolean; autoUrl?: string; }
 
-const bandStyles: Record<AnalysisResult["score_band"], { ar: string; en: string; cls: string }> = {
-  weak:      { ar: "ضعيف",  en: "Weak",     cls: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/15 dark:text-rose-200 dark:border-rose-400/30" },
-  fair:      { ar: "مقبول", en: "Fair",     cls: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-200 dark:border-amber-400/30" },
-  strong:    { ar: "قوي",   en: "Strong",   cls: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-200 dark:border-emerald-400/30" },
-  excellent: { ar: "ممتاز", en: "Excellent", cls: "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-100 dark:border-emerald-400/40" },
+const bandStyles: Record<AnalysisResult["score_band"], { ar: string; en: string; cls: string; ring: string }> = {
+  weak:      { ar: "ضعيف",  en: "Weak",     cls: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/15 dark:text-rose-200 dark:border-rose-400/30", ring: "ring-rose-300/40" },
+  fair:      { ar: "مقبول", en: "Fair",     cls: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-200 dark:border-amber-400/30", ring: "ring-amber-300/40" },
+  strong:    { ar: "قوي",   en: "Strong",   cls: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-200 dark:border-emerald-400/30", ring: "ring-emerald-300/40" },
+  excellent: { ar: "ممتاز", en: "Excellent", cls: "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-100 dark:border-emerald-400/40", ring: "ring-emerald-400/50" },
 };
+
+/** Friendly localized platform names */
+const platformLabel: Record<string, { ar: string; en: string }> = {
+  twitter:   { ar: "تويتر / X",  en: "X (Twitter)" },
+  linkedin:  { ar: "لينكدإن",    en: "LinkedIn" },
+  instagram: { ar: "إنستغرام",    en: "Instagram" },
+  facebook:  { ar: "فيسبوك",     en: "Facebook" },
+  youtube:   { ar: "يوتيوب",     en: "YouTube" },
+  tiktok:    { ar: "تيك توك",    en: "TikTok" },
+  snapchat:  { ar: "سناب شات",   en: "Snapchat" },
+  whatsapp:  { ar: "واتساب",     en: "WhatsApp" },
+  pinterest: { ar: "بنترست",     en: "Pinterest" },
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   Component
+   ─────────────────────────────────────────────────────────────────── */
 
 const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr, autoUrl }) => {
   const { toast } = useToast();
   const [url, setUrl] = useState(autoUrl || "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
-  // When the analysis itself fails, we render an inline diagnostic card
-  // (friendly, bilingual, with a "show technical detail" disclosure)
-  // instead of leaking raw `TypeError: dns error: ...` to the user.
   const [failure, setFailure] = useState<FailureDx | null>(null);
   const [showTechnical, setShowTechnical] = useState(false);
+  const [showTechSection, setShowTechSection] = useState(false);
 
-  // Mounted flag — this component is rendered inside an expandable
-  // panel in OwnerDashboard. If the owner collapses the panel (or
-  // navigates away) before the fetch / edge-function call returns,
-  // the `.then(setUrl)` / `setResult(...)` would hit an unmounted
-  // component and React logs a warning. The flag short-circuits the
-  // set calls.
   const mountedRef = useRef(true);
   useEffect(() => {
     mountedRef.current = true;
@@ -187,23 +262,13 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
       });
   }, [developerId, autoUrl, url]);
 
-  /* Normalise the URL the user typed before sending it to the edge
-   * function. Accepts forms like:
-   *   "waheejs.com"           → "https://waheejs.com"
-   *   "www.waheejs.com"       → "https://www.waheejs.com"
-   *   "http://waheejs.com"    → unchanged (user explicitly chose http)
-   *   "https://waheejs.com/"  → "https://waheejs.com" (trailing slash dropped)
-   * Returns null if the value can't be parsed into a valid URL. */
   const normaliseUrl = (raw: string): string | null => {
     let v = raw.trim();
     if (!v) return null;
-    // Strip wrapping quotes a user might paste from a CSV
     v = v.replace(/^['"]+|['"]+$/g, "");
-    // Auto-prefix protocol if missing
     if (!/^https?:\/\//i.test(v)) v = "https://" + v;
     try {
       const u = new URL(v);
-      // Reject obviously invalid hostnames (no dot)
       if (!u.hostname || !u.hostname.includes(".")) return null;
       return u.toString().replace(/\/+$/, "");
     } catch {
@@ -223,23 +288,18 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
       });
       return;
     }
-    // Reflect the cleaned URL back to the input so the user sees the
-    // exact value being analysed (and the next click won't keep
-    // re-prefixing).
     if (cleaned !== url) setUrl(cleaned);
 
     setLoading(true);
     setResult(null);
     setFailure(null);
     setShowTechnical(false);
+    setShowTechSection(false);
     try {
       const { data, error } = await supabase.functions.invoke("analyze-developer-website", {
         body: { website: cleaned, developer_id: developerId },
       });
 
-      // Network-level / function-invocation error (function unreachable,
-      // 5xx from the edge runtime, etc). These don't carry the structured
-      // `success: false` envelope, so classify the raw message.
       if (error) {
         if (!mountedRef.current) return;
         const dx = classifyFailure(error.message || "Function invocation failed", undefined, undefined, undefined);
@@ -252,10 +312,6 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
         return;
       }
 
-      // Structured failure envelope from our edge function — translate
-      // the raw cause into a friendly diagnosis and render an inline
-      // card so the admin can read it calmly (and copy the technical
-      // detail if support asks).
       if (!data?.success) {
         if (!mountedRef.current) return;
         const dx = classifyFailure(
@@ -277,8 +333,6 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
       setResult(data.result as AnalysisResult);
     } catch (e: unknown) {
       if (!mountedRef.current) return;
-      // Defensive catch — anything that escapes the structured paths
-      // above. Still classified through the same friendly mapper.
       const msg = e instanceof Error ? e.message : String(e);
       const dx = classifyFailure(msg, undefined, undefined, undefined);
       setFailure(dx);
@@ -292,10 +346,6 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
     }
   };
 
-  const orgName = (result?.organization_ld?.name as string) || result?.snapshot.og_title || result?.snapshot.page_title || developerName;
-  const orgDesc = (result?.organization_ld?.description as string) || result?.snapshot.meta_description || result?.snapshot.og_description || "";
-  const orgLogo = (result?.organization_ld?.logo as string) || result?.snapshot.og_image || "";
-
   return (
     <div className="space-y-4" dir={isAr ? "rtl" : "ltr"}>
       {/* URL input */}
@@ -303,10 +353,6 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
         <div className="relative flex-1">
           <Globe className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            // type="text" so the browser does not pop the native
-            // "please enter a URL" tooltip when the user types a bare
-            // domain like "waheejs.com". We do our own validation +
-            // protocol auto-prefix in `normaliseUrl`.
             type="text"
             inputMode="url"
             autoComplete="url"
@@ -327,14 +373,20 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
 
       {/* Loading */}
       {loading && (
-        <div className="flex flex-col items-center justify-center py-8 gap-2 rounded-xl border border-border/50 bg-card/60">
-          <Loader2 className="h-7 w-7 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">{isAr ? "جاري تحليل الموقع..." : "Analyzing website..."}</p>
+        <div className="flex flex-col items-center justify-center py-12 gap-3 rounded-2xl border border-border/50 bg-card/60">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm font-medium text-foreground">
+            {isAr ? "نُحلِّل موقع المطوِّر..." : "Analysing developer website..."}
+          </p>
+          <p className="text-[11px] text-muted-foreground max-w-sm text-center">
+            {isAr
+              ? "نزور صفحات المشاريع والأخبار والفعاليات ونجمع بيانات الشركة وحساباتها — قد يستغرق ذلك حتى ١٥ ثانية."
+              : "Visiting project, news and event pages, then assembling company data — may take up to 15s."}
+          </p>
         </div>
       )}
 
-      {/* Failure card — friendly, bilingual, with a collapsible
-          "technical detail" so support can still read the raw error. */}
+      {/* Failure card */}
       {failure && !loading && (
         <div className="rounded-2xl border border-amber-300/60 bg-amber-50/60 dark:border-amber-400/30 dark:bg-amber-500/10 p-5">
           <div className="flex items-start gap-3">
@@ -400,118 +452,427 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
 
       {/* Result */}
       {result && !loading && (
-        <div className="rounded-2xl border border-border bg-card overflow-hidden">
-          {/* Header */}
-          <div className="p-5 md:p-6 border-b border-border/50 bg-muted/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="shrink-0 h-11 w-11 rounded-xl bg-background border border-border flex items-center justify-center overflow-hidden">
-                {orgLogo ? (
-                  <img src={orgLogo} alt={orgName} className="h-full w-full object-contain p-1.5"
-                    onError={(e) => { e.currentTarget.style.display = "none"; }} />
-                ) : (
-                  <Building2 className="h-5 w-5 text-primary" strokeWidth={1.5} />
-                )}
-              </div>
-              <div className="min-w-0">
-                <h4 className="text-base font-semibold text-foreground truncate">{orgName || developerName}</h4>
-                <a href={result.website} target="_blank" rel="noopener noreferrer"
-                  className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1.5 mt-0.5 truncate">
-                  {result.website} <ExternalLink className="h-3 w-3 shrink-0" />
-                </a>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 shrink-0">
-              <div className="text-end">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-0.5">{isAr ? "درجة الأداء" : "Performance Score"}</p>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-bold text-foreground tabular-nums" dir="ltr">{result.score}</span>
-                  <span className="text-xs text-muted-foreground">/100</span>
-                </div>
-              </div>
-              <Badge variant="outline" className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 ${bandStyles[result.score_band].cls}`}>
-                {isAr ? bandStyles[result.score_band].ar : bandStyles[result.score_band].en}
-              </Badge>
+        <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+          {/* ─── Hero band ─────────────────────────────────────────── */}
+          <div className="relative p-5 md:p-6 border-b border-border/50 bg-gradient-to-br from-primary/5 via-background to-background">
+            <div className="absolute top-3 end-3">
               <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => setResult(null)}>
                 <X className="h-4 w-4" />
               </Button>
             </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pe-10">
+              {/* Logo */}
+              <div className={`shrink-0 h-16 w-16 rounded-2xl bg-background border border-border flex items-center justify-center overflow-hidden ring-2 ring-offset-2 ring-offset-background ${bandStyles[result.score_band].ring}`}>
+                {result.company.logo_url ? (
+                  <img
+                    src={result.company.logo_url}
+                    alt={result.company.name}
+                    className="h-full w-full object-contain p-2"
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                  />
+                ) : (
+                  <Building2 className="h-7 w-7 text-primary" strokeWidth={1.5} />
+                )}
+              </div>
+
+              {/* Identity */}
+              <div className="min-w-0 flex-1">
+                <h3 className="text-lg md:text-xl font-bold text-foreground truncate">
+                  {result.company.name || result.developer_name || developerName}
+                </h3>
+                {result.company.legal_name && result.company.legal_name !== result.company.name && (
+                  <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{result.company.legal_name}</p>
+                )}
+                {result.company.tagline && (
+                  <p className="text-[12.5px] text-muted-foreground mt-1 line-clamp-2 leading-snug">{result.company.tagline}</p>
+                )}
+                <a href={result.website} target="_blank" rel="noopener noreferrer"
+                  className="text-[11.5px] text-primary hover:underline inline-flex items-center gap-1.5 mt-1.5" dir="ltr">
+                  {result.website} <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+
+              {/* Score */}
+              <div className="shrink-0 flex flex-col items-center gap-1.5">
+                <div className={`flex items-baseline gap-0.5 px-3 py-2 rounded-xl border ${bandStyles[result.score_band].cls}`} dir="ltr">
+                  <span className="text-3xl font-extrabold tabular-nums">{result.score}</span>
+                  <span className="text-xs opacity-70">/100</span>
+                </div>
+                <Badge variant="outline" className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 ${bandStyles[result.score_band].cls}`}>
+                  {isAr ? bandStyles[result.score_band].ar : bandStyles[result.score_band].en}
+                </Badge>
+              </div>
+            </div>
+          </div>
+
+          {/* ─── Stats row (5 KPIs) ────────────────────────────────── */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-border/40 border-b border-border/50">
+            <Kpi
+              icon={<Briefcase className="h-4 w-4" />}
+              label={isAr ? "المشاريع" : "Projects"}
+              value={result.portfolio.pages_found}
+              sub={result.portfolio.has_dedicated_section ? (isAr ? "قسم مخصَّص" : "dedicated section") : (isAr ? "غير منشور" : "not published")}
+              tone={result.portfolio.pages_found > 0 ? "good" : "muted"}
+            />
+            <Kpi
+              icon={<Newspaper className="h-4 w-4" />}
+              label={isAr ? "أخبار وإعلانات" : "News & Press"}
+              value={result.news.pages_found}
+              sub={result.news.recent_in_last_year > 0
+                ? (isAr ? `${result.news.recent_in_last_year} حديثة` : `${result.news.recent_in_last_year} recent`)
+                : (isAr ? "—" : "—")}
+              tone={result.news.pages_found > 0 ? "good" : "muted"}
+            />
+            <Kpi
+              icon={<Share2 className="h-4 w-4" />}
+              label={isAr ? "السوشيال ميديا" : "Social Media"}
+              value={result.social_presence.count}
+              sub={isAr ? "منصة" : "platforms"}
+              tone={result.social_presence.count >= 3 ? "good" : result.social_presence.count > 0 ? "fair" : "muted"}
+            />
+            <Kpi
+              icon={<MapPin className="h-4 w-4" />}
+              label={isAr ? "المكاتب" : "Offices"}
+              value={result.expansion.office_locations_count}
+              sub={result.expansion.international ? (isAr ? "دولي" : "International") : (isAr ? "محلي" : "Domestic")}
+              tone={result.expansion.office_locations_count >= 2 ? "good" : "muted"}
+            />
+            <Kpi
+              icon={<LanguagesIcon className="h-4 w-4" />}
+              label={isAr ? "اللغات" : "Languages"}
+              value={result.expansion.languages_supported.length}
+              sub={result.expansion.languages_supported.slice(0, 3).join(" / ").toUpperCase() || "—"}
+              tone={result.expansion.languages_supported.length >= 2 ? "good" : "muted"}
+            />
           </div>
 
           <div className="p-5 md:p-6 space-y-6">
-            {/* Factual snapshot from HTML */}
-            <section>
-              <h5 className="text-[12px] font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
-                <FileText className="h-3.5 w-3.5" /> {isAr ? "لقطة من الموقع" : "Site Snapshot"}
-              </h5>
-              {orgDesc && (
-                <p className="text-[13px] text-foreground leading-relaxed mb-4">{orgDesc}</p>
-              )}
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <Fact label={isAr ? "حالة الاتصال" : "Connection"} value={`HTTP ${result.status}`} icon={<ShieldCheck className="h-3.5 w-3.5" />} good={result.https && result.status < 400} />
-                <Fact label={isAr ? "زمن الاستجابة" : "Response Time"} value={`${result.latency_ms}ms`} icon={<Gauge className="h-3.5 w-3.5" />} good={result.latency_ms < 3500} />
-                <Fact label={isAr ? "حجم الصفحة" : "Page Size"} value={`${(result.size_bytes / 1024).toFixed(0)} KB`} icon={<FileText className="h-3.5 w-3.5" />} good={result.size_bytes > 2000} />
-                <Fact label={isAr ? "الصور" : "Images"} value={String(result.snapshot.image_count)} icon={<ImageIcon className="h-3.5 w-3.5" />} good={result.snapshot.image_count > 0} />
-                <Fact label="Title" value={result.snapshot.page_title || "—"} />
-                <Fact label="H1 / H2 / H3" value={`${result.snapshot.heading_counts.h1} / ${result.snapshot.heading_counts.h2} / ${result.snapshot.heading_counts.h3}`} good={result.snapshot.heading_counts.h1 >= 1} />
-                <Fact label="Canonical" value={result.snapshot.canonical_url || (isAr ? "غير موجود" : "not set")} good={!!result.snapshot.canonical_url} />
-                <Fact label="Lang" value={result.snapshot.html_lang || "—"} good={!!result.snapshot.html_lang} />
-              </div>
-            </section>
+            {/* ─── About / company profile ────────────────────────────── */}
+            {(result.company.description || result.company.founded || result.company.headquarters || result.company.industry) && (
+              <Section
+                title={isAr ? "نبذة عن الشركة" : "About the Company"}
+                icon={<Building2 className="h-3.5 w-3.5" />}
+              >
+                {result.company.description && (
+                  <p className="text-[13.5px] text-foreground leading-relaxed mb-3">
+                    {result.company.description}
+                  </p>
+                )}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {result.company.founded && (
+                    <DataRow icon={<Calendar className="h-3.5 w-3.5" />}
+                      label={isAr ? "سنة التأسيس" : "Founded"}
+                      value={result.company.founded} />
+                  )}
+                  {result.company.headquarters && (
+                    <DataRow icon={<MapPin className="h-3.5 w-3.5" />}
+                      label={isAr ? "المقر الرئيسي" : "Headquarters"}
+                      value={result.company.headquarters} />
+                  )}
+                  {result.company.industry && (
+                    <DataRow icon={<Briefcase className="h-3.5 w-3.5" />}
+                      label={isAr ? "المجال" : "Industry"}
+                      value={result.company.industry} />
+                  )}
+                </div>
+              </Section>
+            )}
 
-            {/* Score breakdown */}
-            <section>
-              <h5 className="text-[12px] font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
-                <Gauge className="h-3.5 w-3.5" /> {isAr ? "تفاصيل قياس الأداء" : "Score Breakdown"}
-              </h5>
-              <div className="grid sm:grid-cols-2 gap-2">
-                {result.score_signals.map((s, i) => (
-                  <div key={i} className="flex items-center gap-2 rounded-lg border border-border/40 bg-background/50 px-3 py-2">
+            {/* ─── Portfolio ─────────────────────────────────────────── */}
+            {(result.portfolio.has_dedicated_section || result.portfolio.sample_titles.length > 0 || result.portfolio.sample_images.length > 0) && (
+              <Section
+                title={isAr ? "محفظة المشاريع" : "Project Portfolio"}
+                icon={<Briefcase className="h-3.5 w-3.5" />}
+                badge={result.portfolio.pages_found > 0 ? `${result.portfolio.pages_found}` : undefined}
+                action={result.portfolio.first_page_url ? (
+                  <a href={result.portfolio.first_page_url} target="_blank" rel="noopener noreferrer"
+                    className="text-[11px] text-primary hover:underline inline-flex items-center gap-1">
+                    {isAr ? "زيارة قسم المشاريع" : "Visit projects"} <ExternalLink className="h-3 w-3" />
+                  </a>
+                ) : undefined}
+              >
+                {result.portfolio.sample_titles.length > 0 ? (
+                  <ul className="grid sm:grid-cols-2 gap-1.5 mb-3">
+                    {result.portfolio.sample_titles.map((t, i) => (
+                      <li key={i} className="flex items-start gap-2 text-[13px] text-foreground rounded-lg border border-border/40 bg-background/50 px-2.5 py-1.5">
+                        <Trophy className="h-3.5 w-3.5 text-amber-500 mt-0.5 shrink-0" />
+                        <span className="line-clamp-2">{t}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-[12.5px] text-muted-foreground mb-3">
+                    {isAr ? "وُجد قسم مشاريع لكن العناوين غير قابلة للقراءة آلياً." : "Portfolio section detected but titles not machine-readable."}
+                  </p>
+                )}
+                {result.portfolio.sample_images.length > 0 && (
+                  <div className="flex gap-2 overflow-x-auto py-1">
+                    {result.portfolio.sample_images.map((src, i) => (
+                      <img key={i} src={src} alt=""
+                        className="h-20 w-32 object-cover rounded-lg border border-border/40 shrink-0 bg-muted"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+                    ))}
+                  </div>
+                )}
+              </Section>
+            )}
+
+            {/* ─── News & Press ─────────────────────────────────────── */}
+            {(result.news.has_section || result.news.recent_items.length > 0) && (
+              <Section
+                title={isAr ? "الأخبار والنشاط الإعلامي" : "News & Press Activity"}
+                icon={<Newspaper className="h-3.5 w-3.5" />}
+                badge={result.news.pages_found > 0 ? `${result.news.pages_found}` : undefined}
+                action={result.news.first_page_url ? (
+                  <a href={result.news.first_page_url} target="_blank" rel="noopener noreferrer"
+                    className="text-[11px] text-primary hover:underline inline-flex items-center gap-1">
+                    {isAr ? "قسم الأخبار" : "Newsroom"} <ExternalLink className="h-3 w-3" />
+                  </a>
+                ) : undefined}
+              >
+                {result.news.recent_in_last_year > 0 && (
+                  <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-200 dark:border-emerald-400/30 px-3 py-1 text-[11.5px] text-emerald-700 dark:text-emerald-200 font-medium">
+                    <TrendingUp className="h-3.5 w-3.5" />
+                    {isAr
+                      ? `${result.news.recent_in_last_year} خبر منشور خلال آخر ١٢ شهر`
+                      : `${result.news.recent_in_last_year} item${result.news.recent_in_last_year === 1 ? "" : "s"} published in last 12 months`}
+                  </div>
+                )}
+                {result.news.recent_items.length > 0 ? (
+                  <ul className="space-y-1.5">
+                    {result.news.recent_items.map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 rounded-lg border border-border/40 bg-background/50 px-3 py-2">
+                        <div className="shrink-0 h-7 w-7 rounded-md bg-primary/10 text-primary flex items-center justify-center mt-0.5">
+                          <Newspaper className="h-3.5 w-3.5" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] text-foreground line-clamp-2 leading-snug">{item.title}</p>
+                          {item.date && (
+                            <p className="text-[10.5px] text-muted-foreground mt-0.5 tabular-nums" dir="ltr">{item.date}</p>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-[12.5px] text-muted-foreground">
+                    {isAr ? "وُجد قسم الأخبار لكن لم نستخرج عناوين جاهزة." : "News section found but headlines could not be extracted."}
+                  </p>
+                )}
+              </Section>
+            )}
+
+            {/* ─── Events ───────────────────────────────────────────── */}
+            {(result.events.pages_found > 0 || result.events.sample_titles.length > 0) && (
+              <Section
+                title={isAr ? "الفعاليات والاجتماعات" : "Events & Meetings"}
+                icon={<CalendarDays className="h-3.5 w-3.5" />}
+                badge={result.events.pages_found > 0 ? `${result.events.pages_found}` : undefined}
+                action={result.events.first_page_url ? (
+                  <a href={result.events.first_page_url} target="_blank" rel="noopener noreferrer"
+                    className="text-[11px] text-primary hover:underline inline-flex items-center gap-1">
+                    {isAr ? "زيارة الفعاليات" : "Visit events"} <ExternalLink className="h-3 w-3" />
+                  </a>
+                ) : undefined}
+              >
+                {result.events.sample_titles.length > 0 ? (
+                  <ul className="grid sm:grid-cols-2 gap-1.5">
+                    {result.events.sample_titles.map((t, i) => (
+                      <li key={i} className="flex items-start gap-2 text-[13px] text-foreground rounded-lg border border-border/40 bg-background/50 px-2.5 py-1.5">
+                        <CalendarDays className="h-3.5 w-3.5 text-violet-500 mt-0.5 shrink-0" />
+                        <span className="line-clamp-2">{t}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-[12.5px] text-muted-foreground">
+                    {isAr ? "وُجد قسم فعاليات لكن العناوين غير قابلة للقراءة آلياً." : "Events section detected but titles not machine-readable."}
+                  </p>
+                )}
+              </Section>
+            )}
+
+            {/* ─── Social presence ──────────────────────────────────── */}
+            {result.social_presence.platforms.length > 0 && (
+              <Section
+                title={isAr ? "حسابات التواصل الاجتماعي" : "Social Media Accounts"}
+                icon={<Share2 className="h-3.5 w-3.5" />}
+                badge={`${result.social_presence.count}`}
+              >
+                <div className="flex flex-wrap gap-2">
+                  {result.social_presence.platforms.map((s, i) => {
+                    const lbl = platformLabel[s.platform];
+                    return (
+                      <a key={i} href={s.url} target="_blank" rel="noopener noreferrer"
+                        className="group inline-flex items-center gap-2 text-[12.5px] rounded-xl border border-border bg-background hover:bg-primary/5 hover:border-primary/30 px-3 py-1.5 transition-colors">
+                        <Share2 className="h-3.5 w-3.5 text-primary" />
+                        <span className="font-medium">{lbl ? (isAr ? lbl.ar : lbl.en) : s.platform}</span>
+                        <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </a>
+                    );
+                  })}
+                </div>
+              </Section>
+            )}
+
+            {/* ─── Expansion / growth ───────────────────────────────── */}
+            {(result.expansion.addresses.length > 0
+              || result.expansion.languages_supported.length > 0
+              || result.careers.has_careers_page
+              || result.expansion.international) && (
+              <Section
+                title={isAr ? "التوسُّع والنمو" : "Expansion & Growth"}
+                icon={<TrendingUp className="h-3.5 w-3.5" />}
+              >
+                <div className="grid md:grid-cols-2 gap-3">
+                  {/* Locations */}
+                  {result.expansion.addresses.length > 0 && (
+                    <div className="rounded-xl border border-border/40 bg-background/50 p-3">
+                      <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-muted-foreground mb-2">
+                        <MapPin className="h-3 w-3" />
+                        {isAr ? `المواقع (${result.expansion.office_locations_count})` : `Locations (${result.expansion.office_locations_count})`}
+                      </div>
+                      <ul className="space-y-1">
+                        {result.expansion.addresses.map((a, i) => (
+                          <li key={i} className="text-[12.5px] text-foreground flex items-start gap-2">
+                            <span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary/60 shrink-0" />
+                            <span>{a.full || [a.city, a.country].filter(Boolean).join(", ") || "—"}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Languages */}
+                  {result.expansion.languages_supported.length > 0 && (
+                    <div className="rounded-xl border border-border/40 bg-background/50 p-3">
+                      <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-muted-foreground mb-2">
+                        <LanguagesIcon className="h-3 w-3" />
+                        {isAr ? "اللغات المدعومة" : "Supported Languages"}
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {result.expansion.languages_supported.map((l, i) => (
+                          <span key={i} className="text-[11px] font-mono uppercase rounded-md border border-border bg-background px-2 py-0.5">
+                            {l}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Careers */}
+                  {result.careers.has_careers_page && (
+                    <div className="rounded-xl border border-emerald-200/60 dark:border-emerald-400/30 bg-emerald-50/60 dark:bg-emerald-500/10 p-3">
+                      <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-emerald-700 dark:text-emerald-300 mb-1">
+                        <Users className="h-3 w-3" />
+                        {isAr ? "صفحة وظائف نشطة" : "Active careers page"}
+                      </div>
+                      <p className="text-[12px] text-emerald-800/90 dark:text-emerald-100/80">
+                        {isAr ? "مؤشِّر إيجابي على نمو الفريق والشركة." : "Positive signal of team & company growth."}
+                      </p>
+                      {result.careers.first_page_url && (
+                        <a href={result.careers.first_page_url} target="_blank" rel="noopener noreferrer"
+                          className="text-[11px] text-emerald-700 dark:text-emerald-200 hover:underline inline-flex items-center gap-1 mt-1">
+                          {isAr ? "عرض صفحة الوظائف" : "View careers page"} <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                    </div>
+                  )}
+
+                  {/* International marker */}
+                  {result.expansion.international && (
+                    <div className="rounded-xl border border-blue-200/60 dark:border-blue-400/30 bg-blue-50/60 dark:bg-blue-500/10 p-3">
+                      <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-blue-700 dark:text-blue-300 mb-1">
+                        <Sparkles className="h-3 w-3" />
+                        {isAr ? "حضور دولي" : "International presence"}
+                      </div>
+                      <p className="text-[12px] text-blue-800/90 dark:text-blue-100/80">
+                        {isAr ? "الموقع متاح بأكثر من لغة، مما يوحي بسوق دولي." : "Site published in 2+ languages — suggests international market reach."}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </Section>
+            )}
+
+            {/* ─── Trust signals ────────────────────────────────────── */}
+            <Section
+              title={isAr ? "مؤشِّرات الثقة" : "Trust Signals"}
+              icon={<ShieldCheck className="h-3.5 w-3.5" />}
+            >
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <Trust label={isAr ? "اتصال آمن (HTTPS)" : "Secure connection (HTTPS)"} ok={result.trust_signals.https} />
+                <Trust label={isAr ? "بيانات منظَّمة Schema.org" : "Schema.org structured data"} ok={result.trust_signals.has_organization_schema} />
+                <Trust label={isAr ? "شعار الشركة" : "Company logo"} ok={result.trust_signals.has_logo} />
+                <Trust label={isAr ? "وصف واضح للشركة" : "Clear company description"} ok={result.trust_signals.has_clear_description} />
+                <Trust label={isAr ? "صفحة من نحن" : "About page"} ok={result.trust_signals.has_about_page} />
+                <Trust label={isAr ? "صفحة اتصال" : "Contact page"} ok={result.trust_signals.has_contact_page} />
+                <Trust label={isAr ? "سياسة الخصوصية" : "Privacy policy"} ok={result.trust_signals.has_privacy_page} />
+                <Trust label={isAr ? "متوافق مع الجوال" : "Mobile-optimised"} ok={result.trust_signals.mobile_optimized} />
+              </div>
+            </Section>
+
+            {/* ─── Score breakdown ──────────────────────────────────── */}
+            <Section
+              title={isAr ? "كيف احتُسبت الدرجة؟" : "How the score was computed"}
+              icon={<Gauge className="h-3.5 w-3.5" />}
+            >
+              <div className="grid sm:grid-cols-2 gap-1.5">
+                {result.score_breakdown.map((s, i) => (
+                  <div key={i} className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${
+                    s.passed
+                      ? "border-emerald-200/60 bg-emerald-50/40 dark:border-emerald-400/20 dark:bg-emerald-500/5"
+                      : "border-border/40 bg-background/40"
+                  }`}>
                     {s.passed
                       ? <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                      : <XCircle className="h-4 w-4 text-muted-foreground/60 shrink-0" />}
-                    <span className="text-[12.5px] text-foreground flex-1">{isAr ? s.label_ar : s.label_en}</span>
-                    {s.value && <span className="text-[10px] text-muted-foreground tabular-nums" dir="ltr">{s.value}</span>}
-                    <span className="text-[10px] text-muted-foreground tabular-nums" dir="ltr">{s.passed ? `+${s.weight}` : "0"}</span>
+                      : <XCircle className="h-4 w-4 text-muted-foreground/50 shrink-0" />}
+                    <span className={`text-[12.5px] flex-1 ${s.passed ? "text-foreground" : "text-muted-foreground"}`}>
+                      {isAr ? s.label_ar : s.label_en}
+                    </span>
+                    {s.value && (
+                      <span className="text-[10.5px] tabular-nums font-mono text-muted-foreground" dir="ltr">{s.value}</span>
+                    )}
+                    <span className={`text-[10.5px] tabular-nums font-bold shrink-0 ${
+                      s.passed ? "text-emerald-700 dark:text-emerald-300" : "text-muted-foreground/60"
+                    }`} dir="ltr">{s.passed ? `+${s.weight}` : `0/${s.weight}`}</span>
                   </div>
                 ))}
               </div>
-            </section>
+            </Section>
 
-            {/* Social presence detected in the HTML */}
-            {result.social_links.length > 0 && (
-              <section>
-                <h5 className="text-[12px] font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
-                  <Share2 className="h-3.5 w-3.5" /> {isAr ? "حسابات التواصل المرصودة" : "Detected Social Links"}
-                </h5>
-                <div className="flex flex-wrap gap-2">
-                  {result.social_links.map((s, i) => (
-                    <a key={i} href={s.url} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs rounded-lg border border-border bg-background hover:bg-muted px-2.5 py-1.5 transition-colors">
-                      <Share2 className="h-3 w-3 text-primary" />
-                      <span className="font-medium capitalize">{s.platform}</span>
-                      <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                    </a>
-                  ))}
+            {/* ─── Technical details (collapsed by default) ─────────── */}
+            <div>
+              <button
+                type="button"
+                onClick={() => setShowTechSection((v) => !v)}
+                className="w-full flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors py-2 border-t border-border/30"
+              >
+                <span className="flex items-center gap-2">
+                  <FileText className="h-3.5 w-3.5" />
+                  {isAr ? "تفاصيل تقنية إضافية" : "Additional Technical Detail"}
+                </span>
+                {showTechSection ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+              </button>
+              {showTechSection && (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-3">
+                  <Tech label={isAr ? "الحالة" : "HTTP status"}      value={`${result.technical.http_status}`} good={result.technical.http_status >= 200 && result.technical.http_status < 400} />
+                  <Tech label={isAr ? "زمن الاستجابة" : "Response"}    value={`${result.technical.latency_ms}ms`} good={result.technical.latency_ms < 3500} />
+                  <Tech label={isAr ? "حجم الصفحة" : "Page size"}      value={`${(result.technical.page_size_bytes / 1024).toFixed(0)} KB`} />
+                  <Tech label={isAr ? "إجمالي زمن التحليل" : "Analysis duration"} value={`${(result.total_latency_ms / 1000).toFixed(1)}s`} />
+                  <Tech label={isAr ? "لغة الصفحة" : "HTML lang"}      value={result.technical.html_lang || "—"} />
+                  <Tech label="Canonical"                              value={result.technical.canonical_url || "—"} />
+                  <Tech label="H1 / H2 / H3"                           value={`${result.technical.heading_counts.h1} / ${result.technical.heading_counts.h2} / ${result.technical.heading_counts.h3}`} />
+                  <Tech label={isAr ? "صفحات تمّ زيارتها" : "Pages crawled"} value={`${result.crawled_pages.length}`} />
                 </div>
-              </section>
-            )}
+              )}
+            </div>
 
-            {/* Organization from schema.org JSON-LD — only if present */}
-            {result.organization_ld && (
-              <section>
-                <h5 className="text-[12px] font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
-                  <Building2 className="h-3.5 w-3.5" /> {isAr ? "بيانات الشركة من JSON-LD" : "Organization (JSON-LD)"}
-                </h5>
-                <pre className="text-[11px] font-mono bg-muted/40 rounded-lg p-3 overflow-x-auto whitespace-pre-wrap max-h-48 overflow-y-auto" dir="ltr">
-                  {JSON.stringify(result.organization_ld, null, 2)}
-                </pre>
-              </section>
-            )}
-
-            <p className="text-[10px] text-muted-foreground text-center pt-2 border-t border-border/30">
+            {/* ─── Footer ───────────────────────────────────────────── */}
+            <p className="text-[10.5px] text-muted-foreground text-center pt-3 border-t border-border/30">
               {isAr
-                ? `تم التحليل في ${new Date(result.fetched_at).toLocaleString("ar-SA-u-nu-latn")} • لا توصيات، معلومات حقيقية فقط من HTML الصفحة`
-                : `Analyzed at ${new Date(result.fetched_at).toLocaleString("en-US")} • Facts only, no recommendations`}
+                ? `تمّ التحليل في ${new Date(result.fetched_at).toLocaleString("ar-SA-u-nu-latn")} • بيانات مستخرجة مباشرةً من الموقع — بلا توصيات وبلا ذكاء اصطناعي`
+                : `Analysed at ${new Date(result.fetched_at).toLocaleString("en-US")} • Data extracted directly from the website — no AI, no recommendations`}
             </p>
           </div>
         </div>
@@ -520,13 +881,86 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
   );
 };
 
-const Fact: React.FC<{ label: string; value: string; icon?: React.ReactNode; good?: boolean }> = ({ label, value, icon, good }) => (
-  <div className="rounded-lg border border-border/40 bg-background/50 p-3">
-    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+/* ═══════════════════════════════════════════════════════════════════
+   Small presentation atoms
+   ─────────────────────────────────────────────────────────────────── */
+
+const Section: React.FC<{
+  title: string;
+  icon: React.ReactNode;
+  badge?: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}> = ({ title, icon, badge, action, children }) => (
+  <section>
+    <div className="flex items-center justify-between gap-3 mb-3">
+      <h5 className="text-[12px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+        {icon}
+        {title}
+        {badge && (
+          <span className="ms-1 text-[10.5px] font-bold rounded-full bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 tabular-nums" dir="ltr">
+            {badge}
+          </span>
+        )}
+      </h5>
+      {action}
+    </div>
+    {children}
+  </section>
+);
+
+const Kpi: React.FC<{
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+  sub?: string;
+  tone: "good" | "fair" | "muted";
+}> = ({ icon, label, value, sub, tone }) => {
+  const toneCls =
+    tone === "good"
+      ? "text-emerald-700 dark:text-emerald-300"
+      : tone === "fair"
+        ? "text-amber-700 dark:text-amber-300"
+        : "text-muted-foreground";
+  return (
+    <div className="bg-card p-3 md:p-4 flex flex-col gap-1">
+      <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-muted-foreground">
+        <span className={toneCls}>{icon}</span>
+        <span className="truncate">{label}</span>
+      </div>
+      <p className="text-2xl font-extrabold text-foreground tabular-nums leading-none mt-1" dir="ltr">{value}</p>
+      {sub && <p className="text-[10.5px] text-muted-foreground line-clamp-1">{sub}</p>}
+    </div>
+  );
+};
+
+const DataRow: React.FC<{ icon: React.ReactNode; label: string; value: string }> = ({ icon, label, value }) => (
+  <div className="rounded-lg border border-border/40 bg-background/40 px-3 py-2 min-w-0">
+    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">
       {icon}
       {label}
     </div>
-    <p className={`text-[13px] font-medium truncate ${good === false ? "text-muted-foreground" : "text-foreground"}`} title={value}>{value}</p>
+    <p className="text-[13px] font-medium text-foreground truncate" title={value}>{value}</p>
+  </div>
+);
+
+const Trust: React.FC<{ label: string; ok: boolean }> = ({ label, ok }) => (
+  <div className={`flex items-center gap-2 rounded-lg border px-2.5 py-2 ${
+    ok
+      ? "border-emerald-200/60 bg-emerald-50/40 dark:border-emerald-400/20 dark:bg-emerald-500/5"
+      : "border-border/40 bg-background/40"
+  }`}>
+    {ok
+      ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+      : <XCircle className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />}
+    <span className={`text-[12px] line-clamp-2 leading-tight ${ok ? "text-foreground" : "text-muted-foreground"}`}>{label}</span>
+  </div>
+);
+
+const Tech: React.FC<{ label: string; value: string; good?: boolean }> = ({ label, value, good }) => (
+  <div className="rounded-lg border border-border/40 bg-background/40 px-2.5 py-1.5">
+    <p className="text-[9.5px] uppercase tracking-wider text-muted-foreground">{label}</p>
+    <p className={`text-[11.5px] font-mono mt-0.5 truncate ${good === false ? "text-muted-foreground" : "text-foreground"}`} dir="ltr" title={value}>{value}</p>
   </div>
 );
 
