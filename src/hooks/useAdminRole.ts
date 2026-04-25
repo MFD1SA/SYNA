@@ -24,13 +24,35 @@ export const useAdminRole = () => {
     // Skip re-check if we already verified this user
     if (checkedUserId.current === userId) return;
 
+    // CRITICAL: user identity changed — reset flags to loading/false BEFORE the
+    // async query so no render in the gap sees stale `{isAdmin: true}` against
+    // the new user. Without this reset, AdminRoute would briefly allow a
+    // non-admin into /admincp/* because `isAdmin` and `roleChecked` still
+    // reflect the previous logged-in admin.
+    setRoleChecked(false);
+    setIsAdmin(false);
+
+    let cancelled = false;
+
     const checkRole = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", userId)
         .eq("role", "admin")
         .maybeSingle();
+
+      // Drop result if user changed again before the query resolved.
+      if (cancelled) return;
+
+      // On an RLS/network failure, surface the non-admin result but do NOT
+      // cache the user id — next render will retry. Caching on error would
+      // lock the user out until a hard refresh.
+      if (error) {
+        setIsAdmin(false);
+        setRoleChecked(true);
+        return;
+      }
 
       checkedUserId.current = userId;
       setIsAdmin(!!data);
@@ -38,6 +60,10 @@ export const useAdminRole = () => {
     };
 
     checkRole();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user?.id, authLoading]);
 
   // Loading is true until auth finishes AND role check completes

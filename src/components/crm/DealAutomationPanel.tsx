@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileCheck2, Link2, PartyPopper, ShieldCheck } from "lucide-react";
+import { sanitizeDriveHref } from "@/lib/urlSafe";
 
 export interface DealDocumentItem {
   id: string;
@@ -52,23 +53,44 @@ const DealAutomationPanel: React.FC<DealAutomationPanelProps> = ({
             <FileCheck2 className="h-3.5 w-3.5 text-primary" />
             {isAr ? "روابط المستندات" : "Document Links"}
           </h6>
-          {documents.map((doc) => (
-            <a
-              key={doc.id}
-              href={doc.document_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between rounded-md border border-border/40 bg-background px-2.5 py-2 text-xs hover:border-primary/40"
-            >
-              <span className="truncate flex items-center gap-1.5">
-                <Link2 className="h-3 w-3 text-primary" />
-                {doc.document_url}
-              </span>
-              <Badge variant="outline" className="text-[10px] shrink-0">
-                {doc.verified ? (isAr ? "تم التحقق" : "Verified") : (isAr ? "بانتظار التحقق" : "Pending")}
-              </Badge>
-            </a>
-          ))}
+          {documents.map((doc) => {
+            // P2.4 — defense-in-depth: sanitize at render. The insert path
+            // already Zod-validates the URL, but a legacy row or an API
+            // path we haven't audited yet might leak a bad protocol.
+            // Render unsafe URLs as plain text (no href) instead of a
+            // clickable link, so a javascript:/data: payload can't execute.
+            const safeHref = sanitizeDriveHref(doc.document_url);
+            const commonInner = (
+              <>
+                <span className="truncate flex items-center gap-1.5">
+                  <Link2 className="h-3 w-3 text-primary" />
+                  {doc.document_url}
+                </span>
+                <Badge variant="outline" className="text-[10px] shrink-0">
+                  {doc.verified ? (isAr ? "تم التحقق" : "Verified") : (isAr ? "بانتظار التحقق" : "Pending")}
+                </Badge>
+              </>
+            );
+            return safeHref ? (
+              <a
+                key={doc.id}
+                href={safeHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between rounded-md border border-border/40 bg-background px-2.5 py-2 text-xs hover:border-primary/40"
+              >
+                {commonInner}
+              </a>
+            ) : (
+              <div
+                key={doc.id}
+                className="flex items-center justify-between rounded-md border border-destructive/30 bg-destructive/5 px-2.5 py-2 text-xs"
+                title={isAr ? "رابط غير آمن — تم تعطيل الفتح" : "Unsafe link — opening disabled"}
+              >
+                {commonInner}
+              </div>
+            );
+          })}
         </div>
       )}
 

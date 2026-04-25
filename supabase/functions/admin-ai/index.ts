@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit, clientIpFromRequest, rateLimited } from "../_shared/rate-limit.ts";
 
 const publicSiteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://cidoma.com";
 const allowedRootDomain = (Deno.env.get("ALLOWED_ROOT_DOMAIN") ?? "cidoma.com").toLowerCase();
@@ -47,27 +48,59 @@ serve(async (req) => {
     const userClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-    const { data: { user } } = await userClient.auth.getUser();
-    if (!user) {
+    const { data: { user }, error: userErr } = await userClient.auth.getUser();
+    if (userErr || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Verify admin role
+    // Verify admin role. Use the SECURITY DEFINER has_role() helper as the
+    // primary source of truth so the check matches what every RLS policy
+    // uses — that way admin-ai can't diverge from the rest of the app.
+    // Fall back to a direct user_roles lookup if the RPC is unavailable.
     const adminClient = createClient(supabaseUrl, serviceKey);
-    const { data: roleData } = await adminClient
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "admin")
-      .maybeSingle();
+    let isAdmin = false;
+    const { data: rpcData, error: rpcErr } = await adminClient.rpc("has_role", {
+      _user_id: user.id,
+      _role: "admin",
+    });
+    if (!rpcErr && rpcData === true) {
+      isAdmin = true;
+    } else {
+      if (rpcErr) console.error("admin-ai has_role rpc error, falling back", rpcErr);
+      const { data: roleData } = await adminClient
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      isAdmin = !!roleData;
+    }
 
-    if (!roleData) {
+    if (!isAdmin) {
       return new Response(JSON.stringify({ error: "Forbidden: admin only" }), {
         status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Rate-limit per admin user AND per IP. Admin chats are expensive
+    // (AI gateway). The per-user cap keeps a single compromised token
+    // from running a bill up, and the per-IP cap catches any abuse
+    // that slips past user-level.
+    const ip = clientIpFromRequest(req);
+    const userGate = await checkRateLimit(adminClient, {
+      key: `admin-ai:user:${user.id}`,
+      windowSeconds: 60,
+      maxHits: 30,
+    });
+    if (!userGate.allowed) return rateLimited(corsHeaders);
+    const ipGate = await checkRateLimit(adminClient, {
+      key: `admin-ai:ip:${ip}`,
+      windowSeconds: 60,
+      maxHits: 60,
+    });
+    if (!ipGate.allowed) return rateLimited(corsHeaders);
 
     const { messages, model: requestedModel } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");

@@ -1,5 +1,11 @@
 project_id = "ocizyrlruajynauipuwq"
 
+# Every edge function is pinned below. Supabase defaults to
+# verify_jwt = true when an entry is omitted, but pinning explicitly
+# documents intent and prevents accidental exposure when a new
+# function is added without reviewing this file.
+
+# ── Authenticated (require a valid Supabase JWT) ──────────────────
 [functions.admin-ai]
 verify_jwt = true
 
@@ -15,5 +21,76 @@ verify_jwt = true
 [functions.send-deal-notification]
 verify_jwt = true
 
+[functions.accept-nda]
+verify_jwt = true
+
+[functions.notify-interest]
+verify_jwt = true
+
+[functions.notify-new-opportunity]
+verify_jwt = true
+
+[functions.create-owner]
+verify_jwt = true
+
+[functions.deal-drive-automation]
+verify_jwt = true
+
+[functions.resolve-party-identity]
+verify_jwt = true
+
+[functions.generate-developer-report]
+verify_jwt = true
+
+[functions.transition-deal-phase]
+verify_jwt = true
+
+[functions.impersonate-user]
+verify_jwt = true
+
+[functions.invite-owner]
+verify_jwt = true
+
+[functions.send-platform-email]
+verify_jwt = true
+
+[functions.seo-generate]
+verify_jwt = true
+
+# ── Public / webhook / cron (no JWT expected) ─────────────────────
+# impersonate-exchange is called from an impersonation tab that has no
+# session yet (that's exactly what it's fetching). Security relies on
+# single-use atomic consume, 60s TTL, and UUID unguessability — see
+# supabase/functions/impersonate-exchange/index.ts.
+[functions.impersonate-exchange]
+verify_jwt = false
+
 [functions.register-developer]
+verify_jwt = false
+
+[functions.send-contact]
+verify_jwt = false
+
+[functions.seo-robots]
+verify_jwt = false
+
+[functions.seo-sitemap]
+verify_jwt = false
+
+[functions.indexnow-submit]
+verify_jwt = false
+
+# check-report-deadlines is a scheduled job invoked with its own
+# CRON_SECRET (see function implementation). Disabling JWT verification
+# here lets the cron scheduler call it; the function enforces
+# authorization internally via the Bearer secret.
+[functions.check-report-deadlines]
+verify_jwt = false
+
+# email-retry-cron sweeps stuck email_log rows (status in 'queued' or
+# 'failed' with attempts < max_attempts and next_retry_at <= now()) and
+# re-invokes send-platform-email. Same auth model as above: CRON_SECRET
+# via Authorization: Bearer or x-cron-secret header, or admin JWT for
+# manual triggers.
+[functions.email-retry-cron]
 verify_jwt = false

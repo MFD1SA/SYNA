@@ -5,11 +5,14 @@ import { listSeoTemplates, updateSeoTemplate } from "@/services/seo/templates.se
 import type { SeoTemplate } from "@/types/seo";
 import { pageTypeLabels, contentModeLabels } from "@/types/seo";
 import { Save, FileCog } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { logAudit } from "@/lib/auditLog";
 
 const AdminSeoTemplates: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const [templates, setTemplates] = useState<SeoTemplate[]>([]);
   const [selected, setSelected] = useState<SeoTemplate | null>(null);
@@ -57,6 +60,13 @@ const AdminSeoTemplates: React.FC = () => {
       });
       setSelected(saved);
       setDirty(false);
+      if (user) {
+        await logAudit(user.id, user.email, "update", "seo_template", saved.id, {
+          name: saved.name,
+          page_type: saved.page_type,
+          is_active: saved.is_active,
+        });
+      }
       toast({ title: isAr ? "تم الحفظ" : "Saved" });
       await load();
     } catch (err: unknown) {

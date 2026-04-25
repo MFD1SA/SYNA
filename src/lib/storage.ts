@@ -17,7 +17,21 @@ import { supabase } from "@/integrations/supabase/client";
 export type PrivateBucket = "land-documents";
 export type PublicBucket = "land-images";
 
-const SIGNED_URL_TTL_SECONDS = 3600; // 1 hour
+/**
+ * P2.2 — Signed URL lifetime for PRIVATE bucket assets (title deeds,
+ * krokis, additional legal docs). Previously 1h — anyone who screen-
+ * grabbed or forwarded the URL had sixty full minutes of access
+ * against a document the owner had just uploaded. Tightened to 5 min,
+ * which is still long enough for a human to click Download, but
+ * short enough that a casually-shared URL is dead by the time a
+ * non-authorized recipient tries it.
+ *
+ * UI call sites that display the URL inside an <img src=...> or a
+ * long-lived preview must re-sign before the TTL expires. All current
+ * call sites (openPrivateFile → window.open) are immediate-use, so
+ * the tighter TTL is safe.
+ */
+const SIGNED_URL_TTL_SECONDS = 300; // 5 min
 
 const extFromName = (name: string) => {
   const dot = name.lastIndexOf(".");

@@ -7,9 +7,37 @@ import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, History, Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, History, Filter, ChevronLeft, ChevronRight, Download, FileJson, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+
+// Hard cap how many rows a single export can pull. Larger exports should
+// go through a proper reporting pipeline, not the browser. This keeps us
+// well under supabase-js default row limit and avoids frozen tabs.
+const EXPORT_MAX_ROWS = 5000;
+
+/**
+ * Escape a value for CSV. Wraps in quotes if it contains comma, quote,
+ * newline, or CR; doubles embedded quotes per RFC 4180.
+ */
+const csvEscape = (v: unknown): string => {
+  if (v === null || v === undefined) return "";
+  const s = typeof v === "string" ? v : typeof v === "object" ? JSON.stringify(v) : String(v);
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+};
+
+const triggerBrowserDownload = (filename: string, blob: Blob) => {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  // Give the browser a tick to start the download before revoking.
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
 
 const actionColors: Record<string, string> = {
   create: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
@@ -46,6 +74,7 @@ const sanitizeFilterInput = (input: string): string =>
 
 const AdminAuditLog: React.FC = () => {
   const { lang } = useLanguage();
+  const { toast } = useToast();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "سجل العمليات" : "Audit Log");
 
@@ -56,6 +85,7 @@ const AdminAuditLog: React.FC = () => {
   const [actionFilter, setActionFilter] = useState("all");
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [exporting, setExporting] = useState<null | "csv" | "json">(null);
 
   const fetchLogs = useCallback(async () => {
     setLoading(true);
@@ -79,6 +109,91 @@ const AdminAuditLog: React.FC = () => {
   }, [page, entityFilter, actionFilter, search]);
 
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
+
+  /**
+   * P1.8 — Export the CURRENT filter set (not the on-screen page).
+   * Runs the same query builder as fetchLogs but pulls up to
+   * EXPORT_MAX_ROWS in one shot, then writes a file client-side.
+   *
+   * Security note: audit_logs RLS already restricts SELECT to admins,
+   * so there's no privilege-escalation surface here — we just reuse
+   * whatever rows supabase-js is willing to return to this session.
+   */
+  const runExport = useCallback(async (fmt: "csv" | "json") => {
+    setExporting(fmt);
+    try {
+      let query = supabase
+        .from("audit_logs")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(EXPORT_MAX_ROWS);
+
+      if (entityFilter !== "all") query = query.eq("entity_type", entityFilter);
+      if (actionFilter !== "all") query = query.eq("action", actionFilter);
+      if (search) {
+        const safe = sanitizeFilterInput(search);
+        query = query.or(`user_email.ilike.%${safe}%,entity_id.ilike.%${safe}%`);
+      }
+
+      const { data, error } = await query;
+      if (error) {
+        toast({ variant: "destructive", title: isAr ? "فشل التصدير" : "Export failed", description: error.message });
+        return;
+      }
+      const rows = data || [];
+      if (rows.length === 0) {
+        toast({ title: isAr ? "لا توجد سجلات للتصدير" : "No logs to export" });
+        return;
+      }
+
+      const stamp = format(new Date(), "yyyy-MM-dd_HHmm");
+      if (fmt === "json") {
+        const blob = new Blob([JSON.stringify(rows, null, 2)], {
+          type: "application/json;charset=utf-8",
+        });
+        triggerBrowserDownload(`audit_logs_${stamp}.json`, blob);
+      } else {
+        // CSV header follows the audit_logs column order most admins expect.
+        const headers = [
+          "created_at",
+          "user_email",
+          "user_id",
+          "action",
+          "entity_type",
+          "entity_id",
+          "details",
+        ];
+        const lines = [headers.join(",")];
+        for (const row of rows) {
+          lines.push([
+            csvEscape(row.created_at),
+            csvEscape(row.user_email),
+            csvEscape(row.user_id),
+            csvEscape(row.action),
+            csvEscape(row.entity_type),
+            csvEscape(row.entity_id),
+            csvEscape(row.details),
+          ].join(","));
+        }
+        // Prepend UTF-8 BOM so Excel opens Arabic correctly.
+        const blob = new Blob(["\uFEFF" + lines.join("\r\n")], {
+          type: "text/csv;charset=utf-8",
+        });
+        triggerBrowserDownload(`audit_logs_${stamp}.csv`, blob);
+      }
+
+      toast({
+        title: isAr ? "تم التصدير" : "Export complete",
+        description: isAr
+          ? `تم تصدير ${rows.length} سجل${rows.length >= EXPORT_MAX_ROWS ? " (تم بلوغ الحد الأقصى)" : ""}.`
+          : `Exported ${rows.length} rows${rows.length >= EXPORT_MAX_ROWS ? " (max cap reached)" : ""}.`,
+      });
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "فشل التصدير" : "Export failed", description: err.message });
+    } finally {
+      setExporting(null);
+    }
+  }, [entityFilter, actionFilter, search, toast, isAr]);
 
   return (
     <AdminLayout>
@@ -120,6 +235,32 @@ const AdminAuditLog: React.FC = () => {
             ))}
           </SelectContent>
         </Select>
+
+        {/* P1.8 — export buttons. Both respect the current filters. */}
+        <div className="ms-auto flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1.5"
+            disabled={exporting !== null}
+            onClick={() => runExport("csv")}
+            title={isAr ? "تصدير النتائج الحالية CSV" : "Export current filters as CSV"}
+          >
+            {exporting === "csv" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+            CSV
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1.5"
+            disabled={exporting !== null}
+            onClick={() => runExport("json")}
+            title={isAr ? "تصدير النتائج الحالية JSON" : "Export current filters as JSON"}
+          >
+            {exporting === "json" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileJson className="h-3.5 w-3.5" />}
+            JSON
+          </Button>
+        </div>
       </div>
 
       {/* Table */}

@@ -1,8 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit, clientIpFromRequest, rateLimited } from "../_shared/rate-limit.ts";
 
 const publicSiteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://cidoma.com";
 const allowedRootDomain = (Deno.env.get("ALLOWED_ROOT_DOMAIN") ?? "cidoma.com").toLowerCase();
+
+// Rate limit: a fresh radius call hits Overpass + Lovable AI, both of which
+// cost real money. The 24-hour cache makes the typical loop cheap, but
+// `force_refresh=true` bypasses it — so a malicious client could churn
+// through OpenAI/Overpass budget with a simple loop. Cap at 20 fresh calls
+// per user per hour (+ an IP fallback for anonymous race conditions).
+const RADIUS_MAX_PER_HOUR_PER_USER = 20;
+const RADIUS_MAX_PER_HOUR_PER_IP = 40;
 
 const isAllowedOrigin = (origin: string | null) => {
   if (!origin) return false;
@@ -64,6 +73,27 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Per-user rate limit: counts every request regardless of cache hit,
+    // because the cost we want to bound is client chatter, not network I/O.
+    // The helper fails open if the RPC errors — a broken rate-limit table
+    // must never take down a legitimate lookup.
+    const userGate = await checkRateLimit(supabase, {
+      key: `radius900:user:${user.id}`,
+      windowSeconds: 3600,
+      maxHits: RADIUS_MAX_PER_HOUR_PER_USER,
+    });
+    if (!userGate.allowed) return rateLimited(corsHeaders, 3600);
+
+    // Secondary IP gate catches the case where many accounts on the same
+    // machine amplify each other (credential-stuffing flavour). Cheap to
+    // run — same Postgres function, different key.
+    const ipGate = await checkRateLimit(supabase, {
+      key: `radius900:ip:${clientIpFromRequest(req)}`,
+      windowSeconds: 3600,
+      maxHits: RADIUS_MAX_PER_HOUR_PER_IP,
+    });
+    if (!ipGate.allowed) return rateLimited(corsHeaders, 3600);
 
     // Check cache (24h)
     if (!force_refresh) {

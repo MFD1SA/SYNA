@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Camera, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { buildSafeStoragePath, SAFE_IMAGE_MIMES, UnsafeFileTypeError } from "@/lib/storageSafe";
 
 interface AvatarUploadProps {
   /** Current image URL */
@@ -39,17 +40,30 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) return; // 5MB max
+    if (file.size > 5 * 1024 * 1024) {
+      // 5MB max. Bail before touching storage.
+      e.target.value = "";
+      return;
+    }
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop() || "jpg";
-      const filename = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      // P2.1 — MIME validation + extension derived from the validated MIME
+      // (never from file.name). Blocks double-extension tricks and
+      // filenames without a dot. Throws UnsafeFileTypeError on mismatch,
+      // which we surface to the console — the <input accept=...> attribute
+      // already gave the user a filtered picker, so a hit here means
+      // someone deliberately bypassed the picker.
+      const filename = buildSafeStoragePath(folder, file, SAFE_IMAGE_MIMES);
       const { error } = await supabase.storage.from("site-assets").upload(filename, file, { upsert: true, contentType: file.type });
       if (error) throw error;
       const { data } = supabase.storage.from("site-assets").getPublicUrl(filename);
       onUpload(data.publicUrl);
     } catch (err) {
-      console.error("Upload error:", err);
+      if (err instanceof UnsafeFileTypeError) {
+        console.warn("Rejected upload:", err.message);
+      } else {
+        console.error("Upload error:", err);
+      }
     }
     setUploading(false);
     e.target.value = "";

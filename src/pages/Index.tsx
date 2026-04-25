@@ -19,7 +19,23 @@ import { MapPin, Ruler, ArrowUpRight, ArrowLeft, ArrowRight as ArrowRightIcon, H
 const OffersPreview: React.FC<{ isAr: boolean }> = ({ isAr }) => {
   const [offers, setOffers] = useState<any[]>([]);
   useEffect(() => {
-    getActiveOffers().then((data) => setOffers(data.slice(0, 3))).catch(console.error);
+    let cancelled = false;
+    // On the landing page we deliberately don't surface a toast for this
+    // failure — the rest of the page still paints and a partial hero with
+    // missing "Latest Offers" is a softer degradation than a modal error
+    // on first paint. We do log with a tagged prefix so the failure is
+    // still greppable in Sentry / browser devtools instead of silently
+    // swallowed.
+    getActiveOffers()
+      .then((data) => {
+        if (cancelled) return;
+        setOffers(data.slice(0, 3));
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Index.OffersPreview getActiveOffers error:", err);
+      });
+    return () => { cancelled = true; };
   }, []);
   return (
     <section className="py-16 bg-gray-50/50">

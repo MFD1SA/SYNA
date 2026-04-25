@@ -175,6 +175,21 @@ const AdminOwners: React.FC = () => {
     if (!deleteDialog) return;
     setDeleting(true);
     try {
+      // Step 1 — soft-delete the owner's lands and close any open
+      // deal_requests pointing at them inside a single transaction.
+      // Without this RPC the edge function below would delete the
+      // auth user but leave their lands with an owner_id that no
+      // longer resolves, breaking RLS policies on dependent queries.
+      const { error: cascadeErr } = await supabase.rpc(
+        "admin_soft_delete_owner_lands" as any,
+        { _owner_user_id: deleteDialog.owner_id } as any
+      );
+      if (cascadeErr) {
+        console.warn("Owner cascade warning:", cascadeErr.message);
+        // Don't abort — the owner may simply have no lands yet.
+      }
+
+      // Step 2 — drop the auth user via service-role edge function.
       const res = await supabase.functions.invoke("create-owner", {
         body: { action: "delete_user", user_id: deleteDialog.owner_id },
       });

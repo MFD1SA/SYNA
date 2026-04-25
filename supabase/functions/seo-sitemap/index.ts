@@ -79,12 +79,20 @@ Deno.serve(async (_req) => {
     .order("sort_order", { ascending: true })
     .limit(5000);
 
-  // Fetch published + owner-approved opportunities (lands)
+  // Fetch published + owner-approved + FEATURED opportunities (lands).
+  //
+  // Why the `is_featured=true` filter: OpportunityDetail only renders rows
+  // that are featured (`.eq("is_featured", true)`). Without this filter the
+  // sitemap advertises URLs that the page will render as "not available",
+  // which Google treats as a soft-404 and drags down the rest of the
+  // domain's crawl-budget / ranking. Featured is the gate between
+  // "listed internally" and "indexable for the open web".
   const { data: lands } = await client
     .from("lands")
     .select("id, updated_at")
     .eq("is_active", true)
     .eq("owner_approved", true)
+    .eq("is_featured", true)
     .order("updated_at", { ascending: false })
     .limit(5000);
 

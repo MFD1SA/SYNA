@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Link } from "react-router-dom";
@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import logoImg from "@/assets/logo.png";
 import CommissionAgreementModal from "@/components/agreements/CommissionAgreementModal";
+import { buildSafeStoragePath, SAFE_IMAGE_MIMES, UnsafeFileTypeError } from "@/lib/storageSafe";
 
 interface RegForm {
   company_name: string;
@@ -48,6 +49,10 @@ const Register: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showAgreement, setShowAgreement] = useState(false);
   const [registered, setRegistered] = useState(false);
+  // Ref-based re-entry guard: state updates are async, so two fast clicks
+  // can both slip through the `loading` check before React commits. The
+  // ref is synchronous and blocks the second call immediately.
+  const submittingRef = useRef(false);
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
 
@@ -71,8 +76,23 @@ const Register: React.FC = () => {
     }
     setUploadingLogo(true);
     try {
-      const ext = file.name.split(".").pop() || "png";
-      const path = `pending-registrations/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      // P2.1 — MIME-validated path; extension is derived from file.type,
+      // not file.name, so "evil.svg.jpg" can't smuggle an SVG.
+      let path: string;
+      try {
+        path = buildSafeStoragePath("pending-registrations", file, SAFE_IMAGE_MIMES);
+      } catch (err) {
+        if (err instanceof UnsafeFileTypeError) {
+          toast({
+            variant: "destructive",
+            title: isAr ? "نوع ملف غير مدعوم" : "Unsupported file type",
+            description: isAr ? "JPG, PNG أو WebP فقط" : "JPG, PNG or WebP only",
+          });
+          setUploadingLogo(false);
+          return;
+        }
+        throw err;
+      }
       const { error } = await supabase.storage.from("developer-logos").upload(path, file, {
         cacheControl: "3600",
         upsert: false,
@@ -172,6 +192,9 @@ const Register: React.FC = () => {
   };
 
   const handleAcceptAgreement = async () => {
+    // Idempotency guard — block re-entry even before setLoading commits.
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setShowAgreement(false);
     setLoading(true);
     try {
@@ -226,8 +249,10 @@ const Register: React.FC = () => {
         title: isAr ? "خطأ في التسجيل" : "Registration Error",
         description: err.message,
       });
+    } finally {
+      setLoading(false);
+      submittingRef.current = false;
     }
-    setLoading(false);
   };
 
   const handleDeclineAgreement = () => {

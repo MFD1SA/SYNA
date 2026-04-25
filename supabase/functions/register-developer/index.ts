@@ -292,6 +292,14 @@ Deno.serve(async (req) => {
 
     if (devError) {
       await adminClient.auth.admin.deleteUser(userId);
+      // 23505 = unique_violation; surfaces if a parallel request
+      // somehow raced past the auth uniqueness check (e.g. admin
+      // already pre-created a developer row for this user_id).
+      // The `developers_user_id_uniq` constraint closes that hole;
+      // we translate the error so the user sees something actionable.
+      if ((devError as any).code === "23505") {
+        throw new Error("This email is already registered");
+      }
       throw new Error("Failed to create developer profile");
     }
 

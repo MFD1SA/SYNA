@@ -31,12 +31,12 @@ export const isImpersonationSession = (): boolean => {
   return sessionStorage.getItem(IMPERSONATION_FLAG) === "true";
 };
 
-/** Get the correct Supabase client for this tab */
-export const getActiveClient = () => {
-  if (isImpersonationSession()) {
-    return impersonateClient;
-  }
-  // Dynamic import to avoid circular deps
-  const { supabase } = require("./client");
-  return supabase;
-};
+// NOTE: A previous `getActiveClient()` helper that branched between
+// impersonateClient and the normal supabase client used CommonJS `require()`
+// at runtime — that would throw `ReferenceError: require is not defined` in
+// the Vite browser bundle. It had zero callers (verified via grep across src/),
+// so it has been removed rather than rewritten. Tab isolation for
+// impersonation is handled inside src/integrations/supabase/client.ts
+// (the `isImpersonationTab` check at module load) — consumers should import
+// `supabase` from there as usual; impersonation tabs get their own
+// sessionStorage-scoped client automatically.

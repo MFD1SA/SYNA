@@ -33,14 +33,21 @@
     <!-- Canonical (default — per-page hooks may override via useMetaTags) -->
     <link rel="canonical" href="https://cidoma.com/" />
 
-    <!-- Hreflang defaults (Arabic is the primary locale) -->
+    <!-- Hreflang defaults (Arabic is the primary locale).
+         NOTE: /en prefix routes are not implemented yet — the app router
+         has no /en/* handlers, so every /en/* URL would fall through to
+         NotFound. The English alternate is removed until routing lands.
+         Re-enable these entries the same day /en/* gets its route table. -->
     <link rel="alternate" hreflang="ar" href="https://cidoma.com/" />
-    <link rel="alternate" hreflang="en" href="https://cidoma.com/en" />
     <link rel="alternate" hreflang="x-default" href="https://cidoma.com/" />
 
     <!-- Search Console verification: Google uses file-based verification
-         (/google78ccfc58b8ce98c5.html in public/). Bing pending. -->
-    <meta name="msvalidate.01" content="REPLACE_WITH_BING_VERIFICATION_TOKEN" />
+         (/google78ccfc58b8ce98c5.html in public/). Bing verification is
+         not configured yet — the tag is removed (instead of shipping a
+         placeholder) so bots don't trip on an invalid token. Re-add with
+         the real token from Bing Webmaster Tools when ready. -->
+    <!-- <meta name="msvalidate.01" content="..." /> -->
+
 
     <!-- Performance hints for the fonts + Supabase origin used on first paint -->
     <link rel="preconnect" href="https://nqbobxtlwzvtzxqcdfdo.supabase.co" crossorigin />

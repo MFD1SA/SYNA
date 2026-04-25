@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link, Navigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, ShieldCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth, notifyLocalAuthChange } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import logoImg from "@/assets/logo.png";
 
@@ -24,6 +24,20 @@ const AdminLogin: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [loginSuccess, setLoginSuccess] = useState(false);
+  // Hard re-entry guard — identical pattern to /auth/login.
+  const submittingRef = useRef(false);
+  // Redirect timer id so unmount can cancel; previously a pending
+  // setTimeout would navigate even after the user clicked "Home".
+  const redirectTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current !== null) {
+        window.clearTimeout(redirectTimerRef.current);
+        redirectTimerRef.current = null;
+      }
+    };
+  }, []);
 
   if (!authLoading && !roleLoading && user && isAdmin) {
     return <Navigate to="/admincp/overview" replace />;
@@ -77,31 +91,38 @@ const AdminLogin: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setLoading(true);
-    // Tell AuthContext that we're initiating a local auth change — this
-    // prevents the cross-tab protection from blocking the new session
-    // if localStorage has a stale session from a different user.
-    notifyLocalAuthChange();
-    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-    if (error) {
-      toast({ variant: "destructive", title: isAr ? "فشل التحقق" : "Auth Failure", description: isAr ? "البريد الإلكتروني أو كلمة المرور غير صحيحة" : "Incorrect email or password" });
-      setLoading(false);
-      return;
-    }
-    if (data.user) {
-      const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id).eq("role", "admin").maybeSingle();
-      if (!roleData) {
-        await supabase.auth.signOut();
-        toast({ variant: "destructive", title: isAr ? "غير مصرح" : "Unauthorized", description: isAr ? "هذه البوابة مخصصة للمسؤولين فقط" : "This portal is for administrators only" });
-        setLoading(false);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (error) {
+        toast({ variant: "destructive", title: isAr ? "فشل التحقق" : "Auth Failure", description: isAr ? "البريد الإلكتروني أو كلمة المرور غير صحيحة" : "Incorrect email or password" });
         return;
       }
-      setLoginSuccess(true);
-      setTimeout(() => {
-        navigate("/admincp/overview");
-      }, 3000);
+      if (data.user) {
+        const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id).eq("role", "admin").maybeSingle();
+        if (!roleData) {
+          await supabase.auth.signOut();
+          toast({ variant: "destructive", title: isAr ? "غير مصرح" : "Unauthorized", description: isAr ? "هذه البوابة مخصصة للمسؤولين فقط" : "This portal is for administrators only" });
+          return;
+        }
+        // Success animation + redirect. Previous code used a flat 3s
+        // delay (a) with no way to cancel on unmount, and (b) long
+        // enough that users clicked "Home" only to be yanked back to
+        // the admin panel 3 seconds later. Cut to 900ms — enough to
+        // show the success card animate in, short enough that the
+        // user doesn't have time to navigate away.
+        setLoginSuccess(true);
+        redirectTimerRef.current = window.setTimeout(() => {
+          redirectTimerRef.current = null;
+          navigate("/admincp/overview", { replace: true });
+        }, 900);
+      }
+    } finally {
+      setLoading(false);
+      submittingRef.current = false;
     }
-    setLoading(false);
   };
 
   return (

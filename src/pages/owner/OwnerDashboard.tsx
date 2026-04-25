@@ -110,7 +110,7 @@ const OwnerDashboard: React.FC = () => {
     if (!user) return;
     const fetchData = async () => {
       const { data: profile } = await supabase.from("profiles").select("full_name").eq("user_id", user.id).maybeSingle();
-      const { data: landsData } = await supabase.from("lands").select("*").eq("owner_id", user.id).order("created_at", { ascending: false });
+      const { data: landsData } = await supabase.from("lands").select("*").eq("owner_id", user.id).is("deleted_at", null).order("created_at", { ascending: false });
 
       const profileName = profile?.full_name;
       const landOwnerName = landsData?.[0]?.owner_name;
@@ -215,7 +215,11 @@ const OwnerDashboard: React.FC = () => {
         await logAudit(user?.id || "", user?.email, "owner_approve_request", "deal_request", a.request_id, {
           developer_name: a.developer_name, developer_id: a.developer_id, land_city: landCity, land_district: landDistrict, approved_by: "owner",
         });
-      } catch {}
+      } catch (e) {
+        // Audit-log failures must not revert the approval (the DB
+        // transition already committed) — but we do want a trace.
+        console.error("Audit log failed:", e);
+      }
       toast({ title: isAr ? "تمت الموافقة المبدئية" : "Preliminary approval granted" });
 
       try {

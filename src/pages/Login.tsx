@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, Building2, Crown, ShieldCheck, MapPin, FileCheck, BarChart3, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { notifyLocalAuthChange } from "@/contexts/AuthContext";
 import logoImg from "@/assets/logo.png";
 
 const LoginPage: React.FC = () => {
@@ -21,6 +20,11 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const navigate = useNavigate();
+  // Hard re-entry guard: React state updates are async, so a double-click
+  // can pass the `loading` check twice before the re-render. A ref flips
+  // synchronously and blocks the second call.
+  const submittingRef = useRef(false);
 
   const validate = (): boolean => {
     const e: typeof errors = {};
@@ -39,40 +43,52 @@ const LoginPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setLoading(true);
-    notifyLocalAuthChange();
-    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-    if (error) {
-      toast({ variant: "destructive", title: isAr ? "خطأ في تسجيل الدخول" : "Login Failed", description: isAr ? "البريد الإلكتروني أو كلمة المرور غير صحيحة" : "Incorrect email or password" });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (error) {
+        toast({ variant: "destructive", title: isAr ? "خطأ في تسجيل الدخول" : "Login Failed", description: isAr ? "البريد الإلكتروني أو كلمة المرور غير صحيحة" : "Incorrect email or password" });
+        return;
+      }
+      if (data.user) {
+        const [devRes, rolesRes] = await Promise.all([
+          supabase.from("developers").select("id").eq("user_id", data.user.id).maybeSingle(),
+          supabase.from("user_roles").select("role").eq("user_id", data.user.id),
+        ]);
+        const isDev = !!devRes.data;
+        const roles = (rolesRes.data || []).map((r: any) => r.role);
+        const isOwner = roles.includes("owner");
+        const isAdmin = roles.includes("admin");
+
+        if (isAdmin && !isDev && !isOwner) {
+          await supabase.auth.signOut();
+          toast({ variant: "destructive", title: isAr ? "غير مصرح" : "Unauthorized", description: isAr ? "هذه البوابة مخصصة للمطورين والملاك فقط" : "This portal is for developers and owners only" });
+          return;
+        }
+
+        if (!isDev && !isOwner) {
+          await supabase.auth.signOut();
+          toast({ variant: "destructive", title: isAr ? "غير مصرح" : "Unauthorized", description: isAr ? "لا يوجد لديك صلاحية للدخول" : "You do not have access" });
+          return;
+        }
+
+        toast({ title: isAr ? "تم تسجيل الدخول" : "Signed in successfully" });
+        // Navigate explicitly so the user doesn't see a ~1s lag while
+        // PublicOnlyRoute re-evaluates. Role precedence matches
+        // useUserType: developer > owner (a hybrid account lands on
+        // the CRM dashboard, never flickers between two shells).
+        if (isDev) {
+          navigate("/crm/dashboard", { replace: true });
+        } else {
+          navigate("/owner/dashboard", { replace: true });
+        }
+      }
+    } finally {
       setLoading(false);
-      return;
+      submittingRef.current = false;
     }
-    if (data.user) {
-      const [devRes, rolesRes] = await Promise.all([
-        supabase.from("developers").select("id").eq("user_id", data.user.id).maybeSingle(),
-        supabase.from("user_roles").select("role").eq("user_id", data.user.id),
-      ]);
-      const isDev = !!devRes.data;
-      const roles = (rolesRes.data || []).map((r: any) => r.role);
-      const isOwner = roles.includes("owner");
-      const isAdmin = roles.includes("admin");
-
-      if (isAdmin && !isDev && !isOwner) {
-        await supabase.auth.signOut();
-        toast({ variant: "destructive", title: isAr ? "غير مصرح" : "Unauthorized", description: isAr ? "هذه البوابة مخصصة للمطورين والملاك فقط" : "This portal is for developers and owners only" });
-        setLoading(false);
-        return;
-      }
-
-      if (!isDev && !isOwner) {
-        await supabase.auth.signOut();
-        toast({ variant: "destructive", title: isAr ? "غير مصرح" : "Unauthorized", description: isAr ? "لا يوجد لديك صلاحية للدخول" : "You do not have access" });
-        setLoading(false);
-        return;
-      }
-      toast({ title: isAr ? "تم تسجيل الدخول" : "Signed in successfully" });
-    }
-    setLoading(false);
   };
 
   const ownerFeatures = isAr

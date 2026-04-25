@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { transitionDealPhase } from "./dealPhase.service";
+import { safeSendPlatformEmail } from "./emailDispatch.service";
 
 /* ── Types ── */
 
@@ -90,15 +91,18 @@ export async function closeDealWon(params: {
     const result = await transitionDealPhase(params.requestId, "closed_won" as any);
     if (!result.success) console.warn("Phase transition note:", result.error);
 
-    // Send notification
-    try {
-      await supabase.functions.invoke("send-platform-email", {
-        body: {
-          event_type: "deal_closed_won",
-          deal_request_id: params.requestId,
-        },
-      });
-    } catch (e) { console.warn("Email notification failed:", e); }
+    // Send notification — safeSendPlatformEmail never throws; on failure
+    // it enqueues a retry row via RPC so the email-retry cron picks it up.
+    const emailRes = await safeSendPlatformEmail({
+      eventType: "deal_closed_won",
+      dealRequestId: params.requestId,
+    });
+    if (!emailRes.sent && !emailRes.queued) {
+      console.warn(
+        "[dealClosing.closeDealWon] email neither sent nor queued:",
+        emailRes.error,
+      );
+    }
 
     return { success: true, closing: closing as unknown as DealClosing };
   } catch (err: any) {
@@ -135,15 +139,17 @@ export async function closeDealLost(params: {
     );
     if (!result.success) console.warn("Phase transition note:", result.error);
 
-    // Send notification
-    try {
-      await supabase.functions.invoke("send-platform-email", {
-        body: {
-          event_type: "deal_closed_lost",
-          deal_request_id: params.requestId,
-        },
-      });
-    } catch (e) { console.warn("Email notification failed:", e); }
+    // Send notification via safe wrapper — queues retry on failure.
+    const emailRes = await safeSendPlatformEmail({
+      eventType: "deal_closed_lost",
+      dealRequestId: params.requestId,
+    });
+    if (!emailRes.sent && !emailRes.queued) {
+      console.warn(
+        "[dealClosing.closeDealLost] email neither sent nor queued:",
+        emailRes.error,
+      );
+    }
 
     return { success: true };
   } catch (err: any) {

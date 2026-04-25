@@ -4,7 +4,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Users, Landmark, Handshake, HardHat, FileText, CheckCircle2, ArrowUpRight, Clock, Activity, BookOpen, ArrowRight, TrendingUp } from "lucide-react";
+import PageHeader from "@/components/dashboard/PageHeader";
+import { Users, Landmark, Handshake, HardHat, FileText, CheckCircle2, ArrowUpRight, Clock, Activity, BookOpen, ArrowRight, TrendingUp, LayoutDashboard } from "lucide-react";
 import AdminAnalyticsCharts from "@/components/admin/AdminAnalyticsCharts";
 import { Link } from "react-router-dom";
 
@@ -138,13 +139,17 @@ const AdminOverview: React.FC = () => {
   return (
     <AdminLayout>
       <div dir={isAr ? "rtl" : "ltr"}>
-        {/* Greeting */}
-        <div className="mb-8">
-          <h1 className="text-[24px] font-bold text-[#1E374B] tracking-tight">{greeting}</h1>
-          <p className="mt-1.5 text-[13px] text-gray-400 font-medium">
-            {isAr ? "نظرة شاملة على المنصة والأداء" : "Platform overview and performance metrics"}
-          </p>
-        </div>
+        <PageHeader
+          variant="admin"
+          icon={LayoutDashboard}
+          eyebrowAr="لوحة الإدارة · نظرة عامة"
+          eyebrowEn="Admin · Overview"
+          titleAr={greeting}
+          titleEn={greeting}
+          descAr="نظرة شاملة على أداء المنصة وحالة الفرص والصفقات في الوقت الفعلي."
+          descEn="A real-time view of platform performance, opportunities and deal flow."
+        />
+
 
         {loading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

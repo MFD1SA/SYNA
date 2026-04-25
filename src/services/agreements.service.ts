@@ -60,3 +60,44 @@ export async function getAgreementByUserId(userId: string): Promise<DeveloperAgr
   }
   return data as DeveloperAgreement | null;
 }
+
+/**
+ * Batch version of getAgreementByUserId — one round trip for N users.
+ * Returns a map of user_id → latest commission_agreement row.
+ *
+ * This replaces the admin-panel N+1 pattern of calling
+ * `getAgreementByUserId` in a Promise.all over every developer
+ * (100 developers → 100 queries, 2-5s TTFB on cold caches).
+ * One IN-query + client-side dedup to the latest row per user = O(1)
+ * round trips regardless of developer count.
+ */
+export async function getAgreementsByUserIds(
+  userIds: string[],
+): Promise<Record<string, DeveloperAgreement>> {
+  if (userIds.length === 0) return {};
+
+  // Dedup — accidental duplicates in the input shouldn't blow up the query.
+  const uniqueIds = Array.from(new Set(userIds));
+
+  const { data, error } = await supabase
+    .from("developer_agreements")
+    .select("*")
+    .in("user_id", uniqueIds)
+    .eq("agreement_type", "commission_agreement")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error batch-fetching agreements:", error);
+    return {};
+  }
+
+  // Keep only the latest row per user_id. Rows arrive in created_at DESC
+  // order, so the first row we see for a given user_id is the newest.
+  const map: Record<string, DeveloperAgreement> = {};
+  for (const row of (data || []) as DeveloperAgreement[]) {
+    if (!map[row.user_id]) {
+      map[row.user_id] = row;
+    }
+  }
+  return map;
+}

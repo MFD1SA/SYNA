@@ -180,7 +180,14 @@ export async function createReport(params: {
   }
 }
 
-/** Submit an approval decision (owner/developer/admin) */
+/** Submit an approval decision (owner/developer/admin).
+ *
+ * All consensus logic (role resolution, upsert, status recompute)
+ * runs server-side inside the `submit_report_approval` RPC, which
+ * takes a row lock on the report so concurrent approvals from
+ * owner + developer can't race. The client is only responsible
+ * for calling `transition-deal-phase` afterwards using the phase
+ * the RPC recommends. */
 export async function submitApproval(params: {
   reportId: string;
   requestId: string;
@@ -188,122 +195,30 @@ export async function submitApproval(params: {
   notes?: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+    const { data, error: rpcErr } = await supabase.rpc(
+      "submit_report_approval" as any,
+      {
+        _report_id: params.reportId,
+        _decision: params.decision,
+        _notes: params.notes || "",
+      },
+    );
+    if (rpcErr) throw new Error(rpcErr.message);
 
-    // Check report is still approvable
-    const { data: report } = await supabase
-      .from("meeting_reports" as any)
-      .select("id, status, expires_at")
-      .eq("id", params.reportId)
-      .single();
+    // RPC returns TABLE(...); supabase-js gives us an array
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row) throw new Error("Failed to record approval");
 
-    if (!report) throw new Error("Report not found");
-    const r = report as any;
-    if (r.status === "fully_approved" || r.status === "rejected" || r.status === "expired") {
-      throw new Error("Report is no longer open for approval");
-    }
+    const actorRole = row.actor_role as "owner" | "developer" | "admin";
+    const nextPhase = row.next_phase as string | null;
 
-    // Check if expired
-    if (new Date(r.expires_at) < new Date()) {
-      throw new Error("Approval deadline has passed");
-    }
-
-    // Determine actor role
-    let actorRole: "owner" | "developer" | "admin" = "developer";
-
-    // Check admin
-    const { data: adminRows } = await supabase
-      .from("user_roles" as any)
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("role", "admin")
-      .limit(1);
-    if (adminRows && adminRows.length > 0) {
-      actorRole = "admin";
-    } else {
-      // Check if owner via deal_request → land
-      const { data: reqData } = await supabase
-        .from("deal_requests")
-        .select("land_id, developer_id")
-        .eq("id", params.requestId)
-        .single();
-      if (reqData) {
-        const { data: landData } = await supabase
-          .from("lands")
-          .select("owner_id")
-          .eq("id", reqData.land_id)
-          .eq("owner_id", user.id)
-          .maybeSingle();
-        if (landData) {
-          actorRole = "owner";
-        } else {
-          const { data: devData } = await supabase
-            .from("developers")
-            .select("id")
-            .eq("id", reqData.developer_id)
-            .eq("user_id", user.id)
-            .maybeSingle();
-          if (devData) {
-            actorRole = "developer";
-          }
-        }
-      }
-    }
-
-    // Upsert approval (unique per report + user)
-    const { error: upsertErr } = await supabase
-      .from("report_approvals" as any)
-      .upsert({
-        report_id: params.reportId,
-        user_id: user.id,
-        role: actorRole,
-        decision: params.decision,
-        notes: params.notes || null,
-        decided_at: new Date().toISOString(),
-      }, { onConflict: "report_id,user_id" });
-    if (upsertErr) throw new Error(upsertErr.message);
-
-    // Recompute report status based on all approvals
-    const { data: allApprovals } = await supabase
-      .from("report_approvals" as any)
-      .select("*")
-      .eq("report_id", params.reportId);
-
-    const approvals = (allApprovals || []) as unknown as ReportApproval[];
-    const hasReject = approvals.some(a => a.decision === "rejected");
-    const hasChanges = approvals.some(a => a.decision === "changes_requested");
-    const ownerApproved = approvals.some(a => a.role === "owner" && a.decision === "approved");
-    const devApproved = approvals.some(a => a.role === "developer" && a.decision === "approved");
-
-    let newStatus: ReportStatus;
-    let newPhase: string | null = null;
-
-    if (hasReject) {
-      newStatus = "rejected";
-      newPhase = "report_rejected";
-    } else if (hasChanges) {
-      newStatus = "changes_requested";
-      newPhase = "report_changes_requested";
-    } else if (ownerApproved && devApproved) {
-      newStatus = "fully_approved";
-      newPhase = "report_approved";
-    } else if (ownerApproved || devApproved) {
-      newStatus = "partially_approved";
-      // Phase stays at report_pending_approval
-    } else {
-      newStatus = "pending_approval";
-    }
-
-    // Update report status
-    await supabase
-      .from("meeting_reports" as any)
-      .update({ status: newStatus, updated_at: new Date().toISOString() })
-      .eq("id", params.reportId);
-
-    // Transition deal phase if needed
-    if (newPhase) {
-      const result = await transitionDealPhase(params.requestId, newPhase as any, params.notes);
+    // Transition deal phase if the RPC recommended one
+    if (nextPhase) {
+      const result = await transitionDealPhase(
+        params.requestId,
+        nextPhase as any,
+        params.notes,
+      );
       if (!result.success) console.warn("Phase transition note:", result.error);
     }
 

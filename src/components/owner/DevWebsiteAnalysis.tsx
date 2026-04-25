@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,10 +59,25 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
 
+  // Mounted flag — this component is rendered inside an expandable
+  // panel in OwnerDashboard. If the owner collapses the panel (or
+  // navigates away) before the fetch / edge-function call returns,
+  // the `.then(setUrl)` / `setResult(...)` would hit an unmounted
+  // component and React logs a warning. The flag short-circuits the
+  // set calls.
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+
   useEffect(() => {
     if (autoUrl || url) return;
     supabase.from("developers").select("website").eq("id", developerId).maybeSingle()
-      .then(({ data }) => { if (data?.website) setUrl(data.website); });
+      .then(({ data }) => {
+        if (!mountedRef.current) return;
+        if (data?.website) setUrl(data.website);
+      });
   }, [developerId, autoUrl, url]);
 
   const analyze = async () => {
@@ -78,12 +93,14 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
       });
       if (error) throw error;
       if (!data?.success) throw new Error(data?.error || "Analysis failed");
+      if (!mountedRef.current) return;
       setResult(data.result as AnalysisResult);
     } catch (e: unknown) {
+      if (!mountedRef.current) return;
       const msg = e instanceof Error ? e.message : String(e);
       toast({ variant: "destructive", title: isAr ? "خطأ في التحليل" : "Analysis Error", description: msg });
     } finally {
-      setLoading(false);
+      if (mountedRef.current) setLoading(false);
     }
   };
 

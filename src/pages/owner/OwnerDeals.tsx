@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useToast } from "@/hooks/use-toast";
+import { logAudit } from "@/lib/auditLog";
 import OwnerLayout from "@/components/owner/OwnerLayout";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import BentoCard from "@/components/dashboard/BentoCard";
@@ -22,6 +24,7 @@ import {
 const OwnerDeals: React.FC = () => {
   const { user } = useAuth();
   const { lang } = useLanguage();
+  const { toast } = useToast();
   const isAr = lang === "ar";
   usePageTitle(isAr ? "صفقاتي" : "My Deals");
   const [deals, setDeals] = useState<any[]>([]);
@@ -34,28 +37,46 @@ const OwnerDeals: React.FC = () => {
     if (!user) return;
     const fetch = async () => {
       try {
-        const { data } = await supabase
+        // deals has a soft-delete column — without the filter an owner
+        // would still see a deal the developer had archived, and clicking
+        // into it would load a 404-ish detail. Also surface any fetch
+        // error instead of silently returning an empty list.
+        const { data, error } = await supabase
           .from("deals")
           .select("*, developers(company_name, marketing_brand_name), lands(city, district, land_area_sqm, estimated_price_per_sqm, estimated_total_value, owner_name, usage_type, partnership_goal, project_model, deed_number, plan_number)")
           .eq("owner_id", user.id)
+          .is("deleted_at", null)
           .order("created_at", { ascending: false });
+        if (error) throw error;
         setDeals(data || []);
-      } catch (err) {
+      } catch (err: any) {
         console.error("Failed to fetch deals:", err);
+        toast({
+          variant: "destructive",
+          title: isAr ? "فشل تحميل الصفقات" : "Failed to load deals",
+          description: err?.message || (isAr ? "تعذر جلب البيانات" : "Could not fetch data"),
+        });
       } finally {
         setLoading(false);
       }
     };
     fetch();
-  }, [user]);
+  }, [user, toast, isAr]);
 
   const openDealDetail = async (deal: any) => {
     setViewDeal(deal);
     try {
-      const { data } = await supabase.from("deal_meetings").select("*").eq("deal_id", deal.id).order("scheduled_at", { ascending: false });
+      const { data, error } = await supabase.from("deal_meetings").select("*").eq("deal_id", deal.id).order("scheduled_at", { ascending: false });
+      if (error) throw error;
       setMeetings(data || []);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to fetch deal meetings:", err);
+      setMeetings([]);
+      toast({
+        variant: "destructive",
+        title: isAr ? "تعذر تحميل الاجتماعات" : "Could not load meetings",
+        description: err?.message || undefined,
+      });
     }
   };
 
@@ -227,6 +248,17 @@ const OwnerDeals: React.FC = () => {
           onAcknowledged={() => {
             setViewDeal((prev: any) => prev ? { ...prev, owner_acknowledgment_accepted: true, owner_acknowledgment_date: new Date().toISOString() } : prev);
             setDeals(prev => prev.map(d => d.id === viewDeal.id ? { ...d, owner_acknowledgment_accepted: true, owner_acknowledgment_date: new Date().toISOString() } : d));
+            // Legal acknowledgment is a regulated action — record who
+            // signed, for which deal, and when. LegalDocPrintView commits
+            // the DB write itself; this is the audit companion.
+            logAudit(
+              user?.id || "",
+              user?.email,
+              "deal.owner_acknowledged",
+              "deal",
+              viewDeal.id,
+              { land_id: viewDeal.land_id, developer_id: viewDeal.developer_id },
+            ).catch((e) => console.error("Audit log failed:", e));
           }}
         />
       )}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { getActiveOffers, getOfferBySlug, usageTypeLabels, offerTypeLabels, type RealEstateOffer } from "@/data/offers";
@@ -28,12 +29,96 @@ const OfferDetailPage: React.FC = () => {
 
   usePageTitle(offer ? (isAr ? offer.title.ar : offer.title.en) : (isAr ? "عرض عقاري" : "Offer"));
 
+  // --- SEO metadata (per-offer) -----------------------------------------
+  // Each offer is a public-indexable page — a city/district-specific URL
+  // meant to rank for queries like "شراكة عقارية في جدة". Until the
+  // catalogue fetch resolves we emit a generic fallback so the shell
+  // never broadcasts an empty <title>/<meta description> pair.
+  //
+  // We don't set `noindex` on the loading branch because the page will
+  // always either resolve into an offer (→ tightened tags) or redirect
+  // to /offers via <Navigate replace /> (→ the destination sets its own
+  // SEO). There is no indexable "not-found" skeleton here.
+  const seoTitle = offer
+    ? (isAr
+        ? `${offer.title.ar} | ${offer.city.ar} | سينا`
+        : `${offer.title.en} | ${offer.city.en} | SINA`)
+    : (isAr ? "عرض عقاري | سينا" : "Real Estate Offer | SINA");
+  const seoDescription = offer
+    ? (isAr ? offer.description.ar : offer.description.en)
+    : (isAr
+        ? "تفاصيل عرض عقاري على منصة سينا — فرص شراكة ومنتجات جاهزة."
+        : "SINA offer details — partnership opportunities and ready products.");
+  const canonicalBase = isAr ? "https://cidoma.com" : "https://cidoma.com/en";
+  const canonicalUrl = `${canonicalBase}/offers${id ? `/${id}` : ""}`;
+  const siblingUrl = isAr
+    ? `https://cidoma.com/en/offers${id ? `/${id}` : ""}`
+    : `https://cidoma.com/offers${id ? `/${id}` : ""}`;
+  const ogImage = offer?.imageUrl || "https://cidoma.com/og-image.png";
+
+  useMetaTags({
+    title: seoTitle,
+    description: seoDescription,
+    canonical: canonicalUrl,
+    ogTitle: seoTitle,
+    ogDescription: seoDescription,
+    ogImage,
+    ogType: "article",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: siblingUrl },
+    structuredData: offer
+      ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+              { "@type": "ListItem", position: 2, name: isAr ? "العروض العقارية" : "Offers", item: `${canonicalBase}/offers` },
+              { "@type": "ListItem", position: 3, name: seoTitle, item: canonicalUrl },
+            ],
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: seoTitle,
+            description: seoDescription,
+            image: ogImage,
+            url: canonicalUrl,
+            category: isAr ? "عقاري" : "Real Estate",
+            brand: { "@type": "Brand", name: "SINA" },
+          },
+        ]
+      : undefined,
+  });
+
   useEffect(() => {
     if (!id) { setLoading(false); return; }
-    getOfferBySlug(id).then(data => { setOffer(data); setLoading(false); }).catch(console.error);
-    getActiveOffers().then(all => {
-      setRelated(all.filter(o => o.slug !== id).slice(0, 3));
-    }).catch(() => { /* ignore */ });
+    let cancelled = false;
+    // Silent `catch(console.error)` was hiding real fetch errors — if
+    // Supabase 500s, the page just stays empty. Keep the fallback safe
+    // (always clear loading, always honour the cancelled flag) but log
+    // with a tagged prefix so a broken catalogue is grep-able.
+    getOfferBySlug(id)
+      .then((data) => {
+        if (cancelled) return;
+        setOffer(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("OfferDetailPage getOfferBySlug error:", err);
+        setLoading(false);
+      });
+    getActiveOffers()
+      .then((all) => {
+        if (cancelled) return;
+        setRelated(all.filter((o) => o.slug !== id).slice(0, 3));
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("OfferDetailPage getActiveOffers error:", err);
+      });
+    return () => { cancelled = true; };
   }, [id]);
 
   if (loading) {

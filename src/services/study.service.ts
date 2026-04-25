@@ -23,32 +23,44 @@ export type StudyStatus = "submitted" | "under_review" | "changes_requested" | "
 /** Hard limits enforced before upload */
 const MAX_FILE_SIZE_MB = 50;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
-const ALLOWED_EXTENSIONS = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx"];
-const ALLOWED_MIME_PREFIXES = [
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument",
-  "application/vnd.ms-excel",
-  "application/vnd.ms-powerpoint",
-];
 
-function validateFile(file: File): void {
+/**
+ * P2.1 + P2.3 — MIME → extension safelist. Keys are the mime types the
+ * user can actually supply; values are the safe extension to embed in
+ * the storage path. Anything outside this map is hard-rejected.
+ *
+ * Previously we (a) read the extension from file.name (spoofable) and
+ * (b) only *warned* on unexpected MIME. Now we:
+ *   - pick the extension from the validated MIME
+ *   - hard-fail on unknown MIME so no Office macro + renamed .pdf trick
+ *     can slip through and get stored as a blessed filename
+ */
+const STUDY_MIME_MAP: Record<string, string> = {
+  "application/pdf": "pdf",
+  "application/msword": "doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+  "application/vnd.ms-excel": "xls",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+  "application/vnd.ms-powerpoint": "ppt",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
+};
+
+function validateFile(file: File): string {
   if (file.size > MAX_FILE_SIZE_BYTES) {
     throw new Error(`الملف كبير جداً. الحد الأقصى ${MAX_FILE_SIZE_MB}MB — File too large, max ${MAX_FILE_SIZE_MB}MB`);
   }
   if (file.size === 0) {
     throw new Error("الملف فارغ — Empty file");
   }
-  const ext = (file.name.split(".").pop() || "").toLowerCase();
-  if (!ALLOWED_EXTENSIONS.includes(ext)) {
-    throw new Error(`نوع الملف غير مسموح. المسموح: ${ALLOWED_EXTENSIONS.join(", ")}`);
+  const mime = (file.type || "").toLowerCase();
+  const ext = STUDY_MIME_MAP[mime];
+  if (!ext) {
+    throw new Error(
+      `نوع الملف غير مسموح (${mime || "unknown"}). المسموح: PDF, Word, Excel, PowerPoint — ` +
+      `File type not allowed; use PDF, Word, Excel, or PowerPoint.`,
+    );
   }
-  // Soft MIME check — some browsers lie about type, so we don't hard-fail but
-  // log for future server-side tightening.
-  const mime = file.type || "";
-  if (mime && !ALLOWED_MIME_PREFIXES.some((p) => mime.startsWith(p))) {
-    console.warn(`[study.service] Suspicious MIME for ${file.name}: ${mime}`);
-  }
+  return ext;
 }
 
 /** Fetch all study versions for a deal request */
@@ -92,17 +104,23 @@ export async function uploadStudy(params: {
   notes?: string;
 }): Promise<{ success: boolean; error?: string; study?: DealStudy }> {
   try {
-    validateFile(params.file);
+    const ext = validateFile(params.file);
 
-    // Get current version count (optimistic — see note in comment)
+    // We still need an optimistic version number for the storage
+    // path name — but the authoritative version is assigned by the
+    // `insert_study_next_version` RPC below inside a row lock, so
+    // two concurrent uploads can never collide on (request,version).
+    // The path collision is protected by `upsert: false` on the
+    // upload; if a conflict happens we bump and retry.
     const { count } = await supabase
       .from("deal_studies" as any)
       .select("id", { count: "exact", head: true })
       .eq("deal_request_id", params.requestId);
 
-    const version = (count || 0) + 1;
-    const ext = (params.file.name.split(".").pop() || "pdf").toLowerCase();
-    const path = `${params.requestId}/v${version}_${Date.now()}.${ext}`;
+    const optimisticVersion = (count || 0) + 1;
+    // ext is derived from the validated MIME inside validateFile —
+    // the user-supplied filename is never embedded in the path.
+    const path = `${params.requestId}/v${optimisticVersion}_${Date.now()}.${ext}`;
 
     // Upload file
     const { error: uploadErr } = await supabase.storage
@@ -118,26 +136,24 @@ export async function uploadStudy(params: {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Not authenticated");
 
-    // Insert study record — store the storage path, NOT a public URL.
-    // This ensures access is always mediated by createSignedUrl().
-    const { data: study, error: insertErr } = await supabase
-      .from("deal_studies" as any)
-      .insert({
-        deal_request_id: params.requestId,
-        version,
-        uploaded_by: user.id,
-        title: params.title,
-        summary: params.summary || null,
-        file_url: path,
-        notes: params.notes || null,
-        status: "submitted",
-      })
-      .select()
-      .single();
-    if (insertErr) {
+    // Atomically compute MAX(version)+1 and insert — two concurrent
+    // callers serialize on the deal_requests row lock inside the
+    // RPC and one of them will see the other's row. No duplicate
+    // version numbers possible.
+    const { data: study, error: insertErr } = await supabase.rpc(
+      "insert_study_next_version" as any,
+      {
+        _deal_request_id: params.requestId,
+        _title: params.title,
+        _summary: params.summary || "",
+        _file_url: path,
+        _notes: params.notes || "",
+      },
+    );
+    if (insertErr || !study) {
       // Roll back the uploaded object so we don't leak orphan files
       await supabase.storage.from("deal-studies").remove([path]).catch(() => {});
-      throw new Error(insertErr.message);
+      throw new Error(insertErr?.message || "Failed to record study");
     }
 
     // Transition phase: study_required → study_submitted OR study_changes_requested → study_resubmitted

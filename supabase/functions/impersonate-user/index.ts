@@ -117,21 +117,32 @@ Deno.serve(async (req) => {
       throw new Error("Session tokens not returned from verification");
     }
 
-    // Build the redirect URL with tokens in the URL FRAGMENT (#t=<base64>).
-    // URL fragments are never transmitted to any server (not logged by CDN,
-    // proxies, or our own Deno runtime) — this is the only reason it's safe
-    // to ship session tokens this way. The callback page reads them from
-    // window.location.hash, wipes the hash, and hands them to supabase.auth.
+    // Store the session tokens server-side with a ≤60s TTL and return
+    // only the exchange_id to the admin browser. The callback page then
+    // POSTs the exchange_id to `impersonate-exchange` which atomically
+    // consumes the row and returns the tokens once.
     //
-    // Security hardening (2026-04): we DO NOT include access/refresh tokens
-    // in the JSON response body anymore — that body *is* transmitted and
-    // would end up in the browser's network-log / devtools / any
-    // well-meaning error reporter. The caller receives ONLY this opaque URL.
-    const payload = btoa(JSON.stringify({
-      access_token: session.access_token,
-      refresh_token: session.refresh_token,
-    }));
-    const redirectUrl = `${publicSiteUrl}/impersonate-callback#t=${encodeURIComponent(payload)}`;
+    // Why this replaces the old "tokens in URL fragment" approach:
+    //   - Although URL fragments aren't sent to servers on navigation,
+    //     they DO live inside this JSON response body — visible in browser
+    //     devtools, network capture, and any error reporter that snapshots
+    //     response payloads.
+    //   - The UUID exchange_id alone is worthless after 60s or one use.
+    const exchangeId = crypto.randomUUID();
+    const { error: exchErr } = await adminClient
+      .from("impersonation_exchanges")
+      .insert({
+        id: exchangeId,
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+        admin_user_id: caller.id,
+        target_user_id,
+        expires_at: new Date(Date.now() + 60_000).toISOString(),
+      });
+    if (exchErr) {
+      console.error("impersonate-user exchange insert failed", exchErr);
+      throw new Error("Failed to store exchange token");
+    }
 
     // Audit log: record impersonation action server-side (mandatory — fail if not recorded)
     const { error: auditError } = await adminClient.from("audit_logs").insert({
@@ -142,6 +153,7 @@ Deno.serve(async (req) => {
       entity_id: target_user_id,
       details: {
         target_email: targetUser.user.email,
+        exchange_id: exchangeId,
         timestamp: new Date().toISOString(),
       },
     });
@@ -150,13 +162,14 @@ Deno.serve(async (req) => {
       throw new Error("Impersonation blocked: audit log failed");
     }
 
-    // NOTE: we deliberately do NOT return access_token / refresh_token in
-    // the JSON body. They live only inside redirectUrl's fragment (never
-    // sent to any server). Callers MUST consume `verify_url` by opening it.
+    // Verify URL carries ONLY the exchange_id in the fragment. No tokens
+    // are in this response — the body is safe to log.
+    // `email` is intentionally omitted: the admin already selected the
+    // target by name on the previous page; returning it again is PII leakage.
+    const redirectUrl = `${publicSiteUrl}/impersonate-callback#x=${encodeURIComponent(exchangeId)}`;
     return new Response(JSON.stringify({
       success: true,
       verify_url: redirectUrl,
-      email: targetUser.user.email,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -168,6 +181,7 @@ Deno.serve(async (req) => {
       "Cannot impersonate your own account", "Admin impersonation is not allowed",
       "Impersonation blocked: audit log failed",
       "Failed to verify magic link token", "Session tokens not returned",
+      "Failed to store exchange token",
     ];
     const message = safeMessages.some(m => err.message?.includes(m)) ? err.message : "Operation failed";
     return new Response(JSON.stringify({ error: message }), {

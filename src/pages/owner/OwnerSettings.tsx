@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { logAudit } from "@/lib/auditLog";
 import OwnerLayout from "@/components/owner/OwnerLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,11 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { User, Lock, Eye, EyeOff, Shield } from "lucide-react";
 import AvatarUpload from "@/components/shared/AvatarUpload";
+
+/* Minimum password length is a platform-wide policy. AdminSettings uses
+ * the same constant; keep them in lock-step. 10 chars + mix of classes is
+ * what Supabase's default auth_password_policies now recommends. */
+const MIN_PASSWORD_LENGTH = 10;
 
 const OwnerSettings: React.FC = () => {
   const { user } = useAuth();
@@ -27,57 +33,107 @@ const OwnerSettings: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  /* Synchronous re-entry guards. `saving` is a single boolean shared
+   * by the profile and password forms; a simultaneous click on both
+   * would only lock one. We also need to block a rapid second click
+   * on the same form before `setSaving(true)` commits. */
+  const savingProfileRef = useRef(false);
+  const savingPasswordRef = useRef(false);
+
   useEffect(() => {
     if (!user) return;
+    let cancelled = false;
     const fetch = async () => {
       try {
-        const { data } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
+        const { data, error } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
+        if (cancelled) return;
+        if (error) throw error;
         if (data) {
           setProfile(data);
           setFullName(data.full_name || "");
           setPhone(data.phone || "");
           setAvatarUrl((data as any).avatar_url || null);
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (cancelled) return;
         console.error("Failed to fetch profile:", err);
+        toast({
+          variant: "destructive",
+          title: isAr ? "تعذر تحميل الملف" : "Could not load profile",
+          description: err?.message || undefined,
+        });
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     fetch();
-  }, [user]);
+    return () => { cancelled = true; };
+  }, [user, toast, isAr]);
 
   const handleSaveProfile = async () => {
     if (!user) return;
+    if (savingProfileRef.current) return;
+    savingProfileRef.current = true;
     setSaving(true);
-    const { error } = await supabase.from("profiles").update({ full_name: fullName, phone, avatar_url: avatarUrl } as any).eq("user_id", user.id);
-    if (error) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
-    } else {
+    try {
+      const { error } = await supabase.from("profiles").update({ full_name: fullName, phone, avatar_url: avatarUrl } as any).eq("user_id", user.id);
+      if (error) {
+        toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
+        return;
+      }
       toast({ title: isAr ? "تم الحفظ بنجاح" : "Saved successfully" });
+      try {
+        await logAudit(user.id, user.email, "profile.update", "profile", user.id, {
+          fields: ["full_name", "phone", "avatar_url"],
+        });
+      } catch (e) { console.error("Audit log failed:", e); }
+    } finally {
+      setSaving(false);
+      savingProfileRef.current = false;
     }
-    setSaving(false);
   };
 
   const handleChangePassword = async () => {
-    if (password.length < 6) {
-      toast({ variant: "destructive", title: isAr ? "كلمة المرور قصيرة جداً" : "Password too short" });
+    if (savingPasswordRef.current) return;
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      toast({
+        variant: "destructive",
+        title: isAr ? "كلمة المرور قصيرة جداً" : "Password too short",
+        description: isAr
+          ? `يجب أن تحتوي كلمة المرور على ${MIN_PASSWORD_LENGTH} أحرف على الأقل`
+          : `Password must be at least ${MIN_PASSWORD_LENGTH} characters`,
+      });
       return;
     }
     if (password !== confirmPassword) {
       toast({ variant: "destructive", title: isAr ? "كلمتا المرور غير متطابقتين" : "Passwords don't match" });
       return;
     }
+    savingPasswordRef.current = true;
     setSaving(true);
-    const { error } = await supabase.auth.updateUser({ password });
-    if (error) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
-    } else {
+    try {
+      // Intentionally NOT calling signInWithPassword() as a pre-verify
+      // step — that rotates the session tokens mid-request and can log
+      // the user out of other open tabs. Session freshness is enforced
+      // by Supabase itself (updateUser fails with AuthSessionMissingError
+      // if the session is stale).
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) {
+        toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
+        return;
+      }
       toast({ title: isAr ? "تم تغيير كلمة المرور" : "Password changed" });
       setPassword("");
       setConfirmPassword("");
+      // Password changes are security-sensitive — always audit, even on
+      // success (especially on success, actually, for forensic trails).
+      try {
+        await logAudit(user?.id || "", user?.email, "password.change", "auth", user?.id || "", {});
+      } catch (e) { console.error("Audit log failed:", e); }
+    } finally {
+      setSaving(false);
+      savingPasswordRef.current = false;
     }
-    setSaving(false);
   };
 
   if (loading) {

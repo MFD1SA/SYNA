@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { logAudit } from "@/lib/auditLog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -128,42 +129,68 @@ const OwnerRequests: React.FC = () => {
   const [rejectNotes, setRejectNotes] = useState("");
   const [expandedReq, setExpandedReq] = useState<string | null>(null);
 
-  /* ── Fetch data ── */
-  useEffect(() => {
+  /* ── Re-entry guard keyed by requestId. Buttons on every card can
+   * double-fire if the user double-clicks before the RPC round-trip
+   * finishes. `actionLoading` is a single string, so two different
+   * cards can still overlap; this ref blocks per-request. */
+  const submittingRef = useRef<Record<string, boolean>>({});
+
+  /* ── Fetch data ──
+   * Exposed as a `refreshAll` callback so child phase panels can
+   * trigger a re-fetch after they transition a deal, instead of
+   * forcing a full page reload (which drops dialog state, scroll
+   * position, and re-initialises the Supabase client). */
+  const refreshAll = React.useCallback(async () => {
     if (!user) return;
-    const fetchAll = async () => {
-      const { data: lands } = await supabase.from("lands").select("id").eq("owner_id", user.id);
-      if (!lands || lands.length === 0) { setLoading(false); return; }
-      const landIds = lands.map(l => l.id);
-      const [reqRes, ndaRes] = await Promise.all([
-        supabase
-          .from("deal_requests")
-          .select("*, lands(city, district, land_area_sqm)")
-          .in("land_id", landIds)
-          .order("created_at", { ascending: false }),
-        getNDAConsentsForUser(user.id, "owner"),
-      ]);
-      const reqs = reqRes.data || [];
-      setRequests(reqs);
-      const map: Record<string, NDAConsent["status"]> = {};
-      ndaRes.forEach(n => { map[n.land_id] = n.status; });
-      setOwnerNdaMap(map);
+    const { data: lands } = await supabase.from("lands").select("id").eq("owner_id", user.id).is("deleted_at", null);
+    if (!lands || lands.length === 0) { setLoading(false); return; }
+    const landIds = lands.map(l => l.id);
+    const [reqRes, ndaRes] = await Promise.all([
+      supabase
+        .from("deal_requests")
+        .select("*, lands(city, district, land_area_sqm)")
+        .in("land_id", landIds)
+        .order("created_at", { ascending: false }),
+      getNDAConsentsForUser(user.id, "owner"),
+    ]);
+    const reqs = reqRes.data || [];
+    setRequests(reqs);
+    const map: Record<string, NDAConsent["status"]> = {};
+    ndaRes.forEach(n => { map[n.land_id] = n.status; });
+    setOwnerNdaMap(map);
 
-      // Resolve identities via centralized Edge Function (no direct developer JOINs)
-      if (reqs.length > 0) {
-        try {
-          const result = await resolvePartyIdentities(reqs.map(r => r.id));
-          setIdentities(result.identities);
-        } catch (e) { console.error("Identity resolve error:", e); }
-      }
+    // Resolve identities via centralized Edge Function (no direct developer JOINs)
+    if (reqs.length > 0) {
+      try {
+        const result = await resolvePartyIdentities(reqs.map(r => r.id));
+        setIdentities(result.identities);
+      } catch (e) { console.error("Identity resolve error:", e); }
+    }
 
-      setLoading(false);
-    };
-    fetchAll();
+    setLoading(false);
   }, [user]);
 
-  /* ── Action handlers (all go through transitionDealPhase) ── */
-  const handleTransition = async (requestId: string, target: DealPhase, reason?: string) => {
+  useEffect(() => { refreshAll(); }, [refreshAll]);
+
+  /* ── Action handlers (all go through transitionDealPhase) ──
+   *
+   * Returns a boolean so callers (e.g. confirmReject) can distinguish
+   * success from failure — important because we previously dismissed
+   * the reject dialog unconditionally, which silently swallowed errors
+   * and left the request in its previous phase while pretending it had
+   * been rejected.
+   *
+   * The submittingRef gate is stronger than `actionLoading` because
+   * `actionLoading` is reset in `finally` — a double-click that fires
+   * before React commits the state change would still slip through.
+   * The ref is synchronous. */
+  const handleTransition = async (
+    requestId: string,
+    target: DealPhase,
+    reason?: string,
+  ): Promise<boolean> => {
+    if (submittingRef.current[requestId]) return false;
+    submittingRef.current[requestId] = true;
     setActionLoading(requestId);
     try {
       const result = await transitionDealPhase(requestId, target, reason);
@@ -174,6 +201,23 @@ const OwnerRequests: React.FC = () => {
         prev.map(r => r.id === requestId ? { ...r, current_phase: target, ...(target === "closed_lost" ? { closed_at: new Date().toISOString(), rejection_reason: reason || null } : {}) } : r)
       );
 
+      // Audit — transitions driven from the owner panel are high-signal
+      // (especially closed_lost); log once, after success, per P1-6.
+      try {
+        await logAudit(
+          user?.id || "",
+          user?.email,
+          target === "closed_lost" ? "reject_request" : "transition_phase",
+          "deal_request",
+          requestId,
+          { to_phase: target, reason: reason || null },
+        );
+      } catch (e) {
+        // Audit failures must not flip the operation back to "failed"
+        // in the UI — the real work already committed server-side.
+        console.error("Audit log failed:", e);
+      }
+
       const labels: Record<string, { ar: string; en: string }> = {
         under_review: { ar: "تمت الموافقة المبدئية", en: "Preliminary approval granted" },
         study_required: { ar: "تم طلب الدراسة", en: "Study requested" },
@@ -181,22 +225,32 @@ const OwnerRequests: React.FC = () => {
       };
       const lbl = labels[target] || { ar: "تم التحديث", en: "Updated" };
       toast({ title: isAr ? lbl.ar : lbl.en });
+      return true;
     } catch (err: any) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+      return false;
     } finally {
       setActionLoading(null);
+      delete submittingRef.current[requestId];
     }
   };
 
   const confirmReject = async () => {
     if (!rejectDialog) return;
-    await handleTransition(rejectDialog.requestId, "closed_lost", rejectNotes || undefined);
-    setRejectDialog(null);
-    setRejectNotes("");
+    const ok = await handleTransition(rejectDialog.requestId, "closed_lost", rejectNotes || undefined);
+    // Only dismiss the dialog on success — if the RPC failed the toast
+    // surfaces the error and the user keeps their typed reason so they
+    // can retry without re-typing.
+    if (ok) {
+      setRejectDialog(null);
+      setRejectNotes("");
+    }
   };
 
   /* ── Owner accepts the NDA for a specific request ── */
-  const handleAcceptNDA = async (req: { id: string; land_id: string }) => {
+  const handleAcceptNDA = async (req: { id: string; land_id: string }): Promise<boolean> => {
+    if (submittingRef.current[req.id]) return false;
+    submittingRef.current[req.id] = true;
     setActionLoading(req.id);
     try {
       const result = await submitNDADecision(req.land_id, "accept", "owner");
@@ -209,11 +263,28 @@ const OwnerRequests: React.FC = () => {
       setRequests(prev => prev.map(r => r.id === req.id
         ? { ...r, current_phase: "nda_both_accepted", owner_nda_status: "accepted" }
         : r));
+
+      try {
+        await logAudit(
+          user?.id || "",
+          user?.email,
+          "accept_nda",
+          "deal_request",
+          req.id,
+          { land_id: req.land_id, to_phase: "nda_both_accepted" },
+        );
+      } catch (e) {
+        console.error("Audit log failed:", e);
+      }
+
       toast({ title: isAr ? "تم قبول اتفاقية عدم الإفصاح" : "NDA accepted" });
+      return true;
     } catch (err: any) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+      return false;
     } finally {
       setActionLoading(null);
+      delete submittingRef.current[req.id];
     }
   };
 
@@ -461,19 +532,14 @@ const OwnerRequests: React.FC = () => {
                       currentPhase={phase}
                       viewerRole="owner"
                       isAr={isAr}
-                      onPhaseChange={() => {
-                        // Refresh requests
-                        window.location.reload();
-                      }}
+                      onPhaseChange={() => { refreshAll(); }}
                     />
                     <MeetingPanel
                       requestId={req.id}
                       currentPhase={phase}
                       viewerRole="owner"
                       isAr={isAr}
-                      onPhaseChange={() => {
-                        window.location.reload();
-                      }}
+                      onPhaseChange={() => { refreshAll(); }}
                     />
                     <MeetingReportPanel
                       requestId={req.id}
@@ -481,9 +547,7 @@ const OwnerRequests: React.FC = () => {
                       currentPhase={phase}
                       viewerRole="owner"
                       isAr={isAr}
-                      onPhaseChange={() => {
-                        window.location.reload();
-                      }}
+                      onPhaseChange={() => { refreshAll(); }}
                     />
                     <DeveloperReportPanel
                       requestId={req.id}
@@ -497,14 +561,14 @@ const OwnerRequests: React.FC = () => {
                       currentPhase={phase}
                       viewerRole="owner"
                       isAr={isAr}
-                      onPhaseChange={() => window.location.reload()}
+                      onPhaseChange={() => { refreshAll(); }}
                     />
                     <DealClosingPanel
                       requestId={req.id}
                       currentPhase={phase}
                       viewerRole="owner"
                       isAr={isAr}
-                      onPhaseChange={() => window.location.reload()}
+                      onPhaseChange={() => { refreshAll(); }}
                     />
                   </div>
                 )}

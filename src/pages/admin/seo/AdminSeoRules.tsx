@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { logAudit } from "@/lib/auditLog";
 import { listSeoRules, updateSeoRule } from "@/services/seo/rules.service";
 import type { SeoGenerationRule } from "@/types/seo";
 import { contentModeLabels, pageTypeLabels } from "@/types/seo";
@@ -9,6 +11,7 @@ const AdminSeoRules: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const [rules, setRules] = useState<SeoGenerationRule[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,6 +32,9 @@ const AdminSeoRules: React.FC = () => {
   const handleToggle = async (r: SeoGenerationRule) => {
     try {
       await updateSeoRule(r.id, { is_active: !r.is_active });
+      if (user) {
+        await logAudit(user.id, user.email, "update", "seo_rule", r.id, { field: "is_active", from: r.is_active, to: !r.is_active });
+      }
       await load();
     } catch (err: unknown) {
       toast({ variant: "destructive", title: String(err) });
@@ -38,6 +44,9 @@ const AdminSeoRules: React.FC = () => {
   const handleModeChange = async (r: SeoGenerationRule, mode: SeoGenerationRule["content_mode"]) => {
     try {
       await updateSeoRule(r.id, { content_mode: mode });
+      if (user) {
+        await logAudit(user.id, user.email, "update", "seo_rule", r.id, { field: "content_mode", from: r.content_mode, to: mode });
+      }
       await load();
     } catch (err: unknown) {
       toast({ variant: "destructive", title: String(err) });

@@ -11,8 +11,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { setImpersonationActive } from "@/integrations/supabase/impersonateClient";
 
-const TOKENS_KEY = "syna_impersonate_tokens";
-
 const ImpersonateCallback: React.FC = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
@@ -20,42 +18,44 @@ const ImpersonateCallback: React.FC = () => {
   useEffect(() => {
     const processTokens = async () => {
       try {
-        // Tokens are passed through the URL hash (#t=...) — hashes are never
-        // sent to any server. Consume + wipe immediately.
+        // Only the hardened exchange flow is accepted: fragment is
+        // `#x=<exchange_id>`. We POST the id to `impersonate-exchange`
+        // which atomically consumes the row and returns the session
+        // tokens. The exchange_id alone is useless after one consume
+        // or after 60s.
+        //
+        // The legacy `#t=<base64 tokens>` and localStorage bridges were
+        // removed 2026-04 — they accepted unvalidated tokens from URL
+        // fragments / localStorage without server confirmation, so a
+        // leaked link could be replayed offline. If an old admin client
+        // is still on the legacy handoff, they will now see a clear
+        // "unsupported impersonation link" error and must refresh the
+        // admin panel to get the new exchange-based link.
         const hash = window.location.hash;
-        let raw: string | null = null;
-        if (hash.startsWith("#t=")) {
-          try {
-            raw = atob(decodeURIComponent(hash.slice(3)));
-          } catch {
-            raw = null;
-          }
-          // Clear hash from URL and browser history
-          history.replaceState(null, "", window.location.pathname + window.location.search);
-        }
-        // Legacy fallback (older admin clients may still write to localStorage)
-        if (!raw) {
-          raw = localStorage.getItem(TOKENS_KEY);
-          localStorage.removeItem(TOKENS_KEY);
-        }
 
-        if (!raw) {
-          setError("No impersonation tokens found");
+        if (!hash.startsWith("#x=")) {
+          setError(
+            "Unsupported impersonation link. Please refresh the admin panel " +
+            "and re-issue the impersonation — the legacy token handoff has " +
+            "been retired.",
+          );
           return;
         }
 
-        let tokens: { access_token: string; refresh_token: string };
-        try {
-          tokens = JSON.parse(raw);
-        } catch {
-          setError("Invalid token data");
+        const exchangeId = decodeURIComponent(hash.slice(3));
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+        const { data: exchData, error: exchErr } = await supabase.functions.invoke(
+          "impersonate-exchange",
+          { body: { exchange_id: exchangeId } },
+        );
+        if (exchErr || !exchData?.access_token || !exchData?.refresh_token) {
+          setError(exchErr?.message || "Impersonation link expired or already used");
           return;
         }
-
-        if (!tokens.access_token || !tokens.refresh_token) {
-          setError("Missing access_token or refresh_token");
-          return;
-        }
+        const tokens = {
+          access_token: exchData.access_token as string,
+          refresh_token: exchData.refresh_token as string,
+        };
 
         // Ensure the impersonation flag is set (module-level code in client.ts
         // already sets it, but this is defence in depth).
@@ -65,10 +65,7 @@ const ImpersonateCallback: React.FC = () => {
         // was detected as an impersonation tab at module load, the client is
         // already configured to use sessionStorage — so this does NOT touch
         // the admin's localStorage session.
-        const { data, error: sessionError } = await supabase.auth.setSession({
-          access_token: tokens.access_token,
-          refresh_token: tokens.refresh_token,
-        });
+        const { data, error: sessionError } = await supabase.auth.setSession(tokens);
 
         if (sessionError || !data.session) {
           setError(sessionError?.message || "Failed to establish session");
@@ -77,16 +74,25 @@ const ImpersonateCallback: React.FC = () => {
 
         const userId = data.session.user.id;
 
-        // Determine user type to redirect correctly
-        const [devRes, ownerRes] = await Promise.all([
+        // Determine user type via the authoritative role tables rather
+        // than by existence of a `lands` row. An owner who has not yet
+        // listed any land would otherwise be bounced to `/` instead of
+        // the owner dashboard.
+        const [rolesRes, devRes] = await Promise.all([
+          supabase.from("user_roles").select("role").eq("user_id", userId),
           supabase.from("developers").select("id").eq("user_id", userId).maybeSingle(),
-          supabase.from("lands").select("id").eq("owner_id", userId).limit(1),
         ]);
+
+        const roles = (rolesRes.data || []).map((r: { role: string }) => r.role);
 
         if (devRes.data) {
           navigate("/crm/dashboard", { replace: true });
-        } else if (ownerRes.data && ownerRes.data.length > 0) {
+        } else if (roles.includes("owner")) {
           navigate("/owner/dashboard", { replace: true });
+        } else if (roles.includes("admin")) {
+          // Impersonation targets should not be admins, but if one slipped
+          // through (e.g. admin set as owner too), land on admin CP.
+          navigate("/admincp/overview", { replace: true });
         } else {
           navigate("/", { replace: true });
         }

@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil, KeyRound, Eye, EyeOff, Download, Globe, FileText, LogIn, Loader2, Banknote } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
-import { getAgreementByUserId, type DeveloperAgreement } from "@/services/agreements.service";
+import { getAgreementByUserId, getAgreementsByUserIds, type DeveloperAgreement } from "@/services/agreements.service";
 
 type Developer = Database["public"]["Tables"]["developers"]["Row"];
 
@@ -84,15 +84,10 @@ const AdminDevelopers: React.FC = () => {
       const { data } = await supabase.from("developers").select("*").order("created_at", { ascending: false });
       setDevs(data || []);
 
-      // Fetch agreements for all developers
+      // Fetch agreements for all developers in one batch — previously
+      // this was N+1 (one round trip per developer).
       if (data && data.length > 0) {
-        const agMap: Record<string, DeveloperAgreement> = {};
-        await Promise.all(
-          data.map(async (dev) => {
-            const ag = await getAgreementByUserId(dev.user_id);
-            if (ag) agMap[dev.user_id] = ag;
-          })
-        );
+        const agMap = await getAgreementsByUserIds(data.map(d => d.user_id));
         setAgreementMap(agMap);
       }
     } catch (err) {
@@ -163,31 +158,24 @@ const AdminDevelopers: React.FC = () => {
     if (!deleteDialog) return;
     setDeleting(true);
     try {
-      // 1. Find all deals linked to this developer
-      const { data: deals } = await supabase
-        .from("deals")
-        .select("id")
-        .eq("developer_id", deleteDialog.id);
+      // Step 1 — run the cascade in a single DB transaction via RPC.
+      // The RPC (admin_delete_developer_cascade) does all the child-row
+      // cleanup atomically; if any table fails the whole delete rolls
+      // back, so we never leave orphaned deals/deal_requests pointing
+      // at a missing developer. It also writes a single "cascade_delete"
+      // audit row with counts.
+      const { error: cascadeErr } = await supabase.rpc(
+        "admin_delete_developer_cascade" as any,
+        { _developer_id: deleteDialog.id } as any
+      );
+      if (cascadeErr) throw cascadeErr;
 
-      if (deals && deals.length > 0) {
-        const dealIds = deals.map((d) => d.id);
-
-        // 2. Delete deal-related records in correct order
-        await supabase.from("deal_tasks").delete().in("deal_id", dealIds);
-        await supabase.from("deal_meetings").delete().in("deal_id", dealIds);
-        await supabase.from("deal_stages_log").delete().in("deal_id", dealIds);
-        await supabase.from("deal_logs").delete().in("deal_id", dealIds);
-        await supabase.from("deals").delete().in("id", dealIds);
-      }
-
-      // 3. Delete deal_requests linked to this developer
-      await supabase.from("deal_requests").delete().eq("developer_id", deleteDialog.id);
-
-      // 4. Delete developer record
-      const { error: dbError } = await supabase.from("developers").delete().eq("id", deleteDialog.id);
-      if (dbError) throw dbError;
-
-      // 5. Delete the auth user via edge function
+      // Step 2 — drop the auth user. This call cannot be part of the
+      // DB transaction (service-role key lives in the edge function).
+      // If it fails we log a warning but do NOT roll back the cascade,
+      // because the developer row is already gone and re-creating it
+      // would be inconsistent. Orphan auth users are acceptable and
+      // can be cleaned up manually.
       const res = await supabase.functions.invoke("create-owner", {
         body: { action: "delete_user", user_id: deleteDialog.user_id },
       });
@@ -195,7 +183,6 @@ const AdminDevelopers: React.FC = () => {
         console.warn("Auth user delete warning:", res.data?.error || res.error?.message);
       }
 
-      if (user) await logAudit(user.id, user.email, "delete", "developer", deleteDialog.id, { company: deleteDialog.company_name });
       toast({ title: isAr ? "تم حذف المطور" : "Developer deleted" });
       setDeleteDialog(null);
       fetchDevs();

@@ -18,7 +18,28 @@ export type NotificationType =
   | "opportunity_interest"
   | "deal_update"
   | "system"
-  | "contact";
+  | "contact"
+  // P1.1 / P1.4 — deal-flow + land-lifecycle events surfaced to users.
+  // Keeping this union in sync with server-side INSERTs means we fail
+  // fast (TypeScript) instead of silently persisting a typo.
+  | "study_required"
+  | "meeting_proposed"
+  | "meeting_rescheduled"
+  | "report_pending_approval"
+  | "study_approved"
+  | "study_rejected"
+  | "study_changes_requested"
+  | "closed_lost"
+  | "cancelled"
+  | "land_approved"
+  | "land_changes_required"
+  | "land_published"
+  | "land_unpublished"
+  | "land_new_submitted"
+  | "land_cr_uploaded"
+  | "developer_cr_uploaded"
+  | "owner_complaint"
+  | "deal_abuse_flag";
 
 export interface CreateNotificationInput {
   userId: string;
@@ -31,13 +52,36 @@ export interface CreateNotificationInput {
   entityId?: string;
 }
 
+export interface CreateNotificationResult {
+  success: boolean;
+  id?: string;
+  error?: string;
+}
+
+export interface CreateNotificationsResult {
+  success: boolean;
+  inserted: number;
+  error?: string;
+}
+
 /**
- * Insert a single in-app notification. Never throws; logs on failure.
- * Returns the new row id or null.
+ * Insert a single in-app notification.
+ *
+ * P2.5 — returns a structured result. Previously this returned a plain
+ * `string | null`, which conflated "RLS denied / FK violation" with
+ * "no row returned". Callers couldn't tell a silent drop from a real
+ * insert. The new shape forces each caller to decide:
+ *   - `success: true`  → id is set
+ *   - `success: false` → error is set, log includes it; caller can
+ *                         surface it upstream if the notification is
+ *                         critical for the operation.
+ *
+ * We still don't throw — one failed notification must not take down a
+ * happy-path transaction — but the error is no longer hidden.
  */
 export async function createNotification(
   input: CreateNotificationInput,
-): Promise<string | null> {
+): Promise<CreateNotificationResult> {
   const admin = getAdminClient();
   const { data, error } = await admin
     .from("notifications")
@@ -54,17 +98,23 @@ export async function createNotification(
     .select("id")
     .maybeSingle();
   if (error) {
-    console.error("[notifications] insert failed", error.message);
-    return null;
+    console.error("[notifications] insert failed", {
+      message: error.message,
+      user_id: input.userId,
+      type: input.type,
+      entity_type: input.entityType ?? null,
+      entity_id: input.entityId ?? null,
+    });
+    return { success: false, error: error.message };
   }
-  return data?.id ?? null;
+  return { success: true, id: data?.id };
 }
 
 /** Bulk insert notifications — one row per recipient. */
 export async function createNotifications(
   inputs: CreateNotificationInput[],
-): Promise<number> {
-  if (inputs.length === 0) return 0;
+): Promise<CreateNotificationsResult> {
+  if (inputs.length === 0) return { success: true, inserted: 0 };
   const admin = getAdminClient();
   const rows = inputs.map((i) => ({
     user_id: i.userId,
@@ -80,8 +130,13 @@ export async function createNotifications(
     .from("notifications")
     .insert(rows, { count: "exact" });
   if (error) {
-    console.error("[notifications] bulk insert failed", error.message);
-    return 0;
+    console.error("[notifications] bulk insert failed", {
+      message: error.message,
+      attempted: rows.length,
+      first_user_id: rows[0]?.user_id,
+      first_type: rows[0]?.type,
+    });
+    return { success: false, inserted: 0, error: error.message };
   }
-  return count ?? rows.length;
+  return { success: true, inserted: count ?? rows.length };
 }

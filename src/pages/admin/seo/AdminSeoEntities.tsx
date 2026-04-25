@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { logAudit } from "@/lib/auditLog";
 import { listSeoEntities, updateSeoEntity, createSeoEntity, deleteSeoEntity } from "@/services/seo/entities.service";
 import type { SeoEntity, SeoEntityType } from "@/types/seo";
 import { Plus, Trash2, ShieldCheck } from "lucide-react";
@@ -17,6 +19,7 @@ const AdminSeoEntities: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const [activeTab, setActiveTab] = useState<SeoEntityType>("city");
   const [rows, setRows] = useState<SeoEntity[]>([]);
@@ -42,6 +45,9 @@ const AdminSeoEntities: React.FC = () => {
   const handleToggleActive = async (row: SeoEntity) => {
     try {
       await updateSeoEntity(row.id, { is_active: !row.is_active });
+      if (user) {
+        await logAudit(user.id, user.email, "update", "seo_entity", row.id, { field: "is_active", from: row.is_active, to: !row.is_active, entity_type: row.entity_type, slug: row.slug });
+      }
       await load();
     } catch (err: unknown) {
       toast({ variant: "destructive", title: String(err) });
@@ -50,6 +56,9 @@ const AdminSeoEntities: React.FC = () => {
   const handleToggleSensitive = async (row: SeoEntity) => {
     try {
       await updateSeoEntity(row.id, { is_sensitive: !row.is_sensitive });
+      if (user) {
+        await logAudit(user.id, user.email, "update", "seo_entity", row.id, { field: "is_sensitive", from: row.is_sensitive, to: !row.is_sensitive, entity_type: row.entity_type, slug: row.slug });
+      }
       await load();
     } catch (err: unknown) {
       toast({ variant: "destructive", title: String(err) });
@@ -59,6 +68,9 @@ const AdminSeoEntities: React.FC = () => {
     if (!confirm(isAr ? "حذف هذا الكيان؟" : "Delete this entity?")) return;
     try {
       await deleteSeoEntity(row.id);
+      if (user) {
+        await logAudit(user.id, user.email, "delete", "seo_entity", row.id, { entity_type: row.entity_type, slug: row.slug, name_ar: row.name_ar, name_en: row.name_en });
+      }
       await load();
     } catch (err: unknown) {
       toast({ variant: "destructive", title: String(err) });
@@ -70,13 +82,22 @@ const AdminSeoEntities: React.FC = () => {
       return;
     }
     try {
-      await createSeoEntity({
+      const created = await createSeoEntity({
         entity_type: activeTab,
         slug: newSlug.trim().toLowerCase(),
         name_ar: newNameAr.trim(),
         name_en: newNameEn.trim(),
         is_active: true,
       });
+      if (user) {
+        await logAudit(user.id, user.email, "create", "seo_entity", created.id, {
+          entity_type: created.entity_type,
+          slug: created.slug,
+          name_ar: created.name_ar,
+          name_en: created.name_en,
+          is_active: created.is_active,
+        });
+      }
       setNewSlug(""); setNewNameAr(""); setNewNameEn("");
       await load();
     } catch (err: unknown) {

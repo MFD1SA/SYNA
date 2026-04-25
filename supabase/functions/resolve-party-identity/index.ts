@@ -28,6 +28,49 @@ type RevealLevel = "anonymous" | "brand_visible" | "full";
 type Phase = string;
 type ViewerRole = "developer" | "owner" | "admin";
 
+/**
+ * Identity reveal matrix — server-side source of truth.
+ *
+ * The client-side helper in src/services/identityReveal.service.ts
+ * (`getRevealLevel`) MUST stay in lock-step with this table. Any drift
+ * produces a UX lie: the client claims "full reveal during negotiation"
+ * while the server returns anonymous, so the deal proceeds past the
+ * identity-reveal UX without identities actually being exchanged.
+ *
+ * Matrix:
+ *   terminal          → anonymous (closed_lost, cancelled)
+ *   admin viewer      → full, always
+ *   owner→developer   → anonymous before nda_both_accepted
+ *                       brand_visible during study/meeting/report phases
+ *                       full once negotiation has started
+ *   developer→owner   → anonymous until negotiation
+ *                       full once negotiation has started
+ */
+const FULL_REVEAL_PHASES = new Set<Phase>([
+  "negotiation_active",
+  "final_approval",
+  "closed_won",
+]);
+
+const BRAND_VISIBLE_PHASES = new Set<Phase>([
+  "nda_both_accepted",
+  "under_review",
+  "study_required",
+  "study_submitted",
+  "study_under_review",
+  "study_changes_requested",
+  "study_resubmitted",
+  "study_approved",
+  "meeting_proposed",
+  "meeting_confirmed",
+  "meeting_completed",
+  "report_pending_approval",
+  "report_approved",
+  "report_changes_requested",
+  "report_expired",
+  "report_rejected",
+]);
+
 function computeRevealLevel(
   phase: Phase,
   viewerRole: ViewerRole,
@@ -41,14 +84,18 @@ function computeRevealLevel(
 
   // Owner viewing developer
   if (viewerRole === "owner" && viewingParty === "developer") {
-    if (phase === "nda_pending" || phase === "nda_developer_accepted") return "anonymous";
-    if (phase === "nda_both_accepted" || phase === "under_review" || phase === "study_required") return "brand_visible";
+    if (FULL_REVEAL_PHASES.has(phase)) return "full";
+    if (BRAND_VISIBLE_PHASES.has(phase)) return "brand_visible";
+    // nda_pending, nda_developer_accepted, anything else → anonymous
     return "anonymous";
   }
 
-  // Developer viewing owner: ALWAYS anonymous until final agreement
-  // (full reveal requires a future phase like "deal_closed" which doesn't exist yet)
+  // Developer viewing owner: kept anonymous until negotiation starts.
+  // This is the asymmetry that's INTENTIONAL — owners reveal themselves
+  // last, because developers are brand-public first (their reputation is
+  // on the line during the study phase).
   if (viewerRole === "developer" && viewingParty === "owner") {
+    if (FULL_REVEAL_PHASES.has(phase)) return "full";
     return "anonymous";
   }
 

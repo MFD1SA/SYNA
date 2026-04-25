@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useAuth } from "@/contexts/AuthContext";
+import { logAudit } from "@/lib/auditLog";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Plus, Globe, Building2, Trash2, Newspaper, RefreshCw, Loader2,
@@ -56,6 +57,8 @@ const AdminTargets: React.FC = () => {
   const [companies, setCompanies] = useState<TargetCompany[]>([]);
   const [loading, setLoading] = useState(true);
   const [addOpen, setAddOpen] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState<TargetCompany | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Deal news
   const [dealNews, setDealNews] = useState<DealNews[]>([]);
@@ -157,7 +160,7 @@ const AdminTargets: React.FC = () => {
 
   const handleAdd = async () => {
     if (!form.company_name.trim() || !user) return;
-    const { error } = await supabase.from("target_companies").insert({
+    const { data: inserted, error } = await supabase.from("target_companies").insert({
       company_name: form.company_name,
       website: form.website || null,
       image_url: form.image_url || null,
@@ -166,10 +169,18 @@ const AdminTargets: React.FC = () => {
       is_registered: false,
       lead_status: "new",
       added_by: user.id,
-    } as any);
+    } as any).select("id").maybeSingle();
     if (error) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
     } else {
+      await logAudit(
+        user.id,
+        user.email,
+        "create",
+        "target_company",
+        inserted?.id ?? "unknown",
+        { company_name: form.company_name, website: form.website || null }
+      );
       toast({ title: isAr ? "تمت الإضافة" : "Added" });
       setForm({ company_name: "", website: "", image_url: "", contact_person_name: "", contact_phone: "" });
       setAddOpen(false);
@@ -177,14 +188,54 @@ const AdminTargets: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    await supabase.from("target_companies").delete().eq("id", id);
-    fetchCompanies();
+  const confirmDelete = async () => {
+    if (!deleteDialog) return;
+    setDeleting(true);
+    try {
+      const { error } = await supabase.from("target_companies").delete().eq("id", deleteDialog.id);
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: isAr ? "تعذر الحذف" : "Delete failed",
+          description: error.message,
+        });
+        return;
+      }
+      if (user) {
+        await logAudit(
+          user.id,
+          user.email,
+          "delete",
+          "target_company",
+          deleteDialog.id,
+          { company_name: deleteDialog.company_name }
+        );
+      }
+      setDeleteDialog(null);
+      fetchCompanies();
+      toast({ title: isAr ? "تم الحذف" : "Deleted" });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const handleToggleProspect = async (company: TargetCompany) => {
     const newStatus = company.lead_status === "prospect" ? "new" : "prospect";
-    await supabase.from("target_companies").update({ lead_status: newStatus } as any).eq("id", company.id);
+    const { error } = await supabase.from("target_companies").update({ lead_status: newStatus } as any).eq("id", company.id);
+    if (error) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
+      return;
+    }
+    if (user) {
+      await logAudit(
+        user.id,
+        user.email,
+        "update",
+        "target_company",
+        company.id,
+        { field: "lead_status", from: company.lead_status, to: newStatus }
+      );
+    }
     fetchCompanies();
     toast({
       title: newStatus === "prospect"
@@ -339,7 +390,7 @@ const AdminTargets: React.FC = () => {
                     {isAr ? "محتمل" : "Prospect"}
                   </span>
                 </div>
-                <Button size="sm" variant="ghost" className="text-destructive h-7 w-7 p-0" onClick={() => handleDelete(c.id)}>
+                <Button size="sm" variant="ghost" className="text-destructive h-7 w-7 p-0" onClick={() => setDeleteDialog(c)}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
@@ -388,6 +439,31 @@ const AdminTargets: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteDialog} onOpenChange={(open) => { if (!open && !deleting) setDeleteDialog(null); }}>
+        <DialogContent className="max-w-sm" dir={isAr ? "rtl" : "ltr"}>
+          <DialogHeader>
+            <DialogTitle className="text-destructive flex items-center gap-2">
+              <Trash2 className="h-5 w-5" />
+              {isAr ? "حذف الشركة" : "Delete Company"}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {isAr
+              ? `هل أنت متأكد من حذف شركة "${deleteDialog?.company_name || ""}"؟ لا يمكن التراجع عن هذا الإجراء.`
+              : `Are you sure you want to delete "${deleteDialog?.company_name || ""}"? This action cannot be undone.`}
+          </p>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setDeleteDialog(null)} disabled={deleting}>
+              {isAr ? "إلغاء" : "Cancel"}
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete} disabled={deleting}>
+              {deleting ? (isAr ? "جارٍ الحذف..." : "Deleting...") : (isAr ? "حذف" : "Delete")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       </div>
     </AdminLayout>
   );

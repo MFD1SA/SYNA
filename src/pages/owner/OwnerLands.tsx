@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -16,7 +16,7 @@ import {
   Plus, Landmark, MapPin, Ruler, Building2, Pencil, CheckCircle2,
   Clock, Eye, Image as ImageIcon, FileText, Shield, Download, Banknote,
 } from "lucide-react";
-import { getContractByLandId, getContractFileUrl, type BrokerageContract } from "@/services/brokerage.service";
+import { getContractsByLandIds, getContractFileUrl, type BrokerageContract } from "@/services/brokerage.service";
 import { logAudit } from "@/lib/auditLog";
 
 const submissionStatusConfig: Record<string, { ar: string; en: string; color: string; icon: React.ElementType }> = {
@@ -41,42 +41,65 @@ const OwnerLands: React.FC = () => {
   const [contractUrls, setContractUrls] = useState<Record<string, string>>({});
   const [contractDetailLand, setContractDetailLand] = useState<any>(null);
 
+  /* Re-entry guard: LandSubmissionForm's submit button is complex and the
+   * INSERT + storage signing chain takes a second or two. A second click
+   * before state settles would insert two land rows with identical payloads
+   * — and two rows fan out to two notify-new-opportunity invocations,
+   * spamming every verified developer. */
+  const submittingRef = useRef(false);
+
   const fetchLands = useCallback(async () => {
     if (!user) return;
     try {
-      const { data } = await supabase.from("lands").select("*").eq("owner_id", user.id).order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("lands").select("*").eq("owner_id", user.id).is("deleted_at", null).order("created_at", { ascending: false });
+      if (error) throw error;
       setLands(data || []);
 
-      // Fetch contracts for all lands
+      // Fetch contracts for all lands in one round trip, then sign
+      // each contract file URL in parallel (one signed-URL call per
+      // contract is unavoidable — Storage's createSignedUrl has no
+      // batch API — but the contract SELECTs are now O(1) queries).
       if (data && data.length > 0) {
-        const cMap: Record<string, BrokerageContract> = {};
-        const urlMap: Record<string, string> = {};
-        await Promise.all(
-          data.map(async (land) => {
-            const contract = await getContractByLandId(land.id);
-            if (contract) {
-              cMap[land.id] = contract;
-              if (contract.contract_file_url) {
-                const url = await getContractFileUrl(contract.contract_file_url);
-                if (url) urlMap[land.id] = url;
-              }
-            }
-          })
-        );
+        const cMap = await getContractsByLandIds(data.map(l => l.id));
         setContractsMap(cMap);
+
+        const urlPairs = await Promise.all(
+          Object.values(cMap)
+            .filter(c => c.contract_file_url)
+            .map(async (c) => {
+              const url = await getContractFileUrl(c.contract_file_url!);
+              return [c.land_id, url] as const;
+            }),
+        );
+        const urlMap: Record<string, string> = {};
+        for (const [landId, url] of urlPairs) {
+          if (url) urlMap[landId] = url;
+        }
         setContractUrls(urlMap);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to fetch lands:", err);
+      toast({
+        variant: "destructive",
+        title: isAr ? "فشل تحميل الأراضي" : "Failed to load lands",
+        description: err?.message || (isAr ? "تعذر جلب البيانات" : "Could not fetch data"),
+      });
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, toast, isAr]);
 
   useEffect(() => { fetchLands(); }, [fetchLands]);
 
   const handleSubmit = async (form: LandFormData) => {
     if (!user) return;
+    // Hard gate against double-submit. LandSubmissionForm's button is
+    // already `disabled` while its internal state spinner is on, but
+    // the gap between our toast and `closeDialog()` is wide enough for
+    // a second click if the user is impatient or the network hiccups.
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+
     const payload: any = {
       owner_id: user.id,
       city: form.city,
@@ -132,9 +155,11 @@ const OwnerLands: React.FC = () => {
       newLandId = inserted?.id ?? null;
     }
 
-    if (error) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
-    } else {
+    try {
+      if (error) {
+        toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
+        return;
+      }
       toast({ title: isAr ? (editingId ? "تم التحديث" : "تم إدراج الأرض بنجاح") : (editingId ? "Updated" : "Land submitted successfully") });
       // Audit trail: owner land create/update.
       const auditedId = editingId || newLandId || undefined;
@@ -148,14 +173,46 @@ const OwnerLands: React.FC = () => {
           { city: payload.city, submission_status: payload.submission_status },
         );
       }
-      // Fanout to all verified developers when a brand-new opportunity is submitted.
+      // Fanout to all verified developers when a brand-new opportunity is
+      // submitted. If fanout fails we surface a soft warning — the land is
+      // saved either way, but developers won't see it until the next poll,
+      // so the owner deserves to know.
       if (!editingId && newLandId && payload.submission_status === "submitted") {
         supabase.functions
           .invoke("notify-new-opportunity", { body: { land_id: newLandId } })
-          .catch((e) => console.error("notify-new-opportunity failed", e));
+          .catch((e) => {
+            console.error("notify-new-opportunity failed", e);
+            toast({
+              variant: "destructive",
+              title: isAr ? "تم الحفظ لكن تعذر إشعار المطورين" : "Saved but developer notifications failed",
+              description: isAr
+                ? "سيتم الإشعار عند المحاولة التالية تلقائيًا."
+                : "Notifications will retry automatically.",
+            });
+          });
+
+        // P1.3 — mirror the event to the admin team so oversight has
+        // a real-time feed of new submissions. Uses the allowlisted
+        // notify_all_admins RPC (SECURITY DEFINER); the caller cannot
+        // choose recipients.
+        supabase
+          .rpc("notify_all_admins", {
+            _type: "land_new_submitted",
+            _title_ar: "أرض جديدة بانتظار المراجعة",
+            _title_en: "New land submission",
+            _message_ar: `تم إدراج أرض جديدة في ${payload.city ?? "—"}${payload.district ? ` / ${payload.district}` : ""} — مطلوبة المراجعة`,
+            _message_en: `New land submitted in ${payload.city ?? "—"}${payload.district ? ` / ${payload.district}` : ""} — review required`,
+            _entity_type: "land",
+            _entity_id: newLandId,
+          })
+          .then((res) => {
+            if (res.error) console.warn("[OwnerLands] notify_all_admins:", res.error.message);
+          });
       }
       closeDialog();
       fetchLands();
+    } finally {
+      submittingRef.current = false;
     }
   };
 

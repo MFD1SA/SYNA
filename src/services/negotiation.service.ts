@@ -59,7 +59,12 @@ export async function getRounds(requestId: string): Promise<NegotiationRound[]> 
   return (data || []) as unknown as NegotiationRound[];
 }
 
-/** Create a new negotiation round (offer or counter-offer) */
+/** Create a new negotiation round (offer or counter-offer).
+ *
+ * Role resolution, round numbering, and the "previous round must
+ * be responded-to" invariant all live in the
+ * `create_negotiation_round` RPC — the client can't spoof its role
+ * or race against concurrent offers. */
 export async function createRound(params: {
   requestId: string;
   offerSummary: string;
@@ -67,34 +72,21 @@ export async function createRound(params: {
   attachments?: Array<{ name: string; url: string }>;
 }): Promise<{ success: boolean; error?: string; round?: NegotiationRound }> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+    const { data, error: rpcErr } = await supabase.rpc(
+      "create_negotiation_round" as any,
+      {
+        _deal_request_id: params.requestId,
+        _offer_summary: params.offerSummary,
+        _proposed_terms: params.proposedTerms || {},
+        _attachments: params.attachments || [],
+      },
+    );
+    if (rpcErr) throw new Error(rpcErr.message);
 
-    // Determine role
-    const actorRole = await resolveRole(user.id, params.requestId);
+    const round = Array.isArray(data) ? data[0] : data;
+    if (!round) throw new Error("Failed to create round");
 
-    // Get current round count
-    const { count } = await supabase
-      .from("negotiation_rounds" as any)
-      .select("id", { count: "exact", head: true })
-      .eq("deal_request_id", params.requestId);
-
-    const roundNumber = (count || 0) + 1;
-
-    const { data: round, error: insertErr } = await supabase
-      .from("negotiation_rounds" as any)
-      .insert({
-        deal_request_id: params.requestId,
-        round_number: roundNumber,
-        initiated_by: user.id,
-        initiator_role: actorRole,
-        offer_summary: params.offerSummary,
-        proposed_terms: params.proposedTerms,
-        attachments: params.attachments || [],
-      })
-      .select()
-      .single();
-    if (insertErr) throw new Error(insertErr.message);
+    const roundNumber = (round as any).round_number as number;
 
     // If this is the first round, transition to negotiation_active
     if (roundNumber === 1) {
@@ -119,7 +111,11 @@ export async function createRound(params: {
   }
 }
 
-/** Respond to a negotiation round */
+/** Respond to a negotiation round.
+ *
+ * Role resolution, deadline check, and the "no double response"
+ * invariant all enforced by the `respond_to_negotiation_round`
+ * RPC under a row lock — this function is a thin wrapper. */
 export async function respondToRound(params: {
   roundId: string;
   requestId: string;
@@ -127,22 +123,15 @@ export async function respondToRound(params: {
   notes?: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
-
-    const actorRole = await resolveRole(user.id, params.requestId);
-
-    const { error: updateErr } = await supabase
-      .from("negotiation_rounds" as any)
-      .update({
-        response_decision: params.decision,
-        response_notes: params.notes || null,
-        responded_by: user.id,
-        responder_role: actorRole,
-        responded_at: new Date().toISOString(),
-      })
-      .eq("id", params.roundId);
-    if (updateErr) throw new Error(updateErr.message);
+    const { error: rpcErr } = await supabase.rpc(
+      "respond_to_negotiation_round" as any,
+      {
+        _round_id: params.roundId,
+        _decision: params.decision,
+        _notes: params.notes || "",
+      },
+    );
+    if (rpcErr) throw new Error(rpcErr.message);
 
     // Handle decision outcomes
     if (params.decision === "accepted") {
@@ -170,46 +159,4 @@ export async function respondToRound(params: {
   } catch (err: any) {
     return { success: false, error: err.message };
   }
-}
-
-/** Helper to resolve user role for a deal request */
-async function resolveRole(
-  userId: string,
-  requestId: string,
-): Promise<"owner" | "developer" | "admin"> {
-  // Check admin
-  const { data: adminRows } = await supabase
-    .from("user_roles" as any)
-    .select("id")
-    .eq("user_id", userId)
-    .eq("role", "admin")
-    .limit(1);
-  if (adminRows && adminRows.length > 0) return "admin";
-
-  // Check owner or developer via deal request
-  const { data: reqData } = await supabase
-    .from("deal_requests")
-    .select("land_id, developer_id")
-    .eq("id", requestId)
-    .single();
-
-  if (reqData) {
-    const { data: landData } = await supabase
-      .from("lands")
-      .select("owner_id")
-      .eq("id", reqData.land_id)
-      .eq("owner_id", userId)
-      .maybeSingle();
-    if (landData) return "owner";
-
-    const { data: devData } = await supabase
-      .from("developers")
-      .select("id")
-      .eq("id", reqData.developer_id)
-      .eq("user_id", userId)
-      .maybeSingle();
-    if (devData) return "developer";
-  }
-
-  return "developer"; // fallback
 }

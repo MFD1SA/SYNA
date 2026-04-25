@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { logAudit } from "@/lib/auditLog";
 import {
   listSeoRedirects, createSeoRedirect, updateSeoRedirect, deleteSeoRedirect,
 } from "@/services/seo/redirects.service";
@@ -11,6 +13,7 @@ const AdminSeoRedirects: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const [rows, setRows] = useState<SeoRedirect[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,25 +37,49 @@ const AdminSeoRedirects: React.FC = () => {
   const handleCreate = async () => {
     if (!src.trim() || !tgt.trim()) { toast({ variant: "destructive", title: isAr ? "أدخل المصدر والهدف" : "Enter source and target" }); return; }
     try {
-      await createSeoRedirect({
+      const created = await createSeoRedirect({
         source_path: src.trim(),
         target_path: tgt.trim(),
         status_code: code,
         is_active: true,
       });
+      if (user) {
+        await logAudit(user.id, user.email, "create", "seo_redirect", created.id, {
+          source_path: created.source_path,
+          target_path: created.target_path,
+          status_code: created.status_code,
+          is_active: created.is_active,
+        });
+      }
       setSrc(""); setTgt("");
       await load();
     } catch (err: unknown) { toast({ variant: "destructive", title: String(err) }); }
   };
 
   const handleToggle = async (r: SeoRedirect) => {
-    try { await updateSeoRedirect(r.id, { is_active: !r.is_active }); await load(); }
+    try {
+      await updateSeoRedirect(r.id, { is_active: !r.is_active });
+      if (user) {
+        await logAudit(user.id, user.email, "update", "seo_redirect", r.id, { field: "is_active", from: r.is_active, to: !r.is_active });
+      }
+      await load();
+    }
     catch (err: unknown) { toast({ variant: "destructive", title: String(err) }); }
   };
 
   const handleDelete = async (r: SeoRedirect) => {
     if (!confirm(isAr ? "حذف هذا التحويل؟" : "Delete this redirect?")) return;
-    try { await deleteSeoRedirect(r.id); await load(); }
+    try {
+      await deleteSeoRedirect(r.id);
+      if (user) {
+        await logAudit(user.id, user.email, "delete", "seo_redirect", r.id, {
+          source_path: r.source_path,
+          target_path: r.target_path,
+          status_code: r.status_code,
+        });
+      }
+      await load();
+    }
     catch (err: unknown) { toast({ variant: "destructive", title: String(err) }); }
   };
 

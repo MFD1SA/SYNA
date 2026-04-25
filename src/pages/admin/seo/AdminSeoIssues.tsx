@@ -5,6 +5,7 @@ import { listSeoIssues, resolveSeoIssue, resolveSeoIssuesBulk } from "@/services
 import type { SeoIssue } from "@/types/seo";
 import { CheckCircle2, AlertTriangle, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { logAudit } from "@/lib/auditLog";
 
 const AdminSeoIssues: React.FC = () => {
   const { lang } = useLanguage();
@@ -34,6 +35,9 @@ const AdminSeoIssues: React.FC = () => {
   const handleResolve = async (id: string) => {
     try {
       await resolveSeoIssue(id, user?.id ?? null);
+      if (user) {
+        await logAudit(user.id, user.email, "update", "seo_issue", id, { action: "resolved" });
+      }
       toast({ title: isAr ? "تم الحل" : "Resolved" });
       await load();
     } catch (err: unknown) {
@@ -63,7 +67,11 @@ const AdminSeoIssues: React.FC = () => {
     if (selected.size === 0) return;
     setBulkBusy(true);
     try {
-      const n = await resolveSeoIssuesBulk(Array.from(selected), user?.id ?? null);
+      const ids = Array.from(selected);
+      const n = await resolveSeoIssuesBulk(ids, user?.id ?? null);
+      if (user) {
+        await logAudit(user.id, user.email, "update", "seo_issue", "bulk", { action: "bulk_resolved", count: n, ids });
+      }
       toast({
         title: isAr ? `تم حلّ ${n} مشكلة` : `Resolved ${n} issue(s)`,
       });
@@ -81,6 +89,9 @@ const AdminSeoIssues: React.FC = () => {
     setBulkBusy(true);
     try {
       const n = await resolveSeoIssuesBulk(allUnresolvedIds, user?.id ?? null);
+      if (user) {
+        await logAudit(user.id, user.email, "update", "seo_issue", "bulk_all", { action: "resolve_all_unresolved", count: n });
+      }
       toast({ title: isAr ? `تم حلّ ${n} مشكلة` : `Resolved ${n} issue(s)` });
       await load();
     } catch (err: unknown) {

@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { logAudit } from "@/lib/auditLog";
 import CrmLayout from "@/components/crm/CrmLayout";
 import DealAutomationPanel, { DealDocumentItem } from "@/components/crm/DealAutomationPanel";
 import DashboardShell from "@/components/dashboard/DashboardShell";
@@ -21,11 +22,36 @@ import CommissionBreakdown from "@/components/deal/CommissionBreakdown";
 import LegalDocPrintView from "@/components/land/LegalDocPrintView";
 import { stageConfig, healthLabels, commissionStatusLabels } from "@/components/deal/dealStageConfig";
 import { defaultLandForm, LandFormData } from "@/components/land/LandFormConstants";
+import { DRIVE_ALLOWED_HOSTS } from "@/lib/urlSafe";
 
+/**
+ * P2.4 — Drive URL validation. Hostname check was already in place, but
+ * we add three further guards to close subtle bypass vectors:
+ *
+ *   1. Protocol must be https: (no http, no javascript:, no data:).
+ *      z.url() accepts any valid URL, including data: — which a link
+ *      component rendering the value as an <a href> would execute.
+ *
+ *   2. No userinfo (user:pass@host). `https://drive.google.com@evil.com`
+ *      parses with hostname=evil.com so our hostname check already
+ *      rejects it, but userinfo is never legitimate for a Drive share
+ *      link — reject early and explicitly.
+ *
+ *   3. Hostname must EQUAL one of the allowlisted values (not "endsWith").
+ *      `endsWith("drive.google.com")` would pass `fakedrive.google.com`
+ *      if someone registered it. Exact equality is what we want.
+ */
 const driveUrlSchema = z
   .string().trim().url("invalid")
   .refine((value) => {
-    try { const u = new URL(value); return ["drive.google.com", "docs.google.com"].includes(u.hostname); } catch { return false; }
+    try {
+      const u = new URL(value);
+      if (u.protocol !== "https:") return false;
+      if (u.username || u.password) return false;
+      return DRIVE_ALLOWED_HOSTS.has(u.hostname);
+    } catch {
+      return false;
+    }
   }, "invalid_drive");
 
 const CrmDeals: React.FC = () => {
@@ -47,23 +73,43 @@ const CrmDeals: React.FC = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [showLegalDoc, setShowLegalDoc] = useState(false);
 
+  /* Synchronous guard: `setActionLoading(true)` doesn't commit before the
+   * next click in the same tick. Without this ref, a double-click on Close
+   * Deal fires two close_deal invocations and the second errors on an
+   * already-closed deal (or worse, succeeds and double-writes). */
+  const actionInFlightRef = useRef(false);
+
   const fetchDeals = useCallback(async () => {
     if (!user) return;
-    const { data: devProfile } = await supabase.from("developers").select("id").eq("user_id", user.id).maybeSingle();
+    const { data: devProfile, error: devErr } = await supabase.from("developers").select("id").eq("user_id", user.id).maybeSingle();
+    if (devErr) {
+      console.error("Failed to load developer profile:", devErr);
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: devErr.message });
+      setLoading(false);
+      return;
+    }
     if (!devProfile) {
       // No developer profile found — do not fetch deals without a filter
       setDeals([]);
       setLoading(false);
       return;
     }
-    const { data } = await supabase
+    // Filter soft-deleted deals. An admin soft-delete leaves the row in the
+    // table but must remove it from every end-user surface — the developer
+    // should not see a deal the platform has administratively dropped.
+    const { data, error } = await supabase
       .from("deals")
       .select("*, lands(city, district, land_area_sqm, estimated_price_per_sqm, estimated_total_value, usage_type, partnership_goal, project_model, deed_number, plan_number), developers(company_name, marketing_brand_name)")
       .eq("developer_id", devProfile.id)
+      .is("deleted_at", null)
       .order("created_at", { ascending: false });
+    if (error) {
+      console.error("Failed to load deals:", error);
+      toast({ variant: "destructive", title: isAr ? "تعذر تحميل الصفقات" : "Could not load deals", description: error.message });
+    }
     setDeals(data || []);
     setLoading(false);
-  }, [user]);
+  }, [user, toast, isAr]);
 
   useEffect(() => { fetchDeals(); }, [fetchDeals]);
 
@@ -112,6 +158,8 @@ const CrmDeals: React.FC = () => {
 
   const handleSubmitDriveAndAdvance = async () => {
     if (!viewDeal || !linkValidated) return;
+    if (actionInFlightRef.current) return;
+    actionInFlightRef.current = true;
     setActionLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("deal-drive-automation", { body: { action: "submit_drive_link", dealId: viewDeal.id, documentUrl: driveUrl.trim() } });
@@ -122,13 +170,31 @@ const CrmDeals: React.FC = () => {
       setDeals((prev) => prev.map((d) => (d.id === viewDeal.id ? { ...d, current_stage: nextStage } : d)));
       await fetchDealExtras(viewDeal.id);
       toast({ title: isAr ? "تم اعتماد الرابط" : "Link approved" });
+      // Audit trail: the developer just advanced the deal by submitting a
+      // drive link for legal review. This is a compliance-worthy event
+      // because it ties the developer's identity to a specific document URL.
+      try {
+        await logAudit(
+          user?.id || "",
+          user?.email,
+          "deal.submit_drive_link",
+          "deal",
+          viewDeal.id,
+          { to_stage: nextStage, document_url: driveUrl.trim() },
+        );
+      } catch (e) { console.error("Audit log failed:", e); }
     } catch (err: any) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
-    } finally { setActionLoading(false); }
+    } finally {
+      setActionLoading(false);
+      actionInFlightRef.current = false;
+    }
   };
 
   const handleCloseDeal = async () => {
     if (!viewDeal) return;
+    if (actionInFlightRef.current) return;
+    actionInFlightRef.current = true;
     setActionLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("deal-drive-automation", { body: { action: "close_deal", dealId: viewDeal.id } });
@@ -137,9 +203,23 @@ const CrmDeals: React.FC = () => {
       setViewDeal((prev: any) => prev ? { ...prev, current_stage: "deal_closed", closed_at: data?.deal?.closed_at } : prev);
       setDeals((prev) => prev.map((d) => (d.id === viewDeal.id ? { ...d, current_stage: "deal_closed" } : d)));
       toast({ title: isAr ? "تم إغلاق الصفقة" : "Deal closed" });
+      // Closing is a terminal state change — always audit.
+      try {
+        await logAudit(
+          user?.id || "",
+          user?.email,
+          "deal.close",
+          "deal",
+          viewDeal.id,
+          { land_id: viewDeal.land_id, closed_at: data?.deal?.closed_at || null },
+        );
+      } catch (e) { console.error("Audit log failed:", e); }
     } catch (err: any) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
-    } finally { setActionLoading(false); }
+    } finally {
+      setActionLoading(false);
+      actionInFlightRef.current = false;
+    }
   };
 
   const buildLandForm = (land: any): LandFormData => ({
@@ -162,8 +242,8 @@ const CrmDeals: React.FC = () => {
           <div className="absolute top-0 end-0 w-60 h-60 bg-[#C2A86B]/10 rounded-full blur-3xl -me-20 -mt-20 pointer-events-none" />
           <div className="relative flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#C2A86B]/15 text-[11px] font-semibold text-[#A88A4A] mb-2">
-                <Handshake className="w-3 h-3" strokeWidth={2} />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#C2A86B]/35 dark:border-[#C2A86B]/40 text-[11px] font-semibold text-[#A88A4A] dark:text-[#D4BC8A] mb-2">
+                <Handshake className="w-3 h-3" strokeWidth={1.7} />
                 {isAr ? "الصفقات" : "Deals"}
               </span>
               <h1 className="text-[24px] md:text-[28px] font-bold text-[#1E374B] dark:text-white tracking-tight">
@@ -325,6 +405,16 @@ const CrmDeals: React.FC = () => {
           onAcknowledged={() => {
             setViewDeal((prev: any) => prev ? { ...prev, developer_acknowledgment_accepted: true, developer_acknowledgment_date: new Date().toISOString() } : prev);
             setDeals(prev => prev.map(d => d.id === viewDeal.id ? { ...d, developer_acknowledgment_accepted: true, developer_acknowledgment_date: new Date().toISOString() } : d));
+            // Developer acknowledgment is part of the legal trail — audit on
+            // every acknowledgment regardless of viewer surface.
+            logAudit(
+              user?.id || "",
+              user?.email,
+              "deal.developer_acknowledged",
+              "deal",
+              viewDeal.id,
+              { land_id: viewDeal.land_id },
+            ).catch((e) => console.error("Audit log failed:", e));
           }}
         />
       )}

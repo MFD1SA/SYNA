@@ -35,6 +35,41 @@ export async function getContractByLandId(landId: string): Promise<BrokerageCont
 }
 
 /**
+ * Batch version of getContractByLandId — one round trip for N lands.
+ * Returns a map of land_id → latest contract row.
+ *
+ * Replaces the N+1 pattern where OwnerLands.tsx called
+ * `getContractByLandId` once per land in a Promise.all loop.
+ */
+export async function getContractsByLandIds(
+  landIds: string[],
+): Promise<Record<string, BrokerageContract>> {
+  if (landIds.length === 0) return {};
+
+  const uniqueIds = Array.from(new Set(landIds));
+
+  const { data, error } = await supabase
+    .from("brokerage_contracts")
+    .select("*")
+    .in("land_id", uniqueIds)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error batch-fetching brokerage contracts:", error);
+    return {};
+  }
+
+  // Rows arrive newest-first per land_id; keep only the first per land.
+  const map: Record<string, BrokerageContract> = {};
+  for (const row of (data || []) as BrokerageContract[]) {
+    if (!map[row.land_id]) {
+      map[row.land_id] = row;
+    }
+  }
+  return map;
+}
+
+/**
  * Get all brokerage contracts for an owner
  */
 export async function getContractsByOwnerId(ownerId: string): Promise<BrokerageContract[]> {

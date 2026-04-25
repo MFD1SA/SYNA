@@ -384,7 +384,21 @@ Deno.serve(async (req) => {
 
       const userId = newUser.user.id;
 
-      const { error: roleError } = await adminClient.from("user_roles").insert({ user_id: userId, role: "admin" });
+      // SECURITY: A previous version inserted `role: "admin"` here, which
+      // meant every "supervisor" passed `has_role(auth.uid(),'admin')` on
+      // RLS policies guarding contact_submissions, email_log, developers,
+      // audit_logs, etc. That silently bypassed the fine-grained
+      // admin_permissions flags and effectively gave every supervisor
+      // full admin data access.
+      //
+      // The `supervisor` role was added to the app_role enum in
+      // 20260418200000_phase1_gallery_high_control.sql specifically so
+      // we could store supervisors with a distinct role. RLS policies
+      // should gate off admin_permissions.is_super_admin / perm_* flags
+      // rather than raw has_role('admin').
+      const { error: roleError } = await adminClient
+        .from("user_roles")
+        .insert({ user_id: userId, role: "supervisor" });
       if (roleError) {
         await adminClient.auth.admin.deleteUser(userId);
         throw roleError;

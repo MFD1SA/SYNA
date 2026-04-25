@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { logAudit } from "@/lib/auditLog";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -67,9 +69,12 @@ const AdminOffers: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const { toast } = useToast();
+  const { user } = useAuth();
   usePageTitle(isAr ? "إدارة العروض" : "Manage Offers");
 
   const [offers, setOffers] = useState<Offer[]>([]);
+  const [deleteDialog, setDeleteDialog] = useState<Offer | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dialog, setDialog] = useState<{ mode: "create" | "edit"; offer: Partial<Offer> } | null>(null);
   const [saving, setSaving] = useState(false);
@@ -141,8 +146,11 @@ const AdminOffers: React.FC = () => {
     };
 
     let error: any;
+    let createdId: string | undefined;
     if (dialog.mode === "create") {
-      ({ error } = await supabase.from("platform_offers").insert(payload));
+      const res = await supabase.from("platform_offers").insert(payload).select("id").maybeSingle();
+      error = res.error;
+      createdId = res.data?.id;
     } else {
       ({ error } = await supabase.from("platform_offers").update(payload).eq("id", o.id));
     }
@@ -152,22 +160,69 @@ const AdminOffers: React.FC = () => {
       toast({ variant: "destructive", title: "Error", description: error.message });
       return;
     }
+    // Audit log — offer create/update is a public-website-content change and must be traceable.
+    if (user) {
+      const targetId = dialog.mode === "create" ? (createdId ?? "unknown") : (o.id ?? "unknown");
+      await logAudit(
+        user.id,
+        user.email,
+        dialog.mode === "create" ? "create" : "update",
+        "platform_offer",
+        targetId,
+        { slug: payload.slug, type: payload.type, is_active: payload.is_active }
+      );
+    }
     toast({ title: isAr ? "تم الحفظ" : "Saved" });
     setDialog(null);
     fetchOffers();
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(isAr ? "هل أنت متأكد من الحذف؟" : "Are you sure you want to delete?")) return;
-    const { error } = await supabase.from("platform_offers").delete().eq("id", id);
-    if (error) { toast({ variant: "destructive", title: "Error", description: error.message }); return; }
-    toast({ title: isAr ? "تم الحذف" : "Deleted" });
-    fetchOffers();
+  const confirmDelete = async () => {
+    if (!deleteDialog) return;
+    setDeleting(true);
+    try {
+      const { error } = await supabase.from("platform_offers").delete().eq("id", deleteDialog.id);
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: isAr ? "تعذر الحذف" : "Delete failed",
+          description: error.message,
+        });
+        return;
+      }
+      // Audit log — destructive deletion of public-website content.
+      if (user) {
+        await logAudit(
+          user.id,
+          user.email,
+          "delete",
+          "platform_offer",
+          deleteDialog.id,
+          { slug: deleteDialog.slug, title_ar: deleteDialog.title_ar, title_en: deleteDialog.title_en }
+        );
+      }
+      setDeleteDialog(null);
+      toast({ title: isAr ? "تم الحذف" : "Deleted" });
+      fetchOffers();
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const toggleActive = async (offer: Offer) => {
-    const { error } = await supabase.from("platform_offers").update({ is_active: !offer.is_active }).eq("id", offer.id);
+    const next = !offer.is_active;
+    const { error } = await supabase.from("platform_offers").update({ is_active: next }).eq("id", offer.id);
     if (error) { toast({ variant: "destructive", title: "Error", description: error.message }); return; }
+    if (user) {
+      await logAudit(
+        user.id,
+        user.email,
+        "update",
+        "platform_offer",
+        offer.id,
+        { field: "is_active", from: offer.is_active, to: next }
+      );
+    }
     fetchOffers();
   };
 
@@ -180,6 +235,16 @@ const AdminOffers: React.FC = () => {
       supabase.from("platform_offers").update({ sort_order: other.sort_order }).eq("id", offer.id),
       supabase.from("platform_offers").update({ sort_order: offer.sort_order }).eq("id", other.id),
     ]);
+    if (user) {
+      await logAudit(
+        user.id,
+        user.email,
+        "update",
+        "platform_offer",
+        offer.id,
+        { field: "sort_order", direction, swapped_with: other.id }
+      );
+    }
     fetchOffers();
   };
 
@@ -278,7 +343,7 @@ const AdminOffers: React.FC = () => {
                   <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(offer)}>
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400 hover:text-red-600" onClick={() => handleDelete(offer.id)}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400 hover:text-red-600" onClick={() => setDeleteDialog(offer)}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
@@ -443,6 +508,31 @@ const AdminOffers: React.FC = () => {
             </DialogContent>
           </Dialog>
         )}
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={!!deleteDialog} onOpenChange={(open) => { if (!open && !deleting) setDeleteDialog(null); }}>
+          <DialogContent className="max-w-sm" dir={isAr ? "rtl" : "ltr"}>
+            <DialogHeader>
+              <DialogTitle className="text-destructive flex items-center gap-2">
+                <Trash2 className="h-5 w-5" />
+                {isAr ? "حذف العرض" : "Delete Offer"}
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              {isAr
+                ? `هل أنت متأكد من حذف عرض "${deleteDialog?.title_ar || deleteDialog?.title_en || ""}"؟ لا يمكن التراجع عن هذا الإجراء.`
+                : `Are you sure you want to delete "${deleteDialog?.title_en || deleteDialog?.title_ar || ""}"? This action cannot be undone.`}
+            </p>
+            <DialogFooter className="gap-2">
+              <Button variant="outline" onClick={() => setDeleteDialog(null)} disabled={deleting}>
+                {isAr ? "إلغاء" : "Cancel"}
+              </Button>
+              <Button variant="destructive" onClick={confirmDelete} disabled={deleting}>
+                {deleting ? (isAr ? "جارٍ الحذف..." : "Deleting...") : (isAr ? "حذف" : "Delete")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );

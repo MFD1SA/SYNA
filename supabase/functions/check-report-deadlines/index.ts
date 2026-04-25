@@ -68,6 +68,8 @@ Deno.serve(async (req) => {
 
   let reminders_sent = 0;
   let reports_expired = 0;
+  let nda_requests_expired = 0;
+  let negotiation_rounds_expired = 0;
 
   try {
     // ── Step 1: Send reminders for reports approaching deadline ──
@@ -182,12 +184,49 @@ Deno.serve(async (req) => {
       }
     }
 
-    console.log(`[check-report-deadlines] Done: ${reminders_sent} reminders sent, ${reports_expired} reports expired`);
+    // ── Step 3: Expire deal_requests whose NDA deadline has passed ──
+    // Flip stale `nda_pending` / `nda_developer_accepted` rows to
+    // `closed_lost` in bulk. Uses the DB-side sweeper so the trigger
+    // logic stays in one place.
+    try {
+      const { data: ndaExpired, error: ndaErr } = await admin.rpc(
+        "expire_stale_nda_requests",
+      );
+      if (ndaErr) {
+        console.error("[check-report-deadlines] expire_stale_nda_requests rpc error:", ndaErr.message);
+      } else if (typeof ndaExpired === "number") {
+        nda_requests_expired = ndaExpired;
+      }
+    } catch (e) {
+      console.error("[check-report-deadlines] NDA sweeper threw:", e);
+    }
+
+    // ── Step 4: Expire negotiation rounds that never got a response ──
+    // Auto-rejects the round and closes the parent deal_request as
+    // closed_lost with reason=negotiation_deadline_expired.
+    try {
+      const { data: negExpired, error: negErr } = await admin.rpc(
+        "expire_stale_negotiation_rounds",
+      );
+      if (negErr) {
+        console.error("[check-report-deadlines] expire_stale_negotiation_rounds rpc error:", negErr.message);
+      } else if (typeof negExpired === "number") {
+        negotiation_rounds_expired = negExpired;
+      }
+    } catch (e) {
+      console.error("[check-report-deadlines] negotiation sweeper threw:", e);
+    }
+
+    console.log(
+      `[check-report-deadlines] Done: ${reminders_sent} reminders sent, ${reports_expired} reports expired, ${nda_requests_expired} NDA requests expired, ${negotiation_rounds_expired} negotiation rounds expired`,
+    );
 
     return new Response(JSON.stringify({
       success: true,
       reminders_sent,
       reports_expired,
+      nda_requests_expired,
+      negotiation_rounds_expired,
       checked_at: now.toISOString(),
     }), {
       headers: { "Content-Type": "application/json" },

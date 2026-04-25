@@ -9,6 +9,7 @@ import {
   Search, ExternalLink, CheckCircle2, FileText, Eye, Trash2, Filter,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { logAudit } from "@/lib/auditLog";
 
 const AdminSeoPages: React.FC = () => {
   const { lang } = useLanguage();
@@ -47,6 +48,7 @@ const AdminSeoPages: React.FC = () => {
   const handlePublish = async (id: string) => {
     try {
       await setSeoPageStatus(id, "published", user?.id);
+      if (user) await logAudit(user.id, user.email, "update", "seo_page", id, { status: "published" });
       toast({ title: isAr ? "تم النشر" : "Published" });
       await load();
     } catch (err: unknown) {
@@ -56,6 +58,7 @@ const AdminSeoPages: React.FC = () => {
   const handleMarkReady = async (id: string) => {
     try {
       await setSeoPageStatus(id, "ready_for_review", user?.id);
+      if (user) await logAudit(user.id, user.email, "update", "seo_page", id, { status: "ready_for_review" });
       toast({ title: isAr ? "جاهز للمراجعة" : "Marked ready" });
       await load();
     } catch (err: unknown) {
@@ -65,6 +68,7 @@ const AdminSeoPages: React.FC = () => {
   const handleNoindex = async (id: string, currentNoindex: boolean) => {
     try {
       await updateSeoPage(id, { noindex: !currentNoindex });
+      if (user) await logAudit(user.id, user.email, "update", "seo_page", id, { field: "noindex", from: currentNoindex, to: !currentNoindex });
       await load();
     } catch (err: unknown) {
       toast({ variant: "destructive", title: String(err) });
@@ -74,6 +78,7 @@ const AdminSeoPages: React.FC = () => {
     if (!confirm(isAr ? "حذف هذه الصفحة نهائياً؟" : "Delete this page permanently?")) return;
     try {
       await deleteSeoPage(id);
+      if (user) await logAudit(user.id, user.email, "delete", "seo_page", id);
       toast({ title: isAr ? "تم الحذف" : "Deleted" });
       await load();
     } catch (err: unknown) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import LocationMap from "@/components/crm/LocationMap";
@@ -71,6 +72,14 @@ const CrmBrowseLands: React.FC = () => {
   const [ndaMap, setNdaMap] = useState<Record<string, NDAConsent["status"]>>({});
   const [ndaDialog, setNdaDialog] = useState<{ landId: string; city: string; district?: string } | null>(null);
   const [ndaLoading, setNdaLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  /* Synchronous re-entry guard. Without this, a double-click on the Submit
+   * button (before React commits the setSubmitting(true) state) would fire
+   * two INSERTs into deal_requests and surface as duplicate rows. The boolean
+   * state is still needed for the disabled UI; the ref is what actually
+   * blocks the race. */
+  const submittingRef = useRef(false);
 
   const areaRanges = [
     { value: "all", ar: "الكل", en: "All" },
@@ -82,7 +91,17 @@ const CrmBrowseLands: React.FC = () => {
   ];
 
   const fetchMyRequests = async (devId: string) => {
-    const { data } = await supabase.from("deal_requests").select("land_id, current_phase").eq("developer_id", devId);
+    // Soft-deleted requests must not block the developer from re-applying on
+    // the same land. Mirrors the filter used by OwnerRequests and CrmDeals.
+    const { data, error } = await supabase
+      .from("deal_requests")
+      .select("land_id, current_phase")
+      .eq("developer_id", devId)
+      .is("deleted_at", null);
+    if (error) {
+      console.error("Failed to load existing deal_requests:", error);
+      return;
+    }
     if (data) {
       const map: Record<string, string> = {};
       data.forEach(r => { map[r.land_id] = r.current_phase; });
@@ -105,7 +124,7 @@ const CrmBrowseLands: React.FC = () => {
         setNdaMap(map);
       }
       // Select only fields needed for display — exclude owner_name to prevent identity leakage
-      const { data } = await supabase.from("lands").select("id, city, district, land_area_sqm, usage_type, partnership_goal, street_width_m, created_at, brokerage_license_number, brokerage_license_status, vision_summary, image_url, gallery_urls, is_active, owner_approved, owner_id, partnership_model, project_type").eq("is_active", true).eq("owner_approved", true).order("created_at", { ascending: false });
+      const { data } = await supabase.from("lands").select("id, city, district, land_area_sqm, usage_type, partnership_goal, street_width_m, created_at, brokerage_license_number, brokerage_license_status, vision_summary, image_url, gallery_urls, is_active, owner_approved, owner_id, partnership_model, project_type").eq("is_active", true).eq("owner_approved", true).is("deleted_at", null).order("created_at", { ascending: false });
       setLands(data || []);
       setLoading(false);
     };
@@ -117,39 +136,55 @@ const CrmBrowseLands: React.FC = () => {
       toast({ variant: "destructive", title: isAr ? "يرجى تعبئة جميع الحقول والموافقة على الرسوم" : "Please fill all fields and acknowledge fees" });
       return;
     }
-    // Get the land info for notification
-    const targetLand = lands.find(l => l.id === requestDialog);
+    // Ref guard blocks the synchronous double-click race. The `setSubmitting`
+    // below is still needed for the button's disabled state, but React batches
+    // state so the guard must be an imperative ref check.
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+    setSubmitting(true);
 
-    const { data: insertedReq, error } = await supabase.from("deal_requests").insert({
-      developer_id: developerId,
-      land_id: requestDialog,
-      proposal_summary: requestForm.proposal_summary,
-      proposed_project_type: requestForm.proposed_project_type,
-      commission_accepted: true,
-      // Total platform fee the developer has just acknowledged:
-      // 2.50% brokerage + 1.50% platform services = 4.00% of land value.
-      // Matches PLATFORM_TOTAL_RATE in LandFormConstants and the signed agreement v2.0.
-      commission_rate: 4.00,
-      proposal_link: requestForm.google_drive_link || null,
-    } as any).select("id").single();
-    if (error) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
-    } else {
+    // Snapshot the land id — requestDialog can be cleared by the success path
+    // before the notification fan-out has finished reading it.
+    const landId = requestDialog;
+    const targetLand = lands.find(l => l.id === landId);
+
+    try {
+      const { data: insertedReq, error } = await supabase.from("deal_requests").insert({
+        developer_id: developerId,
+        land_id: landId,
+        proposal_summary: requestForm.proposal_summary,
+        proposed_project_type: requestForm.proposed_project_type,
+        commission_accepted: true,
+        // Total platform fee the developer has just acknowledged:
+        // 2.50% brokerage + 1.50% platform services = 4.00% of land value.
+        // Matches PLATFORM_TOTAL_RATE in LandFormConstants and the signed agreement v2.0.
+        commission_rate: 4.00,
+        proposal_link: requestForm.google_drive_link || null,
+      } as any).select("id").single();
+
+      if (error) {
+        toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
+        return;
+      }
+
       toast({ title: isAr ? "تم إرسال الطلب بنجاح" : "Request submitted successfully" });
 
       // Audit trail: developer created an interest request on a land.
       if (insertedReq?.id && user) {
-        logAudit(
-          user.id,
-          user.email,
-          "deal_request.create",
-          "deal_request",
-          insertedReq.id,
-          { land_id: requestDialog, proposed_project_type: requestForm.proposed_project_type },
-        );
+        try {
+          await logAudit(
+            user.id,
+            user.email,
+            "deal_request.create",
+            "deal_request",
+            insertedReq.id,
+            { land_id: landId, proposed_project_type: requestForm.proposed_project_type },
+          );
+        } catch (e) { console.error("Audit log failed:", e); }
       }
 
       // Primary: unified owner-facing notification (Resend email + in-app row).
+      // Fire-and-forget — a failing webhook must not block the dialog from closing.
       if (insertedReq?.id) {
         supabase.functions
           .invoke("notify-interest", { body: { deal_request_id: insertedReq.id } })
@@ -158,9 +193,7 @@ const CrmBrowseLands: React.FC = () => {
 
       // Legacy secondary path (kept for existing deal-notification pipeline).
       try {
-        // Get developer info
         const { data: devInfo } = await supabase.from("developers").select("company_name, email").eq("id", developerId).maybeSingle();
-        // Get owner email from profiles
         if (targetLand?.owner_id) {
           const { data: ownerProfile } = await supabase.from("profiles").select("email, full_name").eq("user_id", targetLand.owner_id).maybeSingle();
           await supabase.functions.invoke("send-deal-notification", {
@@ -179,10 +212,13 @@ const CrmBrowseLands: React.FC = () => {
       } catch (e) {
         console.error("Notification error:", e);
       }
-      
+
       setRequestDialog(null);
       setRequestForm({ proposal_summary: "", proposed_project_type: "", google_drive_link: "", fee_acknowledged: false });
-      if (developerId) fetchMyRequests(developerId);
+      fetchMyRequests(developerId);
+    } finally {
+      setSubmitting(false);
+      submittingRef.current = false;
     }
   };
 
@@ -215,6 +251,12 @@ const CrmBrowseLands: React.FC = () => {
       setNdaDialog(null);
       setRequestDialog(landId);
       toast({ title: isAr ? "تم قبول اتفاقية عدم الإفصاح" : "NDA Accepted" });
+      // NDA decisions are part of the compliance trail — audit on every outcome.
+      if (user) {
+        try {
+          await logAudit(user.id, user.email, "nda.accept", "land", landId, { role: "developer" });
+        } catch (e) { console.error("Audit log failed:", e); }
+      }
     } else {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: result.error });
     }
@@ -223,16 +265,22 @@ const CrmBrowseLands: React.FC = () => {
   const handleNDAReject = async () => {
     if (!ndaDialog) return;
     setNdaLoading(true);
-    const result = await submitNDADecision(ndaDialog.landId, "reject");
+    const landId = ndaDialog.landId;
+    const result = await submitNDADecision(landId, "reject");
     setNdaLoading(false);
     if (result.success) {
-      setNdaMap(prev => ({ ...prev, [ndaDialog.landId]: "rejected" }));
+      setNdaMap(prev => ({ ...prev, [landId]: "rejected" }));
       setNdaDialog(null);
       toast({
         variant: "destructive",
         title: isAr ? "تم رفض اتفاقية عدم الإفصاح" : "NDA Rejected",
         description: isAr ? "لن تتمكن من التقديم على هذه الفرصة." : "You will not be able to apply for this opportunity.",
       });
+      if (user) {
+        try {
+          await logAudit(user.id, user.email, "nda.reject", "land", landId, { role: "developer" });
+        } catch (e) { console.error("Audit log failed:", e); }
+      }
     } else {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: result.error });
     }
@@ -291,8 +339,8 @@ const CrmBrowseLands: React.FC = () => {
           <div className="relative flex items-start justify-between gap-4 flex-wrap">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2B4C66]/10 text-[11px] font-semibold text-[#2B4C66]">
-                  <Search className="w-3 h-3" strokeWidth={2} />
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#2B4C66]/25 dark:border-[#7BA3C5]/35 text-[11px] font-semibold text-[#2B4C66] dark:text-[#9CC3DD]">
+                  <Search className="w-3 h-3" strokeWidth={1.7} />
                   {isAr ? "استعراض الفرص" : "Browse"}
                 </span>
                 {isVerified && <StatusBadge variant="success" dot>{isAr ? "موثّق" : "Verified"}</StatusBadge>}
@@ -381,25 +429,25 @@ const CrmBrowseLands: React.FC = () => {
             )}
           </div>
 
-          {/* Active filter chips */}
+          {/* Active filter chips — flat outlined style */}
           {(usageFilter !== "all" || areaFilter !== "all" || searchQuery) && (
             <div className="mt-3 flex flex-wrap gap-1.5">
               {searchQuery && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#2B4C66]/10 text-[11px] font-semibold text-[#2B4C66]">
-                  <Search className="w-3 h-3" />{searchQuery}
-                  <button onClick={() => setSearchQuery("")} className="hover:text-[#1E374B]"><XCircle className="w-3 h-3" /></button>
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#2B4C66]/25 dark:border-[#7BA3C5]/35 text-[11px] font-semibold text-[#2B4C66] dark:text-[#9CC3DD]">
+                  <Search className="w-3 h-3" strokeWidth={1.7} />{searchQuery}
+                  <button onClick={() => setSearchQuery("")} className="hover:text-[#1E374B] dark:hover:text-white"><XCircle className="w-3 h-3" strokeWidth={1.7} /></button>
                 </span>
               )}
               {usageFilter !== "all" && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#C2A86B]/15 text-[11px] font-semibold text-[#A88A4A]">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#C2A86B]/35 dark:border-[#C2A86B]/40 text-[11px] font-semibold text-[#A88A4A] dark:text-[#D4BC8A]">
                   {isAr ? usageLabels[usageFilter]?.ar : usageLabels[usageFilter]?.en}
-                  <button onClick={() => setUsageFilter("all")} className="hover:text-[#866C3A]"><XCircle className="w-3 h-3" /></button>
+                  <button onClick={() => setUsageFilter("all")} className="hover:text-[#866C3A] dark:hover:text-[#E5D4A6]"><XCircle className="w-3 h-3" strokeWidth={1.7} /></button>
                 </span>
               )}
               {areaFilter !== "all" && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-[11px] font-semibold text-emerald-700">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-emerald-300 dark:border-emerald-500/40 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
                   {isAr ? areaRanges.find(r => r.value === areaFilter)?.ar : areaRanges.find(r => r.value === areaFilter)?.en}
-                  <button onClick={() => setAreaFilter("all")} className="hover:text-emerald-900"><XCircle className="w-3 h-3" /></button>
+                  <button onClick={() => setAreaFilter("all")} className="hover:text-emerald-900 dark:hover:text-emerald-200"><XCircle className="w-3 h-3" strokeWidth={1.7} /></button>
                 </span>
               )}
             </div>
@@ -475,12 +523,30 @@ const CrmBrowseLands: React.FC = () => {
                       <Eye className="h-3 w-3" />{isAr ? "التفاصيل" : "Details"}
                     </Button>
                     {!submittedLands[l.id] ? (
-                      <Button size="sm" className="flex-1 text-xs gap-1 syna-gradient" disabled={!isVerified} onClick={() => handleApplyClick(l)}>
-                        <Send className="h-3 w-3" />{isAr ? "تقديم طلب" : "Apply"}
-                      </Button>
+                      !isVerified ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            {/* Wrapper span: disabled buttons don't fire pointer events so Radix can't detect hover */}
+                            <span className="flex-1" tabIndex={0}>
+                              <Button size="sm" variant="outline" className="w-full text-xs gap-1 border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10" disabled>
+                                <Send className="h-3 w-3" strokeWidth={1.7} />{isAr ? "تقديم طلب" : "Apply"}
+                              </Button>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[240px] text-center">
+                            {isAr
+                              ? "حسابك قيد التحقق. يرجى إكمال التوثيق أولاً لتتمكن من تقديم الطلبات."
+                              : "Your account is pending verification. Complete verification first to submit applications."}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <Button size="sm" variant="outline" className="flex-1 text-xs gap-1 border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 hover:text-[#1E374B] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10" onClick={() => handleApplyClick(l)}>
+                          <Send className="h-3 w-3" strokeWidth={1.7} />{isAr ? "تقديم طلب" : "Apply"}
+                        </Button>
+                      )
                     ) : (
-                      <Button variant="outline" size="sm" className="flex-1 text-xs gap-1" disabled>
-                        <CheckCircle2 className="h-3 w-3" />{isAr ? "تم التقديم" : "Applied"}
+                      <Button variant="outline" size="sm" className="flex-1 text-xs gap-1 border-emerald-300 text-emerald-700 dark:border-emerald-500/40 dark:text-emerald-300" disabled>
+                        <CheckCircle2 className="h-3 w-3" strokeWidth={1.7} />{isAr ? "تم التقديم" : "Applied"}
                       </Button>
                     )}
                   </div>
@@ -560,16 +626,33 @@ const CrmBrowseLands: React.FC = () => {
                 <LandAIInsights landId={detailDialog.id} />
               )}
 
-              {/* Apply button */}
+              {/* Apply button — flat outline */}
               <div className="flex justify-end gap-2 pt-2">
                 <Button variant="outline" onClick={() => setDetailDialog(null)}>{isAr ? "إغلاق" : "Close"}</Button>
                 {!submittedLands[detailDialog.id] ? (
-                  <Button className="doma-gradient gap-1.5" disabled={!isVerified} onClick={() => { setDetailDialog(null); handleApplyClick(detailDialog); }}>
-                    <Send className="h-4 w-4" />{isAr ? "تقديم طلب شراكة" : "Submit Request"}
-                  </Button>
+                  !isVerified ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span tabIndex={0}>
+                          <Button variant="outline" className="gap-1.5 border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10" disabled>
+                            <Send className="h-4 w-4" strokeWidth={1.7} />{isAr ? "تقديم طلب شراكة" : "Submit Request"}
+                          </Button>
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[260px] text-center">
+                        {isAr
+                          ? "حسابك قيد التحقق. يرجى إكمال التوثيق أولاً لتتمكن من تقديم الطلبات."
+                          : "Your account is pending verification. Complete verification first to submit applications."}
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Button variant="outline" className="gap-1.5 border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 hover:text-[#1E374B] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10" onClick={() => { setDetailDialog(null); handleApplyClick(detailDialog); }}>
+                      <Send className="h-4 w-4" strokeWidth={1.7} />{isAr ? "تقديم طلب شراكة" : "Submit Request"}
+                    </Button>
+                  )
                 ) : (
-                  <Button disabled className="gap-1.5">
-                    <CheckCircle2 className="h-4 w-4" />{isAr ? "تم التقديم" : "Already Applied"}
+                  <Button variant="outline" disabled className="gap-1.5 border-emerald-300 text-emerald-700 dark:border-emerald-500/40 dark:text-emerald-300">
+                    <CheckCircle2 className="h-4 w-4" strokeWidth={1.7} />{isAr ? "تم التقديم" : "Already Applied"}
                   </Button>
                 )}
               </div>
@@ -629,8 +712,15 @@ const CrmBrowseLands: React.FC = () => {
             />
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setRequestDialog(null)}>{isAr ? "إلغاء" : "Cancel"}</Button>
-              <Button onClick={handleSubmitRequest} disabled={!requestForm.fee_acknowledged} className="syna-gradient">{isAr ? "إرسال الطلب" : "Submit Request"}</Button>
+              <Button variant="outline" onClick={() => setRequestDialog(null)} disabled={submitting}>{isAr ? "إلغاء" : "Cancel"}</Button>
+              <Button
+                variant="outline"
+                onClick={handleSubmitRequest}
+                disabled={!requestForm.fee_acknowledged || submitting}
+                className="border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 hover:text-[#1E374B] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10"
+              >
+                {submitting ? (isAr ? "جارٍ الإرسال..." : "Submitting...") : (isAr ? "إرسال الطلب" : "Submit Request")}
+              </Button>
             </div>
           </div>
         </DialogContent>

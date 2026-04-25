@@ -466,25 +466,154 @@ serve(async (req) => {
     }
 
     // ── Authorization: non-admin users must be a party to the deal ──
-    if (!isAdmin) {
-      const callerIsParty =
-        (payload.developer_user_id && payload.developer_user_id === user.id) ||
-        (payload.owner_user_id && payload.owner_user_id === user.id);
-      if (!callerIsParty) {
-        return new Response(JSON.stringify({ error: "Forbidden: you are not a party to this deal" }), {
+    //
+    // SECURITY: We MUST NOT trust the caller-supplied `developer_user_id` /
+    // `owner_user_id` / `developer_email` / `owner_email` fields for
+    // authorization or routing. A previous version compared user.id to
+    // the body-supplied developer_user_id — a caller could simply set
+    // that to their own id and then supply any developer_email /
+    // owner_email, effectively turning this endpoint into a free
+    // phishing-email service branded as SYNA.
+    //
+    // Resolve the party addresses SERVER-SIDE from deal_id / request_id.
+    // Some notification types (new_owner_registered, new_developer_registered)
+    // are triggered from flows that don't have a deal yet and carry their
+    // own registered_email; those are gated to admin callers only.
+    const ADMIN_ONLY_TYPES = new Set<NotificationType>([
+      "new_owner_registered",
+      "new_developer_registered",
+    ]);
+
+    type ResolvedParties = {
+      developer_user_id: string | null;
+      developer_email: string | null;
+      developer_name: string | null;
+      owner_user_id: string | null;
+      owner_email: string | null;
+      owner_name: string | null;
+    };
+    const resolved: ResolvedParties = {
+      developer_user_id: null,
+      developer_email: null,
+      developer_name: null,
+      owner_user_id: null,
+      owner_email: null,
+      owner_name: null,
+    };
+
+    if (ADMIN_ONLY_TYPES.has(payload.type)) {
+      if (!isAdmin) {
+        return new Response(JSON.stringify({ error: "Forbidden: admin-only notification type" }), {
           status: 403,
           headers: { "Content-Type": "application/json", ...corsHeaders },
         });
       }
+      // Admin-only types use payload.registered_email for the recipient;
+      // no deal resolution needed.
+    } else {
+      // All other types REQUIRE a deal_id or request_id. Resolve parties
+      // server-side with the service-role client.
+      const dealId = payload.deal_id;
+      const requestId = payload.request_id;
+      if (!dealId && !requestId) {
+        return new Response(
+          JSON.stringify({ error: "Missing deal_id or request_id" }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } },
+        );
+      }
+
+      // Load deal/request → developer + land → owner.
+      let developerRowId: string | null = null;
+      let landRowId: string | null = null;
+
+      if (dealId) {
+        const { data: deal, error: dealErr } = await supabaseAdmin
+          .from("deals")
+          .select("developer_id, land_id")
+          .eq("id", dealId)
+          .maybeSingle();
+        if (dealErr || !deal) {
+          return new Response(JSON.stringify({ error: "Deal not found" }), {
+            status: 404,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          });
+        }
+        developerRowId = deal.developer_id as string | null;
+        landRowId = deal.land_id as string | null;
+      } else if (requestId) {
+        const { data: request, error: reqErr } = await supabaseAdmin
+          .from("deal_requests")
+          .select("developer_id, land_id")
+          .eq("id", requestId)
+          .maybeSingle();
+        if (reqErr || !request) {
+          return new Response(JSON.stringify({ error: "Request not found" }), {
+            status: 404,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          });
+        }
+        developerRowId = request.developer_id as string | null;
+        landRowId = request.land_id as string | null;
+      }
+
+      if (developerRowId) {
+        const { data: dev } = await supabaseAdmin
+          .from("developers")
+          .select("user_id, email, company_name")
+          .eq("id", developerRowId)
+          .maybeSingle();
+        if (dev) {
+          resolved.developer_user_id = (dev.user_id as string | null) ?? null;
+          resolved.developer_email = (dev.email as string | null) ?? null;
+          resolved.developer_name = (dev.company_name as string | null) ?? null;
+        }
+      }
+
+      if (landRowId) {
+        const { data: land } = await supabaseAdmin
+          .from("lands")
+          .select("owner_id, owner_name")
+          .eq("id", landRowId)
+          .maybeSingle();
+        if (land?.owner_id) {
+          resolved.owner_user_id = land.owner_id as string;
+          resolved.owner_name = (land.owner_name as string | null) ?? null;
+          // Fetch owner email from auth.users via the service-role admin API.
+          const { data: ownerUser } = await supabaseAdmin.auth.admin.getUserById(
+            land.owner_id as string,
+          );
+          resolved.owner_email = ownerUser?.user?.email ?? null;
+        }
+      }
+
+      // Non-admin caller must be a resolved party. This check uses
+      // the server-resolved ids, not the body-supplied ids.
+      if (!isAdmin) {
+        const callerIsParty =
+          (resolved.developer_user_id && resolved.developer_user_id === user.id) ||
+          (resolved.owner_user_id && resolved.owner_user_id === user.id);
+        if (!callerIsParty) {
+          return new Response(JSON.stringify({ error: "Forbidden: you are not a party to this deal" }), {
+            status: 403,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          });
+        }
+      }
     }
 
-    // Sanitize all string fields
+    // Sanitize all string fields.
+    // IMPORTANT: party names and emails are taken from the SERVER-RESOLVED
+    // values (not caller-supplied), except for the admin-only registration
+    // types which legitimately carry `registered_*` fields from the
+    // upstream registration handler.
     const sanitizedPayload: NotificationPayload = {
       ...payload,
-      developer_name: escapeHtml(payload.developer_name),
-      developer_email: payload.developer_email,
-      owner_name: escapeHtml(payload.owner_name),
-      owner_email: payload.owner_email,
+      developer_name: escapeHtml(resolved.developer_name ?? payload.developer_name),
+      developer_email: resolved.developer_email ?? (isAdmin ? payload.developer_email : undefined),
+      developer_user_id: resolved.developer_user_id ?? undefined,
+      owner_name: escapeHtml(resolved.owner_name ?? payload.owner_name),
+      owner_email: resolved.owner_email ?? (isAdmin ? payload.owner_email : undefined),
+      owner_user_id: resolved.owner_user_id ?? undefined,
       land_city: escapeHtml(payload.land_city),
       land_district: escapeHtml(payload.land_district),
       reject_reason: escapeHtml(payload.reject_reason),
@@ -495,6 +624,9 @@ serve(async (req) => {
       from_stage: payload.from_stage,
       to_stage: payload.to_stage,
       meeting_link: payload.meeting_link,
+      // Sanitize meeting_date and meeting_time — previously interpolated raw.
+      meeting_date: escapeHtml(payload.meeting_date),
+      meeting_time: escapeHtml(payload.meeting_time),
     };
 
     // Get admin user IDs for in-app notifications

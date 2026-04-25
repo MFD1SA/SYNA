@@ -120,13 +120,43 @@ const AdminTeam: React.FC = () => {
 
   const saveEdit = async () => {
     if (!editMember) return;
+
+    // P1.9 — compute a before/after diff so the audit log records what
+    // actually changed, not just the new snapshot. A diff-only record
+    // is both easier to eyeball ("who added perm_deals?") and cheaper
+    // for incident-response grep. We still store the full snapshot too.
+    const diff: Record<string, { before: boolean; after: boolean }> = {};
+    for (const k of PERM_KEYS) {
+      const before = !!editMember[k];
+      const after = !!editPerms[k];
+      if (before !== after) diff[k] = { before, after };
+    }
+    const changedKeys = Object.keys(diff);
+
+    // No-op guard: if nothing actually changed, don't touch the DB or
+    // spam the audit log. This avoids phantom "update" rows when the
+    // admin opens + saves the dialog without changing any toggle.
+    if (changedKeys.length === 0) {
+      toast({ title: isAr ? "لا تغييرات" : "No changes" });
+      setEditMember(null);
+      return;
+    }
+
     setSaving(true);
     const { error } = await supabase.from("admin_permissions").update(editPerms).eq("id", editMember.id);
     setSaving(false);
     if (error) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message });
     } else {
-      if (user) await logAudit(user.id, user.email, "update", "supervisor_permissions", editMember.id, editPerms);
+      if (user) {
+        await logAudit(user.id, user.email, "update", "supervisor_permissions", editMember.id, {
+          target_user_email: editMember.user_email,
+          target_user_id: editMember.user_id,
+          changed_keys: changedKeys,
+          diff,
+          after: editPerms,
+        });
+      }
       toast({ title: isAr ? "تم تحديث الصلاحيات" : "Permissions updated" });
       setEditMember(null);
       fetchMembers();

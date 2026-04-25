@@ -34,8 +34,13 @@ export const useUserType = (): UserTypeResult => {
   );
   const fetchingRef = useRef(false);
 
-  // Detect user change before effect runs — keeps `loading` true
-  const needsRecheck = !!user?.id && _cachedUserId !== user.id && !_cacheReady;
+  // Detect user change before effect runs — keeps `loading` true.
+  // CRITICAL: we must recheck whenever the cache is for a DIFFERENT user
+  // regardless of `_cacheReady`. The previous `&& !_cacheReady` clause meant
+  // that after user A populated the cache, a switch to user B would briefly
+  // return `{loading: false, userType: "A's type"}` for one render — enough
+  // for DeveloperRoute/OwnerRoute to render the wrong dashboard frame.
+  const needsRecheck = !!user?.id && _cachedUserId !== user.id;
   const loading = authLoading || !typeChecked || needsRecheck;
 
   useEffect(() => {
@@ -109,6 +114,9 @@ export const useUserType = (): UserTypeResult => {
         setDeveloperId(resolvedDevId);
       } catch (err) {
         console.error("useUserType error:", err);
+        // Do NOT cache a "none" verdict on error. Transient RLS/network
+        // failures would otherwise demote an admin/developer/owner to
+        // "none" and stick there until a hard refresh.
         setUserType("none");
       } finally {
         setTypeChecked(true);

@@ -172,8 +172,12 @@ serve(async (req) => {
       }
     }
 
-    // In-app notifications for every developer user
-    const inAppCount = await createNotifications(
+    // In-app notifications for every developer user.
+    // P2.5 — createNotifications now returns a structured result; we
+    // include both the inserted count AND the error (if any) in the
+    // response so the caller / monitoring knows when a batch silently
+    // dropped instead of showing a blanket success.
+    const inAppResult = await createNotifications(
       devList
         .filter((d) => d.user_id)
         .map((d) => ({
@@ -189,7 +193,14 @@ serve(async (req) => {
     );
 
     return new Response(
-      JSON.stringify({ success: true, emails_sent: sent, emails_failed: failed, notifications: inAppCount, developers_total: devList.length }),
+      JSON.stringify({
+        success: true,
+        emails_sent: sent,
+        emails_failed: failed,
+        notifications: inAppResult.inserted,
+        notifications_error: inAppResult.error ?? null,
+        developers_total: devList.length,
+      }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );
   } catch (err) {

@@ -109,6 +109,75 @@ export const phaseIcons = {
   cancelled: "XCircle",
 } as const;
 
+/**
+ * Returns true if the phase is a terminal state (no further transitions
+ * allowed). Mirrors TERMINAL_PHASES but gives a readable call site.
+ */
+export function isTerminalPhase(phase: DealPhase | string | null | undefined): boolean {
+  return !!phase && TERMINAL_PHASES.includes(phase as DealPhase);
+}
+
+/**
+ * P1.5 — pre-flight prerequisite check. The edge function is the source
+ * of truth for the full transition graph (supabase/functions/transition-
+ * deal-phase/index.ts), but we do *cheap* client-side checks first to:
+ *   1) avoid a useless edge-function round-trip when the deal is closed
+ *   2) give a friendlier error message than the generic server rejection
+ *   3) let callers disable buttons up-front
+ *
+ * Any check that would have to duplicate the server-side graph is left
+ * to the server so we don't drift. This function ONLY checks:
+ *   - request exists
+ *   - current phase is not terminal
+ *   - if `targetPhase` is terminal, require a reason (matches server behavior)
+ */
+export async function checkTransitionPrerequisites(
+  requestId: string,
+  targetPhase: DealPhase,
+  reason?: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!requestId) return { ok: false, error: "Request ID is required" };
+
+  const { data, error } = await supabase
+    .from("deal_requests")
+    .select("current_phase, closed_at")
+    .eq("id", requestId)
+    .maybeSingle();
+
+  if (error) return { ok: false, error: error.message };
+  if (!data) return { ok: false, error: "Deal request not found" };
+
+  const current = data.current_phase as DealPhase | null;
+
+  // Already terminal → nothing can change.
+  if (isTerminalPhase(current)) {
+    return {
+      ok: false,
+      error: `Cannot transition a closed deal (current phase: ${current}).`,
+    };
+  }
+
+  // Redundant transition (same → same) is a no-op. Block to avoid
+  // accidental audit-log noise and double-counted timestamps.
+  if (current === targetPhase) {
+    return {
+      ok: false,
+      error: `Deal is already in phase "${targetPhase}".`,
+    };
+  }
+
+  // Terminal transitions should carry a reason for the audit trail.
+  // The server enforces this too, but catching it early avoids the round trip.
+  if ((targetPhase === "closed_lost" || targetPhase === "cancelled") && !reason?.trim()) {
+    return {
+      ok: false,
+      error: "A reason is required when closing or cancelling a deal.",
+    };
+  }
+
+  return { ok: true };
+}
+
 export async function transitionDealPhase(
   requestId: string,
   targetPhase: DealPhase,
@@ -120,6 +189,10 @@ export async function transitionDealPhase(
   to_phase?: string;
   actor_role?: string;
 }> {
+  // P1.5 — pre-flight guard.
+  const pre = await checkTransitionPrerequisites(requestId, targetPhase, reason);
+  if (!pre.ok) return { success: false, error: pre.error };
+
   const { data, error } = await supabase.functions.invoke("transition-deal-phase", {
     body: { request_id: requestId, target_phase: targetPhase, reason: reason || null },
   });

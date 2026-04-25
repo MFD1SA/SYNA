@@ -13,6 +13,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import DevWebsiteAnalysis from "@/components/owner/DevWebsiteAnalysis";
@@ -102,6 +112,16 @@ const AdminDeals: React.FC = () => {
   // Deal meetings data
   const [dealMeetings, setDealMeetings] = useState<Record<string, any[]>>({});
   const [showLegalDoc, setShowLegalDoc] = useState(false);
+  // Confirmation dialog for the destructive "cancel deal" action.
+  // Previously the button fired handleCancelDeal immediately on click —
+  // a single misclick would irreversibly cancel a live deal. Now we
+  // stage the intent here and require a second explicit confirm.
+  const [cancelConfirm, setCancelConfirm] = useState<{
+    dealId: string;
+    currentStage: string;
+    devName?: string;
+    landCity?: string;
+  } | null>(null);
 
   const buildLandForm = (land: any): LandFormData => ({
     ...defaultLandForm,
@@ -280,11 +300,27 @@ const AdminDeals: React.FC = () => {
       if (!nextStage) throw new Error("Already at final stage");
       const updates: any = { current_stage: nextStage };
       if (nextStage === "deal_closed") updates.closed_at = new Date().toISOString();
-      await supabase.from("deals").update(updates).eq("id", stageDialog.dealId);
+      const { error: upErr } = await supabase.from("deals").update(updates).eq("id", stageDialog.dealId);
+      if (upErr) throw upErr;
       await supabase.from("deal_stages_log").insert({
         deal_id: stageDialog.dealId, from_stage: stageDialog.currentStage as any, to_stage: nextStage as any,
         changed_by: user!.id, notes: stageNotes || null,
       });
+      // P1.6 — mirror the stage advance into audit_logs. deal_stages_log
+      // is the per-deal timeline view, but audit_logs is the cross-entity
+      // compliance trail (same table a security auditor reads). Missing
+      // this entry meant an admin could advance a deal and nothing
+      // appeared in the audit export.
+      try {
+        await logAudit(user?.id || "", user?.email, "transition_stage", "deal", stageDialog.dealId, {
+          from_stage: stageDialog.currentStage,
+          to_stage: nextStage,
+          notes: stageNotes || null,
+        });
+      } catch (auditErr) {
+        // Audit failure must not roll back a committed stage change.
+        console.error("[AdminDeals] audit log for stage advance failed:", auditErr);
+      }
       // Send stage change notification
       try {
         await supabase.functions.invoke("send-deal-notification", {
@@ -312,13 +348,26 @@ const AdminDeals: React.FC = () => {
   const handleCancelDeal = async (dealId: string, currentStage: string) => {
     setActionLoading(true);
     try {
-      await supabase.from("deals").update({ current_stage: "deal_cancelled" }).eq("id", dealId);
+      const { error: updateErr } = await supabase
+        .from("deals")
+        .update({ current_stage: "deal_cancelled" })
+        .eq("id", dealId);
+      if (updateErr) throw updateErr;
       await supabase.from("deal_stages_log").insert({
         deal_id: dealId, from_stage: currentStage as any, to_stage: "deal_cancelled" as any,
         changed_by: user!.id, notes: "تم إلغاء الصفقة من قبل الإدارة",
       });
+      // Audit trail — destructive actions must always be recorded for
+      // incident-response reconstruction. `logAudit` signature is
+      // (userId, userEmail, action, entity_type, entity_id, details) —
+      // previous call was missing the actor fields, writing garbage rows.
+      await logAudit(user?.id || "", user?.email, "cancel", "deal", dealId, {
+        from_stage: currentStage,
+        to_stage: "deal_cancelled",
+      });
       toast({ title: isAr ? "تم إلغاء الصفقة" : "Deal cancelled" });
       setViewDeal(null);
+      setCancelConfirm(null);
     } catch (err: any) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
     } finally {
@@ -327,8 +376,19 @@ const AdminDeals: React.FC = () => {
   };
 
   const handleUpdateHealth = async (dealId: string, health: "green" | "yellow" | "red") => {
-    await supabase.from("deals").update({ health }).eq("id", dealId);
-    toast({ title: isAr ? "تم تحديث حالة الصفقة" : "Deal health updated" });
+    try {
+      const { error } = await supabase
+        .from("deals")
+        .update({ health })
+        .eq("id", dealId);
+      if (error) throw error;
+      // Signature fix: logAudit expects (userId, userEmail, action, ...).
+      await logAudit(user?.id || "", user?.email, "update", "deal", dealId, { health });
+      toast({ title: isAr ? "تم تحديث حالة الصفقة" : "Deal health updated" });
+    } catch (err: any) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
+      return;
+    }
     fetchAll();
   };
 
@@ -859,7 +919,20 @@ const AdminDeals: React.FC = () => {
                     </Button>
                   )}
                   {canAdvance && (
-                    <Button variant="destructive" size="sm" className="gap-1" onClick={() => handleCancelDeal(viewDeal.id, viewDeal.current_stage)} disabled={actionLoading}>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="gap-1"
+                      onClick={() =>
+                        setCancelConfirm({
+                          dealId: viewDeal.id,
+                          currentStage: viewDeal.current_stage,
+                          devName: viewDeal.developers?.company_name,
+                          landCity: viewDeal.lands?.city,
+                        })
+                      }
+                      disabled={actionLoading}
+                    >
                       <XCircle className="h-3.5 w-3.5" />{isAr ? "إلغاء" : "Cancel"}
                     </Button>
                   )}
@@ -945,15 +1018,39 @@ const AdminDeals: React.FC = () => {
                 <MoveRight className="h-4 w-4 text-[#2B4C66]" />
                 <Badge className="text-xs bg-primary">{isAr ? stageConfig[stageDialog.nextStage]?.ar : stageConfig[stageDialog.nextStage]?.en}</Badge>
               </div>
+              {/* P1.7 — extra explicit warning when the next stage is
+                  terminal. Advancing a deal to "deal_closed" writes a
+                  closed_at stamp, opens the commission-settlement path,
+                  and is not easily reversible. The generic "Advance"
+                  button deserves a stronger signal at that final step. */}
+              {stageDialog.nextStage === "deal_closed" && (
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-700 dark:text-amber-400 flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                  <span>
+                    {isAr
+                      ? "تنبيه: سيتم إغلاق الصفقة وتسجيل وقت الإغلاق. هذا الانتقال نهائي ويفتح مسار احتساب العمولة. تأكد من اكتمال كل المراحل السابقة."
+                      : "Warning: this closes the deal, stamps closed_at, and opens the commission-settlement path. This is a terminal stage. Verify all prior stages are complete."}
+                  </span>
+                </div>
+              )}
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium">{isAr ? "ملاحظات (اختياري)" : "Notes (optional)"}</Label>
+                <Label className="text-xs font-medium">
+                  {stageDialog.nextStage === "deal_closed"
+                    ? (isAr ? "ملاحظات الإغلاق *" : "Closing notes *")
+                    : (isAr ? "ملاحظات (اختياري)" : "Notes (optional)")}
+                </Label>
                 <Textarea value={stageNotes} onChange={e => setStageNotes(e.target.value)} rows={3} placeholder={isAr ? "تفاصيل الانتقال..." : "Transition details..."} />
               </div>
             </div>
           )}
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setStageDialog(null)}>{isAr ? "إلغاء" : "Cancel"}</Button>
-            <Button onClick={handleAdvanceStage} disabled={actionLoading} className="gap-1.5">
+            <Button
+              onClick={handleAdvanceStage}
+              /* P1.7 — closing the deal requires non-empty notes (audit hygiene). */
+              disabled={actionLoading || (stageDialog?.nextStage === "deal_closed" && !stageNotes.trim())}
+              className="gap-1.5"
+            >
               {actionLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
               {isAr ? "تأكيد الانتقال" : "Confirm Advance"}
             </Button>
@@ -978,6 +1075,43 @@ const AdminDeals: React.FC = () => {
           developerAcknowledgedDate={viewDeal.developer_acknowledgment_date}
         />
       )}
+
+      {/* Cancel deal confirmation — destructive action. A single misclick
+          on the "Cancel" button used to irreversibly terminate a live
+          deal. This AlertDialog forces an explicit second confirmation
+          and surfaces which deal is about to be cancelled. */}
+      <AlertDialog open={!!cancelConfirm} onOpenChange={(o) => { if (!o) setCancelConfirm(null); }}>
+        <AlertDialogContent dir={isAr ? "rtl" : "ltr"}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {isAr ? "تأكيد إلغاء الصفقة" : "Confirm deal cancellation"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {isAr
+                ? `سيتم إلغاء الصفقة${cancelConfirm?.devName ? ` مع ${cancelConfirm.devName}` : ""}${cancelConfirm?.landCity ? ` - ${cancelConfirm.landCity}` : ""}. هذا الإجراء لا يمكن التراجع عنه.`
+                : `This will cancel the deal${cancelConfirm?.devName ? ` with ${cancelConfirm.devName}` : ""}${cancelConfirm?.landCity ? ` — ${cancelConfirm.landCity}` : ""}. This action cannot be undone.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading}>
+              {isAr ? "تراجع" : "Back"}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (cancelConfirm) {
+                  handleCancelDeal(cancelConfirm.dealId, cancelConfirm.currentStage);
+                }
+              }}
+              disabled={actionLoading}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {actionLoading
+                ? (isAr ? "جارٍ الإلغاء..." : "Cancelling...")
+                : (isAr ? "نعم، إلغاء الصفقة" : "Yes, cancel deal")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
     </AdminLayout>
   );

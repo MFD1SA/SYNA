@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, arrivedWithAuthHash } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useToast } from "@/hooks/use-toast";
@@ -31,6 +31,33 @@ const SetPassword: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    // Defense: this page can ONLY legitimately be reached via a Supabase
+    // invite/recovery/signup email link, which embeds a token in the URL
+    // fragment (#access_token=...&type=invite). `arrivedWithAuthHash` is
+    // captured at module load BEFORE Supabase consumes the hash.
+    //
+    // If the flag is false, the user either:
+    //   a) bookmarked / pasted the URL after the hash was stripped
+    //   b) is an already-authenticated owner who navigated here manually
+    // In case (b), allowing supabase.auth.updateUser() would let them
+    // silently change their own password without re-authenticating — a
+    // CSRF-adjacent hole. Refuse and redirect them to the password-reset
+    // flow instead.
+    if (!arrivedWithAuthHash) {
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) {
+          setSessionError(isAr
+            ? "هذه الصفحة مخصصة لتأكيد دعوة جديدة فقط. لتغيير كلمة مرور حساب قائم يرجى استخدام نسيت كلمة المرور."
+            : "This page is for new invite confirmation only. To change the password of an existing account, use the Forgot Password flow.");
+        } else {
+          setSessionError(isAr
+            ? "انتهت صلاحية رابط الدعوة أو أنه غير صالح. يرجى طلب دعوة جديدة من المسؤول."
+            : "Invite link is invalid or expired. Please request a new invite.");
+        }
+      });
+      return;
+    }
+
     // 1. Check if we already have a session from the invite link.
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
@@ -73,6 +100,18 @@ const SetPassword: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Belt-and-suspenders: even if the UI somehow bypassed the sessionError
+    // branch, refuse to call updateUser without a legitimate invite hash.
+    if (!arrivedWithAuthHash) {
+      toast({
+        variant: "destructive",
+        title: isAr ? "جلسة غير صالحة" : "Invalid session",
+        description: isAr
+          ? "لا يمكن تعيين كلمة المرور بدون رابط دعوة صالح."
+          : "Cannot set password without a valid invite link.",
+      });
+      return;
+    }
     if (!passwordStrong) {
       toast({
         variant: "destructive",

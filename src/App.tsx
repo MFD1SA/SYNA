@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,11 +13,17 @@ import { useAdminRole } from "@/hooks/useAdminRole";
 import { useUserType } from "@/hooks/useUserType";
 import { isImpersonationSession } from "@/integrations/supabase/impersonateClient";
 
-// Immediate loading for entry points to prevent layout shift / delays on landing
+// Immediate loading for entry points to prevent layout shift / delays on landing.
+// Only Index stays eager — it's the single page that must paint without any
+// network-gated JS chunk. LoginPage used to sit in this eager list too, but a
+// cold marketing visitor who never signs in was paying for its bundle (and
+// every shared dep transitively pulled in) on first paint. Moving it into
+// the lazy bucket cuts the entry chunk by the Login bundle size and defers
+// the download until the user actually navigates to /auth/login.
 import Index from "./pages/Index";
-import LoginPage from "./pages/Login";
 
 // Lazy loading for heavy dashboard and secondary pages
+const LoginPage = lazy(() => import("./pages/Login"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const NoAccess = lazy(() => import("./pages/NoAccess"));
 const TermsPage = lazy(() => import("./pages/Terms"));
@@ -116,13 +122,21 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 // Developer-only route: only actual developers allowed
 // Admins must use impersonate (Login button) to access developer dashboards
-// Impersonation tabs (sessionStorage-based) are allowed through
+// Impersonation tabs (sessionStorage-based) are allowed through ONLY when a
+// real Supabase session is present — otherwise a leftover sessionStorage flag
+// from a past impersonation would let a signed-out tab render the CRM frame
+// (RLS would deny data, but the shell would still leak layout + any cached
+// react-query state from the previous user).
 const DeveloperRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading: authLoading } = useAuth();
   const { userType, loading: typeLoading } = useUserType();
-  // Impersonation tabs bypass normal route guards — the session is already
-  // validated by ImpersonateCallback and stored in sessionStorage
-  if (isImpersonationSession()) return <>{children}</>;
+  // Impersonation tabs bypass role checks — the session was validated by
+  // ImpersonateCallback — but they still require a live auth session.
+  if (isImpersonationSession()) {
+    if (authLoading) return <RouteLoader />;
+    if (!user) return <Navigate to="/auth/login" replace />;
+    return <ErrorBoundary>{children}</ErrorBoundary>;
+  }
   if (authLoading || typeLoading) return <RouteLoader />;
   if (!user) return <Navigate to="/auth/login" replace />;
   if (userType === "developer") return <ErrorBoundary>{children}</ErrorBoundary>;
@@ -136,8 +150,12 @@ const DeveloperRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 const OwnerRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading: authLoading } = useAuth();
   const { userType, loading: typeLoading } = useUserType();
-  // Impersonation tabs bypass normal route guards
-  if (isImpersonationSession()) return <>{children}</>;
+  // Impersonation tabs — same guarantee as DeveloperRoute: require a real session.
+  if (isImpersonationSession()) {
+    if (authLoading) return <RouteLoader />;
+    if (!user) return <Navigate to="/auth/login" replace />;
+    return <ErrorBoundary>{children}</ErrorBoundary>;
+  }
   if (authLoading || typeLoading) return <RouteLoader />;
   if (!user) return <Navigate to="/auth/login" replace />;
   if (userType === "owner") return <ErrorBoundary>{children}</ErrorBoundary>;
@@ -152,16 +170,34 @@ const OwnerRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading: authLoading, signOut } = useAuth();
   const { userType, loading: typeLoading } = useUserType();
-  if (authLoading || typeLoading) return <LoadingScreen />;
+  const [cleaningUp, setCleaningUp] = useState(false);
+
+  // A logged-in user with no recognized role (userType === "none") has a
+  // dangling session — sign them out synchronously BEFORE rendering the
+  // login form so they can't re-submit credentials on top of a half-dead
+  // session, and can't see the login screen while a parallel signOut
+  // is racing to finish. Hold on a loading screen until cleanup resolves.
+  // NOTE: useUserType returns the literal string "none" (not null) for this
+  // state — the previous `userType === null` check was dead code.
+  useEffect(() => {
+    if (!authLoading && !typeLoading && user && userType === "none" && !cleaningUp) {
+      setCleaningUp(true);
+      signOut().finally(() => setCleaningUp(false));
+    }
+  }, [authLoading, typeLoading, user, userType, signOut, cleaningUp]);
+
+  if (authLoading || typeLoading || cleaningUp) return <LoadingScreen />;
   if (user) {
     if (userType === "developer") return <Navigate to="/crm/dashboard" replace />;
     if (userType === "owner") return <Navigate to="/owner/dashboard" replace />;
-    // Admin stays on login page — they should use /admincp instead.
-    // Also sign out users with no valid role.
-    if (userType !== "admin") {
-      signOut();
+    if (userType === "admin") {
+      // Admin stays on login page — they should use /admincp instead.
+      return <>{children}</>;
     }
-    return <>{children}</>;
+    // userType === "none": signOut is in flight (triggered above). Render a
+    // loader; once auth state clears, the component re-renders with !user
+    // and falls through to the default branch below.
+    return <LoadingScreen />;
   }
   return <>{children}</>;
 };

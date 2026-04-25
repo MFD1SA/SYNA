@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { clearUserTypeCache } from "@/hooks/useUserType";
 import { setSentryUser } from "@/lib/sentry";
@@ -59,6 +59,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
       if (cancelled) return;
       if (event === "SIGNED_OUT" || !newSession) {
+        // Belt-and-braces: even if signOut() was not called through our
+        // wrapper (e.g. session expired on the server, or a sibling tab
+        // triggered the event), wipe the role cache so the next useUserType
+        // consumer doesn't see a stale admin verdict for a signed-out user.
+        clearUserTypeCache();
         setSession(null);
         setUser(null);
         setSentryUser(null);
@@ -71,16 +76,65 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
     });
 
+    // Cross-tab signOut propagation: Supabase v2 writes to localStorage,
+    // so a sign-out in tab A drops the session key. Tab B's
+    // onAuthStateChange fires only on next refresh attempt; listen for
+    // the storage event directly so tab B reacts immediately.
+    const onStorage = (e: StorageEvent) => {
+      if (cancelled) return;
+      // Supabase's storage key is prefixed `sb-...-auth-token` — match the
+      // removal of any auth-token key, or the explicit clear of our
+      // impersonation flag.
+      if (
+        e.storageArea === localStorage &&
+        e.newValue === null &&
+        (e.key?.includes("auth-token") || e.key?.includes("syna-auth"))
+      ) {
+        clearUserTypeCache();
+        setSession(null);
+        setUser(null);
+        setSentryUser(null);
+      }
+    };
+    window.addEventListener("storage", onStorage);
+
     return () => {
       cancelled = true;
       subscription.unsubscribe();
+      window.removeEventListener("storage", onStorage);
     };
   }, []);
 
-  const signOut = async () => {
-    clearUserTypeCache();
+  // useCallback so consumers (e.g. PublicOnlyRoute's useEffect) get a stable
+  // function identity across renders — otherwise a dependency on signOut in
+  // a useEffect would retrigger on every render of AuthProvider.
+  const signOut = useCallback(async () => {
+    // Tab-scoped impersonation cleanup. sessionStorage is per-tab so
+    // clearing here affects ONLY this tab — admin tabs in other windows
+    // are untouched. If we don't clear these, the next page load in this
+    // tab will still be treated as an impersonation session (see
+    // client.ts) and the stale marker survives the auth signOut.
+    try {
+      sessionStorage.removeItem("syna_impersonation_active");
+      sessionStorage.removeItem("syna-impersonate-session");
+      // Legacy cross-tab bridge — cleared just in case it leaked into
+      // localStorage from an older build.
+      localStorage.removeItem("syna_impersonate_tokens");
+    } catch {
+      /* storage may be unavailable in some sandboxes — non-fatal */
+    }
+    // Sign out first so any in-flight queries observe the invalidated
+    // session; THEN wipe the role cache. Clearing the cache before
+    // signOut() returns created a brief window where still-mounted
+    // components re-read useUserType with the cleared cache and fired
+    // fresh `user_roles` queries against the soon-to-be-invalid JWT.
+    // Also clear Sentry scope before the listener sees SIGNED_OUT so any
+    // error captured during the signOut roundtrip isn't tagged to the
+    // previous user.
+    setSentryUser(null);
     await supabase.auth.signOut();
-  };
+    clearUserTypeCache();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, session, loading, signOut }}>

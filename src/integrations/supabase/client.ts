@@ -16,16 +16,39 @@ const isImpersonationTab = (() => {
   // Already marked (from a prior page in this tab)
   if (sessionStorage.getItem(IMPERSONATION_FLAG) === "true") return true;
   // First landing on /impersonate-callback with tokens waiting → mark now.
-  // Tokens may arrive via URL hash (preferred) or legacy localStorage bridge.
+  //   - #x=<exchange_id> is the current (2026-04+) one-time-exchange flow
+  //   - #t=<base64>      is the legacy direct-hand-off (kept for rollover)
+  //   - localStorage bridge is even older
   if (
     window.location.pathname === "/impersonate-callback" &&
-    (window.location.hash.startsWith("#t=") ||
+    (window.location.hash.startsWith("#x=") ||
+      window.location.hash.startsWith("#t=") ||
       localStorage.getItem("syna_impersonate_tokens"))
   ) {
     sessionStorage.setItem(IMPERSONATION_FLAG, "true");
     return true;
   }
   return false;
+})();
+
+/**
+ * Captured BEFORE Supabase consumes the URL hash (detectSessionInUrl).
+ * True only when this page load began with a Supabase invite/recovery/signup
+ * token in the URL fragment. Used by SetPassword to reject stale sessions
+ * (an already-logged-in owner opening /auth/set-password by mistake should
+ * NOT be able to silently change their password).
+ */
+export const arrivedWithAuthHash = (() => {
+  if (typeof window === "undefined") return false;
+  const h = window.location.hash;
+  if (!h || h.length < 2) return false;
+  try {
+    const params = new URLSearchParams(h.slice(1));
+    const type = params.get("type");
+    return type === "invite" || type === "recovery" || type === "signup";
+  } catch {
+    return false;
+  }
 })();
 
 // Import the supabase client like this:

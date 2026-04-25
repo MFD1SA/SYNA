@@ -8,7 +8,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Star, StarOff, MapPin, Search, Eye, EyeOff, Pencil, Ruler, Building2, Image as ImageIcon, Landmark, FileText, Shield, Upload, Download, Banknote, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -30,11 +30,14 @@ const AdminLands: React.FC = () => {
   const [lands, setLands] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [showDeleted, setShowDeleted] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editInitialData, setEditInitialData] = useState<Partial<LandFormData>>({});
   const [ownerProfiles, setOwnerProfiles] = useState<any[]>([]);
   const [legalDocLand, setLegalDocLand] = useState<any>(null);
+  const [deleteDialog, setDeleteDialog] = useState<any>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Brokerage dialog state
   const [brokerageLand, setBrokerageLand] = useState<any>(null);
@@ -59,12 +62,19 @@ const AdminLands: React.FC = () => {
   });
 
   const fetchLands = async () => {
-    const { data } = await supabase.from("lands").select("*").order("created_at", { ascending: false });
+    // Soft-delete awareness: hide rows where deleted_at is set by default.
+    // Admin can opt-in to see soft-deleted lands via the "عرض المحذوفة" toggle
+    // for recovery / audit workflows. Without this filter, admins were
+    // editing ghosts — UI listed deleted lands as "active" and all mutations
+    // silently failed against the RLS soft-delete guard.
+    let query = supabase.from("lands").select("*").order("created_at", { ascending: false });
+    if (!showDeleted) query = query.is("deleted_at", null);
+    const { data } = await query;
     setLands(data || []);
     setLoading(false);
   };
 
-  useEffect(() => { fetchLands(); }, []);
+  useEffect(() => { fetchLands(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [showDeleted]);
 
   useEffect(() => {
     const fetchOwnerProfiles = async () => {
@@ -121,6 +131,14 @@ const AdminLands: React.FC = () => {
       platform_fee_acknowledged: form.platform_fee_acknowledged,
     };
 
+    // P1.4 — capture previous state BEFORE the update so we can detect
+    // approval/unapproval flips and notify the owner.
+    let prevOwnerApproved = false;
+    if (editingId) {
+      const existingLand = lands.find((l) => l.id === editingId);
+      prevOwnerApproved = !!existingLand?.owner_approved;
+    }
+
     let error;
     if (editingId) {
       ({ error } = await supabase.from("lands").update(payload).eq("id", editingId));
@@ -133,7 +151,35 @@ const AdminLands: React.FC = () => {
     } else {
       if (user) await logAudit(user.id, user.email, editingId ? "update" : "create", "land", editingId || undefined, { city: payload.city });
       toast({ title: isAr ? (editingId ? "تم التحديث" : "تمت الإضافة") : (editingId ? "Updated" : "Land Added") });
-      
+
+      // P1.4 — notify owner when admin flips owner_approved on edit.
+      // Admin RLS allows direct INSERT into notifications (has_role check),
+      // so this is a straight client-side fan-out — no RPC needed.
+      // Fire-and-forget: a notification failure must never block the land save.
+      if (editingId && ownerId !== user?.id && prevOwnerApproved !== payload.owner_approved) {
+        const approved = payload.owner_approved === true;
+        const locLabel = `${payload.city}${payload.district ? ` - ${payload.district}` : ""}`;
+        supabase
+          .from("notifications")
+          .insert({
+            user_id: ownerId,
+            type: approved ? "land_approved" : "land_changes_required",
+            title_ar: approved ? "تمت الموافقة على أرضك" : "طلب مراجعة على أرضك",
+            title_en: approved ? "Your land has been approved" : "Changes required on your land",
+            message_ar: approved
+              ? `تمت الموافقة على أرضك في ${locLabel} وأصبحت جاهزة للعرض على المطورين.`
+              : `هناك حاجة لمراجعة بيانات أرضك في ${locLabel}. يرجى التواصل مع الإدارة لمزيد من التفاصيل.`,
+            message_en: approved
+              ? `Your land in ${locLabel} has been approved and is now visible to developers.`
+              : `Changes required on your land in ${locLabel}. Please contact the admin for details.`,
+            entity_type: "land",
+            entity_id: editingId,
+          })
+          .then(({ error: notifError }) => {
+            if (notifError) console.warn("[AdminLands] owner approval notification failed:", notifError.message);
+          });
+      }
+
       // Send notification to owner when admin creates a draft
       if (!editingId && ownerId !== user?.id) {
         try {
@@ -152,7 +198,7 @@ const AdminLands: React.FC = () => {
           console.error("Draft notification error:", e);
         }
       }
-      
+
       closeDialog();
       fetchLands();
     }
@@ -215,17 +261,71 @@ const AdminLands: React.FC = () => {
   };
 
   const toggleActive = async (id: string, current: boolean) => {
+    const land = lands.find((l) => l.id === id);
     await supabase.from("lands").update({ is_active: !current }).eq("id", id);
     if (user) await logAudit(user.id, user.email, "update", "land", id, { is_active: !current });
+
+    // P1.4 — notify owner when admin publishes/unpublishes their land.
+    // Owners must know when their listing disappears from the marketplace
+    // or (re)appears. Fire-and-forget — publish toggle must not block on notif.
+    if (land?.owner_id && land.owner_id !== user?.id) {
+      const published = !current;
+      const locLabel = `${land.city}${land.district ? ` - ${land.district}` : ""}`;
+      supabase
+        .from("notifications")
+        .insert({
+          user_id: land.owner_id,
+          type: published ? "land_published" : "land_unpublished",
+          title_ar: published ? "تم نشر أرضك" : "تم إيقاف نشر أرضك",
+          title_en: published ? "Your land is now published" : "Your land has been unpublished",
+          message_ar: published
+            ? `تم نشر أرضك في ${locLabel} على المنصة وأصبحت متاحة للمطورين.`
+            : `تم إيقاف نشر أرضك في ${locLabel}. للمزيد من التفاصيل تواصل مع الإدارة.`,
+          message_en: published
+            ? `Your land in ${locLabel} is now live on the platform.`
+            : `Your land in ${locLabel} has been unpublished. Contact admin for details.`,
+          entity_type: "land",
+          entity_id: id,
+        })
+        .then(({ error: notifError }) => {
+          if (notifError) console.warn("[AdminLands] publish toggle notification failed:", notifError.message);
+        });
+    }
+
     fetchLands();
     toast({ title: isAr ? (!current ? "تم النشر" : "تم الإخفاء") : (!current ? "Published" : "Hidden") });
   };
 
-  const deleteLand = async (id: string) => {
-    await supabase.from("lands").delete().eq("id", id);
-    if (user) await logAudit(user.id, user.email, "delete", "land", id);
-    fetchLands();
-    toast({ title: isAr ? "تم الحذف" : "Deleted" });
+  const confirmDeleteLand = async () => {
+    if (!deleteDialog) return;
+    const id = deleteDialog.id;
+    setDeleting(true);
+    try {
+      // Soft-delete so FK cascade doesn't wipe historical deal_requests.
+      // The DB trigger `trg_prevent_land_delete_with_active_deals`
+      // still blocks any hard DELETE that slips through while open
+      // deals reference this land — this path is the intended one.
+      const { error } = await supabase
+        .from("lands")
+        .update({ deleted_at: new Date().toISOString(), is_active: false })
+        .eq("id", id);
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: isAr ? "تعذر الحذف" : "Delete failed",
+          description: error.message,
+        });
+        return;
+      }
+
+      if (user) await logAudit(user.id, user.email, "delete", "land", id);
+      setDeleteDialog(null);
+      fetchLands();
+      toast({ title: isAr ? "تم الحذف" : "Deleted" });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const openBrokerage = async (land: any) => {
@@ -417,10 +517,21 @@ const AdminLands: React.FC = () => {
           </DialogContent>
         </Dialog>
 
-        {/* Search */}
-        <div className="mb-4 relative max-w-sm">
-          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input className="ps-9" placeholder={isAr ? "بحث..." : "Search..."} value={search} onChange={e => setSearch(e.target.value)} />
+        {/* Search + soft-delete toggle */}
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <div className="relative max-w-sm flex-1 min-w-[220px]">
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input className="ps-9" placeholder={isAr ? "بحث..." : "Search..."} value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
+          <label className="inline-flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none">
+            <input
+              type="checkbox"
+              className="accent-primary h-4 w-4"
+              checked={showDeleted}
+              onChange={(e) => setShowDeleted(e.target.checked)}
+            />
+            {isAr ? "عرض الأراضي المحذوفة" : "Show deleted lands"}
+          </label>
         </div>
 
         {loading ? (
@@ -494,7 +605,7 @@ const AdminLands: React.FC = () => {
                             <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-lg" onClick={() => setLegalDocLand(land)} title={isAr ? "طباعة الوثيقة" : "Print Doc"}>
                               <FileText className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg" onClick={() => deleteLand(land.id)} title={isAr ? "حذف" : "Delete"}>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg" onClick={() => setDeleteDialog(land)} title={isAr ? "حذف" : "Delete"}>
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
@@ -685,6 +796,40 @@ const AdminLands: React.FC = () => {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteDialog} onOpenChange={(open) => { if (!open && !deleting) setDeleteDialog(null); }}>
+        <DialogContent className="max-w-sm" dir={isAr ? "rtl" : "ltr"}>
+          <DialogHeader>
+            <DialogTitle className="text-destructive flex items-center gap-2">
+              <Trash2 className="h-5 w-5" />
+              {isAr ? "حذف الأرض" : "Delete Land"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <p className="text-muted-foreground">
+              {isAr
+                ? `هل أنت متأكد من حذف هذه الأرض في "${deleteDialog?.city || ""}${deleteDialog?.district ? ` - ${deleteDialog.district}` : ""}"؟`
+                : `Are you sure you want to delete this land in "${deleteDialog?.city || ""}${deleteDialog?.district ? ` - ${deleteDialog.district}` : ""}"?`}
+            </p>
+            <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
+              <p className="text-xs text-amber-700 dark:text-amber-400">
+                {isAr
+                  ? "سيتم إخفاء الأرض من المنصة مع الحفاظ على السجلات المرتبطة بها (الصفقات، الطلبات). لا يمكن حذف أرض بها صفقات نشطة."
+                  : "The land will be hidden from the platform while preserving related records (deals, requests). Lands with active deals cannot be deleted."}
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setDeleteDialog(null)} disabled={deleting}>
+              {isAr ? "إلغاء" : "Cancel"}
+            </Button>
+            <Button variant="destructive" onClick={confirmDeleteLand} disabled={deleting}>
+              {deleting ? (isAr ? "جارٍ الحذف..." : "Deleting...") : (isAr ? "حذف" : "Delete")}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </AdminLayout>

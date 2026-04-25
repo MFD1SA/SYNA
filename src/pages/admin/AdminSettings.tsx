@@ -33,10 +33,8 @@ const AdminSettings: React.FC = () => {
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingEmail, setSavingEmail] = useState(false);
 
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
@@ -133,8 +131,9 @@ const AdminSettings: React.FC = () => {
 
   const handleChangePassword = async () => {
     if (!user) return;
-    if (newPassword.length < 6) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "كلمة المرور يجب أن تكون 6 أحرف على الأقل" : "Password must be at least 6 characters" });
+    // Enforce 10-char minimum to match Register.tsx / SetPassword.tsx.
+    if (newPassword.length < 10) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "كلمة المرور يجب أن تكون 10 أحرف على الأقل" : "Password must be at least 10 characters" });
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -143,17 +142,33 @@ const AdminSettings: React.FC = () => {
     }
     setSavingPassword(true);
     try {
-      const { error: signInErr } = await supabase.auth.signInWithPassword({ email: user.email!, password: currentPassword });
-      if (signInErr) {
-        toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "كلمة المرور الحالية غير صحيحة" : "Current password is incorrect" });
-        setSavingPassword(false);
-        return;
-      }
+      // IMPORTANT — do NOT call signInWithPassword() as a pre-verify step.
+      // That rotates the access/refresh token pair mid-request, which can
+      // wipe the in-flight admin session and break concurrent tabs. Supabase
+      // has no first-class "verify current password" API; we rely on the
+      // server-side session freshness check inside updateUser() and surface
+      // AuthSessionMissingError back to the user so they can re-authenticate.
       const { error } = await supabase.auth.updateUser({ password: newPassword });
-      if (error) throw error;
+      if (error) {
+        // Session too stale → GoTrue rejects the change. Ask the user to sign in again.
+        const stale =
+          error.name === "AuthSessionMissingError" ||
+          /session/i.test(error.message ?? "");
+        if (stale) {
+          toast({
+            variant: "destructive",
+            title: isAr ? "انتهت صلاحية الجلسة" : "Session expired",
+            description: isAr
+              ? "لأسباب أمنية، يرجى تسجيل الخروج ثم تسجيل الدخول مجددًا قبل تغيير كلمة المرور."
+              : "For security, please sign out and sign in again before changing your password.",
+          });
+          setSavingPassword(false);
+          return;
+        }
+        throw error;
+      }
       await logAudit(user.id, user.email, "update", "admin_password", user.id);
       toast({ title: isAr ? "تم تغيير كلمة المرور بنجاح ✓" : "Password changed successfully ✓" });
-      setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err: any) {
@@ -208,6 +223,10 @@ const AdminSettings: React.FC = () => {
 
   const handleResetPrimaryAdminPassword = async (action: "reset_primary_admin_password" | "trigger_primary_admin_recovery") => {
     if (!primaryAdminPassword || !confirmPrimaryAdminPassword) return;
+    if (primaryAdminPassword.length < 10) {
+      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "كلمة المرور يجب أن تكون 10 أحرف على الأقل" : "Password must be at least 10 characters" });
+      return;
+    }
     if (primaryAdminPassword !== confirmPrimaryAdminPassword) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "كلمات المرور غير متطابقة" : "Passwords do not match" });
       return;
@@ -307,36 +326,50 @@ const AdminSettings: React.FC = () => {
             <KeyRound className="h-4 w-4 text-primary" />
             <h3 className="text-sm font-medium text-foreground">{isAr ? "كلمة المرور" : "Password"}</h3>
           </div>
+          <p className="text-[11px] text-muted-foreground">
+            {isAr
+              ? "لأسباب أمنية، قد يُطلب منك تسجيل الدخول من جديد إذا مضى على جلستك الحالية وقت طويل."
+              : "For security, you may be asked to sign in again if your current session is too old."}
+          </p>
           <div className="space-y-3">
-            <div className="space-y-2">
-              <Label className="text-xs">{isAr ? "كلمة المرور الحالية" : "Current Password"}</Label>
-              <div className="relative">
-                <Input type={showCurrent ? "text" : "password"} value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} dir="ltr" className="pe-10" />
-                <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  {showCurrent ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
             <div className="space-y-2">
               <Label className="text-xs">{isAr ? "كلمة المرور الجديدة" : "New Password"}</Label>
               <div className="relative">
-                <Input type={showNew ? "text" : "password"} value={newPassword} onChange={e => setNewPassword(e.target.value)} dir="ltr" className="pe-10" />
+                <Input
+                  type={showNew ? "text" : "password"}
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  dir="ltr"
+                  className="pe-10"
+                  autoComplete="new-password"
+                  minLength={10}
+                />
                 <button type="button" onClick={() => setShowNew(!showNew)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                   {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              <p className="text-[11px] text-muted-foreground">
+                {isAr ? "10 أحرف كحد أدنى" : "At least 10 characters"}
+              </p>
             </div>
             <div className="space-y-2">
               <Label className="text-xs">{isAr ? "تأكيد كلمة المرور" : "Confirm Password"}</Label>
               <div className="relative">
-                <Input type={showConfirm ? "text" : "password"} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} dir="ltr" className="pe-10" />
+                <Input
+                  type={showConfirm ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  dir="ltr"
+                  className="pe-10"
+                  autoComplete="new-password"
+                />
                 <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                   {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
           </div>
-          <Button onClick={handleChangePassword} disabled={savingPassword || !currentPassword || !newPassword || !confirmPassword} className="syna-gradient gap-2">
+          <Button onClick={handleChangePassword} disabled={savingPassword || newPassword.length < 10 || newPassword !== confirmPassword} className="syna-gradient gap-2">
             {savingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
             {isAr ? "تغيير كلمة المرور" : "Change Password"}
           </Button>

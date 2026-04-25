@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useMetaTags } from "@/hooks/useMetaTags";
+import { useToast } from "@/hooks/use-toast";
 import PageShell from "@/components/landing/PageShell";
 import ImageGallery from "@/components/shared/ImageGallery";
 import {
@@ -51,6 +53,7 @@ const OpportunityDetail: React.FC = () => {
   const navigate = useNavigate();
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  const { toast } = useToast();
   usePageTitle(isAr ? "تفاصيل الفرصة" : "Opportunity Details");
 
   const [land, setLand] = useState<any>(null);
@@ -58,18 +61,115 @@ const OpportunityDetail: React.FC = () => {
 
   useEffect(() => {
     if (!id) return;
-    supabase
-      .from("lands_public" as any)
-      .select("*")
-      .eq("id", id)
-      .eq("is_active", true)
-      .eq("is_featured", true)
-      .single()
-      .then(({ data }) => {
-        setLand(data);
-        setLoading(false);
-      }, console.error);
-  }, [id]);
+    let cancelled = false;
+    (async () => {
+      // `.maybeSingle()` returns `data: null` (without an error) when the
+      // land is missing / unpublished — distinct from a real fetch error.
+      // The previous `.single()` call conflated the two and routed the
+      // "not found" case into a silent `console.error` rejection handler,
+      // which hid real view regressions along the way.
+      const { data, error } = await supabase
+        .from("lands_public" as any)
+        .select("*")
+        .eq("id", id)
+        .eq("is_active", true)
+        .eq("is_featured", true)
+        .maybeSingle();
+      if (cancelled) return;
+      if (error) {
+        console.error("OpportunityDetail fetch error:", error);
+        toast({
+          variant: "destructive",
+          title: isAr ? "تعذر تحميل الفرصة" : "Could not load opportunity",
+          description: error.message || undefined,
+        });
+      }
+      setLand(data || null);
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [id, toast, isAr]);
+
+  // --- SEO metadata (per-opportunity) -----------------------------------
+  // Each featured opportunity is meant to be a public-indexable page — a
+  // city/district-specific landing URL that Google can rank against queries
+  // like "أرض للشراكة في حي الملقا". Without per-land meta tags all detail
+  // pages share one generic <title>/<meta description> pair, which collapses
+  // their ranking potential to a single page in SERPs.
+  //
+  // `noindex` flips on only for the 404 branch (fetch resolved, no land),
+  // so a freshly-unpublished opportunity stops being indexed without us
+  // shipping a manual purge.
+  const cityArForSeo = land ? (cityNameAr[land.city] || land.city) : "";
+  const districtArForSeo = land ? (districtNameAr[land.district || ""] || land.district || "") : "";
+
+  const seoTitle = !loading && !land
+    ? (isAr ? "سينا | الفرصة غير متاحة" : "SINA | Opportunity Not Available")
+    : land
+      ? (isAr
+          ? `فرصة شراكة: أرض ${land.district ? `حي ${districtArForSeo} ` : ""}${cityArForSeo} | سينا`
+          : `Partnership Opportunity: ${land.district ? `${land.district}, ` : ""}${land.city} | SINA`)
+      : (isAr ? "تفاصيل الفرصة | سينا" : "Opportunity Details | SINA");
+
+  const seoDescription = land
+    ? (isAr
+        ? `أرض بمساحة ${land.land_area_sqm?.toLocaleString()} م² في ${land.district ? `حي ${districtArForSeo} ب${cityArForSeo}` : cityArForSeo}، متاحة للشراكة التطويرية مع مطور معتمد على منصة سينا.`
+        : `${land.land_area_sqm?.toLocaleString()} sqm land in ${land.district ? `${land.district}, ${land.city}` : land.city}, available for a development partnership with a certified developer on SINA.`)
+    : (isAr
+        ? "تفاصيل فرصة عقارية على منصة سينا — بيانات كافية لاتخاذ قرار استثماري مدروس."
+        : "Opportunity details on SINA — enough data to make an informed development investment decision.");
+
+  // Router uses /opportunity/:id (singular). Using /opportunities/:id here
+  // would make Google canonicalise to a URL that /opportunities redirects
+  // to /offers — a wasted indexing request and a broken rel=canonical loop.
+  const canonicalBase = isAr ? "https://cidoma.com" : "https://cidoma.com/en";
+  const canonicalUrl = `${canonicalBase}/opportunity${id ? `/${id}` : ""}`;
+  const siblingUrl = isAr
+    ? `https://cidoma.com/en/opportunity${id ? `/${id}` : ""}`
+    : `https://cidoma.com/opportunity${id ? `/${id}` : ""}`;
+  const ogImage = (land?.image_url as string | undefined) || "https://cidoma.com/og-image.png";
+
+  useMetaTags({
+    title: seoTitle,
+    description: seoDescription,
+    canonical: canonicalUrl,
+    ogTitle: seoTitle,
+    ogDescription: seoDescription,
+    ogImage,
+    ogType: "article",
+    twitterCard: "summary_large_image",
+    hreflangAlternate: { lang: isAr ? "en" : "ar", url: siblingUrl },
+    noindex: !loading && !land,
+    structuredData: land
+      ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: isAr ? "الرئيسية" : "Home", item: isAr ? "https://cidoma.com/" : "https://cidoma.com/en" },
+              // /opportunities redirects to /offers in the router — link
+              // Google to the real landing page for consistency.
+              { "@type": "ListItem", position: 2, name: isAr ? "العروض العقارية" : "Offers", item: `${canonicalBase}/offers` },
+              { "@type": "ListItem", position: 3, name: seoTitle, item: canonicalUrl },
+            ],
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "Place",
+            name: seoTitle,
+            description: seoDescription,
+            url: canonicalUrl,
+            image: ogImage,
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: isAr ? cityArForSeo : land.city,
+              addressRegion: isAr ? cityArForSeo : land.city,
+              addressCountry: "SA",
+            },
+          },
+        ]
+      : undefined,
+  });
 
   if (loading) {
     return (
