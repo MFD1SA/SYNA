@@ -177,7 +177,7 @@ const AdminDevelopers: React.FC = () => {
       // would be inconsistent. Orphan auth users are acceptable and
       // can be cleaned up manually.
       const res = await supabase.functions.invoke("create-owner", {
-        body: { action: "delete_user", user_id: deleteDialog.user_id },
+        body: { action: "delete_user", user_id: deleteDialog.user_id, target_kind: "developer" },
       });
       if (res.error || res.data?.error) {
         console.warn("Auth user delete warning:", res.data?.error || res.error?.message);
@@ -194,16 +194,41 @@ const AdminDevelopers: React.FC = () => {
 
     const handleUpdatePassword = async () => {
     if (!passwordDialog || !newPassword) return;
-    if (newPassword.length < 6) {
-      toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: isAr ? "كلمة المرور يجب أن تكون 6 أحرف على الأقل" : "Password must be at least 6 characters" });
+    // Client-side validation must match the edge function's rule (≥10
+    // chars + upper + lower + digit + symbol). If we let through a
+    // weaker password the user sees a confusing server-side error
+    // instead of an actionable hint.
+    const strong =
+      newPassword.length >= 10 &&
+      /[A-Z]/.test(newPassword) &&
+      /[a-z]/.test(newPassword) &&
+      /\d/.test(newPassword) &&
+      /[^A-Za-z0-9]/.test(newPassword);
+    if (!strong) {
+      toast({
+        variant: "destructive",
+        title: isAr ? "كلمة مرور ضعيفة" : "Weak password",
+        description: isAr
+          ? "10 أحرف على الأقل، وتحتوي على حرف كبير وحرف صغير ورقم ورمز خاص."
+          : "At least 10 characters, with upper- and lower-case letters, a digit, and a symbol.",
+      });
       return;
     }
     setUpdatingPassword(true);
     try {
       const devName = passwordDialog.name;
       const devUserId = passwordDialog.user_id;
+      // `target_kind: "developer"` lets the edge function check the
+      // caller's `perm_developers` flag explicitly, so an admin or
+      // supervisor with that permission can change a developer's
+      // password without needing super-admin status.
       const res = await supabase.functions.invoke("create-owner", {
-        body: { action: "update_password", user_id: devUserId, new_password: newPassword },
+        body: {
+          action: "update_password",
+          user_id: devUserId,
+          new_password: newPassword,
+          target_kind: "developer",
+        },
       });
       if (res.error) throw new Error(res.error.message || "Function call failed");
       if (res.data?.error) throw new Error(res.data.error);
@@ -529,10 +554,15 @@ const AdminDevelopers: React.FC = () => {
                 {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              {isAr
+                ? "يجب أن تتكوّن من ١٠ أحرف على الأقل، وتشمل حرفاً كبيراً وصغيراً ورقماً ورمزاً خاصاً."
+                : "Min 10 chars, with upper- & lower-case letters, a digit, and a symbol."}
+            </p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPasswordDialog(null)}>{isAr ? "إلغاء" : "Cancel"}</Button>
-            <Button onClick={handleUpdatePassword} disabled={updatingPassword || newPassword.length < 6}>
+            <Button onClick={handleUpdatePassword} disabled={updatingPassword || newPassword.length < 10}>
               {updatingPassword ? (isAr ? "جارٍ التحديث..." : "Updating...") : (isAr ? "تحديث" : "Update")}
             </Button>
           </DialogFooter>

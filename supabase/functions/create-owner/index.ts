@@ -236,21 +236,43 @@ Deno.serve(async (req) => {
     const { data: { user: caller } } = await userClient.auth.getUser();
     if (!caller) throw new Error("Unauthorized");
 
-    const { data: roleData } = await adminClient
+    // Caller must be on the admin staff. The "admin staff" rolling-up
+    // covers BOTH the legacy 'admin' role (super admins / first-class
+    // admins) AND the newer 'supervisor' / 'specialist' roles introduced
+    // with the high-control gallery work — anyone with a row in
+    // admin_permissions counts. The fine-grained `perm_*` flags then
+    // gate which specific actions each caller can perform; the
+    // `is_super_admin` flag still gates the most destructive ones.
+    const { data: roleRows } = await adminClient
       .from("user_roles")
       .select("role")
-      .eq("user_id", caller.id)
-      .eq("role", "admin")
-      .maybeSingle();
-
-    if (!roleData) throw new Error("Not admin");
+      .eq("user_id", caller.id);
+    const callerRoles = (roleRows ?? []).map((r) => r.role as string);
+    const hasAdminRole = callerRoles.includes("admin");
+    const hasStaffRole =
+      hasAdminRole ||
+      callerRoles.includes("supervisor") ||
+      callerRoles.includes("specialist");
 
     const { data: permData } = await adminClient
       .from("admin_permissions")
-      .select("is_super_admin")
+      .select(
+        "is_super_admin, perm_developers, perm_owners, perm_lands, perm_deals, perm_content, perm_ai, perm_audit_log",
+      )
       .eq("user_id", caller.id)
       .maybeSingle();
     const isSuperAdmin = !!permData?.is_super_admin;
+    const perms = (permData ?? {}) as Record<string, boolean | null>;
+    const hasPerm = (col: string) => isSuperAdmin || !!perms[col];
+
+    // Reject anyone who is NOT on the admin staff. We allow callers who
+    // have a staff role *or* an admin_permissions row (defensive — the
+    // permissions row alone is enough to identify a staff member even if
+    // their user_roles entry was misseated during the supervisor enum
+    // migration).
+    if (!hasStaffRole && !permData) {
+      throw new Error("Not admin");
+    }
 
     if (action === "get_primary_admin_config") {
       if (!isSuperAdmin) throw new Error("Super admin access required");
@@ -337,14 +359,43 @@ Deno.serve(async (req) => {
     }
 
     if (action === "update_password") {
-      if (!isSuperAdmin) throw new Error("Super admin access required");
-      const { user_id, new_password } = body;
+      // Resetting an end-user's password is gated by the relevant
+      // domain permission. The caller specifies which entity they're
+      // operating on via `target_kind`; we accept any of:
+      //   - "developer"  → perm_developers
+      //   - "owner"      → perm_owners
+      // Falling back to perm_developers covers the historical AdminDevelopers
+      // call site that did not send `target_kind` (we want the existing
+      // panel to keep working without a coordinated frontend ship).
+      const { user_id, new_password, target_kind } = body;
       if (!user_id || !new_password) throw new Error("user_id and new_password required");
       if (!isStrongPassword(new_password)) throw new Error("Password must be at least 10 chars and include upper/lowercase letters, number, and symbol");
       if (user_id === caller.id) throw new Error("Cannot change your own password from this endpoint");
 
+      const requiredPerm =
+        target_kind === "owner"
+          ? "perm_owners"
+          : target_kind === "developer"
+            ? "perm_developers"
+            : "perm_developers";
+      if (!hasPerm(requiredPerm)) {
+        throw new Error("Insufficient permissions");
+      }
+
       const { error } = await adminClient.auth.admin.updateUserById(user_id, { password: new_password });
       if (error) throw error;
+
+      // Audit so a super admin can later see which staff member changed
+      // which developer's password.
+      await writeAuditLog(
+        adminClient,
+        caller.id,
+        caller.email || null,
+        "admin_update_password",
+        target_kind === "owner" ? "owner" : "developer",
+        user_id,
+        { target_kind: target_kind || "developer" },
+      );
 
       return new Response(JSON.stringify({ success: true, updated_user_id: user_id }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -352,12 +403,37 @@ Deno.serve(async (req) => {
     }
 
     if (action === "delete_user") {
-      if (!isSuperAdmin) throw new Error("Super admin access required");
-      const { user_id } = body;
+      // Same model: deleting an auth user is permitted when the caller
+      // has the matching domain perm for the entity being deleted. The
+      // AdminDevelopers cascade-delete flow lands here after the DB
+      // cascade has already succeeded; if we reject the auth-delete the
+      // developer row is already gone, so the orphan is benign and we
+      // log a warning at the call site rather than rolling back.
+      const { user_id, target_kind } = body;
       if (!user_id) throw new Error("user_id required");
+
+      const requiredPerm =
+        target_kind === "owner"
+          ? "perm_owners"
+          : target_kind === "developer"
+            ? "perm_developers"
+            : "perm_developers";
+      if (!hasPerm(requiredPerm)) {
+        throw new Error("Insufficient permissions");
+      }
 
       const { error } = await adminClient.auth.admin.deleteUser(user_id);
       if (error) throw error;
+
+      await writeAuditLog(
+        adminClient,
+        caller.id,
+        caller.email || null,
+        "admin_delete_auth_user",
+        target_kind === "owner" ? "owner" : "developer",
+        user_id,
+        { target_kind: target_kind || "developer" },
+      );
 
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -457,6 +533,7 @@ Deno.serve(async (req) => {
     console.error("create-owner error:", err.message);
     const safeMessages = [
       "Missing authorization", "Unauthorized", "Not admin", "Super admin access required",
+      "Insufficient permissions",
       "user_id and new_password required", "Cannot change your own password from this endpoint",
       "Password must be at least 10 chars and include upper/lowercase letters, number, and symbol",
       "user_id required", "target_user_id required", "User not found",
