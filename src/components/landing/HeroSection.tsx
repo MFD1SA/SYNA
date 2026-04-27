@@ -1,7 +1,14 @@
 import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Crown, Building2, ShieldCheck } from "lucide-react";
+// Role icons:
+//   Owner     → LandPlot (a stylised parcel of land — semantically
+//               accurate for someone who owns land, replaces the dated
+//               Crown that read as "VIP/royal" rather than "landowner")
+//   Developer → HardHat  (universal construction-industry symbol —
+//               instantly readable as "real-estate developer", replaces
+//               the generic Building2)
+import { ArrowLeft, ArrowRight, LandPlot, HardHat, ShieldCheck } from "lucide-react";
 // Hero image — modern real-estate development at twilight (3840×2560,
 // native 4K). The previous KAFD asset was 640×640 and pixelated on retina
 // / 4K screens; this professional architectural shot conveys the
@@ -78,7 +85,7 @@ const HeroSection: React.FC = () => {
               className="group inline-flex items-center justify-center gap-3 h-[58px] px-7 bg-white text-[#020202] text-[14px] font-bold rounded-xl shadow-[0_10px_30px_-10px_rgba(255,255,255,0.35)] hover:bg-white/95 hover:-translate-y-0.5 transition-all duration-300"
             >
               <span className="relative inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-[#C45A41] to-[#A24832] shadow-[0_6px_18px_-6px_rgba(196,90,65,0.65)] ring-1 ring-[#C45A41]/30">
-                <Crown className="w-[18px] h-[18px] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" strokeWidth={2.4} />
+                <LandPlot className="w-[18px] h-[18px] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" strokeWidth={2.4} />
                 {/* Subtle halo for depth */}
                 <span className="absolute inset-0 rounded-xl bg-gradient-to-tr from-white/0 via-white/15 to-white/0 pointer-events-none" />
               </span>
@@ -91,7 +98,7 @@ const HeroSection: React.FC = () => {
               className="group inline-flex items-center justify-center gap-3 h-[58px] px-7 bg-white/[0.08] border border-white/25 text-white text-[14px] font-bold rounded-xl backdrop-blur-md hover:bg-white/[0.14] hover:border-white/40 hover:-translate-y-0.5 transition-all duration-300"
             >
               <span className="relative inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-white/25 to-white/10 ring-1 ring-white/30 shadow-[0_6px_18px_-6px_rgba(255,255,255,0.25)]">
-                <Building2 className="w-[18px] h-[18px] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" strokeWidth={2.4} />
+                <HardHat className="w-[18px] h-[18px] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" strokeWidth={2.4} />
                 <span className="absolute inset-0 rounded-xl bg-gradient-to-tr from-white/0 via-white/10 to-white/0 pointer-events-none" />
               </span>
               {isAr ? "دخول المطورين" : "Developer Login"}

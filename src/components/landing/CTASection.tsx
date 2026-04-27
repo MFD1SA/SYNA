@@ -2,7 +2,10 @@ import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, ArrowRight, Crown, Building2, ShieldCheck,
+  // Role icons (shared with Navbar / HeroSection / Login):
+  //   Owner     → LandPlot (parcel of land — modern, literal)
+  //   Developer → HardHat  (construction industry — modern, literal)
+  ArrowLeft, ArrowRight, LandPlot, HardHat, ShieldCheck,
 } from "lucide-react";
 
 const CTASection: React.FC = () => {
@@ -48,7 +51,7 @@ const CTASection: React.FC = () => {
               onClick={() => navigate("/auth/login?type=owner")}
               className="group inline-flex items-center justify-center gap-3 h-[54px] md:h-[58px] px-7 md:px-9 bg-white text-[#020202] text-[13.5px] md:text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(255,255,255,0.3)] hover:shadow-[0_14px_44px_-10px_rgba(255,255,255,0.45)] hover:-translate-y-0.5 transition-all duration-300"
             >
-              <Crown className="w-5 h-5 text-[#2B2B2B] group-hover:text-[#A24832] transition-colors" strokeWidth={1.6} />
+              <LandPlot className="w-5 h-5 text-[#2B2B2B] group-hover:text-[#A24832] transition-colors" strokeWidth={1.8} />
               {isAr ? "دخول الملاك" : "Owner Login"}
               <Arrow className="w-4 h-4 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
             </button>
@@ -56,7 +59,7 @@ const CTASection: React.FC = () => {
               onClick={() => navigate("/auth/login")}
               className="group inline-flex items-center justify-center gap-3 h-[54px] md:h-[58px] px-7 md:px-9 bg-gradient-to-r from-[#C45A41] to-[#A24832] text-white text-[13.5px] md:text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(194,168,107,0.5)] hover:shadow-[0_14px_44px_-10px_rgba(194,168,107,0.65)] hover:-translate-y-0.5 transition-all duration-300"
             >
-              <Building2 className="w-5 h-5" strokeWidth={1.6} />
+              <HardHat className="w-5 h-5" strokeWidth={1.8} />
               {isAr ? "دخول المطورين" : "Developer Login"}
               <Arrow className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
             </button>

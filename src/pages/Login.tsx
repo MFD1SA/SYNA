@@ -3,7 +3,10 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, Building2, Crown, ShieldCheck, MapPin, FileCheck, BarChart3, MessageCircle } from "lucide-react";
+// Role icons (shared with Navbar / HeroSection):
+//   Owner     → LandPlot  (parcel of land — modern, literal)
+//   Developer → HardHat   (construction industry — modern, literal)
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, ArrowLeft, HardHat, LandPlot, ShieldCheck, MapPin, FileCheck, BarChart3, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import logoImg from "@/assets/logo.png";
 
@@ -187,8 +190,8 @@ const LoginPage: React.FC = () => {
           <div className="flex justify-center mb-7">
             <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full font-bold text-[12px] tracking-wide text-[#2B2B2B]">
               {isOwnerMode
-                ? <Crown className="h-4.5 w-4.5" strokeWidth={1.5} />
-                : <Building2 className="h-4.5 w-4.5" strokeWidth={1.5} />
+                ? <LandPlot className="h-4.5 w-4.5" strokeWidth={1.8} />
+                : <HardHat className="h-4.5 w-4.5" strokeWidth={1.8} />
               }
               <span>
                 {isOwnerMode
@@ -317,7 +320,7 @@ const LoginPage: React.FC = () => {
                 to="/auth/login?type=owner"
                 className="inline-flex items-center gap-2 text-[12px] font-semibold text-red-500 hover:text-red-600 transition-colors"
               >
-                <Crown className="w-3.5 h-3.5" /> {isAr ? "الدخول كمالك" : "Sign in as Owner"}
+                <LandPlot className="w-3.5 h-3.5" strokeWidth={1.8} /> {isAr ? "الدخول كمالك" : "Sign in as Owner"}
               </Link>
             </div>
           )}

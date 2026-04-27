@@ -9,11 +9,15 @@ import InnerHero from "@/components/landing/InnerHero";
 const heroImg = "/heroes/partnerships.jpg";
 import {
   ArrowLeft, ArrowRight, TrendingUp,
-  Building2, Landmark, Handshake, FileCheck2,
+  Landmark, Handshake, FileCheck2,
   BadgeCheck, LockKeyhole, ShieldCheck, Eye,
   MapPin, CircleDollarSign, Rocket, Bolt,
-  Crown, Layers, BarChart3, Cpu, Target,
+  Layers, BarChart3, Cpu, Target,
   Gem, Briefcase, Network,
+  // Role icons (shared across the site):
+  //   Owner     → LandPlot (parcel of land — modern, literal)
+  //   Developer → HardHat  (construction industry — modern, literal)
+  LandPlot, HardHat,
 } from "lucide-react";
 
 const Partnerships: React.FC = () => {
@@ -57,14 +61,14 @@ const Partnerships: React.FC = () => {
         { icon: TrendingUp, text: "عوائد مضاعفة تفوق البيع المباشر" },
         { icon: ShieldCheck, text: "حماية قانونية شاملة لحقوقك" },
         { icon: Eye, text: "متابعة شفافة لكل مرحلة" },
-        { icon: Crown, text: "تحكم كامل بقراراتك وشروطك" },
+        { icon: LandPlot, text: "تحكم كامل بقراراتك وشروطك" },
       ]
     : [
         { icon: LockKeyhole, text: "Complete privacy with gradual disclosure" },
         { icon: TrendingUp, text: "Multiplied returns exceeding direct sale" },
         { icon: ShieldCheck, text: "Comprehensive legal protection for your rights" },
         { icon: Eye, text: "Transparent tracking of every stage" },
-        { icon: Crown, text: "Full control over your decisions and terms" },
+        { icon: LandPlot, text: "Full control over your decisions and terms" },
       ];
 
   const devHighlights = isAr
@@ -86,12 +90,12 @@ const Partnerships: React.FC = () => {
   const ownerBenefits = isAr
     ? [
         { icon: Gem, title: "تعظيم قيمة الأرض", desc: "الأرض الخام لها سقف سعري محدود أما المشروع المطوّر فقيمته أعلى بمراحل والمالك شريك في كل هذه القيمة المضافة دون أن يدفع ريالاً واحداً من جيبه" },
-        { icon: Crown, title: "شراكة بلا مخاطرة مالية", desc: "المالك يساهم بالأرض فقط بينما يتحمل المطور كامل تكاليف التصميم والبناء والتسويق مما يجعل الشراكة استثماراً بلا مخاطرة مالية مباشرة على المالك" },
+        { icon: LandPlot, title: "شراكة بلا مخاطرة مالية", desc: "المالك يساهم بالأرض فقط بينما يتحمل المطور كامل تكاليف التصميم والبناء والتسويق مما يجعل الشراكة استثماراً بلا مخاطرة مالية مباشرة على المالك" },
         { icon: ShieldCheck, title: "حقوق محفوظة بالكامل", desc: "من لحظة التسجيل وحتى اكتمال المشروع كل حق من حقوق المالك موثق ومحفوظ رقمياً مع عقود واضحة تحمي مصالحه في جميع الظروف" },
       ]
     : [
         { icon: Gem, title: "Maximize Land Value", desc: "Raw land has a limited price ceiling while a developed project is worth far more and the owner is a partner in all this added value without paying a single riyal from their pocket" },
-        { icon: Crown, title: "Partnership Without Financial Risk", desc: "The owner contributes only the land while the developer bears all design construction and marketing costs making partnership an investment with no direct financial risk to the owner" },
+        { icon: LandPlot, title: "Partnership Without Financial Risk", desc: "The owner contributes only the land while the developer bears all design construction and marketing costs making partnership an investment with no direct financial risk to the owner" },
         { icon: ShieldCheck, title: "Fully Preserved Rights", desc: "From the moment of registration to project completion every owner right is documented and digitally preserved with clear contracts protecting their interests in all circumstances" },
       ];
 
@@ -199,7 +203,7 @@ const Partnerships: React.FC = () => {
                 <Arrow className="w-5 h-5 text-slate-300 group-hover:text-[#2B2B2B] transition-all duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
               </div>
 
-              <Building2 className="w-7 h-7 text-[#2B2B2B] mb-6" strokeWidth={1.7} />
+              <HardHat className="w-7 h-7 text-[#2B2B2B] mb-6" strokeWidth={1.8} />
 
               <h3 className="text-2xl md:text-[28px] font-bold text-[#020202] mb-3 tracking-tight leading-[1.15]">
                 {isAr ? "للمطورين العقاريين" : "For Real Estate Developers"}
@@ -265,7 +269,7 @@ const Partnerships: React.FC = () => {
             {/* Developer Side */}
             <div className="bg-white rounded-3xl p-8 md:p-10 ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.15)]">
               <div className="flex items-center gap-3 mb-8 pb-6 border-b border-slate-100">
-                <Building2 className="w-7 h-7 text-[#2B2B2B]" strokeWidth={1.7} />
+                <HardHat className="w-7 h-7 text-[#2B2B2B]" strokeWidth={1.8} />
                 <h3 className="text-xl font-bold text-[#020202] tracking-tight">{isAr ? "المطور يحصل على" : "The Developer Gets"}</h3>
               </div>
               <div className="space-y-6">
@@ -446,14 +450,14 @@ const Partnerships: React.FC = () => {
               onClick={() => navigate("/auth/login?type=owner")}
               className="inline-flex items-center gap-3 h-14 px-10 bg-gradient-to-br from-[#D7C084] to-[#A24832] hover:from-[#A24832] hover:to-[#8A6F3A] text-white text-[15px] font-bold rounded-xl shadow-lg shadow-[#C45A41]/30 hover:shadow-xl hover:shadow-[#C45A41]/40 transition-all duration-300 tracking-tight"
             >
-              <Landmark className="w-5 h-5" strokeWidth={1.75} />
+              <LandPlot className="w-5 h-5" strokeWidth={1.9} />
               {isAr ? "دخول الملاك" : "Owner Login"}
             </button>
             <button
               onClick={() => navigate("/auth/login")}
               className="inline-flex items-center gap-3 h-14 px-10 bg-gradient-to-br from-[#2B2B2B] to-[#020202] hover:from-[#020202] hover:to-[#020202] text-white text-[15px] font-bold rounded-xl shadow-lg shadow-[#2B2B2B]/30 hover:shadow-xl hover:shadow-[#2B2B2B]/40 transition-all duration-300 tracking-tight"
             >
-              <Building2 className="w-5 h-5" strokeWidth={1.75} />
+              <HardHat className="w-5 h-5" strokeWidth={1.9} />
               {isAr ? "دخول المطورين" : "Developer Login"}
             </button>
           </div>

@@ -8,7 +8,7 @@ import InnerHero from "@/components/landing/InnerHero";
 import {
   LockKeyhole, Settings2, TrendingUp, ShieldCheck,
   Eye, Target, ArrowLeft, ArrowRight, BadgeCheck,
-  Landmark, Crown, Gem, Fingerprint, Scale,
+  Landmark, LandPlot, Gem, Fingerprint, Scale,
 } from "lucide-react";
 
 const PartnershipsOwners: React.FC = () => {
@@ -81,13 +81,13 @@ const PartnershipsOwners: React.FC = () => {
 
   const ownerAdvantages = isAr
     ? [
-        { icon: Crown, title: "احتفظ بملكيتك", desc: "لا تبيع أرضك بل شارك في تطويرها واحتفظ بنسبة من المشروع النهائي مع عوائد تفوق البيع المباشر بأضعاف" },
+        { icon: LandPlot, title: "احتفظ بملكيتك", desc: "لا تبيع أرضك بل شارك في تطويرها واحتفظ بنسبة من المشروع النهائي مع عوائد تفوق البيع المباشر بأضعاف" },
         { icon: Gem, title: "قيمة مضاعفة لأرضك", desc: "الأرض الخام قيمتها محدودة لكن بعد التطوير تتضاعف قيمتها وأنت شريك في هذه القيمة المضافة بالكامل" },
         { icon: Fingerprint, title: "إفصاح متدرج وآمن", desc: "بياناتك تُكشف على مراحل حسب تقدم المفاوضات ولا يرى المطور أي تفاصيل حساسة إلا بعد موافقتك" },
         { icon: Scale, title: "عقود عادلة وموثقة", desc: "كل اتفاقية شراكة تُبنى على أسس عادلة ومتوازنة مع توثيق رقمي شامل يحفظ حقوقك طوال مدة المشروع" },
       ]
     : [
-        { icon: Crown, title: "Retain Your Ownership", desc: "Dont sell your land but participate in developing it and keep a share of the final project with returns far exceeding direct sale" },
+        { icon: LandPlot, title: "Retain Your Ownership", desc: "Dont sell your land but participate in developing it and keep a share of the final project with returns far exceeding direct sale" },
         { icon: Gem, title: "Multiplied Land Value", desc: "Raw land has limited value but after development its value multiplies and you are a full partner in this added value" },
         { icon: Fingerprint, title: "Gradual Safe Disclosure", desc: "Your data is revealed in stages as negotiations progress and developers see no sensitive details without your prior approval" },
         { icon: Scale, title: "Fair Documented Contracts", desc: "Every partnership agreement is built on fair balanced foundations with comprehensive digital documentation preserving your rights throughout the project" },

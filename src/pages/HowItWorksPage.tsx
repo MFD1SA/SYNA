@@ -8,9 +8,13 @@ import InnerHero from "@/components/landing/InnerHero";
 const heroImg = "/heroes/how-it-works.jpg";
 import CTASection from "@/components/landing/CTASection";
 import {
-  Users, Building2, ShieldCheck, Eye, ClipboardList, Handshake,
-  FileCheck2, BarChart3, UserCheck, MapPin, MessageSquare, CheckCircle2,
+  Users, ShieldCheck, Eye, ClipboardList, Handshake,
+  FileCheck2, BarChart3, MapPin, MessageSquare, CheckCircle2,
   Lock, Layers, Rocket, Target,
+  // Role icons (shared with Navbar / HeroSection / Login):
+  //   Owner     → LandPlot (parcel of land — modern, literal)
+  //   Developer → HardHat  (construction industry — modern, literal)
+  LandPlot, HardHat,
 } from "lucide-react";
 
 const HowItWorksPage: React.FC = () => {
@@ -48,7 +52,7 @@ const HowItWorksPage: React.FC = () => {
 
   const ownerSteps = isAr
     ? [
-        { icon: UserCheck, num: "01", title: "أنشئ حسابك كمالك", desc: "سجّل حسابك في دقائق معدودة وأضف بيانات أرضك الأساسية مثل الموقع والمساحة ونوع التطوير المرغوب بخصوصية تامة" },
+        { icon: LandPlot, num: "01", title: "أنشئ حسابك كمالك", desc: "سجّل حسابك في دقائق معدودة وأضف بيانات أرضك الأساسية مثل الموقع والمساحة ونوع التطوير المرغوب بخصوصية تامة" },
         { icon: Lock, num: "02", title: "بياناتك محمية بالكامل", desc: "بيانات أرضك الحساسة مثل رقم الصك والموقع الدقيق وهويتك الشخصية لا تُكشف لأي طرف إلا بموافقتك الصريحة والمسجلة" },
         { icon: ClipboardList, num: "03", title: "استقبل طلبات الشراكة", desc: "يصلك طلبات شراكة من مطورين عقاريين مؤهلين ومتحقق منهم مع ملفاتهم التعريفية الكاملة لتتمكن من التقييم واتخاذ القرار" },
         { icon: Eye, num: "04", title: "راجع وقرر بحرية كاملة", desc: "اطلع على تفاصيل كل مطور وسجل مشاريعه السابقة وقدراته التنفيذية وقرر من تريد قبول طلبه أو رفضه بكل حرية" },
@@ -56,7 +60,7 @@ const HowItWorksPage: React.FC = () => {
         { icon: Handshake, num: "06", title: "أغلق شراكتك بنجاح", desc: "عند اكتمال الاتفاق يتم توثيق الشراكة وإغلاقها رسمياً عبر سينا بضمان حقوق جميع الأطراف وتوثيق كل التفاصيل" },
       ]
     : [
-        { icon: UserCheck, num: "01", title: "Create Your Owner Account", desc: "Register your account in minutes and add your lands basic information such as location, area, and desired development type with complete privacy" },
+        { icon: LandPlot, num: "01", title: "Create Your Owner Account", desc: "Register your account in minutes and add your lands basic information such as location, area, and desired development type with complete privacy" },
         { icon: Lock, num: "02", title: "Your Data is Fully Protected", desc: "Your sensitive land data such as deed number, exact location, and personal identity is never revealed to any party without your explicit and recorded consent" },
         { icon: ClipboardList, num: "03", title: "Receive Partnership Requests", desc: "Get partnership requests from qualified and verified real estate developers with their complete profiles to evaluate and make informed decisions" },
         { icon: Eye, num: "04", title: "Review and Decide Freely", desc: "Review each developers details, previous project history, and executive capabilities and decide to accept or reject requests with complete freedom" },
@@ -66,7 +70,7 @@ const HowItWorksPage: React.FC = () => {
 
   const devSteps = isAr
     ? [
-        { icon: Building2, num: "01", title: "سجّل كمطور وتأهّل", desc: "أنشئ حسابك كمطور عقاري وارفع السجل التجاري والتراخيص المطلوبة ويتم التحقق والتأهيل تلقائياً خلال وقت قصير" },
+        { icon: HardHat, num: "01", title: "سجّل كمطور وتأهّل", desc: "أنشئ حسابك كمطور عقاري وارفع السجل التجاري والتراخيص المطلوبة ويتم التحقق والتأهيل تلقائياً خلال وقت قصير" },
         { icon: MapPin, num: "02", title: "اكتشف الفرص المتاحة", desc: "تصفّح الأراضي المدرجة للشراكة مع بيانات كافية عن الموقع والمساحة ونوع التطوير المرغوب لاتخاذ قرار استثماري مدروس" },
         { icon: FileCheck2, num: "03", title: "قدّم طلب شراكة رسمي", desc: "اختر الفرصة المناسبة وقدّم طلب شراكة رسمي واضح يتضمن نوع التعاون المقترح ورؤيتك التطويرية للمشروع" },
         { icon: Eye, num: "04", title: "انتظر موافقة المالك", desc: "بعد تقديم طلبك يراجعه المالك ويقرر القبول أو الرفض وعند القبول تُفتح لك تفاصيل الأرض الكاملة وقنوات التواصل" },
@@ -74,7 +78,7 @@ const HowItWorksPage: React.FC = () => {
         { icon: Rocket, num: "06", title: "أتمم الشراكة وابدأ التنفيذ", desc: "عند اكتمال الاتفاق بين الطرفين يتم توثيق الشراكة رسمياً وتبدأ مرحلة التنفيذ مع متابعة مستمرة لضمان نجاح المشروع" },
       ]
     : [
-        { icon: Building2, num: "01", title: "Register as Developer & Qualify", desc: "Create your developer account and upload commercial registration and required licenses with automatic verification and qualification in a short time" },
+        { icon: HardHat, num: "01", title: "Register as Developer & Qualify", desc: "Create your developer account and upload commercial registration and required licenses with automatic verification and qualification in a short time" },
         { icon: MapPin, num: "02", title: "Discover Available Opportunities", desc: "Browse listed lands for partnership with sufficient data about location, area, and desired development type to make informed investment decisions" },
         { icon: FileCheck2, num: "03", title: "Submit Formal Partnership Request", desc: "Choose the right opportunity and submit a clear formal partnership request including the proposed collaboration type and your development vision for the project" },
         { icon: Eye, num: "04", title: "Await Owner Approval", desc: "After submitting your request the owner reviews it and decides to accept or reject Upon acceptance full land details and communication channels are opened for you" },
@@ -165,7 +169,7 @@ const HowItWorksPage: React.FC = () => {
         <div className="container">
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 border border-emerald-200">
-              <Building2 className="w-4 h-4 text-emerald-600" strokeWidth={1.5} />
+              <HardHat className="w-4 h-4 text-emerald-600" strokeWidth={1.8} />
               <span className="text-[12px] font-semibold text-emerald-600 uppercase tracking-wider">
                 {isAr ? "رحلة المطور" : "DEVELOPERS JOURNEY"}
               </span>

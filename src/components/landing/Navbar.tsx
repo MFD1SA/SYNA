@@ -3,7 +3,12 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Link, useLocation } from "react-router-dom";
 import {
   Menu, X, Globe, ArrowUpRight,
-  Home, Info, Handshake, Newspaper, MessageSquare, Crown, Building2,
+  Home, Info, Handshake, Newspaper, MessageSquare,
+  // Role icons:
+  //   Owner     → LandPlot (parcel of land, modern + literal)
+  //   Developer → HardHat (construction industry, modern + literal)
+  // Replaces the dated Crown (royal) + generic Building2.
+  LandPlot, HardHat,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 
@@ -170,7 +175,7 @@ const Navbar: React.FC = () => {
               {/* Owner badge — DOMA Orange gradient pill so the icon
                   reads as a premium ownership signal in either theme. */}
               <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-gradient-to-br from-[#C45A41] to-[#A24832] shadow-[0_2px_6px_-2px_rgba(196,90,65,0.5)]">
-                <Crown className="w-3 h-3 text-white" strokeWidth={2.2} />
+                <LandPlot className="w-3 h-3 text-white" strokeWidth={2.2} />
               </span>
               {isAr ? "دخول الملاك" : "Owner Login"}
             </Link>
@@ -190,7 +195,7 @@ const Navbar: React.FC = () => {
                   overDark ? "bg-white/15" : "bg-white/15"
                 }`}
               >
-                <Building2 className="w-3 h-3 text-white" strokeWidth={2.2} />
+                <HardHat className="w-3 h-3 text-white" strokeWidth={2.2} />
               </span>
               {isAr ? "دخول المطورين" : "Developer Login"}
               <ArrowUpRight className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" strokeWidth={2} />
@@ -287,7 +292,7 @@ const Navbar: React.FC = () => {
                 className="flex items-center gap-3 w-full h-[60px] px-4 rounded-2xl border border-[#C45A41]/25 bg-gradient-to-br from-[#C45A41]/[0.06] to-[#C45A41]/[0.02] hover:from-[#C45A41]/10 hover:to-[#C45A41]/5 transition-all"
               >
                 <span className="relative inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-[#C45A41] to-[#A24832] shadow-[0_6px_16px_-6px_rgba(196,90,65,0.55)] ring-1 ring-[#C45A41]/30 shrink-0">
-                  <Crown className="w-5 h-5 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" strokeWidth={2.4} />
+                  <LandPlot className="w-5 h-5 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" strokeWidth={2.4} />
                   <span className="absolute inset-0 rounded-xl bg-gradient-to-tr from-white/0 via-white/15 to-white/0 pointer-events-none" />
                 </span>
                 <div className="flex-1 min-w-0">
@@ -306,7 +311,7 @@ const Navbar: React.FC = () => {
                 className="flex items-center gap-3 w-full h-[60px] px-4 rounded-2xl bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white shadow-[0_8px_24px_-8px_rgba(43,76,102,0.55)]"
               >
                 <span className="relative inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-white/20 to-white/5 ring-1 ring-white/25 shadow-inner shrink-0">
-                  <Building2 className="w-5 h-5 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" strokeWidth={2.4} />
+                  <HardHat className="w-5 h-5 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" strokeWidth={2.4} />
                   <span className="absolute inset-0 rounded-xl bg-gradient-to-tr from-white/0 via-white/10 to-white/0 pointer-events-none" />
                 </span>
                 <div className="flex-1 min-w-0">

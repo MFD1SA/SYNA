@@ -7,7 +7,7 @@ import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import {
   MapPin, ClipboardList, Bolt, ArrowLeft, ArrowRight,
-  BadgeCheck, CircleDollarSign, Rocket, Building2,
+  BadgeCheck, CircleDollarSign, Rocket, HardHat,
   BarChart3, Briefcase, Network, Trophy, Cpu,
 } from "lucide-react";
 
@@ -224,7 +224,7 @@ const PartnershipsDevelopers: React.FC = () => {
       <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white border-t border-slate-100 overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
         <div className="absolute -top-20 start-1/2 -translate-x-1/2 w-[520px] h-[420px] rounded-full bg-[#2B2B2B]/[0.06] blur-3xl pointer-events-none" />
         <div className="container relative text-center">
-          <Building2 className="w-8 h-8 text-[#2B2B2B] mb-6 mx-auto" strokeWidth={1.7} />
+          <HardHat className="w-8 h-8 text-[#2B2B2B] mb-6 mx-auto" strokeWidth={1.8} />
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#020202] mb-4 tracking-tight leading-[1.1]">
             {isAr ? "ابدأ رحلتك كمطور عقاري الآن" : "Start Your Journey as a Developer Now"}
           </h2>
