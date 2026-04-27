@@ -102,7 +102,7 @@ const PartnershipsDevelopers: React.FC = () => {
           ? "نفّذ مشاريع أكثر بتكلفة أقل مع وصول مباشر لأراضي مؤهلة وملاك يبحثون عن مطورين موثوقين عبر سينا للاستثمارات العقارية"
           : "Execute more projects at lower cost with direct access to qualified lands and owners seeking reliable developers through SINA platform"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1590725140246-20acdee442be?w=1920&q=85&auto=format&fit=crop"
+        image="/heroes/partnerships-developers.jpg"
       />
 
       {/* Why Partnership for Developers */}

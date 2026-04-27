@@ -4,7 +4,8 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
-import heroImg from "@/assets/hero/contact.svg";
+// 4K photo hero (served from /public/heroes/, replaces the abstract emblem SVG).
+const heroImg = "/heroes/contact.jpg";
 import { Loader2, CheckCircle2, MessageCircle, Clock, ShieldCheck, Headphones, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -86,7 +87,7 @@ const Contact: React.FC = () => {
           : "Our team is ready to help whether youre a landowner seeking a development partner or a developer looking for real opportunities"}
         isAr={isAr}
         image={heroImg}
-        illustrated
+       
       />
 
       {/* Why Contact Us */}

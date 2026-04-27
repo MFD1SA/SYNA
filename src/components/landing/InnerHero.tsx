@@ -41,6 +41,7 @@ const InnerHero: React.FC<InnerHeroProps> = ({
 
   return (
     <div
+      data-nav-theme="dark"
       className="relative pt-20 pb-14 sm:pt-24 sm:pb-16 md:pt-28 md:pb-20 lg:pt-32 lg:pb-24 overflow-hidden"
       dir={isAr ? "rtl" : "ltr"}
     >

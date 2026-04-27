@@ -29,6 +29,7 @@ const HeroSection: React.FC = () => {
 
   return (
     <section
+      data-nav-theme="dark"
       className="relative bg-[#020202] overflow-hidden isolate"
       dir={isAr ? "rtl" : "ltr"}
     >
@@ -66,24 +67,35 @@ const HeroSection: React.FC = () => {
             {t.hero.subtitle}
           </p>
 
-          {/* CTAs */}
+          {/* CTAs.
+              Each role gets a colour-coded icon BADGE — a pill with an
+              orange (Owner) or charcoal (Developer) gradient surface,
+              a halo glow, and a slightly bolder stroke. Reads as a
+              visual signal long before the user parses the label. */}
           <div className="mt-8 md:mt-10 flex flex-col sm:flex-row gap-3">
             <button
               onClick={() => navigate("/auth/login?type=owner")}
-              className="group inline-flex items-center justify-center gap-2.5 h-[54px] px-7 bg-white text-[#020202] text-[14px] font-bold rounded-xl shadow-[0_10px_30px_-10px_rgba(255,255,255,0.35)] hover:bg-white/95 hover:-translate-y-0.5 transition-all duration-300"
+              className="group inline-flex items-center justify-center gap-3 h-[58px] px-7 bg-white text-[#020202] text-[14px] font-bold rounded-xl shadow-[0_10px_30px_-10px_rgba(255,255,255,0.35)] hover:bg-white/95 hover:-translate-y-0.5 transition-all duration-300"
             >
-              <Crown className="w-4 h-4 text-[#A24832]" strokeWidth={2} />
+              <span className="relative inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-[#C45A41] to-[#A24832] shadow-[0_6px_18px_-6px_rgba(196,90,65,0.65)] ring-1 ring-[#C45A41]/30">
+                <Crown className="w-[18px] h-[18px] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" strokeWidth={2.4} />
+                {/* Subtle halo for depth */}
+                <span className="absolute inset-0 rounded-xl bg-gradient-to-tr from-white/0 via-white/15 to-white/0 pointer-events-none" />
+              </span>
               {isAr ? "دخول الملاك" : "Owner Login"}
-              <Arrow className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
+              <Arrow className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2.2} />
             </button>
 
             <button
               onClick={() => navigate("/auth/login")}
-              className="group inline-flex items-center justify-center gap-2.5 h-[54px] px-7 bg-white/[0.08] border border-white/25 text-white text-[14px] font-bold rounded-xl backdrop-blur-md hover:bg-white/[0.14] hover:border-white/40 hover:-translate-y-0.5 transition-all duration-300"
+              className="group inline-flex items-center justify-center gap-3 h-[58px] px-7 bg-white/[0.08] border border-white/25 text-white text-[14px] font-bold rounded-xl backdrop-blur-md hover:bg-white/[0.14] hover:border-white/40 hover:-translate-y-0.5 transition-all duration-300"
             >
-              <Building2 className="w-4 h-4 text-white/90" strokeWidth={2} />
+              <span className="relative inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-white/25 to-white/10 ring-1 ring-white/30 shadow-[0_6px_18px_-6px_rgba(255,255,255,0.25)]">
+                <Building2 className="w-[18px] h-[18px] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" strokeWidth={2.4} />
+                <span className="absolute inset-0 rounded-xl bg-gradient-to-tr from-white/0 via-white/10 to-white/0 pointer-events-none" />
+              </span>
               {isAr ? "دخول المطورين" : "Developer Login"}
-              <Arrow className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
+              <Arrow className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2.2} />
             </button>
           </div>
 

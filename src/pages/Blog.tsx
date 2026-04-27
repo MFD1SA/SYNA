@@ -4,7 +4,8 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
-import heroImg from "@/assets/hero/blog.svg";
+// 4K photo hero (served from /public/heroes/, replaces the abstract emblem SVG).
+const heroImg = "/heroes/blog.jpg";
 import { Clock, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, TrendingUp, Handshake, Building2, CircleDollarSign, ShieldCheck, Users, BookOpen, Landmark } from "lucide-react";
 
 interface BlogArticle {
@@ -221,7 +222,7 @@ const Blog: React.FC = () => {
           : "Specialized articles on real estate development partnerships: fundamentals, benefits, and importance in developing the real estate sector"}
         isAr={isAr}
         image={heroImg}
-        illustrated
+       
       />
 
       {/* Stats bar */}

@@ -4,7 +4,8 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
-import heroImg from "@/assets/hero/privacy.svg";
+// 4K photo hero (served from /public/heroes/, replaces the abstract emblem SVG).
+const heroImg = "/heroes/legal.jpg";
 
 const PrivacyPage: React.FC = () => {
   const { lang } = useLanguage();
@@ -57,7 +58,7 @@ const PrivacyPage: React.FC = () => {
 
   return (
     <PageShell>
-      <InnerHero pageSlug="privacy" title={isAr ? "سياسة الخصوصية" : "Privacy Policy"} subtitle={isAr ? "كيف نحمي بياناتك ونستخدمها" : "How we protect and use your data"} isAr={isAr} image={heroImg} illustrated />
+      <InnerHero pageSlug="privacy" title={isAr ? "سياسة الخصوصية" : "Privacy Policy"} subtitle={isAr ? "كيف نحمي بياناتك ونستخدمها" : "How we protect and use your data"} isAr={isAr} image={heroImg} />
       <section className="py-20 lg:py-28 bg-white" dir={isAr ? "rtl" : "ltr"}>
         <div className="container max-w-3xl space-y-10">
           {sections.map((s, i) => (

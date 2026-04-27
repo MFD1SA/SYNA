@@ -13,6 +13,7 @@ const CTASection: React.FC = () => {
 
   return (
     <section
+      data-nav-theme="dark"
       className="relative py-14 md:py-20 lg:py-28 overflow-hidden"
       dir={isAr ? "rtl" : "ltr"}
     >

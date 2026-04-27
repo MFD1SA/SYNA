@@ -7,7 +7,9 @@ import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import CTASection from "@/components/landing/CTASection";
 import { MapPin, ClipboardList, MessageSquare, Bolt, ArrowLeft, ArrowRight } from "lucide-react";
-import headerFeaturesImg from "@/assets/header-features.jpg";
+// 4K hero (served from /public/heroes/) — city skyline at twilight
+// for the developer-facing partnership page.
+const headerFeaturesImg = "/heroes/partnerships-developers.jpg";
 
 const ForDevelopers: React.FC = () => {
   const { t, lang } = useLanguage();

@@ -4,7 +4,8 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
-import heroImg from "@/assets/hero/terms.svg";
+// 4K photo hero (served from /public/heroes/, replaces the abstract emblem SVG).
+const heroImg = "/heroes/legal.jpg";
 
 const TermsPage: React.FC = () => {
   const { lang } = useLanguage();
@@ -61,7 +62,7 @@ const TermsPage: React.FC = () => {
 
   return (
     <PageShell>
-      <InnerHero pageSlug="terms" title={isAr ? "الشروط والأحكام" : "Terms & Conditions"} subtitle={isAr ? "الأطر القانونية التي تنظم استخدام سينا" : "Legal frameworks governing platform usage"} isAr={isAr} image={heroImg} illustrated />
+      <InnerHero pageSlug="terms" title={isAr ? "الشروط والأحكام" : "Terms & Conditions"} subtitle={isAr ? "الأطر القانونية التي تنظم استخدام سينا" : "Legal frameworks governing platform usage"} isAr={isAr} image={heroImg} />
       <section className="py-20 lg:py-28 bg-white" dir={isAr ? "rtl" : "ltr"}>
         <div className="container max-w-3xl space-y-10">
           {sections.map((s, i) => (

@@ -8,7 +8,10 @@ import CTASection from "@/components/landing/CTASection";
 import {
   ScanEye, ShieldCheck, Trophy, Lightbulb, Target, Scale, Cpu, Lock,
 } from "lucide-react";
-import aboutHero from "@/assets/hero/about.svg";
+// Hero photo (4K, served from /public/heroes/) — DOMA-toned curved
+// architectural detail. Replaces the abstract emblem SVG so the
+// header reads as a real-estate brand at first glance.
+const aboutHero = "/heroes/about.jpg";
 
 const About: React.FC = () => {
   const { lang } = useLanguage();
@@ -81,7 +84,6 @@ const About: React.FC = () => {
           : "A Saudi digital platform redefining the future of real estate development partnerships with integrated governance and advanced technology"}
         isAr={isAr}
         image={aboutHero}
-        illustrated
       />
 
       {/* Who We Are */}

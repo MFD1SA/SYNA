@@ -8,7 +8,8 @@ import { getActiveOffers, usageTypeLabels, offerTypeLabels, type RealEstateOffer
 import { supabase } from "@/integrations/supabase/client";
 import { MapPin, Ruler, Handshake, Gem, Sparkles, ArrowUpRight, Landmark, ShieldCheck } from "lucide-react";
 import InnerHero from "@/components/landing/InnerHero";
-import heroImg from "@/assets/hero/offers.svg";
+// 4K photo hero (served from /public/heroes/, replaces the abstract emblem SVG).
+const heroImg = "/heroes/offers.jpg";
 // Saudi 3D fallback assets for offer cards missing an imageUrl —
 // rotated by a hash of the offer id so each card gets a stable image.
 import fallback1 from "@/assets/riyadh-kafd-elite.png";
@@ -134,7 +135,7 @@ const OffersPage: React.FC = () => {
           }
           isAr={isAr}
           image={heroImg}
-          illustrated
+         
         />
 
         <section className="-mt-10 relative z-10 pb-24">

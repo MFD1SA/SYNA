@@ -7,7 +7,8 @@ import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import { Link } from "react-router-dom";
 import { MapPin, Ruler, Loader2 } from "lucide-react";
-import headerFeaturesImg from "@/assets/header-features.jpg";
+// Public 4K hero — modern apartment building (DOMA-toned).
+const headerFeaturesImg = "/heroes/opportunities.jpg";
 
 interface Land {
   id: string;

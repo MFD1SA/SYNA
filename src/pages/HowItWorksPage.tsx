@@ -4,7 +4,8 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
-import heroImg from "@/assets/hero/how-it-works.svg";
+// 4K photo hero (served from /public/heroes/, replaces the abstract emblem SVG).
+const heroImg = "/heroes/how-it-works.jpg";
 import CTASection from "@/components/landing/CTASection";
 import {
   Users, Building2, ShieldCheck, Eye, ClipboardList, Handshake,
@@ -105,7 +106,7 @@ const HowItWorksPage: React.FC = () => {
           : "A clear organized journey for each party from registration and verification to successful development partnership completion and official documentation"}
         isAr={isAr}
         image={heroImg}
-        illustrated
+       
       />
 
       {/* SINA Highlights */}

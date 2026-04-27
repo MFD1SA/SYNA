@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-[#020202] text-white" dir={isAr ? "rtl" : "ltr"}>
+    <footer data-nav-theme="dark" className="bg-[#020202] text-white" dir={isAr ? "rtl" : "ltr"}>
       <div className="container py-10 sm:py-12 lg:py-16">
         <div className="grid gap-10 lg:gap-12 lg:grid-cols-12">
           {/* Brand */}

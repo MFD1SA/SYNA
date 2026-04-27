@@ -7,9 +7,10 @@ import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
 import CTASection from "@/components/landing/CTASection";
 import { LockKeyhole, UserCheck, Settings2, BarChart3, ArrowLeft, ArrowRight } from "lucide-react";
-// Premium Saudi architecture — KAFD twisted tower at sunset. Matches the
-// visual caliber of the For-Developers hero.
-import ownersHeroImg from "@/assets/riyadh-kafd-elite.png";
+// 4K Saudi-skyline hero (served from /public/heroes/) — modern apartment
+// building shot. Replaces the low-res KAFD asset that was pixelating on
+// retina screens.
+const ownersHeroImg = "/heroes/partnerships-owners.jpg";
 
 const ForOwners: React.FC = () => {
   const { t, lang } = useLanguage();

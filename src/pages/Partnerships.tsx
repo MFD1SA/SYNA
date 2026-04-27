@@ -5,7 +5,8 @@ import { useMetaTags } from "@/hooks/useMetaTags";
 import { useNavigate } from "react-router-dom";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
-import heroImg from "@/assets/hero/partnerships.svg";
+// 4K photo hero (served from /public/heroes/, replaces the abstract emblem SVG).
+const heroImg = "/heroes/partnerships.jpg";
 import {
   ArrowLeft, ArrowRight, TrendingUp,
   Building2, Landmark, Handshake, FileCheck2,
@@ -134,7 +135,7 @@ const Partnerships: React.FC = () => {
           : "SINA brings together landowners and real estate developers in a governed digital ecosystem to build successful development partnerships with multiplied returns and comprehensive governance"}
         isAr={isAr}
         image={heroImg}
-        illustrated
+       
       />
 
       {/* Two Blocks - Owner & Developer */}

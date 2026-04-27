@@ -4,7 +4,8 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useMetaTags } from "@/hooks/useMetaTags";
 import PageShell from "@/components/landing/PageShell";
 import InnerHero from "@/components/landing/InnerHero";
-import heroImg from "@/assets/hero/faq.svg";
+// 4K photo hero (served from /public/heroes/, replaces the abstract emblem SVG).
+const heroImg = "/heroes/faq.jpg";
 import CTASection from "@/components/landing/CTASection";
 import { ChevronDown, HelpCircle, MessageCircle } from "lucide-react";
 
@@ -59,7 +60,7 @@ const FAQ: React.FC = () => {
           : "Clear and detailed answers to the most frequently asked questions about SINA platform and real estate development partnerships"}
         isAr={isAr}
         image={heroImg}
-        illustrated
+       
       />
 
       {/* Stats bar */}

@@ -102,7 +102,7 @@ const PartnershipsOwners: React.FC = () => {
           ? "حوّل أرضك إلى مشروع استثماري مربح بعوائد مضاعفة مع حماية كاملة لحقوقك وخصوصيتك عبر سينا للاستثمارات العقارية الرقمية المحكومة"
           : "Transform your land into a profitable investment project with multiplied returns and complete protection of your rights and privacy through SINAs governed digital platform"}
         isAr={isAr}
-        image="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1920&q=85&auto=format&fit=crop"
+        image="/heroes/partnerships-owners.jpg"
       />
 
       {/* Why Partner as Owner */}
