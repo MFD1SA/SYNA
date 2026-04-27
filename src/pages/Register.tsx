@@ -260,10 +260,10 @@ const Register: React.FC = () => {
   };
 
   const inputClass =
-    "w-full h-[48px] ps-11 pe-4 bg-white border border-gray-200 rounded-xl text-[14px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#2B4C66]/40 focus:ring-2 focus:ring-[#2B4C66]/10 focus:bg-white transition-all";
+    "w-full h-[48px] ps-11 pe-4 bg-white border border-gray-200 rounded-xl text-[14px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#2B2B2B]/40 focus:ring-2 focus:ring-[#2B2B2B]/10 focus:bg-white transition-all";
 
   const textareaClass =
-    "w-full ps-11 pe-4 py-3 bg-white border border-gray-200 rounded-xl text-[14px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#2B4C66]/40 focus:ring-2 focus:ring-[#2B4C66]/10 focus:bg-white transition-all resize-none";
+    "w-full ps-11 pe-4 py-3 bg-white border border-gray-200 rounded-xl text-[14px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#2B2B2B]/40 focus:ring-2 focus:ring-[#2B2B2B]/10 focus:bg-white transition-all resize-none";
 
   if (registered) {
     return (
@@ -286,7 +286,7 @@ const Register: React.FC = () => {
             </p>
             <Link
               to="/auth/login"
-              className="inline-flex items-center justify-center w-full h-[48px] bg-[#2B4C66] text-white text-[14px] font-semibold rounded-xl hover:bg-[#1E374B] transition-all"
+              className="inline-flex items-center justify-center w-full h-[48px] bg-[#2B2B2B] text-white text-[14px] font-semibold rounded-xl hover:bg-[#020202] transition-all"
             >
               {isAr ? "تسجيل الدخول الآن" : "Sign in now"}
             </Link>
@@ -324,8 +324,8 @@ const Register: React.FC = () => {
         </div>
 
         {/* Welcome notice */}
-        <div className="mb-5 rounded-xl border border-[#2B4C66]/10 bg-[#2B4C66]/[0.03] px-5 py-3.5 text-center">
-          <p className="text-[13px] text-[#2B4C66]/80 leading-relaxed font-medium">
+        <div className="mb-5 rounded-xl border border-[#2B2B2B]/10 bg-[#2B2B2B]/[0.03] px-5 py-3.5 text-center">
+          <p className="text-[13px] text-[#2B2B2B]/80 leading-relaxed font-medium">
             {isAr
               ? "مرحباً بك في سينا للاستثمارات العقارية — هذا التسجيل مخصص للمطورين العقاريين فقط."
               : "Welcome to SINA — this registration is exclusively for real estate developers."}
@@ -381,10 +381,10 @@ const Register: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <label className="flex items-center justify-center gap-2.5 h-[80px] rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 hover:bg-white hover:border-[#2B4C66]/30 transition-all cursor-pointer">
+                <label className="flex items-center justify-center gap-2.5 h-[80px] rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 hover:bg-white hover:border-[#2B2B2B]/30 transition-all cursor-pointer">
                   {uploadingLogo ? (
                     <>
-                      <Loader2 className="w-4 h-4 text-[#2B4C66] animate-spin" />
+                      <Loader2 className="w-4 h-4 text-[#2B2B2B] animate-spin" />
                       <span className="text-[13px] text-gray-500">{isAr ? "جاري الرفع..." : "Uploading..."}</span>
                     </>
                   ) : (
@@ -581,7 +581,7 @@ const Register: React.FC = () => {
                   type="checkbox"
                   checked={agreedTerms}
                   onChange={(e) => { setAgreedTerms(e.target.checked); if (errors.terms) setErrors(prev => { const n = { ...prev }; delete n.terms; return n; }); }}
-                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#2B4C66] focus:ring-[#2B4C66]/20 accent-[#2B4C66]"
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#2B2B2B] focus:ring-[#2B2B2B]/20 accent-[#2B2B2B]"
                 />
                 <span className="text-[13px] text-gray-600 leading-relaxed">
                   {isAr ? "بإنشاء حسابك أنت توافق على " : "By creating your account you agree to the "}
@@ -591,7 +591,7 @@ const Register: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="font-semibold text-[#2B4C66] hover:underline"
+                    className="font-semibold text-[#2B2B2B] hover:underline"
                   >
                     {isAr ? "الشروط والأحكام" : "Terms & Conditions"}
                   </a>
@@ -601,7 +601,7 @@ const Register: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="font-semibold text-[#2B4C66] hover:underline"
+                    className="font-semibold text-[#2B2B2B] hover:underline"
                   >
                     {isAr ? "سياسة الخصوصية" : "Privacy Policy"}
                   </a>
@@ -613,7 +613,7 @@ const Register: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-[50px] bg-[#2B4C66] text-white text-[14px] font-semibold rounded-xl hover:bg-[#1E374B] disabled:opacity-40 transition-all duration-200 flex items-center justify-center gap-2.5 mt-2"
+              className="w-full h-[50px] bg-[#2B2B2B] text-white text-[14px] font-semibold rounded-xl hover:bg-[#020202] disabled:opacity-40 transition-all duration-200 flex items-center justify-center gap-2.5 mt-2"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                 <>
@@ -628,7 +628,7 @@ const Register: React.FC = () => {
         {/* Bottom link */}
         <p className="text-center text-[13px] text-gray-500 mt-8">
           {isAr ? "لديك حساب؟" : "Already have an account?"}{" "}
-          <Link to="/auth/login" className="font-semibold text-[#2B4C66] hover:underline transition-colors">
+          <Link to="/auth/login" className="font-semibold text-[#2B2B2B] hover:underline transition-colors">
             {isAr ? "سجّل دخولك" : "Sign In"}
           </Link>
         </p>

@@ -425,7 +425,7 @@ const AdminDeals: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         {[
           { label: isAr ? "طلبات معلقة" : "Pending", value: pendingCount, icon: Clock, color: "text-amber-600", bg: "bg-amber-500/10", border: "border-amber-500/20" },
-          { label: isAr ? "صفقات نشطة" : "Active Deals", value: activeDealsCount, icon: TrendingUp, color: "text-[#2B4C66]", bg: "bg-[#2B4C66]/10", border: "border-[#2B4C66]/20" },
+          { label: isAr ? "صفقات نشطة" : "Active Deals", value: activeDealsCount, icon: TrendingUp, color: "text-[#2B2B2B]", bg: "bg-[#2B2B2B]/10", border: "border-[#2B2B2B]/20" },
           { label: isAr ? "مُنجزة" : "Closed", value: deals.filter(d => d.current_stage === "deal_closed").length, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
           { label: isAr ? "ملغاة" : "Cancelled", value: deals.filter(d => d.current_stage === "deal_cancelled").length, icon: XCircle, color: "text-destructive", bg: "bg-destructive/10", border: "border-destructive/20" },
         ].map(kpi => (
@@ -460,7 +460,7 @@ const AdminDeals: React.FC = () => {
             <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-start">
-                  <thead className="bg-[#2B4C66]/[0.04] text-muted-foreground border-b border-[#2B4C66]/10">
+                  <thead className="bg-[#2B2B2B]/[0.04] text-muted-foreground border-b border-[#2B2B2B]/10">
                     <tr>
                       <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "المطور والموقع" : "Developer & Location"}</th>
                       <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "المقترح المساحة" : "Proposal & Area"}</th>
@@ -528,7 +528,7 @@ const AdminDeals: React.FC = () => {
             <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-start">
-                  <thead className="bg-[#2B4C66]/[0.04] text-muted-foreground border-b border-[#2B4C66]/10">
+                  <thead className="bg-[#2B2B2B]/[0.04] text-muted-foreground border-b border-[#2B2B2B]/10">
                     <tr>
                       <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide">{isAr ? "معلومات الصفقة" : "Deal Info"}</th>
                       <th className="px-5 py-3.5 font-medium text-start text-xs tracking-wide min-w-[300px]">{isAr ? "مسار الصفقة (Pipeline)" : "Pipeline Progress"}</th>
@@ -905,7 +905,7 @@ const AdminDeals: React.FC = () => {
                 {/* Actions */}
                 <div className="flex items-center gap-2 border-t border-border/40 pt-4">
                   {nextStage && (
-                    <Button className="flex-1 gap-1.5 bg-[#2B4C66] hover:bg-[#2B4C66]/90" onClick={() => setStageDialog({ dealId: viewDeal.id, currentStage: viewDeal.current_stage, nextStage, devName: viewDeal.developers?.company_name, landCity: viewDeal.lands?.city, landDistrict: viewDeal.lands?.district })}>
+                    <Button className="flex-1 gap-1.5 bg-[#2B2B2B] hover:bg-[#2B2B2B]/90" onClick={() => setStageDialog({ dealId: viewDeal.id, currentStage: viewDeal.current_stage, nextStage, devName: viewDeal.developers?.company_name, landCity: viewDeal.lands?.city, landDistrict: viewDeal.lands?.district })}>
                       {isAr ? <ChevronLeft className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
                       {isAr ? `الانتقال إلى: ${stageConfig[nextStage]?.ar}` : `Advance to: ${stageConfig[nextStage]?.en}`}
                     </Button>
@@ -999,7 +999,7 @@ const AdminDeals: React.FC = () => {
         <DialogContent className="max-w-md" dir={isAr ? "rtl" : "ltr"}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              {isAr ? <ChevronLeft className="h-5 w-5 text-[#2B4C66]" /> : <ChevronRight className="h-5 w-5 text-[#2B4C66]" />}
+              {isAr ? <ChevronLeft className="h-5 w-5 text-[#2B2B2B]" /> : <ChevronRight className="h-5 w-5 text-[#2B2B2B]" />}
               {isAr ? "تقديم مرحلة الصفقة" : "Advance Deal Stage"}
             </DialogTitle>
           </DialogHeader>
@@ -1007,7 +1007,7 @@ const AdminDeals: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-3 rounded-lg border border-border/40 p-3">
                 <Badge variant="outline" className="text-xs">{isAr ? stageConfig[stageDialog.currentStage]?.ar : stageConfig[stageDialog.currentStage]?.en}</Badge>
-                <MoveRight className="h-4 w-4 text-[#2B4C66]" />
+                <MoveRight className="h-4 w-4 text-[#2B2B2B]" />
                 <Badge className="text-xs bg-primary">{isAr ? stageConfig[stageDialog.nextStage]?.ar : stageConfig[stageDialog.nextStage]?.en}</Badge>
               </div>
               {/* P1.7 — extra explicit warning when the next stage is

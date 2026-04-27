@@ -35,14 +35,14 @@ const TrustStrip: React.FC = () => {
       dir={isAr ? "rtl" : "ltr"}
     >
       {/* Subtle top gradient */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C2A86B]/40 to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C45A41]/40 to-transparent" />
 
       <div className="container">
         <div className="py-5 flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
           {items.map((item, i) => (
             <React.Fragment key={i}>
               <div className="flex items-center gap-2.5 group">
-                <item.icon className="w-4 h-4 text-[#2B4C66] group-hover:text-[#A88A4A] transition-colors" strokeWidth={1.7} />
+                <item.icon className="w-4 h-4 text-[#2B2B2B] group-hover:text-[#A24832] transition-colors" strokeWidth={1.7} />
                 <span className="text-[12.5px] font-semibold text-gray-700 tracking-wide">
                   {item.label}
                 </span>

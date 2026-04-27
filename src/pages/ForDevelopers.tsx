@@ -77,14 +77,14 @@ const ForDevelopers: React.FC = () => {
 
       <section className="py-14 lg:py-16 bg-white" dir={isAr ? "rtl" : "ltr"}>
         <div className="container">
-          <h2 className="text-2xl md:text-3xl font-bold text-[#1E374B] mb-10 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#020202] mb-10 text-center">
             {isAr ? "لماذا تنضم كمطور في سينا؟" : "Why Join SINA as a Developer?"}
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {values.map((v, i) => (
               <div key={i} className="bg-white rounded-xl p-7 border border-gray-100 hover:shadow-lg transition-all duration-300">
                 <v.icon className="w-6 h-6 text-emerald-600 mb-5" strokeWidth={1.5} />
-                <h3 className="text-[16px] font-semibold text-[#1E374B] mb-3">{v.title}</h3>
+                <h3 className="text-[16px] font-semibold text-[#020202] mb-3">{v.title}</h3>
                 <p className="text-[14px] text-gray-500 leading-[1.8]">{v.desc}</p>
               </div>
             ))}
@@ -94,14 +94,14 @@ const ForDevelopers: React.FC = () => {
 
       <section className="py-14 lg:py-16 bg-white border-t border-gray-100" dir={isAr ? "rtl" : "ltr"}>
         <div className="container">
-          <h2 className="text-2xl md:text-3xl font-bold text-[#1E374B] mb-10 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#020202] mb-10 text-center">
             {isAr ? "رحلة المطور في سينا" : "The Developer's Journey on SINA"}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
             {steps.map((step, i) => (
               <div key={i} className="bg-white rounded-xl p-7 border border-gray-100 hover:shadow-lg transition-all duration-300">
                 <span className="text-[13px] font-bold text-emerald-600 mb-4 block">{step.num}</span>
-                <h4 className="text-[15px] font-semibold text-[#1E374B] mb-3">{step.title}</h4>
+                <h4 className="text-[15px] font-semibold text-[#020202] mb-3">{step.title}</h4>
                 <p className="text-[13px] text-gray-500 leading-[1.8]">{step.desc}</p>
               </div>
             ))}

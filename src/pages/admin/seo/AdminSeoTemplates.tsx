@@ -88,15 +88,15 @@ const AdminSeoTemplates: React.FC = () => {
               <button
                 key={t.id}
                 onClick={() => { setSelected(t); setDirty(false); }}
-                className={`w-full px-4 py-3 text-start hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors ${selected?.id === t.id ? "bg-[#2B4C66]/[0.04] dark:bg-[#2B4C66]/10 border-s-4 border-[#C2A86B]" : "border-s-4 border-transparent"}`}
+                className={`w-full px-4 py-3 text-start hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors ${selected?.id === t.id ? "bg-[#2B2B2B]/[0.04] dark:bg-[#2B2B2B]/10 border-s-4 border-[#C45A41]" : "border-s-4 border-transparent"}`}
               >
                 <div className="flex items-center gap-2">
-                  <FileCog className="w-4 h-4 text-[#2B4C66]" strokeWidth={1.7} />
-                  <p className="text-[13px] font-bold text-[#1E374B] dark:text-white truncate">{t.name}</p>
+                  <FileCog className="w-4 h-4 text-[#2B2B2B]" strokeWidth={1.7} />
+                  <p className="text-[13px] font-bold text-[#020202] dark:text-white truncate">{t.name}</p>
                 </div>
                 <p className="text-[10px] uppercase tracking-wider text-slate-400 mt-1 ms-6">
                   {isAr ? pageTypeLabels[t.page_type].ar : pageTypeLabels[t.page_type].en}
-                  {t.is_default && <span className="ms-2 text-[#C2A86B]">★ default</span>}
+                  {t.is_default && <span className="ms-2 text-[#C45A41]">★ default</span>}
                 </p>
               </button>
             ))}
@@ -112,7 +112,7 @@ const AdminSeoTemplates: React.FC = () => {
           <div className="space-y-5">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-[16px] font-bold text-[#1E374B] dark:text-white">{selected.name}</h3>
+                <h3 className="text-[16px] font-bold text-[#020202] dark:text-white">{selected.name}</h3>
                 <p className="text-[11px] text-slate-400 uppercase tracking-wider mt-0.5">
                   {isAr ? pageTypeLabels[selected.page_type].ar : pageTypeLabels[selected.page_type].en}
                 </p>
@@ -120,7 +120,7 @@ const AdminSeoTemplates: React.FC = () => {
               <button
                 onClick={handleSave}
                 disabled={!dirty || saving}
-                className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[13px] font-bold disabled:opacity-50"
+                className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white text-[13px] font-bold disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
                 {isAr ? "حفظ" : "Save"}

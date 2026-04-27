@@ -48,17 +48,17 @@ export const QuickActions: React.FC<Props> = ({ actions, className }) => {
     hoverShadow: string;
   }> = {
     primary: {
-      grad: "bg-gradient-to-br from-[#2B4C66] to-[#1E374B]",
+      grad: "bg-gradient-to-br from-[#2B2B2B] to-[#020202]",
       glow: "shadow-[0_8px_20px_-8px_rgba(43,76,102,0.5)]",
-      bar: "bg-gradient-to-r from-[#2B4C66] via-[#3A6088] to-transparent",
-      hoverBorder: "hover:border-[#2B4C66]/35 dark:hover:border-[#7FA7C4]/30",
+      bar: "bg-gradient-to-r from-[#2B2B2B] via-[#3A6088] to-transparent",
+      hoverBorder: "hover:border-[#2B2B2B]/35 dark:hover:border-[#7FA7C4]/30",
       hoverShadow: "hover:shadow-[0_16px_32px_-14px_rgba(43,76,102,0.28)]",
     },
     gold: {
-      grad: "bg-gradient-to-br from-[#C2A86B] to-[#A88A4A]",
+      grad: "bg-gradient-to-br from-[#C45A41] to-[#A24832]",
       glow: "shadow-[0_8px_20px_-8px_rgba(194,168,107,0.55)]",
-      bar: "bg-gradient-to-r from-[#C2A86B] via-[#D7C084] to-transparent",
-      hoverBorder: "hover:border-[#C2A86B]/50 dark:hover:border-[#C2A86B]/40",
+      bar: "bg-gradient-to-r from-[#C45A41] via-[#D7C084] to-transparent",
+      hoverBorder: "hover:border-[#C45A41]/50 dark:hover:border-[#C45A41]/40",
       hoverShadow: "hover:shadow-[0_16px_32px_-14px_rgba(194,168,107,0.32)]",
     },
     success: {
@@ -122,7 +122,7 @@ export const QuickActions: React.FC<Props> = ({ actions, className }) => {
 
             {/* Label */}
             <div className="relative mt-4 min-w-0">
-              <p className="text-[14px] font-bold leading-tight text-[#1E374B] dark:text-white break-words">
+              <p className="text-[14px] font-bold leading-tight text-[#020202] dark:text-white break-words">
                 {a.label}
               </p>
               {a.description && (

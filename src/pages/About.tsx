@@ -86,10 +86,10 @@ const About: React.FC = () => {
 
       {/* Who We Are */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-b from-white via-white to-[#FAFBFC] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
-        <div className="absolute -top-24 end-[-120px] w-[480px] h-[480px] rounded-full bg-[#C2A86B]/[0.06] blur-3xl pointer-events-none" />
-        <div className="absolute bottom-[-160px] start-[-120px] w-[520px] h-[520px] rounded-full bg-[#2B4C66]/[0.05] blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 end-[-120px] w-[480px] h-[480px] rounded-full bg-[#C45A41]/[0.06] blur-3xl pointer-events-none" />
+        <div className="absolute bottom-[-160px] start-[-120px] w-[520px] h-[520px] rounded-full bg-[#2B2B2B]/[0.05] blur-3xl pointer-events-none" />
         <div className="container max-w-4xl relative">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-8 tracking-tight leading-[1.1]">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#020202] mb-8 tracking-tight leading-[1.1]">
             {isAr ? "من نحن" : "Who We Are"}
           </h2>
           <div className="space-y-6">
@@ -114,12 +114,12 @@ const About: React.FC = () => {
 
       {/* Vision & Mission */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
-        <div className="absolute top-1/2 -translate-y-1/2 start-[-140px] w-[420px] h-[420px] rounded-full bg-[#2B4C66]/[0.06] blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 -translate-y-1/2 start-[-140px] w-[420px] h-[420px] rounded-full bg-[#2B2B2B]/[0.06] blur-3xl pointer-events-none" />
         <div className="container relative">
           <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
-            <div className="group relative bg-white rounded-3xl p-10 ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.18)] hover:shadow-[0_30px_80px_-30px_rgba(15,31,46,0.28)] hover:ring-[#2B4C66]/20 transition-all duration-500">
-              <ScanEye className="w-7 h-7 text-[#2B4C66] mb-6" strokeWidth={1.7} />
-              <h3 className="text-2xl font-bold text-[#1E374B] mb-4 tracking-tight">
+            <div className="group relative bg-white rounded-3xl p-10 ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.18)] hover:shadow-[0_30px_80px_-30px_rgba(15,31,46,0.28)] hover:ring-[#2B2B2B]/20 transition-all duration-500">
+              <ScanEye className="w-7 h-7 text-[#2B2B2B] mb-6" strokeWidth={1.7} />
+              <h3 className="text-2xl font-bold text-[#020202] mb-4 tracking-tight">
                 {isAr ? "رؤيتنا" : "Our Vision"}
               </h3>
               <p className="text-[15px] text-slate-600 leading-[2.1]">
@@ -128,9 +128,9 @@ const About: React.FC = () => {
                   : "To be the leading platform and primary reference for organizing digital real estate development partnerships and transforming underutilized lands into productive projects that contribute to urban development and serve the Kingdom's Vision 2030"}
               </p>
             </div>
-            <div className="group relative bg-white rounded-3xl p-10 ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.18)] hover:shadow-[0_30px_80px_-30px_rgba(15,31,46,0.28)] hover:ring-[#C2A86B]/30 transition-all duration-500">
-              <Trophy className="w-7 h-7 text-[#A88A4A] mb-6" strokeWidth={1.7} />
-              <h3 className="text-2xl font-bold text-[#1E374B] mb-4 tracking-tight">
+            <div className="group relative bg-white rounded-3xl p-10 ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.18)] hover:shadow-[0_30px_80px_-30px_rgba(15,31,46,0.28)] hover:ring-[#C45A41]/30 transition-all duration-500">
+              <Trophy className="w-7 h-7 text-[#A24832] mb-6" strokeWidth={1.7} />
+              <h3 className="text-2xl font-bold text-[#020202] mb-4 tracking-tight">
                 {isAr ? "رسالتنا" : "Our Mission"}
               </h3>
               <p className="text-[15px] text-slate-600 leading-[2.1]">
@@ -147,7 +147,7 @@ const About: React.FC = () => {
       <section className="relative py-20 lg:py-24 bg-white overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
         <div className="container relative">
           <div className="text-center mb-14 max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#020202] mb-5 tracking-tight leading-[1.1]">
               {isAr ? "ركائزنا الأساسية" : "Our Core Pillars"}
             </h2>
             <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
@@ -158,9 +158,9 @@ const About: React.FC = () => {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
             {pillars.map((p, i) => (
-              <div key={i} className="group relative bg-gradient-to-b from-white to-[#FAFBFC] rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#2B4C66]/25 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(15,31,46,0.25)] transition-all duration-500 hover:-translate-y-1">
-                <p.icon className="w-6 h-6 text-[#2B4C66] mb-5" strokeWidth={1.7} />
-                <h3 className="text-[16px] font-bold text-[#1E374B] mb-2.5 tracking-tight">{p.title}</h3>
+              <div key={i} className="group relative bg-gradient-to-b from-white to-[#FAFBFC] rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#2B2B2B]/25 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(15,31,46,0.25)] transition-all duration-500 hover:-translate-y-1">
+                <p.icon className="w-6 h-6 text-[#2B2B2B] mb-5" strokeWidth={1.7} />
+                <h3 className="text-[16px] font-bold text-[#020202] mb-2.5 tracking-tight">{p.title}</h3>
                 <p className="text-[13px] text-slate-500 leading-[1.9]">{p.desc}</p>
               </div>
             ))}
@@ -170,10 +170,10 @@ const About: React.FC = () => {
 
       {/* Our Values */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-b from-white to-[#FAFBFC] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
-        <div className="absolute top-0 end-0 w-[360px] h-[360px] rounded-full bg-[#C2A86B]/[0.05] blur-3xl pointer-events-none" />
+        <div className="absolute top-0 end-0 w-[360px] h-[360px] rounded-full bg-[#C45A41]/[0.05] blur-3xl pointer-events-none" />
         <div className="container relative">
           <div className="text-center mb-14 max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#020202] mb-5 tracking-tight leading-[1.1]">
               {isAr ? "قيمنا" : "Our Values"}
             </h2>
             <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
@@ -184,9 +184,9 @@ const About: React.FC = () => {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
             {values.map((v, i) => (
-              <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C2A86B]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.25)] transition-all duration-500 hover:-translate-y-1">
-                <v.icon className="w-6 h-6 text-[#A88A4A] mb-5" strokeWidth={1.7} />
-                <h3 className="text-[16px] font-bold text-[#1E374B] mb-2.5 tracking-tight">{v.title}</h3>
+              <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C45A41]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.25)] transition-all duration-500 hover:-translate-y-1">
+                <v.icon className="w-6 h-6 text-[#A24832] mb-5" strokeWidth={1.7} />
+                <h3 className="text-[16px] font-bold text-[#020202] mb-2.5 tracking-tight">{v.title}</h3>
                 <p className="text-[13px] text-slate-500 leading-[1.9]">{v.desc}</p>
               </div>
             ))}
@@ -196,9 +196,9 @@ const About: React.FC = () => {
 
       {/* Why SINA */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
-        <div className="absolute bottom-0 start-0 w-[400px] h-[400px] rounded-full bg-[#2B4C66]/[0.05] blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 start-0 w-[400px] h-[400px] rounded-full bg-[#2B2B2B]/[0.05] blur-3xl pointer-events-none" />
         <div className="container max-w-4xl relative">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-8 tracking-tight leading-[1.1]">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#020202] mb-8 tracking-tight leading-[1.1]">
             {isAr ? "لماذا سينا" : "Why SINA"}
           </h2>
           <div className="space-y-6">
@@ -222,10 +222,10 @@ const About: React.FC = () => {
       </section>
 
       {/* Commitment to Vision 2030 */}
-      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-[#1E374B] via-[#1E374B] to-[#0F1F2E] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-[#020202] via-[#020202] to-[#020202] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
-        <div className="absolute -top-40 end-[-140px] w-[520px] h-[520px] rounded-full bg-[#C2A86B]/10 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-40 start-[-140px] w-[520px] h-[520px] rounded-full bg-[#2B4C66]/25 blur-3xl pointer-events-none" />
+        <div className="absolute -top-40 end-[-140px] w-[520px] h-[520px] rounded-full bg-[#C45A41]/10 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-40 start-[-140px] w-[520px] h-[520px] rounded-full bg-[#2B2B2B]/25 blur-3xl pointer-events-none" />
         <div className="container max-w-4xl relative z-10">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-8 tracking-tight leading-[1.1]">
             {isAr ? "التزامنا برؤية 2030" : "Our Commitment to Vision 2030"}

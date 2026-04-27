@@ -349,10 +349,10 @@ const OwnerDashboard: React.FC = () => {
         {/* ═══════ HERO ═══════ */}
         <BentoGrid className="mb-5">
           <BentoCard variant="hero" span="two-thirds" padding="lg" className="relative overflow-hidden">
-            <div className="absolute top-0 end-0 w-44 h-44 bg-[#C2A86B]/15 rounded-full blur-3xl -me-10 -mt-10 pointer-events-none" />
+            <div className="absolute top-0 end-0 w-44 h-44 bg-[#C45A41]/15 rounded-full blur-3xl -me-10 -mt-10 pointer-events-none" />
             <div className="relative">
               <div className="flex items-center gap-2 mb-3">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#C2A86B]/15 text-[11px] font-semibold text-[#A88A4A]">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#C45A41]/15 text-[11px] font-semibold text-[#A24832]">
                   <ShieldCheck className="w-3 h-3" strokeWidth={2} />
                   {isAr ? "منصة المالك" : "Owner Hub"}
                 </span>
@@ -362,7 +362,7 @@ const OwnerDashboard: React.FC = () => {
                   </StatusBadge>
                 )}
               </div>
-              <h1 className="text-[24px] md:text-[30px] font-bold text-[#1E374B] dark:text-white tracking-tight mb-1.5">
+              <h1 className="text-[24px] md:text-[30px] font-bold text-[#020202] dark:text-white tracking-tight mb-1.5">
                 {isAr ? `مرحباً، ${ownerName || ""}` : `Welcome, ${ownerName || ""}`}
               </h1>
               <p className="text-[13px] md:text-[14px] text-slate-600 dark:text-slate-300 leading-relaxed max-w-[560px]">
@@ -389,7 +389,7 @@ const OwnerDashboard: React.FC = () => {
                 loading={loading}
                 sublabel={isAr ? "مدرجة على المنصة" : "Listed on platform"}
               />
-              <TrendSparkline data={ownerSpark} color="#A88A4A" height={56} />
+              <TrendSparkline data={ownerSpark} color="#A24832" height={56} />
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 {isAr ? "اهتمام المطورين — آخر 7 أيام" : "Developer interest — last 7 days"}
               </p>

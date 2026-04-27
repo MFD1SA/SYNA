@@ -72,7 +72,7 @@ const OwnerSidebar: React.FC = () => {
           {!collapsed && (
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="h-7 w-7 flex items-center justify-center rounded-md text-gray-300 hover:text-[#2B4C66] hover:bg-[#2B4C66]/5 transition-all duration-200"
+              className="h-7 w-7 flex items-center justify-center rounded-md text-gray-300 hover:text-[#2B2B2B] hover:bg-[#2B2B2B]/5 transition-all duration-200"
             >
               <CollapseIcon className="h-3.5 w-3.5" strokeWidth={1.5} />
             </button>
@@ -80,7 +80,7 @@ const OwnerSidebar: React.FC = () => {
           {collapsed && (
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="absolute -end-3 top-[26px] h-6 w-6 flex items-center justify-center rounded-full bg-white border border-gray-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.06)] text-gray-400 hover:text-[#2B4C66] hover:border-[#2B4C66]/20 transition-all duration-200 z-10"
+              className="absolute -end-3 top-[26px] h-6 w-6 flex items-center justify-center rounded-full bg-white border border-gray-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.06)] text-gray-400 hover:text-[#2B2B2B] hover:border-[#2B2B2B]/20 transition-all duration-200 z-10"
             >
               <CollapseIcon className="h-3 w-3" strokeWidth={1.5} />
             </button>
@@ -90,12 +90,12 @@ const OwnerSidebar: React.FC = () => {
 
       {/* User info + Role badge */}
       {!collapsed && (
-        <div className="mx-3 mt-3 mb-3 flex items-center gap-3 rounded-xl bg-gradient-to-br from-[#C2A86B]/[0.12] to-[#C2A86B]/[0.04] dark:from-[#C2A86B]/25 dark:to-[#C2A86B]/10 border border-[#C2A86B]/20 dark:border-[#C2A86B]/20 px-3 py-2.5">
-          <div className="h-9 w-9 rounded-xl bg-[#C2A86B]/20 dark:bg-[#C2A86B]/30 flex items-center justify-center shrink-0">
-            <Crown className="h-4 w-4 text-[#A88A4A] dark:text-[#D7C084]" strokeWidth={1.7} />
+        <div className="mx-3 mt-3 mb-3 flex items-center gap-3 rounded-xl bg-gradient-to-br from-[#C45A41]/[0.12] to-[#C45A41]/[0.04] dark:from-[#C45A41]/25 dark:to-[#C45A41]/10 border border-[#C45A41]/20 dark:border-[#C45A41]/20 px-3 py-2.5">
+          <div className="h-9 w-9 rounded-xl bg-[#C45A41]/20 dark:bg-[#C45A41]/30 flex items-center justify-center shrink-0">
+            <Crown className="h-4 w-4 text-[#A24832] dark:text-[#D7C084]" strokeWidth={1.7} />
           </div>
           <div className="min-w-0">
-            <p className="text-[12px] font-semibold text-[#1E374B] dark:text-white truncate">{fullName || "Owner"}</p>
+            <p className="text-[12px] font-semibold text-[#020202] dark:text-white truncate">{fullName || "Owner"}</p>
             <p className="text-[10px] text-slate-500 dark:text-slate-400">{isAr ? "مالك أرض" : "Land Owner"}</p>
           </div>
         </div>
@@ -113,14 +113,14 @@ const OwnerSidebar: React.FC = () => {
                 title={collapsed ? (isAr ? item.label.ar : item.label.en) : undefined}
                 className={`relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] transition-all ${
                   isActive
-                    ? "bg-gradient-to-r from-[#C2A86B]/[0.18] to-[#C2A86B]/[0.05] text-[#A88A4A] dark:text-[#D7C084] dark:from-[#C2A86B]/30 dark:to-[#C2A86B]/10 font-semibold shadow-[0_2px_8px_-4px_rgba(194,168,107,0.25)]"
-                    : "text-slate-500 dark:text-slate-400 hover:bg-white/60 dark:hover:bg-white/5 hover:text-[#1E374B] dark:hover:text-white"
+                    ? "bg-gradient-to-r from-[#C45A41]/[0.18] to-[#C45A41]/[0.05] text-[#A24832] dark:text-[#D7C084] dark:from-[#C45A41]/30 dark:to-[#C45A41]/10 font-semibold shadow-[0_2px_8px_-4px_rgba(194,168,107,0.25)]"
+                    : "text-slate-500 dark:text-slate-400 hover:bg-white/60 dark:hover:bg-white/5 hover:text-[#020202] dark:hover:text-white"
                 } ${collapsed ? "justify-center" : ""}`}
               >
                 {isActive && !collapsed && (
-                  <span className="absolute start-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-[#C2A86B]" />
+                  <span className="absolute start-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-[#C45A41]" />
                 )}
-                <item.icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-[#A88A4A] dark:text-[#D7C084]" : ""}`} strokeWidth={1.5} />
+                <item.icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? "text-[#A24832] dark:text-[#D7C084]" : ""}`} strokeWidth={1.5} />
                 {!collapsed && (
                   <span className="truncate">{isAr ? item.label.ar : item.label.en}</span>
                 )}
@@ -141,7 +141,7 @@ const OwnerSidebar: React.FC = () => {
           </div>
           <button
             onClick={handleBackToAdmin}
-            className="w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-[12px] text-[#2B4C66] font-medium bg-white border border-[#2B4C66]/20 transition-colors hover:bg-[#2B4C66]/5"
+            className="w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-[12px] text-[#2B2B2B] font-medium bg-white border border-[#2B2B2B]/20 transition-colors hover:bg-[#2B2B2B]/5"
           >
             <ShieldCheck className="h-4 w-4 shrink-0" strokeWidth={1.5} />
             <span>{isAr ? "العودة للوحة الأدمن" : "Back to Admin Panel"}</span>
@@ -166,7 +166,7 @@ const OwnerSidebar: React.FC = () => {
       <div className="space-y-0.5 border-t border-white/60 dark:border-white/5 p-3">
         <button
           onClick={toggleLang}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-slate-500 dark:text-slate-400 transition-colors hover:bg-white/60 dark:hover:bg-white/5 hover:text-[#1E374B] dark:hover:text-white"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-slate-500 dark:text-slate-400 transition-colors hover:bg-white/60 dark:hover:bg-white/5 hover:text-[#020202] dark:hover:text-white"
         >
           <Globe className="h-4 w-4 shrink-0" strokeWidth={1.5} />
           {!collapsed && (isAr ? "English" : "العربية")}

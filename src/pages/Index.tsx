@@ -42,7 +42,7 @@ const OffersPreview: React.FC<{ isAr: boolean }> = ({ isAr }) => {
       <div className="max-w-7xl mx-auto px-6" dir={isAr ? "rtl" : "ltr"}>
         <div className="flex items-end justify-between mb-10">
           <div>
-            <p className="text-[12px] font-semibold text-[#2B4C66] uppercase tracking-widest mb-2">
+            <p className="text-[12px] font-semibold text-[#2B2B2B] uppercase tracking-widest mb-2">
               {isAr ? "فرص حصرية" : "EXCLUSIVE OPPORTUNITIES"}
             </p>
             <h2 className="text-[28px] md:text-[32px] font-bold text-gray-900 tracking-tight">
@@ -51,7 +51,7 @@ const OffersPreview: React.FC<{ isAr: boolean }> = ({ isAr }) => {
           </div>
           <Link
             to="/offers"
-            className="hidden md:flex items-center gap-2 text-[14px] font-semibold text-gray-600 hover:text-[#2B4C66] transition-colors"
+            className="hidden md:flex items-center gap-2 text-[14px] font-semibold text-gray-600 hover:text-[#2B2B2B] transition-colors"
           >
             {isAr ? "عرض الكل" : "View All"}
             {isAr ? <ArrowLeft className="h-4 w-4" strokeWidth={1.5} /> : <ArrowRightIcon className="h-4 w-4" strokeWidth={1.5} />}
@@ -74,7 +74,7 @@ const OffersPreview: React.FC<{ isAr: boolean }> = ({ isAr }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                 <div className="absolute top-3 start-3">
                   <span className={`inline-block px-3 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md ${
-                    offer.type === "partnership" ? "bg-[#2B4C66]/80 text-white" : "bg-emerald-500/80 text-white"
+                    offer.type === "partnership" ? "bg-[#2B2B2B]/80 text-white" : "bg-emerald-500/80 text-white"
                   }`}>
                     {isAr ? offerTypeLabels[offer.type].ar : offerTypeLabels[offer.type].en}
                   </span>
@@ -96,17 +96,17 @@ const OffersPreview: React.FC<{ isAr: boolean }> = ({ isAr }) => {
                     {offer.area_sqm.toLocaleString("en-US")} {isAr ? "م²" : "sqm"}
                   </span>
                 </div>
-                <h3 className="text-[14px] font-bold text-gray-900 mb-2 leading-snug line-clamp-2 group-hover:text-[#2B4C66] transition-colors">
+                <h3 className="text-[14px] font-bold text-gray-900 mb-2 leading-snug line-clamp-2 group-hover:text-[#2B2B2B] transition-colors">
                   {isAr ? offer.title.ar : offer.title.en}
                 </h3>
                 <p className="text-[12px] text-gray-500 leading-relaxed line-clamp-2 mb-3">
                   {isAr ? offer.description.ar : offer.description.en}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-[12px] font-semibold text-[#2B4C66]">
+                  <span className="text-[12px] font-semibold text-[#2B2B2B]">
                     {isAr ? "عرض التفاصيل" : "View Details"}
                   </span>
-                  <ArrowUpRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-[#2B4C66] transition-colors" strokeWidth={1.5} />
+                  <ArrowUpRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-[#2B2B2B] transition-colors" strokeWidth={1.5} />
                 </div>
               </div>
             </Link>
@@ -116,7 +116,7 @@ const OffersPreview: React.FC<{ isAr: boolean }> = ({ isAr }) => {
         <div className="md:hidden mt-6 text-center">
           <Link
             to="/offers"
-            className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#2B4C66] hover:text-[#1E374B] transition-colors"
+            className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#2B2B2B] hover:text-[#020202] transition-colors"
           >
             {isAr ? "عرض جميع العروض" : "View All Offers"}
             {isAr ? <ArrowLeft className="h-4 w-4" strokeWidth={1.5} /> : <ArrowRightIcon className="h-4 w-4" strokeWidth={1.5} />}

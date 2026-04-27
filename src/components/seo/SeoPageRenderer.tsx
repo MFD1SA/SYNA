@@ -132,7 +132,7 @@ export const SeoPageRenderer: React.FC<Props> = ({ slug }) => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="h-7 w-7 animate-spin rounded-full border-r-2 border-t-2 border-[#2B4C66]" />
+        <div className="h-7 w-7 animate-spin rounded-full border-r-2 border-t-2 border-[#2B2B2B]" />
       </div>
     );
   }
@@ -153,9 +153,9 @@ export const SeoPageRenderer: React.FC<Props> = ({ slug }) => {
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-3">
           <div className="flex items-center gap-1.5 text-[12px] overflow-x-auto whitespace-nowrap">
-            <Link to="/" className="text-gray-400 hover:text-[#2B4C66]">{isAr ? "الرئيسية" : "Home"}</Link>
+            <Link to="/" className="text-gray-400 hover:text-[#2B2B2B]">{isAr ? "الرئيسية" : "Home"}</Link>
             <Chevron className="h-3 w-3 text-gray-300" strokeWidth={2} />
-            <span className="text-[#2B4C66] font-semibold">{page.h1}</span>
+            <span className="text-[#2B2B2B] font-semibold">{page.h1}</span>
           </div>
         </div>
       </div>
@@ -170,10 +170,10 @@ export const SeoPageRenderer: React.FC<Props> = ({ slug }) => {
           {page.body_html && (
             <div
               className="prose prose-slate max-w-none
-                prose-headings:text-[#1E374B] prose-headings:font-bold prose-headings:tracking-tight
+                prose-headings:text-[#020202] prose-headings:font-bold prose-headings:tracking-tight
                 prose-h2:text-[22px] md:prose-h2:text-[26px] prose-h2:mt-10 prose-h2:mb-4
                 prose-p:text-[15px] md:prose-p:text-[16px] prose-p:leading-[1.85] prose-p:text-gray-600
-                prose-a:text-[#2B4C66] prose-a:font-semibold prose-a:no-underline hover:prose-a:underline"
+                prose-a:text-[#2B2B2B] prose-a:font-semibold prose-a:no-underline hover:prose-a:underline"
               dangerouslySetInnerHTML={{ __html: sanitizedBody }}
             />
           )}
@@ -181,15 +181,15 @@ export const SeoPageRenderer: React.FC<Props> = ({ slug }) => {
           {/* FAQ */}
           {Array.isArray(page.faq_items) && page.faq_items.length > 0 && (
             <section className="mt-12">
-              <h2 className="text-[22px] md:text-[26px] font-bold text-[#1E374B] mb-6 tracking-tight">
+              <h2 className="text-[22px] md:text-[26px] font-bold text-[#020202] mb-6 tracking-tight">
                 {isAr ? "الأسئلة الشائعة" : "Frequently Asked Questions"}
               </h2>
               <div className="space-y-3">
                 {page.faq_items.map((faq, i) => (
                   <details key={i} className="group bg-white rounded-xl border border-gray-100 p-5 open:shadow-[0_8px_24px_-12px_rgba(15,31,46,0.1)]">
-                    <summary className="cursor-pointer font-bold text-[15px] text-[#1E374B] list-none flex items-center justify-between">
+                    <summary className="cursor-pointer font-bold text-[15px] text-[#020202] list-none flex items-center justify-between">
                       <span>{isAr ? faq.question_ar : faq.question_en}</span>
-                      <Chevron className="h-4 w-4 text-[#C2A86B] group-open:rotate-90 transition-transform" strokeWidth={2} />
+                      <Chevron className="h-4 w-4 text-[#C45A41] group-open:rotate-90 transition-transform" strokeWidth={2} />
                     </summary>
                     <p className="mt-3 text-[14px] text-gray-600 leading-[1.85]">
                       {isAr ? faq.answer_ar : faq.answer_en}
@@ -203,7 +203,7 @@ export const SeoPageRenderer: React.FC<Props> = ({ slug }) => {
           {/* Internal links */}
           {Array.isArray(page.internal_links) && page.internal_links.length > 0 && (
             <section className="mt-12 rounded-2xl bg-[#F7F9FB] border border-gray-100 p-6 md:p-7">
-              <h3 className="text-[16px] font-bold text-[#1E374B] mb-4">
+              <h3 className="text-[16px] font-bold text-[#020202] mb-4">
                 {isAr ? "روابط ذات صلة" : "Related Links"}
               </h3>
               <ul className="grid sm:grid-cols-2 gap-2">
@@ -211,9 +211,9 @@ export const SeoPageRenderer: React.FC<Props> = ({ slug }) => {
                   <li key={i}>
                     <Link
                       to={l.url}
-                      className="flex items-center gap-2 text-[14px] text-[#2B4C66] font-semibold hover:text-[#1E374B] py-1.5"
+                      className="flex items-center gap-2 text-[14px] text-[#2B2B2B] font-semibold hover:text-[#020202] py-1.5"
                     >
-                      <Arrow className="h-3.5 w-3.5 text-[#C2A86B]" strokeWidth={2} />
+                      <Arrow className="h-3.5 w-3.5 text-[#C45A41]" strokeWidth={2} />
                       {l.label}
                     </Link>
                   </li>

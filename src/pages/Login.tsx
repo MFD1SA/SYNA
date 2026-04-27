@@ -110,7 +110,7 @@ const LoginPage: React.FC = () => {
       style={{ fontFamily: isAr ? "'IBM Plex Sans Arabic', sans-serif" : "'Inter', sans-serif" }}
     >
       {/* Left brand panel - desktop only */}
-      <div className="hidden lg:flex lg:w-[45%] xl:w-[42%] bg-[#0F1F2E] relative flex-col items-center justify-center px-12">
+      <div className="hidden lg:flex lg:w-[45%] xl:w-[42%] bg-[#020202] relative flex-col items-center justify-center px-12">
         {/* Subtle pattern overlay */}
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
 
@@ -133,7 +133,7 @@ const LoginPage: React.FC = () => {
               <div className="space-y-4 text-start">
                 {ownerFeatures.map((f, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <f.icon className="w-4 h-4 text-[#C2A86B]/70 shrink-0" strokeWidth={1.5} />
+                    <f.icon className="w-4 h-4 text-[#C45A41]/70 shrink-0" strokeWidth={1.5} />
                     <span className="text-[13px] text-white/50">{f.text}</span>
                   </div>
                 ))}
@@ -154,9 +154,9 @@ const LoginPage: React.FC = () => {
           )}
 
           <div className="mt-10 flex items-center justify-center gap-3">
-            <div className="w-8 h-px bg-[#C2A86B]/30" />
-            <div className="w-2 h-2 rounded-full bg-[#C2A86B]/40" />
-            <div className="w-8 h-px bg-[#C2A86B]/30" />
+            <div className="w-8 h-px bg-[#C45A41]/30" />
+            <div className="w-2 h-2 rounded-full bg-[#C45A41]/40" />
+            <div className="w-8 h-px bg-[#C45A41]/30" />
           </div>
         </div>
       </div>
@@ -165,11 +165,11 @@ const LoginPage: React.FC = () => {
       <div className="flex-1 bg-white flex items-center justify-center relative">
         {/* Top bar */}
         <div className="fixed top-0 start-0 end-0 lg:absolute lg:start-auto flex items-center justify-between px-6 md:px-12 py-4 z-30 bg-white/95 backdrop-blur-sm lg:bg-transparent lg:backdrop-blur-none border-b border-gray-100 lg:border-0">
-          <Link to="/" className="flex items-center gap-2 text-[13px] font-medium text-gray-400 hover:text-[#2B4C66] transition-colors py-2 px-1">
+          <Link to="/" className="flex items-center gap-2 text-[13px] font-medium text-gray-400 hover:text-[#2B2B2B] transition-colors py-2 px-1">
             {isAr ? <ArrowRight className="w-4 h-4" strokeWidth={1.5} /> : <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />}
             {isAr ? "الرئيسية" : "Home"}
           </Link>
-          <button onClick={toggleLang} className="text-[13px] font-medium text-gray-400 hover:text-[#2B4C66] transition-colors tracking-wide py-2 px-1">
+          <button onClick={toggleLang} className="text-[13px] font-medium text-gray-400 hover:text-[#2B2B2B] transition-colors tracking-wide py-2 px-1">
             {isAr ? "English" : "العربية"}
           </button>
         </div>
@@ -185,7 +185,7 @@ const LoginPage: React.FC = () => {
 
           {/* Portal indicator */}
           <div className="flex justify-center mb-7">
-            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full font-bold text-[12px] tracking-wide text-[#2B4C66]">
+            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full font-bold text-[12px] tracking-wide text-[#2B2B2B]">
               {isOwnerMode
                 ? <Crown className="h-4.5 w-4.5" strokeWidth={1.5} />
                 : <Building2 className="h-4.5 w-4.5" strokeWidth={1.5} />
@@ -238,7 +238,7 @@ const LoginPage: React.FC = () => {
                     onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors(prev => ({ ...prev, email: undefined })); }}
                     placeholder="example@email.com"
                     className={`w-full h-[52px] ps-12 pe-4 bg-gray-50/60 border rounded-xl text-[14px] text-gray-800 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:bg-white transition-all ${
-                      errors.email ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-gray-200/80 focus:border-[#2B4C66]/30 focus:ring-[#2B4C66]/10"
+                      errors.email ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-gray-200/80 focus:border-[#2B2B2B]/30 focus:ring-[#2B2B2B]/10"
                     }`}
                   />
                 </div>
@@ -258,7 +258,7 @@ const LoginPage: React.FC = () => {
                     onChange={(e) => { setPassword(e.target.value); if (errors.password) setErrors(prev => ({ ...prev, password: undefined })); }}
                     placeholder="********"
                     className={`w-full h-[52px] ps-12 pe-12 bg-gray-50/60 border rounded-xl text-[14px] text-gray-800 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:bg-white transition-all ${
-                      errors.password ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-gray-200/80 focus:border-[#2B4C66]/30 focus:ring-[#2B4C66]/10"
+                      errors.password ? "border-red-300 focus:border-red-400 focus:ring-red-100" : "border-gray-200/80 focus:border-[#2B2B2B]/30 focus:ring-[#2B2B2B]/10"
                     }`}
                   />
                   <button
@@ -275,7 +275,7 @@ const LoginPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-[52px] bg-gradient-to-b from-[#2B4C66] to-[#1E374B] hover:from-[#1E374B] hover:to-[#162B3A] text-white text-[15px] font-bold rounded-xl disabled:opacity-50 transition-all duration-200 flex items-center justify-center gap-2.5 mt-3 shadow-[0_4px_12px_-2px_rgba(43,76,102,0.35)]"
+                className="w-full h-[52px] bg-gradient-to-b from-[#2B2B2B] to-[#020202] hover:from-[#020202] hover:to-[#162B3A] text-white text-[15px] font-bold rounded-xl disabled:opacity-50 transition-all duration-200 flex items-center justify-center gap-2.5 mt-3 shadow-[0_4px_12px_-2px_rgba(43,76,102,0.35)]"
               >
                 {loading ? <Loader2 className="w-4.5 h-4.5 animate-spin" /> : (
                   <>
@@ -304,7 +304,7 @@ const LoginPage: React.FC = () => {
           {!isOwnerMode && (
             <p className="text-center text-[13px] text-gray-400 mt-8">
               {t.login.noAccount}{" "}
-              <Link to="/auth/register" className="font-bold text-[#2B4C66] hover:text-[#1E374B] transition-colors">
+              <Link to="/auth/register" className="font-bold text-[#2B2B2B] hover:text-[#020202] transition-colors">
                 {t.login.createAccount}
               </Link>
             </p>

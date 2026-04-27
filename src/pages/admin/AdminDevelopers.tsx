@@ -301,7 +301,7 @@ const AdminDevelopers: React.FC = () => {
 
       <div className="mb-4 grid grid-cols-3 gap-3">
         {[
-          { label: isAr ? "إجمالي" : "Total", value: devs.length, icon: HardHat, color: "text-[#2B4C66]", bg: "bg-[#2B4C66]/8" },
+          { label: isAr ? "إجمالي" : "Total", value: devs.length, icon: HardHat, color: "text-[#2B2B2B]", bg: "bg-[#2B2B2B]/8" },
           { label: isAr ? "موثق" : "Verified", value: devs.filter(d => d.verification_status === "verified").length, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-500/8" },
           { label: isAr ? "قيد المراجعة" : "Pending", value: devs.filter(d => d.verification_status === "pending_review").length, icon: Clock, color: "text-amber-600", bg: "bg-amber-500/8" },
         ].map(s => (

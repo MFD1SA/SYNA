@@ -7,10 +7,10 @@ const WhySinaSection: React.FC = () => {
   const isAr = lang === "ar";
 
   const cards = [
-    { icon: ScanEye, title: t.whySina.card1Title, desc: t.whySina.card1Desc, accent: "from-[#2B4C66]/10 to-[#2B4C66]/0" },
-    { icon: ShieldCheck, title: t.whySina.card2Title, desc: t.whySina.card2Desc, accent: "from-[#C2A86B]/15 to-[#C2A86B]/0" },
+    { icon: ScanEye, title: t.whySina.card1Title, desc: t.whySina.card1Desc, accent: "from-[#2B2B2B]/10 to-[#2B2B2B]/0" },
+    { icon: ShieldCheck, title: t.whySina.card2Title, desc: t.whySina.card2Desc, accent: "from-[#C45A41]/15 to-[#C45A41]/0" },
     { icon: LockKeyhole, title: t.whySina.card3Title, desc: t.whySina.card3Desc, accent: "from-emerald-500/10 to-emerald-500/0" },
-    { icon: Bolt, title: t.whySina.card4Title, desc: t.whySina.card4Desc, accent: "from-[#2B4C66]/10 to-[#2B4C66]/0" },
+    { icon: Bolt, title: t.whySina.card4Title, desc: t.whySina.card4Desc, accent: "from-[#2B2B2B]/10 to-[#2B2B2B]/0" },
   ];
 
   return (
@@ -22,7 +22,7 @@ const WhySinaSection: React.FC = () => {
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
-          backgroundImage: "linear-gradient(to right, #2B4C66 1px, transparent 1px), linear-gradient(to bottom, #2B4C66 1px, transparent 1px)",
+          backgroundImage: "linear-gradient(to right, #2B2B2B 1px, transparent 1px), linear-gradient(to bottom, #2B2B2B 1px, transparent 1px)",
           backgroundSize: "64px 64px",
           maskImage: "radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 70%)",
         }}
@@ -30,7 +30,7 @@ const WhySinaSection: React.FC = () => {
 
       <div className="container relative">
         <div className="text-center mb-10 md:mb-16 max-w-3xl mx-auto">
-          <h2 className="text-[26px] sm:text-[34px] md:text-[44px] font-bold text-[#1E374B] mb-4 md:mb-5 tracking-tight leading-[1.15] md:leading-[1.1]">
+          <h2 className="text-[26px] sm:text-[34px] md:text-[44px] font-bold text-[#020202] mb-4 md:mb-5 tracking-tight leading-[1.15] md:leading-[1.1]">
             {t.whySina.title}
           </h2>
           <p className="text-[14px] md:text-[16px] text-gray-600 leading-[1.8] max-w-2xl mx-auto mt-4 md:mt-5">
@@ -42,7 +42,7 @@ const WhySinaSection: React.FC = () => {
           {cards.map((card, i) => (
             <div
               key={i}
-              className="group relative bg-white rounded-2xl p-5 md:p-7 border border-gray-100 hover:border-[#2B4C66]/20 hover:shadow-[0_20px_40px_-20px_rgba(43,76,102,0.15)] hover:-translate-y-1 transition-all duration-500 overflow-hidden"
+              className="group relative bg-white rounded-2xl p-5 md:p-7 border border-gray-100 hover:border-[#2B2B2B]/20 hover:shadow-[0_20px_40px_-20px_rgba(43,76,102,0.15)] hover:-translate-y-1 transition-all duration-500 overflow-hidden"
             >
               {/* Hover gradient glow */}
               <div
@@ -50,9 +50,9 @@ const WhySinaSection: React.FC = () => {
               />
 
               {/* Icon */}
-              <card.icon className="relative mb-4 md:mb-5 w-7 h-7 text-[#2B4C66] group-hover:text-[#A88A4A] transition-colors duration-500" strokeWidth={1.7} />
+              <card.icon className="relative mb-4 md:mb-5 w-7 h-7 text-[#2B2B2B] group-hover:text-[#A24832] transition-colors duration-500" strokeWidth={1.7} />
 
-              <h3 className="relative text-[15px] md:text-[17px] font-bold text-[#1E374B] mb-2 md:mb-3 tracking-tight">
+              <h3 className="relative text-[15px] md:text-[17px] font-bold text-[#020202] mb-2 md:mb-3 tracking-tight">
                 {card.title}
               </h3>
               <p className="relative text-[13px] md:text-[13.5px] text-gray-600 leading-[1.8] md:leading-[1.85]">

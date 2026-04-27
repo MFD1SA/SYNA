@@ -18,14 +18,14 @@ const PreviewSection: React.FC = () => {
     >
       {/* Ambient background glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 start-1/3 w-[600px] h-[400px] rounded-full bg-[#2B4C66]/[0.04] blur-[100px]" />
-        <div className="absolute bottom-1/4 end-1/3 w-[500px] h-[400px] rounded-full bg-[#C2A86B]/[0.06] blur-[100px]" />
+        <div className="absolute top-1/4 start-1/3 w-[600px] h-[400px] rounded-full bg-[#2B2B2B]/[0.04] blur-[100px]" />
+        <div className="absolute bottom-1/4 end-1/3 w-[500px] h-[400px] rounded-full bg-[#C45A41]/[0.06] blur-[100px]" />
       </div>
 
       <div className="container relative">
         {/* Heading — no accent rule, no eyebrow */}
         <div className="text-center mb-12 md:mb-16 max-w-3xl mx-auto">
-          <h2 className="text-[28px] sm:text-[36px] md:text-[44px] lg:text-[52px] font-bold text-[#1E374B] tracking-tight leading-[1.1]">
+          <h2 className="text-[28px] sm:text-[36px] md:text-[44px] lg:text-[52px] font-bold text-[#020202] tracking-tight leading-[1.1]">
             {t.preview.title}
           </h2>
           <p className="mt-5 md:mt-6 text-[15px] md:text-[17px] text-slate-600 leading-[1.8] max-w-2xl mx-auto">
@@ -36,11 +36,11 @@ const PreviewSection: React.FC = () => {
         {/* Premium dashboard mockup */}
         <div className="relative max-w-5xl mx-auto">
           {/* Outer soft glow */}
-          <div className="absolute -inset-8 bg-gradient-to-b from-[#2B4C66]/10 via-[#2B4C66]/5 to-transparent rounded-[48px] blur-3xl" />
-          <div className="absolute -inset-4 bg-gradient-to-tr from-[#C2A86B]/8 via-transparent to-[#2B4C66]/10 rounded-[40px] blur-2xl" />
+          <div className="absolute -inset-8 bg-gradient-to-b from-[#2B2B2B]/10 via-[#2B2B2B]/5 to-transparent rounded-[48px] blur-3xl" />
+          <div className="absolute -inset-4 bg-gradient-to-tr from-[#C45A41]/8 via-transparent to-[#2B2B2B]/10 rounded-[40px] blur-2xl" />
 
           {/* Browser frame */}
-          <div className="relative bg-gradient-to-br from-[#1E374B] via-[#2B4C66] to-[#1E374B] rounded-2xl md:rounded-3xl p-1.5 md:p-2 shadow-[0_30px_80px_-20px_rgba(15,31,46,0.35)] ring-1 ring-white/5">
+          <div className="relative bg-gradient-to-br from-[#020202] via-[#2B2B2B] to-[#020202] rounded-2xl md:rounded-3xl p-1.5 md:p-2 shadow-[0_30px_80px_-20px_rgba(15,31,46,0.35)] ring-1 ring-white/5">
             {/* Browser chrome */}
             <div className="flex items-center justify-between px-4 md:px-5 py-3 border-b border-white/10">
               <div className="flex gap-1.5">
@@ -60,8 +60,8 @@ const PreviewSection: React.FC = () => {
               {/* Top KPIs — richer visual */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-3 mb-5 md:mb-6">
                 {[
-                  { icon: Users,      label: isAr ? "المطورون"  : "Developers", val: "127", trend: "+12%", color: "from-[#2B4C66] to-[#1E374B]" },
-                  { icon: BarChart3,  label: isAr ? "الصفقات"   : "Deals",      val: "89",  trend: "+8%",  color: "from-[#C2A86B] to-[#A88A4A]" },
+                  { icon: Users,      label: isAr ? "المطورون"  : "Developers", val: "127", trend: "+12%", color: "from-[#2B2B2B] to-[#020202]" },
+                  { icon: BarChart3,  label: isAr ? "الصفقات"   : "Deals",      val: "89",  trend: "+8%",  color: "from-[#C45A41] to-[#A24832]" },
                   { icon: Monitor,    label: isAr ? "الأراضي"   : "Lands",      val: "352", trend: "+24%", color: "from-emerald-500 to-emerald-600" },
                   { icon: Bell,       label: isAr ? "التنبيهات" : "Alerts",     val: "14",  trend: "live",  color: "from-amber-500 to-amber-600" },
                 ].map((kpi, i) => (
@@ -75,7 +75,7 @@ const PreviewSection: React.FC = () => {
                       </span>
                     </div>
                     <p className="text-[10px] md:text-[11px] text-gray-400 font-semibold uppercase tracking-wider">{kpi.label}</p>
-                    <p className="text-lg md:text-2xl font-bold text-[#1E374B] mt-0.5">{kpi.val}</p>
+                    <p className="text-lg md:text-2xl font-bold text-[#020202] mt-0.5">{kpi.val}</p>
                   </div>
                 ))}
               </div>
@@ -86,12 +86,12 @@ const PreviewSection: React.FC = () => {
                 <div className="md:col-span-2 bg-white rounded-xl md:rounded-2xl p-4 md:p-5 border border-gray-100 shadow-[0_2px_8px_-2px_rgba(15,31,46,0.06)]">
                   <div className="flex items-center justify-between mb-3 md:mb-4">
                     <div className="flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-[#2B4C66]" strokeWidth={1.8} />
-                      <span className="text-[11px] md:text-[12px] font-bold text-[#1E374B]">
+                      <TrendingUp className="w-4 h-4 text-[#2B2B2B]" strokeWidth={1.8} />
+                      <span className="text-[11px] md:text-[12px] font-bold text-[#020202]">
                         {isAr ? "النشاط خلال 12 شهر" : "12-month activity"}
                       </span>
                     </div>
-                    <span className="text-[10px] font-semibold text-[#C2A86B]">
+                    <span className="text-[10px] font-semibold text-[#C45A41]">
                       {isAr ? "متوقّع" : "Projected"}
                     </span>
                   </div>
@@ -103,8 +103,8 @@ const PreviewSection: React.FC = () => {
                           style={{
                             height: `${h}%`,
                             background: i === 10
-                              ? "linear-gradient(to top, #C2A86B, #D7C084)"
-                              : "linear-gradient(to top, #2B4C66, #3A6088)",
+                              ? "linear-gradient(to top, #C45A41, #D7C084)"
+                              : "linear-gradient(to top, #2B2B2B, #3A6088)",
                             opacity: 0.3 + (h / 100) * 0.5,
                           }}
                         />
@@ -118,20 +118,20 @@ const PreviewSection: React.FC = () => {
                   <div>
                     <div className="flex items-center gap-2 mb-4">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500" strokeWidth={1.8} />
-                      <span className="text-[11px] md:text-[12px] font-bold text-[#1E374B]">
+                      <span className="text-[11px] md:text-[12px] font-bold text-[#020202]">
                         {isAr ? "حالة الصفقات" : "Deal status"}
                       </span>
                     </div>
                     <div className="space-y-3 md:space-y-4">
                       {[
                         { label: isAr ? "مكتملة" : "Completed", pct: "72%", width: 72, color: "from-emerald-400 to-emerald-500" },
-                        { label: isAr ? "قيد التنفيذ" : "In Progress", pct: "20%", width: 20, color: "from-[#2B4C66] to-[#3A6088]" },
-                        { label: isAr ? "معلّقة" : "Pending", pct: "8%", width: 8, color: "from-[#C2A86B] to-[#D7C084]" },
+                        { label: isAr ? "قيد التنفيذ" : "In Progress", pct: "20%", width: 20, color: "from-[#2B2B2B] to-[#3A6088]" },
+                        { label: isAr ? "معلّقة" : "Pending", pct: "8%", width: 8, color: "from-[#C45A41] to-[#D7C084]" },
                       ].map((s, i) => (
                         <div key={i}>
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="text-[10px] md:text-[11px] text-gray-500 font-medium">{s.label}</span>
-                            <span className="text-[11px] md:text-[12px] font-bold text-[#1E374B] tabular-nums" dir="ltr">{s.pct}</span>
+                            <span className="text-[11px] md:text-[12px] font-bold text-[#020202] tabular-nums" dir="ltr">{s.pct}</span>
                           </div>
                           <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                             <div className={`h-full bg-gradient-to-r ${s.color} rounded-full transition-all duration-700`} style={{ width: `${s.width}%` }} />

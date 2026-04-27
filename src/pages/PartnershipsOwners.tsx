@@ -107,10 +107,10 @@ const PartnershipsOwners: React.FC = () => {
 
       {/* Why Partner as Owner */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-b from-white to-[#FAFBFC] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
-        <div className="absolute -top-20 end-[-120px] w-[460px] h-[460px] rounded-full bg-[#C2A86B]/[0.06] blur-3xl pointer-events-none" />
+        <div className="absolute -top-20 end-[-120px] w-[460px] h-[460px] rounded-full bg-[#C45A41]/[0.06] blur-3xl pointer-events-none" />
         <div className="container relative">
           <div className="text-center mb-14 max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#020202] mb-5 tracking-tight leading-[1.1]">
               {isAr ? "لماذا الشراكة أفضل من البيع لمالك الأرض" : "Why Partnership is Better Than Selling for Landowners"}
             </h2>
             <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
@@ -121,11 +121,11 @@ const PartnershipsOwners: React.FC = () => {
           </div>
           <div className="grid sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
             {ownerAdvantages.map((item, i) => (
-              <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C2A86B]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.3)] transition-all duration-500 hover:-translate-y-0.5">
+              <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C45A41]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.3)] transition-all duration-500 hover:-translate-y-0.5">
                 <div className="flex items-start gap-5">
-                  <item.icon className="w-6 h-6 text-[#A88A4A] shrink-0 mt-0.5" strokeWidth={1.7} />
+                  <item.icon className="w-6 h-6 text-[#A24832] shrink-0 mt-0.5" strokeWidth={1.7} />
                   <div>
-                    <h3 className="text-[16px] font-bold text-[#1E374B] mb-2 tracking-tight">{item.title}</h3>
+                    <h3 className="text-[16px] font-bold text-[#020202] mb-2 tracking-tight">{item.title}</h3>
                     <p className="text-[13px] text-slate-500 leading-[1.9]">{item.desc}</p>
                   </div>
                 </div>
@@ -137,10 +137,10 @@ const PartnershipsOwners: React.FC = () => {
 
       {/* Owner Features */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
-        <div className="absolute top-1/3 start-[-140px] w-[440px] h-[440px] rounded-full bg-[#C2A86B]/[0.06] blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 start-[-140px] w-[440px] h-[440px] rounded-full bg-[#C45A41]/[0.06] blur-3xl pointer-events-none" />
         <div className="container relative">
           <div className="text-center mb-14 max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#020202] mb-5 tracking-tight leading-[1.1]">
               {isAr ? "مميزات سينا للاستثمارات العقارية لملاك الأراضي" : "SINA Features for Landowners"}
             </h2>
             <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
@@ -151,9 +151,9 @@ const PartnershipsOwners: React.FC = () => {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
             {ownerFeatures.map((v, i) => (
-              <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C2A86B]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.25)] transition-all duration-500 hover:-translate-y-1">
-                <v.icon className="w-6 h-6 text-[#A88A4A] mb-5" strokeWidth={1.7} />
-                <h3 className="text-[16px] font-bold text-[#1E374B] mb-2.5 tracking-tight">{v.title}</h3>
+              <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C45A41]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.25)] transition-all duration-500 hover:-translate-y-1">
+                <v.icon className="w-6 h-6 text-[#A24832] mb-5" strokeWidth={1.7} />
+                <h3 className="text-[16px] font-bold text-[#020202] mb-2.5 tracking-tight">{v.title}</h3>
                 <p className="text-[13px] text-slate-500 leading-[1.9]">{v.desc}</p>
               </div>
             ))}
@@ -165,7 +165,7 @@ const PartnershipsOwners: React.FC = () => {
       <section className="relative py-20 lg:py-24 bg-white overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
         <div className="container relative">
           <div className="text-center mb-12 max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-5 tracking-tight leading-[1.1]">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#020202] mb-5 tracking-tight leading-[1.1]">
               {isAr ? "رحلة المالك في سينا" : "The Owners Journey on SINA"}
             </h2>
             <p className="text-[15px] md:text-[16px] text-slate-600 leading-relaxed">
@@ -176,9 +176,9 @@ const PartnershipsOwners: React.FC = () => {
           </div>
           <div className="grid md:grid-cols-4 gap-5 max-w-6xl mx-auto">
             {ownerSteps.map((step, i) => (
-              <div key={i} className="relative bg-gradient-to-b from-white to-[#FAFBFC] rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C2A86B]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.22)] transition-all duration-500">
-                <span className="block text-[40px] font-bold bg-gradient-to-br from-[#C2A86B]/30 to-[#A88A4A]/10 bg-clip-text text-transparent mb-3 tracking-tight leading-none">{step.num}</span>
-                <h4 className="text-[15px] font-bold text-[#1E374B] mb-2 tracking-tight">{step.title}</h4>
+              <div key={i} className="relative bg-gradient-to-b from-white to-[#FAFBFC] rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C45A41]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.22)] transition-all duration-500">
+                <span className="block text-[40px] font-bold bg-gradient-to-br from-[#C45A41]/30 to-[#A24832]/10 bg-clip-text text-transparent mb-3 tracking-tight leading-none">{step.num}</span>
+                <h4 className="text-[15px] font-bold text-[#020202] mb-2 tracking-tight">{step.title}</h4>
                 <p className="text-[13px] text-slate-500 leading-[1.9]">{step.desc}</p>
               </div>
             ))}
@@ -187,10 +187,10 @@ const PartnershipsOwners: React.FC = () => {
       </section>
 
       {/* White Land Fees */}
-      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-[#1E374B] via-[#1E374B] to-[#0F1F2E] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
+      <section className="relative py-20 lg:py-24 bg-gradient-to-br from-[#020202] via-[#020202] to-[#020202] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
-        <div className="absolute -top-40 end-[-140px] w-[520px] h-[520px] rounded-full bg-[#C2A86B]/10 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-40 start-[-140px] w-[520px] h-[520px] rounded-full bg-[#2B4C66]/30 blur-3xl pointer-events-none" />
+        <div className="absolute -top-40 end-[-140px] w-[520px] h-[520px] rounded-full bg-[#C45A41]/10 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-40 start-[-140px] w-[520px] h-[520px] rounded-full bg-[#2B2B2B]/30 blur-3xl pointer-events-none" />
         <div className="container relative z-10">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
@@ -242,7 +242,7 @@ const PartnershipsOwners: React.FC = () => {
                 </p>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-[#C2A86B]/20 via-[#C2A86B]/10 to-[#C2A86B]/5 rounded-2xl p-8 md:p-10 ring-1 ring-[#C2A86B]/25">
+            <div className="bg-gradient-to-br from-[#C45A41]/20 via-[#C45A41]/10 to-[#C45A41]/5 rounded-2xl p-8 md:p-10 ring-1 ring-[#C45A41]/25">
               <h3 className="text-xl md:text-2xl font-bold text-white mb-3 tracking-tight leading-[1.2]">
                 {isAr ? "حوّل أرضك من أصل خامل إلى مشروع يدرّ عليك أرباحاً" : "Transform your land from an idle asset into a profit-generating project"}
               </h3>
@@ -259,7 +259,7 @@ const PartnershipsOwners: React.FC = () => {
       {/* Comparison */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-b from-white to-[#FAFBFC] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
         <div className="container relative">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-12 text-center tracking-tight leading-[1.1]">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#020202] mb-12 text-center tracking-tight leading-[1.1]">
             {isAr ? "البيع المباشر مقابل الشراكة التطويرية" : "Direct Sale vs Development Partnership"}
           </h2>
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
@@ -277,18 +277,18 @@ const PartnershipsOwners: React.FC = () => {
                 ))}
               </ul>
             </div>
-            <div className="bg-white rounded-2xl p-8 ring-2 ring-[#C2A86B]/50 shadow-[0_20px_60px_-25px_rgba(194,168,107,0.35)]">
+            <div className="bg-white rounded-2xl p-8 ring-2 ring-[#C45A41]/50 shadow-[0_20px_60px_-25px_rgba(194,168,107,0.35)]">
               <div className="flex items-center gap-2 mb-6">
-                <h3 className="text-lg font-bold text-[#1E374B] tracking-tight">{isAr ? "الشراكة التطويرية" : "Development Partnership"}</h3>
-                <BadgeCheck className="w-5 h-5 text-[#C2A86B]" strokeWidth={1.75} />
+                <h3 className="text-lg font-bold text-[#020202] tracking-tight">{isAr ? "الشراكة التطويرية" : "Development Partnership"}</h3>
+                <BadgeCheck className="w-5 h-5 text-[#C45A41]" strokeWidth={1.75} />
               </div>
               <ul className="space-y-4">
                 {(isAr
                   ? ["عوائد مضاعفة من أرباح المشروع المطوّر", "احتفاظ بجزء من الملكية والمشاركة في الأرباح", "استفادة كاملة من القيمة المضافة بعد التطوير", "توزيع عادل للمخاطر بين المالك والمطور", "شراكة حقيقية ومتابعة مستمرة لنجاح المشروع"]
                   : ["Multiplied returns from developed project profits", "Retain partial ownership and profit sharing", "Full benefit from post-development added value", "Fair risk distribution between owner and developer", "Real partnership and continuous tracking for project success"]
                 ).map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-[14px] text-[#1E374B]">
-                    <BadgeCheck className="w-4 h-4 text-[#C2A86B] mt-0.5 shrink-0" strokeWidth={1.75} />
+                  <li key={i} className="flex items-start gap-3 text-[14px] text-[#020202]">
+                    <BadgeCheck className="w-4 h-4 text-[#C45A41] mt-0.5 shrink-0" strokeWidth={1.75} />
                     {item}
                   </li>
                 ))}
@@ -300,10 +300,10 @@ const PartnershipsOwners: React.FC = () => {
 
       {/* CTA */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white border-t border-slate-100 overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
-        <div className="absolute -top-20 start-1/2 -translate-x-1/2 w-[520px] h-[420px] rounded-full bg-[#C2A86B]/[0.08] blur-3xl pointer-events-none" />
+        <div className="absolute -top-20 start-1/2 -translate-x-1/2 w-[520px] h-[420px] rounded-full bg-[#C45A41]/[0.08] blur-3xl pointer-events-none" />
         <div className="container relative text-center">
-          <Landmark className="w-8 h-8 text-[#A88A4A] mb-6 mx-auto" strokeWidth={1.7} />
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-4 tracking-tight leading-[1.1]">
+          <Landmark className="w-8 h-8 text-[#A24832] mb-6 mx-auto" strokeWidth={1.7} />
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#020202] mb-4 tracking-tight leading-[1.1]">
             {isAr ? "ابدأ رحلتك كمالك أرض الآن" : "Start Your Journey as a Landowner Now"}
           </h2>
           <p className="text-[15px] md:text-[16px] text-slate-600 mb-10 max-w-xl mx-auto leading-relaxed">
@@ -313,7 +313,7 @@ const PartnershipsOwners: React.FC = () => {
           </p>
           <button
             onClick={() => navigate("/auth/login?type=owner")}
-            className="inline-flex items-center gap-3 h-14 px-10 bg-gradient-to-br from-[#D7C084] to-[#A88A4A] hover:from-[#A88A4A] hover:to-[#8A6F3A] text-white text-[15px] font-bold rounded-xl shadow-lg shadow-[#C2A86B]/35 hover:shadow-xl hover:shadow-[#C2A86B]/45 transition-all duration-300 tracking-tight"
+            className="inline-flex items-center gap-3 h-14 px-10 bg-gradient-to-br from-[#D7C084] to-[#A24832] hover:from-[#A24832] hover:to-[#8A6F3A] text-white text-[15px] font-bold rounded-xl shadow-lg shadow-[#C45A41]/35 hover:shadow-xl hover:shadow-[#C45A41]/45 transition-all duration-300 tracking-tight"
           >
             {isAr ? "دخول الملاك" : "Owner Login"}
             <Arrow className="w-4 h-4" />

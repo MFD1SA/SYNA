@@ -15,7 +15,7 @@ const StatCard: React.FC<{ icon: React.ElementType; label: string; value: number
   const toneCls = tone === "warn" ? "bg-amber-50 text-amber-700"
     : tone === "danger" ? "bg-rose-50 text-rose-700"
     : tone === "success" ? "bg-emerald-50 text-emerald-700"
-    : "bg-[#2B4C66]/[0.06] text-[#2B4C66]";
+    : "bg-[#2B2B2B]/[0.06] text-[#2B2B2B]";
   return (
     <div className="rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-white/10 p-5">
       <div className="flex items-center justify-between mb-3">
@@ -24,7 +24,7 @@ const StatCard: React.FC<{ icon: React.ElementType; label: string; value: number
         </div>
       </div>
       <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{label}</p>
-      <p className="text-[24px] font-bold text-[#1E374B] dark:text-white tracking-tight leading-none mt-1" dir="ltr">{value}</p>
+      <p className="text-[24px] font-bold text-[#020202] dark:text-white tracking-tight leading-none mt-1" dir="ltr">{value}</p>
     </div>
   );
 };
@@ -111,7 +111,7 @@ const AdminSeoOverview: React.FC = () => {
       <div className="rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-white/10 p-6">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div>
-            <h2 className="text-[17px] font-bold text-[#1E374B] dark:text-white mb-1">
+            <h2 className="text-[17px] font-bold text-[#020202] dark:text-white mb-1">
               {isAr ? "محرّك التوليد" : "Generation Engine"}
             </h2>
             <p className="text-[12px] text-slate-500">
@@ -123,7 +123,7 @@ const AdminSeoOverview: React.FC = () => {
           <button
             onClick={() => handleGenerate()}
             disabled={running || loading}
-            className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[13px] font-bold disabled:opacity-60 shadow-[0_6px_16px_-6px_rgba(43,76,102,0.5)] hover:shadow-[0_10px_24px_-8px_rgba(43,76,102,0.6)] transition-all"
+            className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white text-[13px] font-bold disabled:opacity-60 shadow-[0_6px_16px_-6px_rgba(43,76,102,0.5)] hover:shadow-[0_10px_24px_-8px_rgba(43,76,102,0.6)] transition-all"
           >
             {running ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
             {isAr ? "تشغيل كل القواعد" : "Run all rules"}
@@ -137,7 +137,7 @@ const AdminSeoOverview: React.FC = () => {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className={`inline-block w-1.5 h-1.5 rounded-full ${r.is_active ? "bg-emerald-500" : "bg-slate-300"}`} />
-                  <p className="text-[13px] font-bold text-[#1E374B] dark:text-white truncate">{r.name}</p>
+                  <p className="text-[13px] font-bold text-[#020202] dark:text-white truncate">{r.name}</p>
                   <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">{r.page_type}</span>
                   {r.content_mode === "manual_only" && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">
@@ -150,7 +150,7 @@ const AdminSeoOverview: React.FC = () => {
               <button
                 onClick={() => handleGenerate(r.id)}
                 disabled={running || !r.is_active}
-                className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-white dark:bg-slate-700 border border-slate-200/70 dark:border-white/10 text-[12px] font-semibold text-[#2B4C66] dark:text-[#7FA7C4] hover:bg-[#2B4C66]/5 disabled:opacity-50 transition-colors"
+                className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-white dark:bg-slate-700 border border-slate-200/70 dark:border-white/10 text-[12px] font-semibold text-[#2B2B2B] dark:text-[#7FA7C4] hover:bg-[#2B2B2B]/5 disabled:opacity-50 transition-colors"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 {isAr ? "تشغيل" : "Run"}
@@ -162,7 +162,7 @@ const AdminSeoOverview: React.FC = () => {
 
       {/* Recent runs */}
       <div className="rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-white/10 p-6">
-        <h2 className="text-[17px] font-bold text-[#1E374B] dark:text-white mb-4">
+        <h2 className="text-[17px] font-bold text-[#020202] dark:text-white mb-4">
           {isAr ? "آخر تشغيلات التوليد" : "Recent generation runs"}
         </h2>
         {runs.length === 0 ? (
@@ -175,7 +175,7 @@ const AdminSeoOverview: React.FC = () => {
                   <p className="text-[12px] text-slate-500">
                     {new Date(r.created_at).toLocaleString(isAr ? "ar-SA-u-nu-latn" : "en-US")}
                   </p>
-                  <p className="text-[13px] font-semibold text-[#1E374B] dark:text-white">
+                  <p className="text-[13px] font-semibold text-[#020202] dark:text-white">
                     {isAr ? "ولّد" : "Generated"}: <span dir="ltr">{r.pages_generated}</span> • {isAr ? "تخطّى" : "Skipped"}: <span dir="ltr">{r.pages_skipped}</span>
                   </p>
                 </div>

@@ -53,7 +53,7 @@ const CookieBanner: React.FC = () => {
             ? "نستخدم ملفات تعريف ارتباط أساسية لتشغيل المنصة وتذكر تفضيلات اللغة. لا نستخدم أي ملفات إعلانية. بمواصلة الاستخدام فإنك توافق على ذلك وفق نظام حماية البيانات الشخصية في المملكة."
             : "We use essential cookies to operate the platform and remember your language preference. No advertising cookies. By continuing you agree, in line with the Saudi Personal Data Protection Law (PDPL)."}
           {" "}
-          <Link to={isAr ? "/privacy" : "/en/privacy"} className="text-[#2B4C66] font-semibold hover:underline">
+          <Link to={isAr ? "/privacy" : "/en/privacy"} className="text-[#2B2B2B] font-semibold hover:underline">
             {isAr ? "سياسة الخصوصية" : "Privacy Policy"}
           </Link>
         </p>
@@ -68,7 +68,7 @@ const CookieBanner: React.FC = () => {
           <button
             type="button"
             onClick={() => decide("accepted")}
-            className="px-4 py-2 text-[12.5px] font-semibold rounded-lg bg-[#2B4C66] text-white hover:bg-[#1E374B] transition-colors"
+            className="px-4 py-2 text-[12.5px] font-semibold rounded-lg bg-[#2B2B2B] text-white hover:bg-[#020202] transition-colors"
           >
             {isAr ? "موافق" : "Accept"}
           </button>

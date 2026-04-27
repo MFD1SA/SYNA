@@ -17,7 +17,7 @@ const CTASection: React.FC = () => {
       dir={isAr ? "rtl" : "ltr"}
     >
       {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0F1F2E] via-[#1E374B] to-[#0F1F2E]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#020202] via-[#020202] to-[#020202]" />
 
       {/* Decorative pattern */}
       <div
@@ -29,8 +29,8 @@ const CTASection: React.FC = () => {
       />
 
       {/* Glow blobs */}
-      <div className="absolute -top-32 start-1/3 w-[600px] h-[400px] bg-[#C2A86B]/20 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute -bottom-20 end-1/4 w-[500px] h-[400px] bg-[#2B4C66]/30 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute -top-32 start-1/3 w-[600px] h-[400px] bg-[#C45A41]/20 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute -bottom-20 end-1/4 w-[500px] h-[400px] bg-[#2B2B2B]/30 blur-[100px] rounded-full pointer-events-none" />
 
       <div className="container relative z-10">
         <div className="max-w-4xl mx-auto text-center">
@@ -45,15 +45,15 @@ const CTASection: React.FC = () => {
           <div className="flex flex-col sm:flex-row justify-center gap-2.5 sm:gap-3">
             <button
               onClick={() => navigate("/auth/login?type=owner")}
-              className="group inline-flex items-center justify-center gap-3 h-[54px] md:h-[58px] px-7 md:px-9 bg-white text-[#1E374B] text-[13.5px] md:text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(255,255,255,0.3)] hover:shadow-[0_14px_44px_-10px_rgba(255,255,255,0.45)] hover:-translate-y-0.5 transition-all duration-300"
+              className="group inline-flex items-center justify-center gap-3 h-[54px] md:h-[58px] px-7 md:px-9 bg-white text-[#020202] text-[13.5px] md:text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(255,255,255,0.3)] hover:shadow-[0_14px_44px_-10px_rgba(255,255,255,0.45)] hover:-translate-y-0.5 transition-all duration-300"
             >
-              <Crown className="w-5 h-5 text-[#2B4C66] group-hover:text-[#A88A4A] transition-colors" strokeWidth={1.6} />
+              <Crown className="w-5 h-5 text-[#2B2B2B] group-hover:text-[#A24832] transition-colors" strokeWidth={1.6} />
               {isAr ? "دخول الملاك" : "Owner Login"}
               <Arrow className="w-4 h-4 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
             </button>
             <button
               onClick={() => navigate("/auth/login")}
-              className="group inline-flex items-center justify-center gap-3 h-[54px] md:h-[58px] px-7 md:px-9 bg-gradient-to-r from-[#C2A86B] to-[#A88A4A] text-white text-[13.5px] md:text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(194,168,107,0.5)] hover:shadow-[0_14px_44px_-10px_rgba(194,168,107,0.65)] hover:-translate-y-0.5 transition-all duration-300"
+              className="group inline-flex items-center justify-center gap-3 h-[54px] md:h-[58px] px-7 md:px-9 bg-gradient-to-r from-[#C45A41] to-[#A24832] text-white text-[13.5px] md:text-[14px] font-bold rounded-2xl shadow-[0_10px_40px_-12px_rgba(194,168,107,0.5)] hover:shadow-[0_14px_44px_-10px_rgba(194,168,107,0.65)] hover:-translate-y-0.5 transition-all duration-300"
             >
               <Building2 className="w-5 h-5" strokeWidth={1.6} />
               {isAr ? "دخول المطورين" : "Developer Login"}

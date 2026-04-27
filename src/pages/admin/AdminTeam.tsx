@@ -301,7 +301,7 @@ const AdminTeam: React.FC = () => {
                 <UserPlus className="h-4.5 w-4.5 text-primary dark:text-white" strokeWidth={1.5} />
               </div>
               <div>
-                <span className="block text-[15px] text-[#1E374B] dark:text-white">{isAr ? "إضافة مشرف جديد" : "Add New Supervisor"}</span>
+                <span className="block text-[15px] text-[#020202] dark:text-white">{isAr ? "إضافة مشرف جديد" : "Add New Supervisor"}</span>
                 <span className="block text-[11px] font-normal text-muted-foreground dark:text-slate-300 mt-0.5">
                   {isAr ? "أنشئ حساباً وحدد صلاحياته" : "Create an account and define permissions"}
                 </span>

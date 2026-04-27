@@ -93,7 +93,7 @@ const AdminSeoRedirects: React.FC = () => {
             <option value={301}>301</option>
             <option value={302}>302</option>
           </select>
-          <button onClick={handleCreate} className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[13px] font-bold inline-flex items-center gap-2">
+          <button onClick={handleCreate} className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white text-[13px] font-bold inline-flex items-center gap-2">
             <Plus className="w-4 h-4" />
             {isAr ? "إضافة" : "Add"}
           </button>
@@ -124,7 +124,7 @@ const AdminSeoRedirects: React.FC = () => {
                 {rows.map((r) => (
                   <tr key={r.id}>
                     <td className="px-4 py-3 font-mono text-[12px]" dir="ltr">{r.source_path}</td>
-                    <td className="px-4 py-3 font-mono text-[12px] text-[#2B4C66]" dir="ltr">{r.target_path}</td>
+                    <td className="px-4 py-3 font-mono text-[12px] text-[#2B2B2B]" dir="ltr">{r.target_path}</td>
                     <td className="px-4 py-3 text-center font-mono text-[11px]" dir="ltr">{r.status_code}</td>
                     <td className="px-4 py-3 text-center">
                       <button onClick={() => handleToggle(r)} className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${r.is_active ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>

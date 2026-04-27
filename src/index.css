@@ -1,4 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+/* ─────────────────────────────────────────────────────────────────────
+   DOMA Brand Typography
+   ─────────────────────────────────────────────────────────────────────
+   Spec from DOMA GUIDELINES (April 2026):
+     • Display Latin   → Galak Pro Demo  (self-hosted, /public/fonts/)
+     • Body Latin      → BW Modelica     (paid licence — substituted with
+                                          Manrope, the closest free
+                                          geometric sans on Google Fonts)
+     • Arabic          → Helvetica Neue Arabic (paid licence — substituted
+                                          with Tajawal, which is openly-
+                                          licensed and explicitly inspired
+                                          by Helvetica Neue Arabic)
+   When the paid licences are acquired, swap the @font-face / Google Fonts
+   import below for the licensed sources without touching downstream code.
+   ───────────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Tajawal:wght@300;400;500;700;800&display=swap');
+
+@font-face {
+  font-family: 'Galak Pro Demo';
+  src: url('/fonts/GalakPro-Demo.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 @tailwind base;
 @tailwind components;
@@ -11,108 +34,128 @@
 
 @layer base {
   :root {
-    /* ─── SINA Design System ─────────────────────────── */
+    /* ─── DOMA Design System ─────────────────────────────────────────
+       Source: DOMA GUIDELINES (April 2026)
+       Primary palette:    BLACK #020202, GREY #2B2B2B, WHITE #FFFFFF
+       Secondary palette:  ORANGE #C45A41, BEIGE #DFD8D2, BABY BLUE #6899B4
+       Editorial choice for the web product:
+         • Primary action  = Grey #2B2B2B (neutral, monochrome)
+         • CTA accent      = Orange #C45A41 (warm, real-estate signal)
+         • Soft surface    = Beige #DFD8D2 (section backgrounds)
+         • Highlight blue  = Baby Blue #6899B4 (links, info badges)
+         • Body bg         = #FAF8F5 — subtle warm white that lets cards
+                             breathe without competing with white surfaces
+       ───────────────────────────────────────────────────────────── */
 
-    /* Soft warm background — softened from harsh #F7F9FB to a gentler off-white */
-    --background: 30 15% 96.5%;          /* #F4F2EE — warm cream, low eye strain */
-    /* Main Text — deep slate, high contrast against the warm bg */
-    --foreground: 217 33% 14%;           /* #171F2B */
+    /* Body canvas — subtle warm white, paired naturally with beige sections */
+    --background: 36 30% 97%;            /* #FAF8F5 */
+    /* Body text — DOMA Black */
+    --foreground: 0 0% 1%;               /* #020202 */
 
-    /* Primary Blue — #2B4C66 */
-    --primary: 207 41% 28%;
+    /* Primary — DOMA Grey (neutral primary action) */
+    --primary: 0 0% 17%;                 /* #2B2B2B */
     --primary-foreground: 0 0% 100%;
 
-    /* Section Background — #F1F5F9 */
-    --secondary: 214 32% 96%;
-    --secondary-foreground: 215 28% 17%;
+    /* Secondary surfaces — DOMA Beige (warm sand for section backgrounds) */
+    --secondary: 27 14% 85%;             /* #DFD8D2 */
+    --secondary-foreground: 0 0% 1%;
 
-    /* Muted — #F1F5F9 / #7B8794 */
-    --muted: 214 32% 96%;
-    --muted-foreground: 209 9% 53%;
+    /* Muted — softer beige tint, near-grey foreground */
+    --muted: 30 14% 92%;                 /* #ECE6E0 — derived lighter beige */
+    --muted-foreground: 0 0% 32%;        /* #525252 */
 
-    /* Accent Gold — #C2A86B (limited use) */
-    --accent: 42 39% 59%;
-    --accent-foreground: 0 0% 4%;
+    /* Accent — DOMA Orange (the loud CTA / hero color) */
+    --accent: 11 53% 51%;                /* #C45A41 */
+    --accent-foreground: 0 0% 100%;
 
-    /* Cards — Pure White */
+    /* Cards — Pure White (DOMA primary) */
     --card: 0 0% 100%;
-    --card-foreground: 215 28% 17%;
+    --card-foreground: 0 0% 1%;
     --popover: 0 0% 100%;
-    --popover-foreground: 215 28% 17%;
+    --popover-foreground: 0 0% 1%;
 
-    /* Borders — #E5E7EB */
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 207 41% 28%;
-    --radius: 0.5rem;
+    /* Borders — soft warm grey, sits between cream bg and white card */
+    --border: 30 10% 88%;                /* #E2DDD8 */
+    --input: 30 10% 88%;
+    --ring: 11 53% 51%;                  /* orange ring on focus */
+    --radius: 0.625rem;                  /* slightly larger for modern feel */
 
-    /* Surface (for admin/CRM panels) */
+    /* Surface (admin/CRM panels) */
     --surface: 0 0% 100%;
-    --surface-hover: 214 32% 96%;
+    --surface-hover: 27 14% 92%;
 
-    /* Destructive */
-    --destructive: 0 72% 38%;
+    /* Destructive (kept warm-red, harmonises with orange accent) */
+    --destructive: 0 72% 45%;
     --destructive-foreground: 0 0% 98%;
 
-    /* Sidebar (admin panels) */
-    --sidebar-background: 207 43% 20%;
-    --sidebar-foreground: 0 0% 95%;
+    /* Sidebar (admin / dashboards) — DOMA Black with orange accent */
+    --sidebar-background: 0 0% 7%;       /* #121212 (between pure black and grey) */
+    --sidebar-foreground: 0 0% 92%;
     --sidebar-primary: 0 0% 100%;
-    --sidebar-primary-foreground: 207 43% 20%;
-    --sidebar-accent: 42 39% 59%;
+    --sidebar-primary-foreground: 0 0% 1%;
+    --sidebar-accent: 11 53% 51%;        /* DOMA Orange */
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 207 30% 25%;
-    --sidebar-ring: 42 39% 59%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 11 53% 51%;
+
+    /* DOMA brand tokens — direct HEX equivalents for use in components
+       that need exact palette references (gradients, hero overlays) */
+    --doma-black: 0 0% 1%;               /* #020202 */
+    --doma-grey: 0 0% 17%;               /* #2B2B2B */
+    --doma-white: 0 0% 100%;             /* #FFFFFF */
+    --doma-orange: 11 53% 51%;           /* #C45A41 */
+    --doma-beige: 27 14% 85%;            /* #DFD8D2 */
+    --doma-blue: 202 32% 56%;            /* #6899B4 (Baby Blue) */
   }
 
   /* ─────────────────────────────────────────────────────
-     DARK THEME — no white surfaces, high-contrast light text
+     DARK THEME — DOMA Black canvas + Orange accent + warm beige tones
      Applies to any element inside <html class="dark">
      ───────────────────────────────────────────────────── */
   .dark {
-    /* Deep blue-black canvas */
-    --background: 213 40% 8%;          /* #0B1623 */
-    --foreground: 210 20% 96%;         /* #F1F5F9 — near-white text */
+    /* Deep DOMA Black canvas */
+    --background: 0 0% 6%;              /* #0F0F0F */
+    --foreground: 30 14% 94%;           /* #F1ECE6 — warm off-white */
 
-    /* Cards: solid dark slate, NEVER white */
-    --card: 215 28% 13%;               /* #1B2533 */
-    --card-foreground: 210 20% 96%;    /* #F1F5F9 */
-    --popover: 215 28% 13%;
-    --popover-foreground: 210 20% 96%;
+    /* Cards: solid charcoal, NEVER white */
+    --card: 0 0% 10%;                   /* #1A1A1A */
+    --card-foreground: 30 14% 94%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 30 14% 94%;
 
-    /* Primary: gold-blue pair — primary text is near-white for contrast */
-    --primary: 210 30% 88%;            /* light slate */
-    --primary-foreground: 213 40% 8%;
+    /* Primary in dark — light beige (inverse of light-mode grey) */
+    --primary: 30 14% 88%;              /* #DFD8D2 → light primary */
+    --primary-foreground: 0 0% 6%;
 
-    /* Secondary / muted — used for subtle surfaces */
-    --secondary: 215 25% 17%;          /* slightly lighter than card */
-    --secondary-foreground: 210 20% 96%;
-    --muted: 215 25% 17%;
-    --muted-foreground: 215 14% 65%;   /* #8994A2 — visible but secondary */
+    /* Secondary / muted */
+    --secondary: 0 0% 15%;              /* #262626 */
+    --secondary-foreground: 30 14% 94%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 30 8% 70%;      /* warm grey */
 
-    /* Accent gold kept identical (gold works on dark too) */
-    --accent: 42 45% 65%;
-    --accent-foreground: 213 40% 8%;
+    /* Accent — DOMA Orange brightened slightly for dark surface */
+    --accent: 11 60% 60%;               /* warmer orange that pops on dark */
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 55%;          /* brighter rose for dark bg */
-    --destructive-foreground: 210 20% 98%;
+    --destructive: 0 72% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 215 20% 22%;             /* ~#2E3948 */
-    --input: 215 20% 22%;
-    --ring: 42 45% 65%;                /* gold ring on focus */
+    --border: 0 0% 18%;                 /* #2E2E2E */
+    --input: 0 0% 18%;
+    --ring: 11 60% 60%;                 /* orange ring */
 
-    --surface: 215 28% 13%;
-    --surface-hover: 215 25% 17%;
+    --surface: 0 0% 10%;
+    --surface-hover: 0 0% 14%;
 
-    /* Sidebar: same deep blue as light; looks native in dark */
-    --sidebar-background: 213 45% 10%;
-    --sidebar-foreground: 210 20% 92%;
-    --sidebar-primary: 210 20% 96%;
-    --sidebar-primary-foreground: 213 40% 8%;
-    --sidebar-accent: 42 45% 65%;
-    --sidebar-accent-foreground: 213 40% 8%;
-    --sidebar-border: 215 20% 18%;
-    --sidebar-ring: 42 45% 65%;
+    /* Sidebar — pure DOMA Black for max contrast in dashboards */
+    --sidebar-background: 0 0% 4%;      /* near-pure black */
+    --sidebar-foreground: 30 14% 92%;
+    --sidebar-primary: 30 14% 94%;
+    --sidebar-primary-foreground: 0 0% 4%;
+    --sidebar-accent: 11 60% 60%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 11 60% 60%;
   }
 
   /* ─────────────────────────────────────────────────────
@@ -132,7 +175,7 @@
 
   .dark [data-dashboard-root] .text-gray-800,
   .dark [data-dashboard-root] .text-gray-900,
-  .dark [data-dashboard-root] .text-\[#1E374B\],
+  .dark [data-dashboard-root] .text-\[#020202\],
   .dark [data-dashboard-root] .text-\[#1F2937\] {
     color: hsl(var(--foreground)) !important;
   }
@@ -156,16 +199,16 @@
      Dark mode: make tinted icon backgrounds transparent/low-contrast
      so the icon itself reads cleanly against the card surface.
      ───────────────────────────────────────────────────── */
-  .dark [data-dashboard-root] [class*="bg-[#2B4C66]/[0."],
-  .dark [data-dashboard-root] [class*="bg-[#2B4C66]/5"],
-  .dark [data-dashboard-root] [class*="bg-[#2B4C66]/10"],
-  .dark [data-dashboard-root] [class*="bg-[#2B4C66]/15"] {
+  .dark [data-dashboard-root] [class*="bg-[#2B2B2B]/[0."],
+  .dark [data-dashboard-root] [class*="bg-[#2B2B2B]/5"],
+  .dark [data-dashboard-root] [class*="bg-[#2B2B2B]/10"],
+  .dark [data-dashboard-root] [class*="bg-[#2B2B2B]/15"] {
     background-color: hsl(215 30% 22% / 0.4) !important;
   }
-  .dark [data-dashboard-root] [class*="bg-[#C2A86B]/[0."],
-  .dark [data-dashboard-root] [class*="bg-[#C2A86B]/10"],
-  .dark [data-dashboard-root] [class*="bg-[#C2A86B]/15"],
-  .dark [data-dashboard-root] [class*="bg-[#C2A86B]/20"] {
+  .dark [data-dashboard-root] [class*="bg-[#C45A41]/[0."],
+  .dark [data-dashboard-root] [class*="bg-[#C45A41]/10"],
+  .dark [data-dashboard-root] [class*="bg-[#C45A41]/15"],
+  .dark [data-dashboard-root] [class*="bg-[#C45A41]/20"] {
     background-color: hsl(42 25% 30% / 0.35) !important;
   }
   /* Tint-50 utility backgrounds (emerald-50, amber-50, rose-50, etc.) */
@@ -285,18 +328,18 @@
      and small labels. In dark mode they disappear.
      Remap to bright neutrals that stay readable.
      ───────────────────────────────────────────────────── */
-  .dark [data-dashboard-root] .text-\[#2B4C66\],
-  .dark [data-dashboard-root] [class*="text-[#2B4C66]/"] {
+  .dark [data-dashboard-root] .text-\[#2B2B2B\],
+  .dark [data-dashboard-root] [class*="text-[#2B2B2B]/"] {
     color: hsl(210 40% 88%) !important;    /* bright slate for dark bg */
   }
-  .dark [data-dashboard-root] .text-\[#1E374B\] {
+  .dark [data-dashboard-root] .text-\[#020202\] {
     color: hsl(210 20% 96%) !important;   /* near-white for titles */
   }
-  .dark [data-dashboard-root] .text-\[#C2A86B\],
-  .dark [data-dashboard-root] [class*="text-[#C2A86B]/"] {
+  .dark [data-dashboard-root] .text-\[#C45A41\],
+  .dark [data-dashboard-root] [class*="text-[#C45A41]/"] {
     color: hsl(42 60% 72%) !important;    /* keep gold but brighter */
   }
-  .dark [data-dashboard-root] .text-\[#A88A4A\] {
+  .dark [data-dashboard-root] .text-\[#A24832\] {
     color: hsl(42 55% 70%) !important;
   }
   /* Shadcn text-muted-foreground hard-baked to dim: bump brighter in dashboards */
@@ -381,28 +424,35 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+    font-family: 'Manrope', 'Tajawal', system-ui, sans-serif;
   }
 
-  /* ── Arabic — IBM Plex Sans Arabic ── */
+  /* ── Arabic — Tajawal (Helvetica-Neue-Arabic-inspired, free) ── */
   [dir="rtl"] body,
   [lang="ar"] body {
-    font-family: 'IBM Plex Sans Arabic', 'Inter', system-ui, sans-serif;
+    font-family: 'Tajawal', 'Manrope', system-ui, sans-serif;
   }
 
   [dir="rtl"],
   :lang(ar) {
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     line-height: 1.7;
     letter-spacing: 0;
   }
 
-  /* ── Headings ── */
+  /* ── Headings ── DOMA Black, slightly tighter tracking */
   h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: -0.025em;
-    color: #111315;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
+  }
+
+  /* Display class — Galak Pro Demo for big hero headlines.
+     Use `font-display` utility on hero <h1> to opt in. */
+  .font-display {
+    font-family: 'Galak Pro Demo', 'Manrope', sans-serif;
+    letter-spacing: -0.01em;
   }
 
   [dir="rtl"] h1,
@@ -411,17 +461,17 @@
   [dir="rtl"] h4,
   [dir="rtl"] h5,
   [dir="rtl"] h6 {
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     letter-spacing: 0;
     line-height: 1.4;
   }
 
-  /* ── English headings — Inter ── */
+  /* ── English headings — Manrope (replaces Inter), Galak via .font-display ── */
   [dir="ltr"] h1,
   [dir="ltr"] h2,
   [dir="ltr"] h3,
   [dir="ltr"] h4 {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Manrope', sans-serif;
   }
 }
 

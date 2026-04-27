@@ -96,8 +96,8 @@ export const MobileNavOverlay: React.FC<Props> = ({
         <div className={cn(
           "relative px-5 py-6 overflow-hidden",
           isGold
-            ? "bg-gradient-to-br from-[#C2A86B] via-[#A88A4A] to-[#8A6F3B]"
-            : "bg-gradient-to-br from-[#2B4C66] via-[#1E374B] to-[#0F1F2E]"
+            ? "bg-gradient-to-br from-[#C45A41] via-[#A24832] to-[#8A6F3B]"
+            : "bg-gradient-to-br from-[#2B2B2B] via-[#020202] to-[#020202]"
         )}>
           {/* Decorative blob */}
           <div className="absolute -top-10 -end-10 w-40 h-40 rounded-full bg-white/10 blur-2xl" />
@@ -157,15 +157,15 @@ export const MobileNavOverlay: React.FC<Props> = ({
                     "relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all",
                     isActive
                       ? isGold
-                        ? "bg-gradient-to-r from-[#C2A86B]/20 to-[#C2A86B]/5 text-[#A88A4A] dark:text-[#D7C084] font-bold"
-                        : "bg-gradient-to-r from-[#2B4C66]/15 to-[#2B4C66]/5 text-[#1E374B] dark:text-white font-bold"
+                        ? "bg-gradient-to-r from-[#C45A41]/20 to-[#C45A41]/5 text-[#A24832] dark:text-[#D7C084] font-bold"
+                        : "bg-gradient-to-r from-[#2B2B2B]/15 to-[#2B2B2B]/5 text-[#020202] dark:text-white font-bold"
                       : "text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-white/5"
                   )}
                 >
                   {isActive && (
                     <span className={cn(
                       "absolute start-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-full",
-                      isGold ? "bg-[#C2A86B]" : "bg-[#2B4C66]"
+                      isGold ? "bg-[#C45A41]" : "bg-[#2B2B2B]"
                     )} />
                   )}
                   <div
@@ -173,8 +173,8 @@ export const MobileNavOverlay: React.FC<Props> = ({
                       "flex items-center justify-center w-10 h-10 rounded-xl",
                       isActive
                         ? isGold
-                          ? "bg-gradient-to-br from-[#C2A86B] to-[#A88A4A] text-white"
-                          : "bg-gradient-to-br from-[#2B4C66] to-[#1E374B] text-white"
+                          ? "bg-gradient-to-br from-[#C45A41] to-[#A24832] text-white"
+                          : "bg-gradient-to-br from-[#2B2B2B] to-[#020202] text-white"
                         : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400"
                     )}
                   >
@@ -184,7 +184,7 @@ export const MobileNavOverlay: React.FC<Props> = ({
                     {isAr ? item.label.ar : item.label.en}
                   </span>
                   {isActive && (
-                    <div className={cn("w-1.5 h-1.5 rounded-full", isGold ? "bg-[#C2A86B]" : "bg-[#2B4C66]")} />
+                    <div className={cn("w-1.5 h-1.5 rounded-full", isGold ? "bg-[#C45A41]" : "bg-[#2B2B2B]")} />
                   )}
                 </Link>
               );
@@ -206,8 +206,8 @@ export const MobileNavOverlay: React.FC<Props> = ({
             >
               <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 dark:bg-white/5">
                 {theme === "dark"
-                  ? <Sun className="w-4 h-4 text-[#C2A86B]" strokeWidth={1.8} />
-                  : <Moon className="w-4 h-4 text-[#2B4C66]" strokeWidth={1.8} />}
+                  ? <Sun className="w-4 h-4 text-[#C45A41]" strokeWidth={1.8} />
+                  : <Moon className="w-4 h-4 text-[#2B2B2B]" strokeWidth={1.8} />}
               </div>
               <span className="text-[13.5px]">
                 {theme === "dark"
@@ -220,7 +220,7 @@ export const MobileNavOverlay: React.FC<Props> = ({
               className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
             >
               <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 dark:bg-white/5">
-                <Globe className="w-4 h-4 text-[#2B4C66] dark:text-[#7FA7C4]" strokeWidth={1.8} />
+                <Globe className="w-4 h-4 text-[#2B2B2B] dark:text-[#7FA7C4]" strokeWidth={1.8} />
               </div>
               <span className="text-[13.5px]">
                 {isAr ? "English" : "العربية"}

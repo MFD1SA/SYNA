@@ -46,7 +46,7 @@ const AdminLogin: React.FC = () => {
   if (authLoading || roleLoading) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-[#0F1419]">
-        <div className="h-7 w-7 animate-spin rounded-full border-r-2 border-t-2 border-[#C2A86B]/40"></div>
+        <div className="h-7 w-7 animate-spin rounded-full border-r-2 border-t-2 border-[#C45A41]/40"></div>
       </div>
     );
   }
@@ -67,7 +67,7 @@ const AdminLogin: React.FC = () => {
             {isAr ? "جاري التحويل للوحة الإدارة..." : "Redirecting to admin panel..."}
           </p>
           <div className="pt-2">
-            <div className="h-5 w-5 mx-auto animate-spin rounded-full border-r-2 border-t-2 border-[#C2A86B]/40"></div>
+            <div className="h-5 w-5 mx-auto animate-spin rounded-full border-r-2 border-t-2 border-[#C45A41]/40"></div>
           </div>
         </div>
       </div>
@@ -133,8 +133,8 @@ const AdminLogin: React.FC = () => {
     >
       {/* Subtle background gradients */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 start-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-[#2B4C66]/[0.06] rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 end-0 w-[400px] h-[400px] bg-[#C2A86B]/[0.02] rounded-full blur-[80px]" />
+        <div className="absolute top-0 start-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-[#2B2B2B]/[0.06] rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 end-0 w-[400px] h-[400px] bg-[#C45A41]/[0.02] rounded-full blur-[80px]" />
       </div>
 
       {/* Top bar */}
@@ -160,9 +160,9 @@ const AdminLogin: React.FC = () => {
 
           {/* Admin badge */}
           <div className="flex justify-center mb-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#C2A86B]/20 bg-[#C2A86B]/5">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#C2A86B]" strokeWidth={1.5} />
-              <span className="text-[11.5px] font-semibold text-[#C2A86B] tracking-wide">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#C45A41]/20 bg-[#C45A41]/5">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#C45A41]" strokeWidth={1.5} />
+              <span className="text-[11.5px] font-semibold text-[#C45A41] tracking-wide">
                 {isAr ? "لوحة الإدارة" : "Administration Panel"}
               </span>
             </div>
@@ -194,7 +194,7 @@ const AdminLogin: React.FC = () => {
                     dir="ltr"
                     placeholder="admin@example.com"
                     className={`w-full h-12 ps-11 pe-4 bg-white/[0.04] border rounded-xl text-[14px] text-white placeholder:text-white/15 focus:outline-none focus:ring-2 focus:bg-white/[0.06] transition-all ${
-                      errors.email ? "border-red-500/40 focus:border-red-500/60 focus:ring-red-500/10" : "border-white/[0.08] focus:border-[#2B4C66]/50 focus:ring-[#2B4C66]/20"
+                      errors.email ? "border-red-500/40 focus:border-red-500/60 focus:ring-red-500/10" : "border-white/[0.08] focus:border-[#2B2B2B]/50 focus:ring-[#2B2B2B]/20"
                     }`}
                   />
                 </div>
@@ -214,7 +214,7 @@ const AdminLogin: React.FC = () => {
                     dir="ltr"
                     placeholder="********"
                     className={`w-full h-12 ps-11 pe-12 bg-white/[0.04] border rounded-xl text-[14px] text-white placeholder:text-white/15 focus:outline-none focus:ring-2 focus:bg-white/[0.06] transition-all ${
-                      errors.password ? "border-red-500/40 focus:border-red-500/60 focus:ring-red-500/10" : "border-white/[0.08] focus:border-[#2B4C66]/50 focus:ring-[#2B4C66]/20"
+                      errors.password ? "border-red-500/40 focus:border-red-500/60 focus:ring-red-500/10" : "border-white/[0.08] focus:border-[#2B2B2B]/50 focus:ring-[#2B2B2B]/20"
                     }`}
                   />
                   <button
@@ -231,7 +231,7 @@ const AdminLogin: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 bg-[#2B4C66] hover:bg-[#1E374B] text-white text-[14px] font-semibold rounded-xl disabled:opacity-50 transition-all duration-200 flex items-center justify-center gap-2 mt-2 shadow-[0_2px_12px_-2px_rgba(43,76,102,0.4)]"
+                className="w-full h-12 bg-[#2B2B2B] hover:bg-[#020202] text-white text-[14px] font-semibold rounded-xl disabled:opacity-50 transition-all duration-200 flex items-center justify-center gap-2 mt-2 shadow-[0_2px_12px_-2px_rgba(43,76,102,0.4)]"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
                   <>

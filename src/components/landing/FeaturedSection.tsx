@@ -39,7 +39,7 @@ const FeaturedSection: React.FC = () => {
       <div className="container">
         <div className="flex items-end justify-between mb-10">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-3 tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#020202] mb-3 tracking-tight">
               {t.featured.title}
             </h2>
             <p className="text-[15px] text-gray-500">
@@ -48,7 +48,7 @@ const FeaturedSection: React.FC = () => {
           </div>
           <Link
             to="/opportunities"
-            className="hidden md:inline-flex items-center gap-2 text-[13px] font-semibold text-[#2B4C66] hover:gap-3.5 transition-all duration-300"
+            className="hidden md:inline-flex items-center gap-2 text-[13px] font-semibold text-[#2B2B2B] hover:gap-3.5 transition-all duration-300"
           >
             {isAr ? "عرض الكل" : "View All"}
             <Arrow className="w-4 h-4" />
@@ -63,12 +63,12 @@ const FeaturedSection: React.FC = () => {
               className="bg-white rounded-xl border border-gray-100 hover:shadow-xl hover:shadow-gray-100/60 hover:border-gray-200 transition-all duration-300 overflow-hidden group"
             >
               {/* Card visual header */}
-              <div className="h-44 relative overflow-hidden bg-gradient-to-br from-[#2B4C66]/[0.08] via-[#2B4C66]/[0.04] to-transparent">
+              <div className="h-44 relative overflow-hidden bg-gradient-to-br from-[#2B2B2B]/[0.08] via-[#2B2B2B]/[0.04] to-transparent">
                 {/* Grid pattern */}
-                <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "linear-gradient(#2B4C66 1px, transparent 1px), linear-gradient(90deg, #2B4C66 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+                <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "linear-gradient(#2B2B2B 1px, transparent 1px), linear-gradient(90deg, #2B2B2B 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
                 {/* Centered icon */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <MapPin className="w-8 h-8 text-[#2B4C66]/40 group-hover:scale-110 transition-transform duration-300" strokeWidth={1.5} />
+                  <MapPin className="w-8 h-8 text-[#2B2B2B]/40 group-hover:scale-110 transition-transform duration-300" strokeWidth={1.5} />
                 </div>
                 {/* Status badge */}
                 <div className="absolute top-3 end-3">
@@ -78,7 +78,7 @@ const FeaturedSection: React.FC = () => {
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="text-[16px] font-semibold text-[#1E374B] mb-3">
+                <h3 className="text-[16px] font-semibold text-[#020202] mb-3">
                   {land.city}{land.district ? ` | ${land.district}` : ""}
                 </h3>
                 <div className="flex items-center gap-4 text-[13px] text-gray-500">
@@ -87,7 +87,7 @@ const FeaturedSection: React.FC = () => {
                     {Number(land.land_area_sqm).toLocaleString()} {isAr ? "م²" : "sqm"}
                   </span>
                   {land.land_type && (
-                    <span className="px-2.5 py-0.5 bg-[#2B4C66]/[0.06] text-[#2B4C66] text-[11px] font-medium rounded-md">
+                    <span className="px-2.5 py-0.5 bg-[#2B2B2B]/[0.06] text-[#2B2B2B] text-[11px] font-medium rounded-md">
                       {land.land_type}
                     </span>
                   )}
@@ -100,7 +100,7 @@ const FeaturedSection: React.FC = () => {
         <div className="md:hidden mt-8 text-center">
           <Link
             to="/opportunities"
-            className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#2B4C66]"
+            className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#2B2B2B]"
           >
             {isAr ? "عرض جميع الفرص" : "View All Opportunities"}
             <Arrow className="w-4 h-4" />

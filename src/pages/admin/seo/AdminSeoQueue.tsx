@@ -62,7 +62,7 @@ const AdminSeoQueue: React.FC = () => {
     <div className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-[16px] font-bold text-[#1E374B] dark:text-white">
+          <h2 className="text-[16px] font-bold text-[#020202] dark:text-white">
             {isAr ? "طابور النشر" : "Publish Queue"}
           </h2>
           <p className="text-[12px] text-slate-500 mt-0.5">
@@ -74,7 +74,7 @@ const AdminSeoQueue: React.FC = () => {
         <button
           onClick={handleProcess}
           disabled={processing || queuedCount === 0}
-          className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[13px] font-bold disabled:opacity-50"
+          className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white text-[13px] font-bold disabled:opacity-50"
         >
           {processing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
           {isAr ? "تشغيل المعالجة" : "Run processor"}

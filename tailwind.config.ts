@@ -19,9 +19,14 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "IBM Plex Sans Arabic", "sans-serif"],
-        ar: ["IBM Plex Sans Arabic", "sans-serif"],
-        en: ["Inter", "sans-serif"],
+        // DOMA stack (Apr 2026):
+        //   Latin body:    Manrope (closest free substitute for BW Modelica)
+        //   Latin display: Galak Pro Demo (self-hosted .ttf), opt-in via `font-display`
+        //   Arabic body:   Tajawal (closest free substitute for Helvetica Neue Arabic)
+        sans: ["Manrope", "Tajawal", "sans-serif"],
+        ar: ["Tajawal", "sans-serif"],
+        en: ["Manrope", "sans-serif"],
+        display: ["Galak Pro Demo", "Manrope", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -59,13 +64,30 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // DOMA brand tokens — direct HEX equivalents from DOMA GUIDELINES.
+        // Use these for gradients, hero overlays, or any spot the design
+        // system semantic tokens (primary/accent/secondary) don't fit.
+        doma: {
+          black: "#020202",
+          grey: "#2B2B2B",
+          white: "#FFFFFF",
+          orange: "#C45A41",
+          "orange-deep": "#A24832",
+          beige: "#DFD8D2",
+          "beige-soft": "#ECE6E0",
+          blue: "#6899B4",
+        },
+        // SINA legacy aliases — kept so existing utility classes
+        // (text-sina-blue, bg-sina-gold, etc.) don't break visually.
+        // Each entry resolves to the DOMA equivalent so the rebrand is
+        // a single config change rather than a sweep across components.
         sina: {
-          black: "#0A0A0A",
-          charcoal: "#111315",
-          blue: "#2B4C66",
-          "dark-blue": "#1E374B",
-          "soft-blue": "#EEF4F8",
-          gold: "#C2A86B",
+          black: "#020202",
+          charcoal: "#2B2B2B",
+          blue: "#2B2B2B",         // primary action → DOMA Grey
+          "dark-blue": "#020202",  // sidebar / deep accent → DOMA Black
+          "soft-blue": "#ECE6E0",  // soft surface → DOMA Beige Soft
+          gold: "#C45A41",         // accent CTA → DOMA Orange
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

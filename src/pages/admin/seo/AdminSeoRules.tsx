@@ -75,7 +75,7 @@ const AdminSeoRules: React.FC = () => {
                 const gates = r.quality_gates as Record<string, unknown>;
                 return (
                   <tr key={r.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02]">
-                    <td className="px-4 py-3 font-semibold text-[#1E374B] dark:text-white">{r.name}</td>
+                    <td className="px-4 py-3 font-semibold text-[#020202] dark:text-white">{r.name}</td>
                     <td className="px-4 py-3 text-slate-500">
                       {isAr ? pageTypeLabels[r.page_type].ar : pageTypeLabels[r.page_type].en}
                     </td>

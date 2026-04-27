@@ -211,7 +211,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <div className="hidden sm:flex items-center gap-2 me-2">
                 <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">{isAr ? "لوحة الإدارة" : "Admin"}</span>
                 <span className="text-gray-300 text-[10px]">/</span>
-                <span className="text-[13px] font-semibold text-[#1E374B] dark:text-white">{isAr ? currentPage.ar : currentPage.en}</span>
+                <span className="text-[13px] font-semibold text-[#020202] dark:text-white">{isAr ? currentPage.ar : currentPage.en}</span>
               </div>
             )}
 
@@ -219,7 +219,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="relative hidden md:block" ref={searchRef}>
               <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" strokeWidth={1.5} />
               <Input
-                className="h-9 w-72 rounded-lg bg-gray-50/60 dark:bg-white/5 border-gray-200/30 dark:border-white/10 ps-10 text-[13px] text-gray-700 dark:text-slate-200 placeholder:text-gray-400 focus-visible:ring-1 focus-visible:ring-[#2B4C66]/20 focus-visible:border-[#2B4C66]/20 transition-all duration-200"
+                className="h-9 w-72 rounded-lg bg-gray-50/60 dark:bg-white/5 border-gray-200/30 dark:border-white/10 ps-10 text-[13px] text-gray-700 dark:text-slate-200 placeholder:text-gray-400 focus-visible:ring-1 focus-visible:ring-[#2B2B2B]/20 focus-visible:border-[#2B2B2B]/20 transition-all duration-200"
                 placeholder={isAr ? "بحث سريع..." : "Quick search..."}
                 value={searchQuery}
                 onChange={e => { setSearchQuery(e.target.value); setShowSearch(true); }}
@@ -233,7 +233,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               {showSearch && searchQuery && (
                 <div className="absolute top-full mt-2 start-0 w-[340px] max-h-80 overflow-auto rounded-xl border border-gray-200/60 bg-white shadow-[0_8px_30px_-8px_rgba(0,0,0,0.1)] z-50">
                   {searchLoading ? (
-                    <div className="flex items-center justify-center py-10"><Loader2 className="h-4 w-4 animate-spin text-[#2B4C66]/40" strokeWidth={1.5} /></div>
+                    <div className="flex items-center justify-center py-10"><Loader2 className="h-4 w-4 animate-spin text-[#2B2B2B]/40" strokeWidth={1.5} /></div>
                   ) : searchResults.length === 0 ? (
                     <p className="py-10 text-center text-[13px] text-gray-400">{isAr ? "لا توجد نتائج" : "No results"}</p>
                   ) : (
@@ -241,7 +241,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                       {searchResults.map((r, i) => (
                         <button
                           key={i}
-                          className="flex w-full items-center gap-3 px-4 py-3 text-start hover:bg-[#2B4C66]/[0.03] transition-all duration-150 border-b border-gray-100/60 last:border-0"
+                          className="flex w-full items-center gap-3 px-4 py-3 text-start hover:bg-[#2B2B2B]/[0.03] transition-all duration-150 border-b border-gray-100/60 last:border-0"
                           onClick={() => { navigate(r.href); setShowSearch(false); setSearchQuery(""); }}
                         >
                           <Badge variant="outline" className={`shrink-0 text-[9px] font-semibold ${searchTypeLabels[r.type]?.color}`}>
@@ -266,12 +266,12 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             {/* Notifications */}
             <div className="relative" ref={notifRef}>
               <button
-                className="h-9 w-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-[#2B4C66] hover:bg-[#2B4C66]/[0.04] transition-all duration-200 relative"
+                className="h-9 w-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-[#2B2B2B] hover:bg-[#2B2B2B]/[0.04] transition-all duration-200 relative"
                 onClick={() => { setShowNotifs(!showNotifs); if (!showNotifs) fetchNotifs(); }}
               >
                 <Bell className="h-[18px] w-[18px]" strokeWidth={1.5} />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1 end-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#C2A86B] text-[8px] font-bold text-white shadow-sm">
+                  <span className="absolute top-1 end-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#C45A41] text-[8px] font-bold text-white shadow-sm">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
@@ -279,9 +279,9 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               {showNotifs && (
                 <div className="absolute top-full mt-2 end-0 w-[340px] max-h-[420px] overflow-auto rounded-xl border border-gray-200/60 bg-white shadow-[0_8px_30px_-8px_rgba(0,0,0,0.1)] z-50">
                   <div className="flex items-center justify-between border-b border-gray-100/80 px-5 py-3.5">
-                    <span className="text-[13px] font-semibold text-[#1E374B]">{isAr ? "الإشعارات" : "Notifications"}</span>
+                    <span className="text-[13px] font-semibold text-[#020202]">{isAr ? "الإشعارات" : "Notifications"}</span>
                     {unreadCount > 0 && (
-                      <button onClick={markAllRead} className="text-[11px] font-medium text-[#C2A86B] hover:text-[#2B4C66] transition-colors">
+                      <button onClick={markAllRead} className="text-[11px] font-medium text-[#C45A41] hover:text-[#2B2B2B] transition-colors">
                         {isAr ? "قراءة الكل" : "Mark all read"}
                       </button>
                     )}
@@ -292,14 +292,14 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     notifications.map(n => (
                       <button
                         key={n.id}
-                        className={`flex w-full items-start gap-3 px-5 py-3.5 text-start hover:bg-[#2B4C66]/[0.02] transition-all duration-150 border-b border-gray-50 last:border-0 ${!n.is_read ? "bg-[#2B4C66]/[0.02]" : ""}`}
+                        className={`flex w-full items-start gap-3 px-5 py-3.5 text-start hover:bg-[#2B2B2B]/[0.02] transition-all duration-150 border-b border-gray-50 last:border-0 ${!n.is_read ? "bg-[#2B2B2B]/[0.02]" : ""}`}
                         onClick={() => markAsRead(n.id)}
                       >
                         <span className="text-sm mt-0.5">{typeLabels[n.type]?.icon || "📌"}</span>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
                             <p className="text-[13px] font-medium text-gray-800 truncate">{n.title}</p>
-                            {!n.is_read && <span className="h-1.5 w-1.5 rounded-full bg-[#C2A86B] shrink-0" />}
+                            {!n.is_read && <span className="h-1.5 w-1.5 rounded-full bg-[#C45A41] shrink-0" />}
                           </div>
                           <p className="text-[11px] text-gray-500 line-clamp-2 mt-0.5">{n.message}</p>
                           <p className="text-[10px] text-gray-400 mt-1">
@@ -320,12 +320,12 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="h-9 w-9 rounded-full overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-[#2B4C66]/20 transition-all duration-200"
+                className="h-9 w-9 rounded-full overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-[#2B2B2B]/20 transition-all duration-200"
               >
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
                 ) : (
-                  <div className="h-full w-full bg-gradient-to-br from-[#2B4C66] to-[#1E374B] flex items-center justify-center">
+                  <div className="h-full w-full bg-gradient-to-br from-[#2B2B2B] to-[#020202] flex items-center justify-center">
                     <span className="text-[11px] font-semibold text-white">{initial}</span>
                   </div>
                 )}
@@ -335,14 +335,14 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <div className="absolute top-full mt-2 end-0 w-52 rounded-xl border border-gray-200/60 bg-white shadow-[0_8px_30px_-8px_rgba(0,0,0,0.12)] z-50 overflow-hidden">
                   {/* User info */}
                   <div className="px-4 py-3 border-b border-gray-100/80">
-                    <p className="text-[13px] font-semibold text-[#1E374B] truncate">{fullName}</p>
+                    <p className="text-[13px] font-semibold text-[#020202] truncate">{fullName}</p>
                     <p className="text-[11px] text-gray-400 truncate">{user?.email}</p>
                   </div>
                   {/* Menu items */}
                   <div className="py-1">
                     <button
                       onClick={() => { setShowUserMenu(false); navigate("/admincp/settings"); }}
-                      className="flex w-full items-center gap-3 px-4 py-2.5 text-[13px] text-gray-600 hover:bg-[#2B4C66]/[0.04] hover:text-[#1E374B] transition-all"
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-[13px] text-gray-600 hover:bg-[#2B2B2B]/[0.04] hover:text-[#020202] transition-all"
                     >
                       <Settings className="h-4 w-4" strokeWidth={1.5} />
                       {isAr ? "الإعدادات" : "Settings"}

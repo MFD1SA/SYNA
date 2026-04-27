@@ -27,10 +27,10 @@ const CommissionBreakdown: React.FC<Props> = ({
   const totalPlatformShare = effectiveTotal * PLATFORM_TOTAL_RATE;
 
   return (
-    <div className="rounded-xl border border-[#2B4C66]/15 bg-card p-4 space-y-3">
+    <div className="rounded-xl border border-[#2B2B2B]/15 bg-card p-4 space-y-3">
       <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2B4C66]/10">
-          <Banknote className="h-4 w-4 text-[#2B4C66]" />
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2B2B2B]/10">
+          <Banknote className="h-4 w-4 text-[#2B2B2B]" />
         </div>
         {isAr ? "تفاصيل العمولة والرسوم" : "Commission & Fee Details"}
       </div>
@@ -65,7 +65,7 @@ const CommissionBreakdown: React.FC<Props> = ({
         <Separator />
         <div className="flex justify-between font-semibold">
           <span>{isAr ? "إجمالي حصة المنصة" : "Total Platform Share"}</span>
-          <span className="text-[#2B4C66] tabular-nums" dir="ltr">4.00%{effectiveTotal > 0 ? ` (${fmtSAR(totalPlatformShare, isAr)})` : ""}</span>
+          <span className="text-[#2B2B2B] tabular-nums" dir="ltr">4.00%{effectiveTotal > 0 ? ` (${fmtSAR(totalPlatformShare, isAr)})` : ""}</span>
         </div>
       </div>
 

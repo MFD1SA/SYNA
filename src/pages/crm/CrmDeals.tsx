@@ -239,14 +239,14 @@ const CrmDeals: React.FC = () => {
     <CrmLayout>
       <DashboardShell isAr={isAr} accent="blue">
         <BentoCard variant="hero" span="full" padding="lg" className="relative overflow-hidden mb-5">
-          <div className="absolute top-0 end-0 w-60 h-60 bg-[#C2A86B]/10 rounded-full blur-3xl -me-20 -mt-20 pointer-events-none" />
+          <div className="absolute top-0 end-0 w-60 h-60 bg-[#C45A41]/10 rounded-full blur-3xl -me-20 -mt-20 pointer-events-none" />
           <div className="relative flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#C2A86B]/35 dark:border-[#C2A86B]/40 text-[11px] font-semibold text-[#A88A4A] dark:text-[#D4BC8A] mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#C45A41]/35 dark:border-[#C45A41]/40 text-[11px] font-semibold text-[#A24832] dark:text-[#D4BC8A] mb-2">
                 <Handshake className="w-3 h-3" strokeWidth={1.7} />
                 {isAr ? "الصفقات" : "Deals"}
               </span>
-              <h1 className="text-[24px] md:text-[28px] font-bold text-[#1E374B] dark:text-white tracking-tight">
+              <h1 className="text-[24px] md:text-[28px] font-bold text-[#020202] dark:text-white tracking-tight">
                 {isAr ? "صفقاتي النشطة" : "My Active Deals"}
               </h1>
               <p className="mt-1 text-[13px] text-slate-600 dark:text-slate-300">
@@ -256,7 +256,7 @@ const CrmDeals: React.FC = () => {
             {!loading && deals.length > 0 && (
               <div className="px-4 py-2.5 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-white/60 dark:border-white/10">
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">{isAr ? "الصفقات" : "Deals"}</p>
-                <p className="text-[22px] font-bold text-[#1E374B] dark:text-white tracking-tight leading-none mt-1" dir="ltr">{deals.length}</p>
+                <p className="text-[22px] font-bold text-[#020202] dark:text-white tracking-tight leading-none mt-1" dir="ltr">{deals.length}</p>
               </div>
             )}
           </div>

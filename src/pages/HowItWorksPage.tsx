@@ -114,9 +114,9 @@ const HowItWorksPage: React.FC = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {platformFeatures.map((f, i) => (
               <div key={i} className="flex items-start gap-3">
-                <f.icon className="w-6 h-6 text-[#2B4C66] shrink-0 mt-0.5" strokeWidth={1.5} />
+                <f.icon className="w-6 h-6 text-[#2B2B2B] shrink-0 mt-0.5" strokeWidth={1.5} />
                 <div>
-                  <h3 className="text-[13px] font-semibold text-[#1E374B] mb-1">{f.title}</h3>
+                  <h3 className="text-[13px] font-semibold text-[#020202] mb-1">{f.title}</h3>
                   <p className="text-[12px] text-gray-500 leading-[1.7]">{f.desc}</p>
                 </div>
               </div>
@@ -129,13 +129,13 @@ const HowItWorksPage: React.FC = () => {
       <section className="py-16 lg:py-20 bg-white" dir={isAr ? "rtl" : "ltr"}>
         <div className="container">
           <div className="text-center mb-14">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 border border-[#2B4C66]/10">
-              <Users className="w-4 h-4 text-[#2B4C66]" strokeWidth={1.5} />
-              <span className="text-[12px] font-semibold text-[#2B4C66] uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 border border-[#2B2B2B]/10">
+              <Users className="w-4 h-4 text-[#2B2B2B]" strokeWidth={1.5} />
+              <span className="text-[12px] font-semibold text-[#2B2B2B] uppercase tracking-wider">
                 {isAr ? "رحلة المالك" : "OWNERS JOURNEY"}
               </span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#020202] mb-4">
               {isAr ? "كيف يبدأ مالك الأرض شراكته التطويرية" : "How a Landowner Starts Their Development Partnership"}
             </h2>
             <p className="text-[15px] text-gray-500 max-w-2xl mx-auto">
@@ -148,10 +148,10 @@ const HowItWorksPage: React.FC = () => {
             {ownerSteps.map((step, i) => (
               <div key={i} className="bg-white rounded-2xl p-8 border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300">
                 <div className="flex items-center gap-3 mb-5">
-                  <step.icon className="w-6 h-6 text-[#2B4C66]" strokeWidth={1.5} />
-                  <span className="text-[24px] font-bold text-[#2B4C66]/10">{step.num}</span>
+                  <step.icon className="w-6 h-6 text-[#2B2B2B]" strokeWidth={1.5} />
+                  <span className="text-[24px] font-bold text-[#2B2B2B]/10">{step.num}</span>
                 </div>
-                <h3 className="text-[15px] font-semibold text-[#1E374B] mb-3">{step.title}</h3>
+                <h3 className="text-[15px] font-semibold text-[#020202] mb-3">{step.title}</h3>
                 <p className="text-[13px] text-gray-500 leading-[1.9]">{step.desc}</p>
               </div>
             ))}
@@ -169,7 +169,7 @@ const HowItWorksPage: React.FC = () => {
                 {isAr ? "رحلة المطور" : "DEVELOPERS JOURNEY"}
               </span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1E374B] mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#020202] mb-4">
               {isAr ? "كيف يبدأ المطور العقاري رحلته في سينا" : "How a Developer Starts Their Journey on SINA"}
             </h2>
             <p className="text-[15px] text-gray-500 max-w-2xl mx-auto">
@@ -185,7 +185,7 @@ const HowItWorksPage: React.FC = () => {
                   <step.icon className="w-6 h-6 text-emerald-600" strokeWidth={1.5} />
                   <span className="text-[24px] font-bold text-emerald-600/10">{step.num}</span>
                 </div>
-                <h3 className="text-[15px] font-semibold text-[#1E374B] mb-3">{step.title}</h3>
+                <h3 className="text-[15px] font-semibold text-[#020202] mb-3">{step.title}</h3>
                 <p className="text-[13px] text-gray-500 leading-[1.9]">{step.desc}</p>
               </div>
             ))}
@@ -194,7 +194,7 @@ const HowItWorksPage: React.FC = () => {
       </section>
 
       {/* Summary */}
-      <section className="py-16 lg:py-20 bg-[#1E374B]" dir={isAr ? "rtl" : "ltr"}>
+      <section className="py-16 lg:py-20 bg-[#020202]" dir={isAr ? "rtl" : "ltr"}>
         <div className="container text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
             {isAr ? "منظومة متكاملة تحمي الجميع" : "A Complete Ecosystem That Protects Everyone"}
@@ -206,15 +206,15 @@ const HowItWorksPage: React.FC = () => {
           </p>
           <div className="grid sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
             <div>
-              <div className="text-3xl font-bold text-[#C2A86B] mb-2">100%</div>
+              <div className="text-3xl font-bold text-[#C45A41] mb-2">100%</div>
               <p className="text-[13px] text-white/50">{isAr ? "حماية للبيانات الحساسة" : "Sensitive Data Protection"}</p>
             </div>
             <div>
-              <div className="text-3xl font-bold text-[#C2A86B] mb-2">6</div>
+              <div className="text-3xl font-bold text-[#C45A41] mb-2">6</div>
               <p className="text-[13px] text-white/50">{isAr ? "خطوات واضحة لكل طرف" : "Clear Steps for Each Party"}</p>
             </div>
             <div>
-              <div className="text-3xl font-bold text-[#C2A86B] mb-2">24/7</div>
+              <div className="text-3xl font-bold text-[#C45A41] mb-2">24/7</div>
               <p className="text-[13px] text-white/50">{isAr ? "متابعة رقمية مستمرة" : "Continuous Digital Tracking"}</p>
             </div>
           </div>

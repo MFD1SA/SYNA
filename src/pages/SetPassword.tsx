@@ -147,10 +147,10 @@ const SetPassword: React.FC = () => {
   return (
     <div
       dir={isAr ? "rtl" : "ltr"}
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0F1F2E] via-[#14283B] to-[#0A1520] p-4"
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#020202] via-[#1A1A1A] to-[#0A1520] p-4"
     >
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <div className="bg-[#0F1F2E] px-8 py-6">
+        <div className="bg-[#020202] px-8 py-6">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center">
               <LockKeyhole className="h-5 w-5 text-white" />
@@ -173,7 +173,7 @@ const SetPassword: React.FC = () => {
             </div>
           ) : !sessionReady ? (
             <div className="flex flex-col items-center gap-3 py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-[#2B4C66]" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#2B2B2B]" />
               <p className="text-[13px] text-gray-500">{isAr ? "جاري التحقق من الدعوة..." : "Verifying invite..."}</p>
             </div>
           ) : (
@@ -237,7 +237,7 @@ const SetPassword: React.FC = () => {
               <Button
                 type="submit"
                 disabled={submitting || !passwordStrong || !match}
-                className="w-full h-11 bg-[#2B4C66] hover:bg-[#1E374B] text-white font-semibold"
+                className="w-full h-11 bg-[#2B2B2B] hover:bg-[#020202] text-white font-semibold"
               >
                 {submitting
                   ? <><Loader2 className="h-4 w-4 animate-spin me-2" />{isAr ? "جاري الحفظ..." : "Saving..."}</>

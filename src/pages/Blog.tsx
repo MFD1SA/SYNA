@@ -229,17 +229,17 @@ const Blog: React.FC = () => {
         <div className="container">
           <div className="flex items-center justify-center gap-8 md:gap-16 text-center">
             <div>
-              <p className="text-2xl font-bold text-[#2B4C66]">6</p>
+              <p className="text-2xl font-bold text-[#2B2B2B]">6</p>
               <p className="text-[12px] text-gray-500">{isAr ? "مقالات متخصصة" : "Specialized Articles"}</p>
             </div>
             <div className="w-px h-8 bg-gray-200" />
             <div>
-              <p className="text-2xl font-bold text-[#2B4C66]">47+</p>
+              <p className="text-2xl font-bold text-[#2B2B2B]">47+</p>
               <p className="text-[12px] text-gray-500">{isAr ? "دقيقة محتوى غني" : "Minutes of Rich Content"}</p>
             </div>
             <div className="w-px h-8 bg-gray-200" />
             <div>
-              <p className="text-2xl font-bold text-[#2B4C66]">
+              <p className="text-2xl font-bold text-[#2B2B2B]">
                 <BookOpen className="w-6 h-6 inline-block" strokeWidth={1.5} />
               </p>
               <p className="text-[12px] text-gray-500">{isAr ? "دليل شامل" : "Complete Guide"}</p>
@@ -254,22 +254,22 @@ const Blog: React.FC = () => {
           <div className="max-w-4xl mx-auto">
             {/* Featured card */}
             <div className="mb-6">
-              <span className="inline-block px-3 py-1 bg-[#C2A86B]/10 text-[#C2A86B] text-[11px] font-bold rounded-full mb-6 tracking-wider">
+              <span className="inline-block px-3 py-1 bg-[#C45A41]/10 text-[#C45A41] text-[11px] font-bold rounded-full mb-6 tracking-wider">
                 {isAr ? "مقال مميز" : "FEATURED"}
               </span>
             </div>
-            <article className="bg-white rounded-2xl border-2 border-[#2B4C66]/10 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
+            <article className="bg-white rounded-2xl border-2 border-[#2B2B2B]/10 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
               <button
                 onClick={() => setExpanded(expanded === featuredArticle.id ? null : featuredArticle.id)}
                 className="w-full text-start p-8 md:p-10"
               >
                 <div className="flex items-start gap-5">
                   <div className="shrink-0 mt-1">
-                    <featuredArticle.icon className="w-8 h-8 text-[#2B4C66]" strokeWidth={1.5} />
+                    <featuredArticle.icon className="w-8 h-8 text-[#2B2B2B]" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="px-2.5 py-0.5 bg-[#2B4C66]/[0.06] text-[#2B4C66] text-[11px] font-medium rounded-md">
+                      <span className="px-2.5 py-0.5 bg-[#2B2B2B]/[0.06] text-[#2B2B2B] text-[11px] font-medium rounded-md">
                         {isAr ? featuredArticle.tag.ar : featuredArticle.tag.en}
                       </span>
                       <span className="flex items-center gap-1 text-[11px] text-gray-400">
@@ -277,7 +277,7 @@ const Blog: React.FC = () => {
                         {isAr ? featuredArticle.readTimeAr : featuredArticle.readTimeEn}
                       </span>
                     </div>
-                    <h2 className="text-[18px] md:text-[22px] font-bold text-[#1E374B] mb-3 leading-snug">
+                    <h2 className="text-[18px] md:text-[22px] font-bold text-[#020202] mb-3 leading-snug">
                       {isAr ? featuredArticle.titleAr : featuredArticle.titleEn}
                     </h2>
                     <p className="text-[14px] text-gray-500 leading-relaxed">
@@ -308,7 +308,7 @@ const Blog: React.FC = () => {
 
             {/* Rest of articles */}
             <div className="mt-12 space-y-5">
-              <h3 className="text-xl font-bold text-[#1E374B] mb-6">
+              <h3 className="text-xl font-bold text-[#020202] mb-6">
                 {isAr ? "جميع المقالات" : "All Articles"}
               </h3>
               {restArticles.map((article) => {
@@ -325,11 +325,11 @@ const Blog: React.FC = () => {
                     >
                       <div className="flex items-start gap-4">
                         <div className="shrink-0 mt-1">
-                          <Icon className="w-6 h-6 text-[#2B4C66]" strokeWidth={1.5} />
+                          <Icon className="w-6 h-6 text-[#2B2B2B]" strokeWidth={1.5} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-3 mb-2">
-                            <span className="px-2.5 py-0.5 bg-[#2B4C66]/[0.06] text-[#2B4C66] text-[11px] font-medium rounded-md">
+                            <span className="px-2.5 py-0.5 bg-[#2B2B2B]/[0.06] text-[#2B2B2B] text-[11px] font-medium rounded-md">
                               {isAr ? article.tag.ar : article.tag.en}
                             </span>
                             <span className="flex items-center gap-1 text-[11px] text-gray-400">
@@ -337,7 +337,7 @@ const Blog: React.FC = () => {
                               {isAr ? article.readTimeAr : article.readTimeEn}
                             </span>
                           </div>
-                          <h2 className="text-[16px] md:text-[18px] font-bold text-[#1E374B] mb-2 leading-snug">
+                          <h2 className="text-[16px] md:text-[18px] font-bold text-[#020202] mb-2 leading-snug">
                             {isAr ? article.titleAr : article.titleEn}
                           </h2>
                           <p className="text-[14px] text-gray-500 leading-relaxed">
@@ -373,7 +373,7 @@ const Blog: React.FC = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-16 lg:py-20 bg-[#1E374B]" dir={isAr ? "rtl" : "ltr"}>
+      <section className="py-16 lg:py-20 bg-[#020202]" dir={isAr ? "rtl" : "ltr"}>
         <div className="container text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
             {isAr ? "مستعد لبدء شراكتك التطويرية" : "Ready to Start Your Development Partnership"}
@@ -386,7 +386,7 @@ const Blog: React.FC = () => {
           <div className="flex flex-wrap justify-center gap-4">
             <a
               href="/auth/login?type=owner"
-              className="inline-flex items-center gap-2.5 h-14 px-10 bg-white text-[#1E374B] text-[15px] font-semibold rounded-xl hover:bg-gray-100 shadow-lg transition-all duration-300"
+              className="inline-flex items-center gap-2.5 h-14 px-10 bg-white text-[#020202] text-[15px] font-semibold rounded-xl hover:bg-gray-100 shadow-lg transition-all duration-300"
             >
               <Landmark className="w-5 h-5" strokeWidth={1.5} />
               {isAr ? "دخول الملاك" : "Owner Login"}

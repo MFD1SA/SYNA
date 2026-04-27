@@ -31,13 +31,13 @@ export const DashboardShell: React.FC<Props> = ({ children, isAr, className, acc
         <div
           className={cn(
             "absolute -top-24 -end-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-40 dark:opacity-25",
-            accent === "gold" ? "bg-[#C2A86B]/30" : "bg-[#2B4C66]/25",
+            accent === "gold" ? "bg-[#C45A41]/30" : "bg-[#2B2B2B]/25",
           )}
         />
         <div
           className={cn(
             "absolute top-1/3 -start-32 w-[360px] h-[360px] rounded-full blur-3xl opacity-30 dark:opacity-20",
-            accent === "gold" ? "bg-[#2B4C66]/25" : "bg-[#C2A86B]/30",
+            accent === "gold" ? "bg-[#2B2B2B]/25" : "bg-[#C45A41]/30",
           )}
         />
       </div>

@@ -123,14 +123,14 @@ const CrmMyRequests: React.FC = () => {
       <DashboardShell isAr={isAr} accent="blue">
         {/* ═══ HERO ═══ */}
         <BentoCard variant="hero" span="full" padding="lg" className="relative overflow-hidden mb-5">
-          <div className="absolute top-0 end-0 w-60 h-60 bg-[#2B4C66]/10 rounded-full blur-3xl -me-20 -mt-20 pointer-events-none" />
+          <div className="absolute top-0 end-0 w-60 h-60 bg-[#2B2B2B]/10 rounded-full blur-3xl -me-20 -mt-20 pointer-events-none" />
           <div className="relative flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#2B4C66]/25 dark:border-[#7BA3C5]/35 text-[11px] font-semibold text-[#2B4C66] dark:text-[#9CC3DD] mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#2B2B2B]/25 dark:border-[#7BA3C5]/35 text-[11px] font-semibold text-[#2B2B2B] dark:text-[#9CC3DD] mb-2">
                 <Send className="w-3 h-3" strokeWidth={1.7} />
                 {isAr ? "طلباتي" : "My Requests"}
               </span>
-              <h1 className="text-[24px] md:text-[28px] font-bold text-[#1E374B] dark:text-white tracking-tight">
+              <h1 className="text-[24px] md:text-[28px] font-bold text-[#020202] dark:text-white tracking-tight">
                 {isAr ? "تقديماتي للشراكة" : "Partnership Submissions"}
               </h1>
               <p className="mt-1 text-[13px] text-slate-600 dark:text-slate-300">
@@ -140,7 +140,7 @@ const CrmMyRequests: React.FC = () => {
             {!loading && requests.length > 0 && (
               <div className="px-4 py-2.5 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-white/60 dark:border-white/10">
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">{isAr ? "الإجمالي" : "Total"}</p>
-                <p className="text-[22px] font-bold text-[#1E374B] dark:text-white tracking-tight leading-none mt-1" dir="ltr">{requests.length}</p>
+                <p className="text-[22px] font-bold text-[#020202] dark:text-white tracking-tight leading-none mt-1" dir="ltr">{requests.length}</p>
               </div>
             )}
           </div>

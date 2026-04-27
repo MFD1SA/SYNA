@@ -21,7 +21,7 @@ const HeroSection: React.FC = () => {
 
   return (
     <section
-      className="relative bg-[#0F1F2E] overflow-hidden isolate"
+      className="relative bg-[#020202] overflow-hidden isolate"
       dir={isAr ? "rtl" : "ltr"}
     >
       {/* Full-bleed background image — covers the entire hero */}
@@ -38,17 +38,17 @@ const HeroSection: React.FC = () => {
       <div
         className={`absolute inset-0 pointer-events-none ${
           isAr
-            ? "bg-gradient-to-l from-[#0F1F2E]/85 via-[#0F1F2E]/55 to-transparent"
-            : "bg-gradient-to-r from-[#0F1F2E]/85 via-[#0F1F2E]/55 to-transparent"
+            ? "bg-gradient-to-l from-[#020202]/85 via-[#020202]/55 to-transparent"
+            : "bg-gradient-to-r from-[#020202]/85 via-[#020202]/55 to-transparent"
         }`}
       />
       {/* Gentle bottom fade for section edge */}
-      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0F1F2E]/70 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#020202]/70 to-transparent pointer-events-none" />
 
       {/* Content */}
       <div className="container relative z-10 pt-28 md:pt-36 lg:pt-44 pb-20 md:pb-28 lg:pb-36 min-h-[calc(100vh-72px)] flex items-center">
         <div className="max-w-2xl">
-          <h1 className="text-[34px] sm:text-[44px] md:text-[56px] lg:text-[66px] font-bold text-white leading-[1.1] tracking-tight mb-5 md:mb-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]">
+          <h1 className={`text-[34px] sm:text-[44px] md:text-[56px] lg:text-[66px] font-bold text-white leading-[1.1] tracking-tight mb-5 md:mb-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)] ${isAr ? "" : "font-display"}`}>
             {t.hero.title}
           </h1>
 
@@ -60,9 +60,9 @@ const HeroSection: React.FC = () => {
           <div className="mt-8 md:mt-10 flex flex-col sm:flex-row gap-3">
             <button
               onClick={() => navigate("/auth/login?type=owner")}
-              className="group inline-flex items-center justify-center gap-2.5 h-[54px] px-7 bg-white text-[#1E374B] text-[14px] font-bold rounded-xl shadow-[0_10px_30px_-10px_rgba(255,255,255,0.35)] hover:bg-white/95 hover:-translate-y-0.5 transition-all duration-300"
+              className="group inline-flex items-center justify-center gap-2.5 h-[54px] px-7 bg-white text-[#020202] text-[14px] font-bold rounded-xl shadow-[0_10px_30px_-10px_rgba(255,255,255,0.35)] hover:bg-white/95 hover:-translate-y-0.5 transition-all duration-300"
             >
-              <Crown className="w-4 h-4 text-[#A88A4A]" strokeWidth={2} />
+              <Crown className="w-4 h-4 text-[#A24832]" strokeWidth={2} />
               {isAr ? "دخول الملاك" : "Owner Login"}
               <Arrow className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
             </button>

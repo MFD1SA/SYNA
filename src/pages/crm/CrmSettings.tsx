@@ -144,7 +144,7 @@ function generateAgreementPdf(
   const sinaLogoUrl = `${window.location.origin}${logoImg}`;
   const devLogoBlock = developerLogoUrl
     ? `<img src="${escAttr(developerLogoUrl)}" alt="${escAttr(companyName)}" style="width:100%;height:100%;object-fit:contain;padding:4px;" />`
-    : `<div style="font-size:18px;font-weight:700;color:#C2A86B;">${escAttr(companyName.charAt(0).toUpperCase())}</div>`;
+    : `<div style="font-size:18px;font-weight:700;color:#C45A41;">${escAttr(companyName.charAt(0).toUpperCase())}</div>`;
 
   // Localised number formatter for percentages — Arabic-Indic numerals
   // would break the print layout in many PDF viewers, so we always use
@@ -331,7 +331,7 @@ function generateAgreementPdf(
       padding: 48px 56px 56px;
       box-shadow: 0 6px 32px -10px rgba(15, 31, 46, 0.18);
       position: relative;
-      border: 2px solid #1E374B;
+      border: 2px solid #020202;
       border-radius: 4px;
     }
     /* Inner gold border line */
@@ -339,7 +339,7 @@ function generateAgreementPdf(
       content: "";
       position: absolute;
       inset: 8px;
-      border: 1px solid #C2A86B;
+      border: 1px solid #C45A41;
       pointer-events: none;
       border-radius: 2px;
     }
@@ -368,7 +368,7 @@ function generateAgreementPdf(
       gap: 16px;
       padding-bottom: 18px;
       margin-bottom: 22px;
-      border-bottom: 2px solid #1E374B;
+      border-bottom: 2px solid #020202;
     }
     .logo-wrap {
       display: flex;
@@ -379,7 +379,7 @@ function generateAgreementPdf(
       width: 56px;
       height: 56px;
       border-radius: 12px;
-      background: linear-gradient(135deg, #2B4C66, #1E374B);
+      background: linear-gradient(135deg, #2B2B2B, #020202);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -409,13 +409,13 @@ function generateAgreementPdf(
       color: #64748B;
       line-height: 1.7;
     }
-    .ref-bar .ref-key { color: #1E374B; font-weight: 700; font-size: 11px; }
+    .ref-bar .ref-key { color: #020202; font-weight: 700; font-size: 11px; }
 
     /* Title block */
     .title-block { text-align: center; margin-bottom: 28px; }
     .title-block h1 {
       font-size: 22px;
-      color: #1E374B;
+      color: #020202;
       font-weight: 700;
       margin-bottom: 6px;
       letter-spacing: ${isAr ? "0" : "-0.01em"};
@@ -444,7 +444,7 @@ function generateAgreementPdf(
       font-weight: 600;
       border: 1px solid;
     }
-    .pill-blue { background: rgba(43, 76, 102, 0.06); color: #2B4C66; border-color: rgba(43, 76, 102, 0.18); }
+    .pill-blue { background: rgba(43, 76, 102, 0.06); color: #2B2B2B; border-color: rgba(43, 76, 102, 0.18); }
     .pill-gold { background: rgba(194, 168, 107, 0.10); color: #8B6F2F; border-color: rgba(194, 168, 107, 0.32); }
     .pill-emerald { background: #ECFDF5; color: #065F46; border-color: #A7F3D0; }
     .pill-amber { background: #FFFBEB; color: #92400E; border-color: #FDE68A; }
@@ -475,7 +475,7 @@ function generateAgreementPdf(
     .party .name {
       font-size: 14px;
       font-weight: 700;
-      color: #1E374B;
+      color: #020202;
       line-height: 1.35;
     }
     .party .meta-line {
@@ -496,7 +496,7 @@ function generateAgreementPdf(
     .fees h2 {
       font-size: 13px;
       font-weight: 700;
-      color: #1E374B;
+      color: #020202;
       margin-bottom: 12px;
       letter-spacing: 0.02em;
     }
@@ -508,20 +508,20 @@ function generateAgreementPdf(
       font-size: 13px;
     }
     .fees-row .lbl { color: #475569; }
-    .fees-row .val { font-weight: 700; color: #1E374B; }
+    .fees-row .val { font-weight: 700; color: #020202; }
     .fees-total {
       border-top: 1px dashed #CBD5E1;
       margin-top: 6px;
       padding-top: 10px;
       font-size: 15px;
     }
-    .fees-total .lbl { font-weight: 700; color: #1E374B; }
-    .fees-total .val { color: #2B4C66; font-size: 18px; font-weight: 700; }
+    .fees-total .lbl { font-weight: 700; color: #020202; }
+    .fees-total .val { color: #2B2B2B; font-size: 18px; font-weight: 700; }
     .fees-note {
       margin-top: 12px;
       padding: 10px 12px;
       background: rgba(43, 76, 102, 0.04);
-      border-${isAr ? "right" : "left"}: 3px solid #2B4C66;
+      border-${isAr ? "right" : "left"}: 3px solid #2B2B2B;
       border-radius: 6px;
       font-size: 11.5px;
       color: #334155;
@@ -533,8 +533,8 @@ function generateAgreementPdf(
     .articles .art-h {
       font-size: 14px;
       font-weight: 700;
-      color: #1E374B;
-      border-${isAr ? "right" : "left"}: 4px solid #2B4C66;
+      color: #020202;
+      border-${isAr ? "right" : "left"}: 4px solid #2B2B2B;
       padding-${isAr ? "right" : "left"}: 14px;
       margin: 22px 0 10px;
       page-break-after: avoid;
@@ -542,8 +542,8 @@ function generateAgreementPdf(
     .articles p { margin: 6px 0; text-align: ${isAr ? "right" : "left"}; }
     .articles .indent { padding-${isAr ? "right" : "left"}: 18px; }
     .articles .note { font-size: 11.5px; color: #64748B; font-style: italic; margin-top: 6px; }
-    .articles strong { color: #1E374B; }
-    .articles .rate { color: #2B4C66; font-weight: 700; background: rgba(43, 76, 102, 0.06); padding: 1px 6px; border-radius: 4px; }
+    .articles strong { color: #020202; }
+    .articles .rate { color: #2B2B2B; font-weight: 700; background: rgba(43, 76, 102, 0.06); padding: 1px 6px; border-radius: 4px; }
 
     /* Signature blocks */
     .signatures {
@@ -571,13 +571,13 @@ function generateAgreementPdf(
     .sig .sig-name {
       font-size: 14px;
       font-weight: 700;
-      color: #1E374B;
+      color: #020202;
       margin-bottom: 4px;
     }
     .sig .sig-sub { font-size: 11px; color: #64748B; }
     .sig .sig-line {
       margin-top: 36px;
-      border-top: 1px solid #1E374B;
+      border-top: 1px solid #020202;
       padding-top: 6px;
       font-size: 10.5px;
       color: #64748B;
@@ -629,17 +629,17 @@ function generateAgreementPdf(
       font-weight: 600;
       border: 1px solid #E2E8F0;
       background: #fff;
-      color: #1E374B;
+      color: #020202;
       transition: all 0.2s;
       font-family: inherit;
     }
-    .btn:hover { border-color: #2B4C66; background: rgba(43, 76, 102, 0.04); }
+    .btn:hover { border-color: #2B2B2B; background: rgba(43, 76, 102, 0.04); }
     .btn-primary {
-      background: linear-gradient(135deg, #2B4C66, #1E374B);
+      background: linear-gradient(135deg, #2B2B2B, #020202);
       color: #fff;
       border-color: transparent;
     }
-    .btn-primary:hover { background: linear-gradient(135deg, #1E374B, #142A3F); }
+    .btn-primary:hover { background: linear-gradient(135deg, #020202, #142A3F); }
 
     /* Print rules */
     @media print {
@@ -654,7 +654,7 @@ function generateAgreementPdf(
         padding: 28px 32px 36px !important;
         page-break-inside: auto;
       }
-      .doc::before { border: 1px solid #C2A86B !important; }
+      .doc::before { border: 1px solid #C45A41 !important; }
       .doc::after { color: rgba(43, 76, 102, 0.04) !important; }
       .articles .art-h { page-break-after: avoid; }
       .signatures { page-break-inside: avoid; }
@@ -674,7 +674,7 @@ function generateAgreementPdf(
       <div class="logo-wrap">
         <div class="logo-sina"><img src="${escAttr(sinaLogoUrl)}" alt="SINA" onerror="this.style.display='none'" /></div>
         <div>
-          <div style="font-size:14px;font-weight:700;color:#1E374B;">${isAr ? "سينا للتطوير العقاري" : "SINA Real Estate Development"}</div>
+          <div style="font-size:14px;font-weight:700;color:#020202;">${isAr ? "سينا للتطوير العقاري" : "SINA Real Estate Development"}</div>
           <div style="font-size:10.5px;color:#94A3B8;letter-spacing:0.04em;">${isAr ? "مشغّل ومدير الخدمات العقارية" : "Real Estate Services Operator"}</div>
         </div>
       </div>
@@ -1179,7 +1179,7 @@ const CrmSettings: React.FC = () => {
             <div className="rounded-2xl border border-gray-200/60 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 shadow-sm">
               <div className="mb-5 flex items-center justify-between">
                 <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <Building2 className="h-4 w-4 text-[#2B4C66]" strokeWidth={1.5} />
+                  <Building2 className="h-4 w-4 text-[#2B2B2B]" strokeWidth={1.5} />
                   {isAr ? "بيانات الشركة" : "Company Information"}
                 </h3>
                 {developer && statusBadge(developer.verification_status)}
@@ -1305,7 +1305,7 @@ const CrmSettings: React.FC = () => {
                       <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-gray-50/60 px-3 py-2.5">
                         <LockKeyhole className="h-3.5 w-3.5 text-gray-300 shrink-0" />
                         <span className="text-sm text-foreground flex-1" dir="ltr">{developer.website}</span>
-                        <a href={developer.website!} target="_blank" rel="noopener noreferrer" className="text-[#2B4C66] hover:text-[#1E374B]">
+                        <a href={developer.website!} target="_blank" rel="noopener noreferrer" className="text-[#2B2B2B] hover:text-[#020202]">
                           <ExternalLink className="h-3.5 w-3.5" />
                         </a>
                       </div>
@@ -1319,7 +1319,7 @@ const CrmSettings: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <Input value={websiteInput} onChange={(e) => setWebsiteInput(e.target.value)} placeholder="https://example.com" className="flex-1" dir="ltr" />
                         {normalizeWebsite(websiteInput) && (
-                          <a href={normalizeWebsite(websiteInput)!} target="_blank" rel="noopener noreferrer" className="shrink-0 text-[#2B4C66] hover:text-[#1E374B]">
+                          <a href={normalizeWebsite(websiteInput)!} target="_blank" rel="noopener noreferrer" className="shrink-0 text-[#2B2B2B] hover:text-[#020202]">
                             <ExternalLink className="h-4 w-4" />
                           </a>
                         )}
@@ -1345,7 +1345,7 @@ const CrmSettings: React.FC = () => {
                       onClick={handleSaveProfile}
                       disabled={savingProfile}
                       variant="outline"
-                      className="w-full mt-2 border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 hover:text-[#1E374B] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10"
+                      className="w-full mt-2 border-[#2B2B2B]/30 text-[#2B2B2B] hover:bg-[#2B2B2B]/5 hover:text-[#020202] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10"
                     >
                       {savingProfile ? (
                         <><Loader2 className="h-4 w-4 animate-spin me-2" strokeWidth={1.6} />{isAr ? "جاري الحفظ..." : "Saving..."}</>
@@ -1373,14 +1373,14 @@ const CrmSettings: React.FC = () => {
               {/* Documents */}
               <div className="rounded-2xl border border-gray-200/60 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 shadow-sm">
                 <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <FileText className="h-4 w-4 text-[#2B4C66]" strokeWidth={1.5} />
+                  <FileText className="h-4 w-4 text-[#2B2B2B]" strokeWidth={1.5} />
                   {isAr ? "المستندات المرفقة" : "Attached Documents"}
                 </h3>
 
                 <div className="flex items-center justify-between rounded-xl border border-border/40 dark:border-slate-800 p-3 transition-colors hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#2B4C66]/15 dark:border-[#7BA3C5]/30 bg-transparent">
-                      <FileText className="h-[18px] w-[18px] text-[#2B4C66] dark:text-[#9CC3DD]" strokeWidth={1.6} />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#2B2B2B]/15 dark:border-[#7BA3C5]/30 bg-transparent">
+                      <FileText className="h-[18px] w-[18px] text-[#2B2B2B] dark:text-[#9CC3DD]" strokeWidth={1.6} />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">{isAr ? "السجل التجاري" : "Commercial Registration"}</p>
@@ -1389,7 +1389,7 @@ const CrmSettings: React.FC = () => {
                   </div>
                   {crSignedUrl ? (
                     <a href={crSignedUrl} target="_blank" rel="noopener noreferrer">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-[#2B4C66] dark:hover:text-[#9CC3DD]">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-[#2B2B2B] dark:hover:text-[#9CC3DD]">
                         <Download className="h-4 w-4" strokeWidth={1.6} />
                       </Button>
                     </a>
@@ -1402,7 +1402,7 @@ const CrmSettings: React.FC = () => {
               {/* Password Change */}
               <div className="rounded-2xl border border-gray-200/60 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 shadow-sm">
                 <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <Lock className="h-4 w-4 text-[#2B4C66]" strokeWidth={1.5} />
+                  <Lock className="h-4 w-4 text-[#2B2B2B]" strokeWidth={1.5} />
                   {isAr ? "تغيير كلمة المرور" : "Change Password"}
                 </h3>
 
@@ -1450,7 +1450,7 @@ const CrmSettings: React.FC = () => {
                     onClick={handlePasswordChange}
                     disabled={!password || !confirmPassword || savingPassword}
                     variant="outline"
-                    className="w-full border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 hover:text-[#1E374B] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10"
+                    className="w-full border-[#2B2B2B]/30 text-[#2B2B2B] hover:bg-[#2B2B2B]/5 hover:text-[#020202] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10"
                   >
                     {savingPassword ? (
                       <><Loader2 className="h-4 w-4 animate-spin me-2" strokeWidth={1.6} />{isAr ? "جاري الحفظ..." : "Saving..."}</>
@@ -1465,7 +1465,7 @@ const CrmSettings: React.FC = () => {
               {agreement && (
                 <div className="rounded-2xl border border-gray-200/60 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 shadow-sm">
                   <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <Scale className="h-4 w-4 text-[#2B4C66]" strokeWidth={1.5} />
+                    <Scale className="h-4 w-4 text-[#2B2B2B]" strokeWidth={1.5} />
                     {isAr ? "اتفاقية الخدمات والأتعاب" : "Services & Fees Agreement"}
                   </h3>
 
@@ -1497,7 +1497,7 @@ const CrmSettings: React.FC = () => {
                       </div>
                       <div className="border-t border-border/40 dark:border-slate-800 pt-2 flex justify-between text-xs">
                         <span className="font-bold text-foreground">{isAr ? "الإجمالي" : "Total"}</span>
-                        <span className="font-bold text-[#2B4C66] dark:text-[#9CC3DD]" dir="ltr">{agreement.commission_total}%</span>
+                        <span className="font-bold text-[#2B2B2B] dark:text-[#9CC3DD]" dir="ltr">{agreement.commission_total}%</span>
                       </div>
                     </div>
 
@@ -1522,7 +1522,7 @@ const CrmSettings: React.FC = () => {
                     {/* Download as PDF — outline */}
                     <Button
                       variant="outline"
-                      className="w-full border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 hover:text-[#1E374B] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10"
+                      className="w-full border-[#2B2B2B]/30 text-[#2B2B2B] hover:bg-[#2B2B2B]/5 hover:text-[#020202] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10"
                       onClick={() => generateAgreementPdf(agreement, developer, logoUrl, isAr)}
                     >
                       <Download className="h-4 w-4 me-2" strokeWidth={1.6} />

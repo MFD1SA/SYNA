@@ -63,7 +63,7 @@ const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileNavOpen(true)}
-              className="lg:hidden h-9 w-9 rounded-xl bg-[#2B4C66]/5 hover:bg-[#2B4C66]/10 text-[#1E374B] dark:bg-white/5 dark:text-white flex items-center justify-center transition-colors"
+              className="lg:hidden h-9 w-9 rounded-xl bg-[#2B2B2B]/5 hover:bg-[#2B2B2B]/10 text-[#020202] dark:bg-white/5 dark:text-white flex items-center justify-center transition-colors"
               aria-label="Open menu"
             >
               <Menu className="h-4 w-4" strokeWidth={2} />
@@ -77,7 +77,7 @@ const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <ThemeToggle />
             <Link
               to="/crm/settings"
-              className="hidden sm:flex h-9 w-9 rounded-full items-center justify-center text-slate-400 hover:text-[#2B4C66] hover:bg-[#2B4C66]/10 dark:hover:bg-white/5 transition-colors"
+              className="hidden sm:flex h-9 w-9 rounded-full items-center justify-center text-slate-400 hover:text-[#2B2B2B] hover:bg-[#2B2B2B]/10 dark:hover:bg-white/5 transition-colors"
               title={isAr ? "الإعدادات" : "Settings"}
             >
               <SlidersHorizontal className="h-4 w-4" strokeWidth={1.5} />

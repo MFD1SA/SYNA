@@ -151,11 +151,11 @@ const AdminSeoPageDetail: React.FC = () => {
       <div className="rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-white/10 p-5">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="min-w-0 flex-1">
-            <Link to="/admincp/seo/pages" className="inline-flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-[#2B4C66] mb-2">
+            <Link to="/admincp/seo/pages" className="inline-flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-[#2B2B2B] mb-2">
               <Arrow className="w-3.5 h-3.5" strokeWidth={2} />
               {isAr ? "العودة للصفحات" : "Back to pages"}
             </Link>
-            <h2 className="text-[18px] font-bold text-[#1E374B] dark:text-white truncate">{page.title}</h2>
+            <h2 className="text-[18px] font-bold text-[#020202] dark:text-white truncate">{page.title}</h2>
             <p className="text-[12px] font-mono text-slate-400 truncate mt-0.5" dir="ltr">{page.slug}</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
@@ -188,7 +188,7 @@ const AdminSeoPageDetail: React.FC = () => {
               <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                 {isAr ? "درجة الجودة" : "Quality score"}
               </span>
-              <span className="text-[13px] font-bold text-[#1E374B] dark:text-white" dir="ltr">
+              <span className="text-[13px] font-bold text-[#020202] dark:text-white" dir="ltr">
                 {quality.score} / 100
               </span>
             </div>
@@ -283,7 +283,7 @@ const AdminSeoPageDetail: React.FC = () => {
             <button
               onClick={handleSave}
               disabled={!dirty || saving}
-              className="w-full h-10 rounded-xl bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[13px] font-bold inline-flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full h-10 rounded-xl bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white text-[13px] font-bold inline-flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               {isAr ? "حفظ التعديلات" : "Save changes"}
@@ -328,7 +328,7 @@ const AdminSeoPageDetail: React.FC = () => {
                 onChange={(e) => patch({ noindex: e.target.checked })}
               />
               {page.noindex ? <EyeOff className="w-4 h-4 text-rose-600" /> : <Eye className="w-4 h-4 text-slate-400" />}
-              <span className="text-[13px] text-[#1E374B] dark:text-white font-semibold">Noindex</span>
+              <span className="text-[13px] text-[#020202] dark:text-white font-semibold">Noindex</span>
             </label>
             <label className="flex items-center gap-2 py-2 cursor-pointer">
               <input
@@ -336,7 +336,7 @@ const AdminSeoPageDetail: React.FC = () => {
                 checked={page.nofollow}
                 onChange={(e) => patch({ nofollow: e.target.checked })}
               />
-              <span className="text-[13px] text-[#1E374B] dark:text-white font-semibold">Nofollow</span>
+              <span className="text-[13px] text-[#020202] dark:text-white font-semibold">Nofollow</span>
             </label>
 
             <button
@@ -399,8 +399,8 @@ const AdminSeoPageDetail: React.FC = () => {
 
 const Section: React.FC<{ title: string; icon?: React.ElementType; children: React.ReactNode }> = ({ title, icon: Icon, children }) => (
   <div className="rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-white/10 p-5">
-    <h3 className="flex items-center gap-2 text-[14px] font-bold text-[#1E374B] dark:text-white mb-4">
-      {Icon && <Icon className="w-4 h-4 text-[#2B4C66]" strokeWidth={1.8} />}
+    <h3 className="flex items-center gap-2 text-[14px] font-bold text-[#020202] dark:text-white mb-4">
+      {Icon && <Icon className="w-4 h-4 text-[#2B2B2B]" strokeWidth={1.8} />}
       {title}
     </h3>
     <div className="space-y-3">{children}</div>

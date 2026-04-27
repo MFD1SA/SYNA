@@ -112,14 +112,14 @@ const AdminSeoIssues: React.FC = () => {
     <div className="space-y-4">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-[16px] font-bold text-[#1E374B] dark:text-white">
+        <h2 className="text-[16px] font-bold text-[#020202] dark:text-white">
           {isAr ? "مشاكل الجودة المكتشفة" : "Detected Quality Issues"}
         </h2>
         <div className="flex items-center gap-3">
           <label className="inline-flex items-center gap-2 text-[12px] text-slate-500 dark:text-slate-300">
             <input
               type="checkbox"
-              className="accent-[#2B4C66]"
+              className="accent-[#2B2B2B]"
               checked={showResolved}
               onChange={(e) => setShowResolved(e.target.checked)}
             />
@@ -129,7 +129,7 @@ const AdminSeoIssues: React.FC = () => {
             <button
               onClick={handleResolveAllFiltered}
               disabled={bulkBusy}
-              className="h-9 px-3 rounded-lg text-[12px] font-semibold text-[#2B4C66] dark:text-[#9BBEDB] border border-[#2B4C66]/20 dark:border-[#2B4C66]/40 hover:bg-[#2B4C66]/5 dark:hover:bg-white/5 disabled:opacity-50"
+              className="h-9 px-3 rounded-lg text-[12px] font-semibold text-[#2B2B2B] dark:text-[#9BBEDB] border border-[#2B2B2B]/20 dark:border-[#2B2B2B]/40 hover:bg-[#2B2B2B]/5 dark:hover:bg-white/5 disabled:opacity-50"
             >
               {isAr ? `حلّ جميع غير المحلولة (${allUnresolvedIds.length})` : `Resolve all unresolved (${allUnresolvedIds.length})`}
             </button>
@@ -139,8 +139,8 @@ const AdminSeoIssues: React.FC = () => {
 
       {/* Bulk action bar — shows only when selections exist */}
       {selected.size > 0 && (
-        <div className="flex items-center justify-between gap-3 rounded-xl bg-[#2B4C66]/5 dark:bg-[#2B4C66]/15 border border-[#2B4C66]/20 dark:border-[#2B4C66]/30 px-4 py-2.5">
-          <p className="text-[12.5px] font-semibold text-[#1E374B] dark:text-white">
+        <div className="flex items-center justify-between gap-3 rounded-xl bg-[#2B2B2B]/5 dark:bg-[#2B2B2B]/15 border border-[#2B2B2B]/20 dark:border-[#2B2B2B]/30 px-4 py-2.5">
+          <p className="text-[12.5px] font-semibold text-[#020202] dark:text-white">
             {isAr ? `${selected.size} مشكلة محددة` : `${selected.size} selected`}
           </p>
           <div className="flex items-center gap-2">
@@ -153,7 +153,7 @@ const AdminSeoIssues: React.FC = () => {
             <button
               onClick={handleBulkResolve}
               disabled={bulkBusy}
-              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-bold bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-bold bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white disabled:opacity-60"
             >
               {bulkBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
               {isAr ? "حلّ المحدد" : "Resolve selected"}
@@ -168,7 +168,7 @@ const AdminSeoIssues: React.FC = () => {
           <div className="flex items-center gap-3 px-4 py-2.5 bg-slate-50/60 dark:bg-white/[0.03] border-b border-slate-100 dark:border-white/5">
             <input
               type="checkbox"
-              className="accent-[#2B4C66]"
+              className="accent-[#2B2B2B]"
               checked={allSelected}
               ref={(el) => { if (el) el.indeterminate = someSelected; }}
               onChange={toggleAll}
@@ -197,7 +197,7 @@ const AdminSeoIssues: React.FC = () => {
                 <li
                   key={i.id}
                   className={`px-4 py-3 flex items-start gap-3 transition-colors ${
-                    isChecked ? "bg-[#2B4C66]/[0.03] dark:bg-[#2B4C66]/10" : "hover:bg-slate-50/60 dark:hover:bg-white/[0.02]"
+                    isChecked ? "bg-[#2B2B2B]/[0.03] dark:bg-[#2B2B2B]/10" : "hover:bg-slate-50/60 dark:hover:bg-white/[0.02]"
                   }`}
                 >
                   {!i.is_resolved && (
@@ -205,7 +205,7 @@ const AdminSeoIssues: React.FC = () => {
                       type="checkbox"
                       checked={isChecked}
                       onChange={() => toggleOne(i.id)}
-                      className="mt-2 accent-[#2B4C66] shrink-0"
+                      className="mt-2 accent-[#2B2B2B] shrink-0"
                     />
                   )}
                   <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${

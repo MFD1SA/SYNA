@@ -319,7 +319,7 @@ const AdminOffers: React.FC = () => {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="text-[13px] font-semibold text-gray-800 dark:text-white truncate">{isAr ? offer.title_ar : offer.title_en}</p>
-                    <Badge variant="outline" className={`text-[9px] shrink-0 ${offer.type === "partnership" ? "border-[#2B4C66]/20 text-[#2B4C66] dark:text-[#9BBEDB]" : "border-emerald-200 text-emerald-600 dark:text-emerald-400"}`}>
+                    <Badge variant="outline" className={`text-[9px] shrink-0 ${offer.type === "partnership" ? "border-[#2B2B2B]/20 text-[#2B2B2B] dark:text-[#9BBEDB]" : "border-emerald-200 text-emerald-600 dark:text-emerald-400"}`}>
                       {typeLabel(offer.type)}
                     </Badge>
                   </div>
@@ -447,7 +447,7 @@ const AdminOffers: React.FC = () => {
                         </div>
                       </div>
                     ) : (
-                      <button type="button" onClick={() => imageInputRef.current?.click()} disabled={uploading} className="mt-1 w-full h-24 rounded-lg border-2 border-dashed border-gray-200 hover:border-[#2B4C66]/30 transition-colors flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:text-[#2B4C66]">
+                      <button type="button" onClick={() => imageInputRef.current?.click()} disabled={uploading} className="mt-1 w-full h-24 rounded-lg border-2 border-dashed border-gray-200 hover:border-[#2B2B2B]/30 transition-colors flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:text-[#2B2B2B]">
                         {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <ImageIcon className="h-5 w-5" />}
                         <span className="text-[10px]">{uploading ? (isAr ? "جارٍ الرفع..." : "Uploading...") : (isAr ? "اضغط لرفع صورة" : "Click to upload image")}</span>
                       </button>

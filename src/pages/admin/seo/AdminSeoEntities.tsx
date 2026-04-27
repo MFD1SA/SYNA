@@ -113,7 +113,7 @@ const AdminSeoEntities: React.FC = () => {
           <button
             key={t.key}
             onClick={() => setActiveTab(t.key)}
-            className={`h-9 px-3.5 rounded-xl text-[12.5px] font-semibold transition-all ${activeTab === t.key ? "bg-white dark:bg-slate-800 text-[#1E374B] dark:text-white shadow-[0_2px_8px_-4px_rgba(15,31,46,0.15)]" : "text-slate-500 hover:text-[#1E374B] dark:hover:text-white"}`}
+            className={`h-9 px-3.5 rounded-xl text-[12.5px] font-semibold transition-all ${activeTab === t.key ? "bg-white dark:bg-slate-800 text-[#020202] dark:text-white shadow-[0_2px_8px_-4px_rgba(15,31,46,0.15)]" : "text-slate-500 hover:text-[#020202] dark:hover:text-white"}`}
           >
             {isAr ? t.ar : t.en}
           </button>
@@ -145,7 +145,7 @@ const AdminSeoEntities: React.FC = () => {
           />
           <button
             onClick={handleCreate}
-            className="h-10 rounded-xl bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[13px] font-bold inline-flex items-center justify-center gap-2 shadow-[0_4px_12px_-4px_rgba(43,76,102,0.45)]"
+            className="h-10 rounded-xl bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white text-[13px] font-bold inline-flex items-center justify-center gap-2 shadow-[0_4px_12px_-4px_rgba(43,76,102,0.45)]"
           >
             <Plus className="w-4 h-4" />
             {isAr ? "إضافة" : "Add"}
@@ -176,7 +176,7 @@ const AdminSeoEntities: React.FC = () => {
                 {rows.map((r) => (
                   <tr key={r.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02]">
                     <td className="px-4 py-3 font-mono text-[12px] text-slate-500" dir="ltr">{r.slug}</td>
-                    <td className="px-4 py-3 font-semibold text-[#1E374B] dark:text-white">{r.name_ar}</td>
+                    <td className="px-4 py-3 font-semibold text-[#020202] dark:text-white">{r.name_ar}</td>
                     <td className="px-4 py-3 text-slate-600 dark:text-slate-300" dir="ltr">{r.name_en}</td>
                     <td className="px-4 py-3 text-center">
                       <button

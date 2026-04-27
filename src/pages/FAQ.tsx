@@ -67,17 +67,17 @@ const FAQ: React.FC = () => {
         <div className="container relative">
           <div className="flex items-center justify-center gap-10 md:gap-20 text-center">
             <div>
-              <p className="text-3xl font-bold text-[#2B4C66] tracking-tight">{items.length}+</p>
+              <p className="text-3xl font-bold text-[#2B2B2B] tracking-tight">{items.length}+</p>
               <p className="text-[12px] text-slate-500 mt-1">{isAr ? "سؤال وجواب" : "Questions & Answers"}</p>
             </div>
             <div className="w-px h-10 bg-gradient-to-b from-transparent via-slate-200 to-transparent" />
             <div>
-              <p className="text-3xl font-bold text-[#2B4C66] tracking-tight">{catKeys.length}</p>
+              <p className="text-3xl font-bold text-[#2B2B2B] tracking-tight">{catKeys.length}</p>
               <p className="text-[12px] text-slate-500 mt-1">{isAr ? "تصنيفات" : "Categories"}</p>
             </div>
             <div className="w-px h-10 bg-gradient-to-b from-transparent via-slate-200 to-transparent" />
             <div>
-              <HelpCircle className="w-6 h-6 text-[#2B4C66] mx-auto" strokeWidth={1.7} />
+              <HelpCircle className="w-6 h-6 text-[#2B2B2B] mx-auto" strokeWidth={1.7} />
               <p className="text-[12px] text-slate-500 mt-1">{isAr ? "إجابات مفصلة" : "Detailed Answers"}</p>
             </div>
           </div>
@@ -85,8 +85,8 @@ const FAQ: React.FC = () => {
       </section>
 
       <section className="relative py-20 lg:py-24 bg-white overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
-        <div className="absolute top-40 end-[-140px] w-[440px] h-[440px] rounded-full bg-[#2B4C66]/[0.05] blur-3xl pointer-events-none" />
-        <div className="absolute bottom-40 start-[-140px] w-[440px] h-[440px] rounded-full bg-[#C2A86B]/[0.05] blur-3xl pointer-events-none" />
+        <div className="absolute top-40 end-[-140px] w-[440px] h-[440px] rounded-full bg-[#2B2B2B]/[0.05] blur-3xl pointer-events-none" />
+        <div className="absolute bottom-40 start-[-140px] w-[440px] h-[440px] rounded-full bg-[#C45A41]/[0.05] blur-3xl pointer-events-none" />
         <div className="container max-w-4xl relative">
           {/* Category tabs */}
           <div className="flex flex-wrap gap-2.5 mb-12 justify-center">
@@ -96,8 +96,8 @@ const FAQ: React.FC = () => {
                 onClick={() => { setActiveCat(key); setOpenCard(null); }}
                 className={`px-6 py-2.5 rounded-full text-[13px] font-semibold transition-all duration-300 ${
                   activeCat === key
-                    ? "bg-gradient-to-br from-[#2B4C66] to-[#1E374B] text-white shadow-lg shadow-[#2B4C66]/25"
-                    : "bg-white text-slate-500 hover:text-[#2B4C66] hover:bg-[#2B4C66]/[0.04] ring-1 ring-slate-200"
+                    ? "bg-gradient-to-br from-[#2B2B2B] to-[#020202] text-white shadow-lg shadow-[#2B2B2B]/25"
+                    : "bg-white text-slate-500 hover:text-[#2B2B2B] hover:bg-[#2B2B2B]/[0.04] ring-1 ring-slate-200"
                 }`}
               >
                 {categories[key]}
@@ -121,7 +121,7 @@ const FAQ: React.FC = () => {
                   key={i}
                   className={`bg-white rounded-2xl transition-all duration-300 cursor-pointer ${
                     isOpen
-                      ? "ring-1 ring-[#2B4C66]/20 shadow-[0_20px_50px_-25px_rgba(43,76,102,0.25)]"
+                      ? "ring-1 ring-[#2B2B2B]/20 shadow-[0_20px_50px_-25px_rgba(43,76,102,0.25)]"
                       : "ring-1 ring-slate-200/70 hover:ring-slate-300 hover:shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)]"
                   }`}
                   onClick={() => setOpenCard(isOpen ? null : i)}
@@ -131,16 +131,16 @@ const FAQ: React.FC = () => {
                       <div className="flex items-center gap-3.5">
                         <span className={`text-[12px] font-bold shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
                           isOpen
-                            ? "bg-gradient-to-br from-[#2B4C66] to-[#1E374B] text-white shadow-md shadow-[#2B4C66]/25"
-                            : "bg-[#2B4C66]/[0.06] text-[#2B4C66]"
+                            ? "bg-gradient-to-br from-[#2B2B2B] to-[#020202] text-white shadow-md shadow-[#2B2B2B]/25"
+                            : "bg-[#2B2B2B]/[0.06] text-[#2B2B2B]"
                         }`}>
                           {i + 1}
                         </span>
-                        <h3 className="text-[14px] md:text-[15px] font-semibold text-[#1E374B] leading-snug tracking-tight">{faq.q}</h3>
+                        <h3 className="text-[14px] md:text-[15px] font-semibold text-[#020202] leading-snug tracking-tight">{faq.q}</h3>
                       </div>
                       <ChevronDown
                         className={`w-4 h-4 shrink-0 transition-all duration-300 ${
-                          isOpen ? "rotate-180 text-[#2B4C66]" : "text-slate-400"
+                          isOpen ? "rotate-180 text-[#2B2B2B]" : "text-slate-400"
                         }`}
                         strokeWidth={2}
                       />
@@ -166,7 +166,7 @@ const FAQ: React.FC = () => {
       <section className="relative py-16 bg-gradient-to-b from-[#FAFBFC] to-white border-t border-slate-100 overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent pointer-events-none" />
         <div className="container relative text-center">
-          <h3 className="text-2xl md:text-3xl font-bold text-[#1E374B] mb-3 tracking-tight leading-[1.1]">
+          <h3 className="text-2xl md:text-3xl font-bold text-[#020202] mb-3 tracking-tight leading-[1.1]">
             {isAr ? "لم تجد إجابة لسؤالك" : "Didnt Find Your Answer"}
           </h3>
           <p className="text-[14px] md:text-[15px] text-slate-600 mb-8 max-w-md mx-auto leading-relaxed">
@@ -186,7 +186,7 @@ const FAQ: React.FC = () => {
             </a>
             <a
               href="/contact"
-              className="inline-flex items-center gap-2.5 h-12 px-7 bg-gradient-to-br from-[#2B4C66] to-[#1E374B] hover:from-[#1E374B] hover:to-[#0F1F2E] text-white text-[14px] font-bold rounded-xl shadow-lg shadow-[#2B4C66]/25 transition-all duration-300"
+              className="inline-flex items-center gap-2.5 h-12 px-7 bg-gradient-to-br from-[#2B2B2B] to-[#020202] hover:from-[#020202] hover:to-[#020202] text-white text-[14px] font-bold rounded-xl shadow-lg shadow-[#2B2B2B]/25 transition-all duration-300"
             >
               {isAr ? "صفحة تواصل معنا" : "Contact Us Page"}
             </a>

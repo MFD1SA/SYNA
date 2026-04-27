@@ -19,7 +19,7 @@ export const EmptyState: React.FC<Props> = ({ icon: Icon, title, description, ac
           <Icon className="w-5 h-5 text-slate-400" strokeWidth={1.5} />
         </div>
       )}
-      <h4 className="text-[14px] font-semibold text-[#1E374B] dark:text-white mb-1">{title}</h4>
+      <h4 className="text-[14px] font-semibold text-[#020202] dark:text-white mb-1">{title}</h4>
       {description && <p className="text-[12px] text-slate-500 dark:text-slate-400 max-w-[320px] mx-auto leading-relaxed">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>

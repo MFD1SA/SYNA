@@ -292,14 +292,14 @@ const OwnerRequests: React.FC = () => {
     <OwnerLayout>
       <DashboardShell isAr={isAr} accent="gold">
         <BentoCard variant="hero" span="full" padding="lg" className="relative overflow-hidden mb-5">
-          <div className="absolute top-0 end-0 w-60 h-60 bg-[#C2A86B]/15 rounded-full blur-3xl -me-20 -mt-20 pointer-events-none" />
+          <div className="absolute top-0 end-0 w-60 h-60 bg-[#C45A41]/15 rounded-full blur-3xl -me-20 -mt-20 pointer-events-none" />
           <div className="relative flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#C2A86B]/15 text-[11px] font-semibold text-[#A88A4A] mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#C45A41]/15 text-[11px] font-semibold text-[#A24832] mb-2">
                 <FileText className="w-3 h-3" strokeWidth={2} />
                 {isAr ? "الطلبات" : "Requests"}
               </span>
-              <h1 className="text-[24px] md:text-[28px] font-bold text-[#1E374B] dark:text-white tracking-tight">
+              <h1 className="text-[24px] md:text-[28px] font-bold text-[#020202] dark:text-white tracking-tight">
                 {isAr ? "طلبات الشراكة الواردة" : "Incoming Partnership Requests"}
               </h1>
               <p className="mt-1 text-[13px] text-slate-600 dark:text-slate-300">
@@ -309,7 +309,7 @@ const OwnerRequests: React.FC = () => {
             {!loading && requests.length > 0 && (
               <div className="px-4 py-2.5 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-white/60 dark:border-white/10">
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">{isAr ? "الطلبات" : "Requests"}</p>
-                <p className="text-[22px] font-bold text-[#1E374B] dark:text-white tracking-tight leading-none mt-1" dir="ltr">{requests.length}</p>
+                <p className="text-[22px] font-bold text-[#020202] dark:text-white tracking-tight leading-none mt-1" dir="ltr">{requests.length}</p>
               </div>
             )}
           </div>
@@ -472,7 +472,7 @@ const OwnerRequests: React.FC = () => {
                       {actions.includes("approve") && (
                         <Button
                           size="sm"
-                          className="h-9 gap-2 text-xs font-medium shadow-sm bg-[#2B4C66] hover:bg-[#2B4C66]/90"
+                          className="h-9 gap-2 text-xs font-medium shadow-sm bg-[#2B2B2B] hover:bg-[#2B2B2B]/90"
                           disabled={isLoading}
                           onClick={() => handleTransition(req.id, "under_review")}
                         >

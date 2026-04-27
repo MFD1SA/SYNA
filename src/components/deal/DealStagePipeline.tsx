@@ -20,7 +20,7 @@ const DealStagePipeline: React.FC<Props> = ({ currentStage, isAr, compact }) => 
             className={`h-2 flex-1 rounded-full transition-colors ${
               idx <= currentIdx
                 ? idx === currentIdx
-                  ? "bg-[#2B4C66] shadow-sm"
+                  ? "bg-[#2B2B2B] shadow-sm"
                   : "bg-emerald-500"
                 : "bg-border/60"
             }`}
@@ -32,7 +32,7 @@ const DealStagePipeline: React.FC<Props> = ({ currentStage, isAr, compact }) => 
   }
 
   return (
-    <div className="rounded-xl border border-[#2B4C66]/15 bg-gradient-to-b from-[#2B4C66]/[0.03] to-transparent p-4" dir="ltr">
+    <div className="rounded-xl border border-[#2B2B2B]/15 bg-gradient-to-b from-[#2B2B2B]/[0.03] to-transparent p-4" dir="ltr">
       <div className="flex items-center gap-1">
         {stageOrder.map((s, idx) => {
           const sc = stageConfig[s];
@@ -45,7 +45,7 @@ const DealStagePipeline: React.FC<Props> = ({ currentStage, isAr, compact }) => 
               <div
                 className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all ${
                   isActive
-                    ? "border-[#2B4C66] bg-[#2B4C66]/10 shadow-sm"
+                    ? "border-[#2B2B2B] bg-[#2B2B2B]/10 shadow-sm"
                     : isPast
                       ? "border-emerald-500 bg-emerald-500/10"
                       : "border-border/50 bg-muted/20"
@@ -54,12 +54,12 @@ const DealStagePipeline: React.FC<Props> = ({ currentStage, isAr, compact }) => 
                 {isPast ? (
                   <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
                 ) : (
-                  <SIcon className={`h-3.5 w-3.5 ${isActive ? "text-[#2B4C66]" : "text-muted-foreground/30"}`} />
+                  <SIcon className={`h-3.5 w-3.5 ${isActive ? "text-[#2B2B2B]" : "text-muted-foreground/30"}`} />
                 )}
               </div>
               <span
                 className={`text-[8px] text-center leading-tight max-w-[60px] ${
-                  isActive ? "font-semibold text-[#2B4C66]" : isPast ? "font-medium text-emerald-600" : "text-muted-foreground/40"
+                  isActive ? "font-semibold text-[#2B2B2B]" : isPast ? "font-medium text-emerald-600" : "text-muted-foreground/40"
                 }`}
               >
                 {isAr ? sc?.ar : sc?.en}

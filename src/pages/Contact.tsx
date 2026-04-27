@@ -62,7 +62,7 @@ const Contact: React.FC = () => {
     }
   };
 
-  const inputClass = "w-full h-12 px-5 bg-white border border-slate-200 rounded-xl text-[14px] text-[#1E374B] placeholder:text-slate-400 focus:outline-none focus:border-[#2B4C66] focus:ring-2 focus:ring-[#2B4C66]/10 transition-all duration-200";
+  const inputClass = "w-full h-12 px-5 bg-white border border-slate-200 rounded-xl text-[14px] text-[#020202] placeholder:text-slate-400 focus:outline-none focus:border-[#2B2B2B] focus:ring-2 focus:ring-[#2B2B2B]/10 transition-all duration-200";
 
   const whyContact = isAr
     ? [
@@ -91,13 +91,13 @@ const Contact: React.FC = () => {
 
       {/* Why Contact Us */}
       <section className="relative py-16 lg:py-20 bg-gradient-to-b from-white to-[#FAFBFC] overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
-        <div className="absolute -top-20 end-[-100px] w-[380px] h-[380px] rounded-full bg-[#C2A86B]/[0.06] blur-3xl pointer-events-none" />
+        <div className="absolute -top-20 end-[-100px] w-[380px] h-[380px] rounded-full bg-[#C45A41]/[0.06] blur-3xl pointer-events-none" />
         <div className="container relative">
           <div className="grid sm:grid-cols-3 gap-5 max-w-5xl mx-auto">
             {whyContact.map((item, i) => (
-              <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C2A86B]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.25)] transition-all duration-500 hover:-translate-y-1">
-                <item.icon className="w-6 h-6 text-[#A88A4A] mb-4" strokeWidth={1.7} />
-                <h3 className="text-[15px] font-bold text-[#1E374B] mb-2 tracking-tight">{item.title}</h3>
+              <div key={i} className="group relative bg-white rounded-2xl p-7 ring-1 ring-slate-200/70 hover:ring-[#C45A41]/30 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] hover:shadow-[0_20px_50px_-20px_rgba(194,168,107,0.25)] transition-all duration-500 hover:-translate-y-1">
+                <item.icon className="w-6 h-6 text-[#A24832] mb-4" strokeWidth={1.7} />
+                <h3 className="text-[15px] font-bold text-[#020202] mb-2 tracking-tight">{item.title}</h3>
                 <p className="text-[13px] text-slate-500 leading-[1.9]">{item.desc}</p>
               </div>
             ))}
@@ -107,11 +107,11 @@ const Contact: React.FC = () => {
 
       {/* Form + WhatsApp CTA */}
       <section className="relative py-20 lg:py-24 bg-gradient-to-b from-[#FAFBFC] to-white overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
-        <div className="absolute top-1/3 start-[-140px] w-[420px] h-[420px] rounded-full bg-[#2B4C66]/[0.06] blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 start-[-140px] w-[420px] h-[420px] rounded-full bg-[#2B2B2B]/[0.06] blur-3xl pointer-events-none" />
         <div className="container relative">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E374B] mb-4 tracking-tight leading-[1.1]">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#020202] mb-4 tracking-tight leading-[1.1]">
                 {isAr ? "أرسل لنا رسالتك" : "Send Us a Message"}
               </h2>
               <p className="text-[15px] text-slate-600 leading-relaxed max-w-xl mx-auto">
@@ -125,7 +125,7 @@ const Contact: React.FC = () => {
             <div className="bg-white rounded-2xl ring-1 ring-slate-200/70 shadow-[0_10px_30px_-15px_rgba(15,31,46,0.12)] p-6 mb-8">
               <div className="flex flex-col sm:flex-row items-center gap-4">
                 <div className="flex-1 text-center sm:text-start">
-                  <h3 className="text-[16px] font-bold text-[#1E374B] mb-1 tracking-tight">
+                  <h3 className="text-[16px] font-bold text-[#020202] mb-1 tracking-tight">
                     {isAr ? "تفضّل التواصل السريع؟" : "Prefer quick communication?"}
                   </h3>
                   <p className="text-[13px] text-slate-500 leading-relaxed">
@@ -147,31 +147,31 @@ const Contact: React.FC = () => {
             {sent ? (
               <div className="text-center py-20 bg-white rounded-2xl ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.18)]">
                 <CheckCircle2 className="w-10 h-10 text-emerald-600 mb-5 mx-auto" strokeWidth={1.7} />
-                <p className="text-[18px] font-bold text-[#1E374B] tracking-tight">{t.contactPage.success}</p>
+                <p className="text-[18px] font-bold text-[#020202] tracking-tight">{t.contactPage.success}</p>
               </div>
             ) : (
               <div className="bg-white rounded-2xl ring-1 ring-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,31,46,0.18)] p-8 md:p-10">
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-[13px] font-semibold text-[#1E374B] mb-2">{t.contactPage.name}</label>
+                      <label className="block text-[13px] font-semibold text-[#020202] mb-2">{t.contactPage.name}</label>
                       <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputClass} />
                     </div>
                     <div>
-                      <label className="block text-[13px] font-semibold text-[#1E374B] mb-2">{t.contactPage.email}</label>
+                      <label className="block text-[13px] font-semibold text-[#020202] mb-2">{t.contactPage.email}</label>
                       <input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputClass} />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[13px] font-semibold text-[#1E374B] mb-2">{t.contactPage.subject}</label>
+                    <label className="block text-[13px] font-semibold text-[#020202] mb-2">{t.contactPage.subject}</label>
                     <input type="text" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} className={inputClass} />
                   </div>
                   <div>
-                    <label className="block text-[13px] font-semibold text-[#1E374B] mb-2">{t.contactPage.message}</label>
+                    <label className="block text-[13px] font-semibold text-[#020202] mb-2">{t.contactPage.message}</label>
                     <textarea required rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className={`${inputClass} h-auto py-4 resize-none`} />
                   </div>
                   {error && <p className="text-[13px] text-red-600 bg-red-50 border border-red-100 px-4 py-3 rounded-lg">{error}</p>}
-                  <button type="submit" disabled={loading} className="w-full h-13 py-3.5 bg-gradient-to-br from-[#2B4C66] to-[#1E374B] hover:from-[#1E374B] hover:to-[#0F1F2E] text-white text-[15px] font-bold rounded-xl shadow-lg shadow-[#2B4C66]/25 transition-all duration-300 disabled:opacity-60 flex items-center justify-center gap-2 tracking-tight">
+                  <button type="submit" disabled={loading} className="w-full h-13 py-3.5 bg-gradient-to-br from-[#2B2B2B] to-[#020202] hover:from-[#020202] hover:to-[#020202] text-white text-[15px] font-bold rounded-xl shadow-lg shadow-[#2B2B2B]/25 transition-all duration-300 disabled:opacity-60 flex items-center justify-center gap-2 tracking-tight">
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" strokeWidth={2} />}
                     {loading ? t.contactPage.sending : t.contactPage.send}
                   </button>

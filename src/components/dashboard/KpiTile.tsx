@@ -80,7 +80,7 @@ export const KpiTile: React.FC<KpiTileProps> = ({
         ) : (
           <>
             <span
-              className="text-[26px] md:text-[30px] font-bold text-[#1E374B] dark:text-white tracking-tight leading-none"
+              className="text-[26px] md:text-[30px] font-bold text-[#020202] dark:text-white tracking-tight leading-none"
               dir="ltr"
               style={{ fontVariantNumeric: "tabular-nums" }}
             >

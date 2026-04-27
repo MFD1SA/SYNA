@@ -257,10 +257,10 @@ const CrmDashboard: React.FC = () => {
         {/* ═══════ HERO ═══════ */}
         <BentoGrid className="mb-5">
           <BentoCard variant="hero" span="two-thirds" padding="lg" className="relative overflow-hidden">
-            <div className="absolute top-0 end-0 w-44 h-44 bg-[#2B4C66]/10 rounded-full blur-3xl -me-10 -mt-10 pointer-events-none" />
+            <div className="absolute top-0 end-0 w-44 h-44 bg-[#2B2B2B]/10 rounded-full blur-3xl -me-10 -mt-10 pointer-events-none" />
             <div className="relative">
               <div className="flex items-center gap-2 mb-3">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#2B4C66]/25 dark:border-[#7BA3C5]/35 text-[11px] font-semibold text-[#2B4C66] dark:text-[#9CC3DD]">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#2B2B2B]/25 dark:border-[#7BA3C5]/35 text-[11px] font-semibold text-[#2B2B2B] dark:text-[#9CC3DD]">
                   <Sparkles className="w-3 h-3" strokeWidth={1.7} />
                   {isAr ? "منصة المطور" : "Developer Hub"}
                 </span>
@@ -268,7 +268,7 @@ const CrmDashboard: React.FC = () => {
                   <StatusBadge variant="success" dot>{isAr ? "موثّق" : "Verified"}</StatusBadge>
                 )}
               </div>
-              <h1 className="text-[24px] md:text-[30px] font-bold text-[#1E374B] dark:text-white tracking-tight mb-1.5">
+              <h1 className="text-[24px] md:text-[30px] font-bold text-[#020202] dark:text-white tracking-tight mb-1.5">
                 {isAr ? `مرحباً، ${greeting}` : `Welcome, ${greeting}`}
               </h1>
               <p className="text-[13px] md:text-[14px] text-slate-600 dark:text-slate-300 leading-relaxed max-w-[560px]">
@@ -279,7 +279,7 @@ const CrmDashboard: React.FC = () => {
               <div className="mt-5 flex flex-wrap gap-2">
                 <button
                   onClick={() => navigate("/crm/browse")}
-                  className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl border border-[#2B4C66]/30 dark:border-[#7BA3C5]/40 bg-transparent hover:bg-[#2B4C66]/5 dark:hover:bg-[#7BA3C5]/10 text-[#2B4C66] dark:text-[#9CC3DD] text-[13px] font-semibold transition-colors"
+                  className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl border border-[#2B2B2B]/30 dark:border-[#7BA3C5]/40 bg-transparent hover:bg-[#2B2B2B]/5 dark:hover:bg-[#7BA3C5]/10 text-[#2B2B2B] dark:text-[#9CC3DD] text-[13px] font-semibold transition-colors"
                 >
                   <Search className="w-4 h-4" strokeWidth={1.7} />
                   {isAr ? "استكشف الفرص" : "Explore Opportunities"}
@@ -310,7 +310,7 @@ const CrmDashboard: React.FC = () => {
                 tone="gold"
                 loading={loading}
               />
-              <TrendSparkline data={activitySpark} color="#A88A4A" height={56} />
+              <TrendSparkline data={activitySpark} color="#A24832" height={56} />
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 {isAr ? "نشاط التقديمات خلال 7 أيام" : "Submissions activity — last 7 days"}
               </p>
@@ -404,7 +404,7 @@ const CrmDashboard: React.FC = () => {
               icon={Target}
               tone="primary"
               action={
-                <Button variant="ghost" size="sm" onClick={() => navigate("/crm/my-requests")} className="h-7 text-[12px] text-[#2B4C66] hover:bg-[#2B4C66]/5">
+                <Button variant="ghost" size="sm" onClick={() => navigate("/crm/my-requests")} className="h-7 text-[12px] text-[#2B2B2B] hover:bg-[#2B2B2B]/5">
                   {isAr ? "عرض التفاصيل" : "View all"}
                   <ArrowRight className="h-3 w-3 ms-1" />
                 </Button>
@@ -430,7 +430,7 @@ const CrmDashboard: React.FC = () => {
                       <div className="flex items-center gap-2 mb-2">
                         <StatusBadge variant={item.variant}>{item.label}</StatusBadge>
                       </div>
-                      <p className="text-[24px] font-bold text-[#1E374B] dark:text-white tracking-tight leading-none" dir="ltr">
+                      <p className="text-[24px] font-bold text-[#020202] dark:text-white tracking-tight leading-none" dir="ltr">
                         {loading ? "—" : item.value}
                       </p>
                       <div className="mt-3 h-1.5 rounded-full bg-slate-100 dark:bg-slate-700/50 overflow-hidden">
@@ -525,11 +525,11 @@ const CrmDashboard: React.FC = () => {
                         ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
                         : isLostFinal
                           ? "bg-rose-500/10 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300"
-                          : "bg-[#2B4C66]/10 text-[#2B4C66] dark:bg-[#2B4C66]/25 dark:text-[#9FB7CC]"
+                          : "bg-[#2B2B2B]/10 text-[#2B2B2B] dark:bg-[#2B2B2B]/25 dark:text-[#9FB7CC]"
                     }`}
                   >
                     <span className={`h-1.5 w-1.5 rounded-full ${
-                      isWonFinal ? "bg-emerald-500" : isLostFinal ? "bg-rose-500" : "bg-[#2B4C66] animate-pulse"
+                      isWonFinal ? "bg-emerald-500" : isLostFinal ? "bg-rose-500" : "bg-[#2B2B2B] animate-pulse"
                     }`} />
                     {isAr ? latestPhaseLabel.ar : latestPhaseLabel.en}
                   </span>
@@ -563,7 +563,7 @@ const CrmDashboard: React.FC = () => {
                   done:
                     "bg-emerald-500 text-white shadow-[0_6px_18px_-6px_rgba(16,185,129,0.55)]",
                   current:
-                    "bg-[#2B4C66] text-white shadow-[0_8px_22px_-6px_rgba(43,76,102,0.6)] ring-4 ring-[#2B4C66]/15 scale-[1.08]",
+                    "bg-[#2B2B2B] text-white shadow-[0_8px_22px_-6px_rgba(43,76,102,0.6)] ring-4 ring-[#2B2B2B]/15 scale-[1.08]",
                   lost:
                     "bg-rose-500 text-white shadow-[0_6px_18px_-6px_rgba(244,63,94,0.55)] ring-4 ring-rose-500/15",
                   upcoming:
@@ -572,7 +572,7 @@ const CrmDashboard: React.FC = () => {
 
                 const labelByState: Record<StageState, string> = {
                   done:     "text-emerald-700 dark:text-emerald-300",
-                  current:  "text-[#1E374B] dark:text-white",
+                  current:  "text-[#020202] dark:text-white",
                   lost:     "text-rose-700 dark:text-rose-300",
                   upcoming: "text-slate-500 dark:text-slate-400",
                 };
@@ -595,7 +595,7 @@ const CrmDashboard: React.FC = () => {
                             state === "done"
                               ? "bg-white text-emerald-600 ring-1 ring-emerald-200"
                               : state === "current"
-                                ? "bg-[#C2A86B] text-white"
+                                ? "bg-[#C45A41] text-white"
                                 : state === "lost"
                                   ? "bg-white text-rose-600 ring-1 ring-rose-200"
                                   : "bg-white dark:bg-slate-700 text-slate-500 dark:text-slate-300 ring-1 ring-slate-200 dark:ring-white/10"
@@ -605,7 +605,7 @@ const CrmDashboard: React.FC = () => {
                           {stepNumber}
                         </span>
                         {state === "current" && (
-                          <span className="absolute inset-0 rounded-full ring-2 ring-[#2B4C66]/40 animate-ping pointer-events-none" />
+                          <span className="absolute inset-0 rounded-full ring-2 ring-[#2B2B2B]/40 animate-ping pointer-events-none" />
                         )}
                       </div>
                       <span className={`text-[11.5px] font-semibold whitespace-nowrap ${labelByState[state]}`}>
@@ -644,7 +644,7 @@ const CrmDashboard: React.FC = () => {
               return (
                 <div className="mt-5 pt-4 border-t border-slate-200/60 dark:border-white/5 flex flex-wrap items-center justify-between gap-3">
                   <p className="text-[12px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-[#C2A86B]" strokeWidth={1.8} />
+                    <Sparkles className="h-3.5 w-3.5 text-[#C45A41]" strokeWidth={1.8} />
                     {isAr
                       ? "كل خطوة تقترب بك من إغلاق الصفقة"
                       : "Each step gets you closer to closing the deal"}
@@ -652,7 +652,7 @@ const CrmDashboard: React.FC = () => {
                   <Button
                     onClick={() => navigate(lifecycleCta.to)}
                     variant="outline"
-                    className="h-9 px-4 border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 hover:text-[#1E374B] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10 text-[12.5px] font-semibold"
+                    className="h-9 px-4 border-[#2B2B2B]/30 text-[#2B2B2B] hover:bg-[#2B2B2B]/5 hover:text-[#020202] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10 text-[12.5px] font-semibold"
                   >
                     <CtaIcon className="h-4 w-4 me-1.5" strokeWidth={1.7} />
                     {isAr ? lifecycleCta.labelAr : lifecycleCta.labelEn}

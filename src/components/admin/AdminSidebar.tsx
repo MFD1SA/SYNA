@@ -33,7 +33,7 @@ const AdminSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`sticky top-0 flex h-screen flex-col bg-[#1E374B] transition-all duration-300 ease-in-out ${
+      className={`sticky top-0 flex h-screen flex-col bg-[#020202] transition-all duration-300 ease-in-out ${
         collapsed ? "w-[68px]" : "w-[260px]"
       }`}
     >
@@ -53,7 +53,7 @@ const AdminSidebar: React.FC = () => {
         {collapsed && (
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="absolute -end-3 top-[26px] h-6 w-6 flex items-center justify-center rounded-full bg-[#1E374B] border border-white/20 shadow-md text-white/60 hover:text-white hover:border-white/40 transition-all duration-200 z-10"
+            className="absolute -end-3 top-[26px] h-6 w-6 flex items-center justify-center rounded-full bg-[#020202] border border-white/20 shadow-md text-white/60 hover:text-white hover:border-white/40 transition-all duration-200 z-10"
           >
             <CollapseIcon className="h-3 w-3" strokeWidth={1.5} />
           </button>
@@ -67,14 +67,14 @@ const AdminSidebar: React.FC = () => {
             {avatarUrl ? (
               <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
             ) : (
-              <div className="h-full w-full bg-[#C2A86B] flex items-center justify-center">
+              <div className="h-full w-full bg-[#C45A41] flex items-center justify-center">
                 <span className="text-[11px] font-semibold text-white">{initial}</span>
               </div>
             )}
           </div>
           <div className="min-w-0">
             <p className="text-[12.5px] font-semibold text-white truncate">{fullName || "Admin"}</p>
-            <p className="text-[10px] text-[#C2A86B] font-medium">{isAr ? "مدير النظام" : "Administrator"}</p>
+            <p className="text-[10px] text-[#C45A41] font-medium">{isAr ? "مدير النظام" : "Administrator"}</p>
           </div>
         </div>
       )}
@@ -96,7 +96,7 @@ const AdminSidebar: React.FC = () => {
                 } ${collapsed ? "justify-center" : ""}`}
               >
                 {isActive && (
-                  <span className="absolute start-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-e-full bg-[#C2A86B]" />
+                  <span className="absolute start-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-e-full bg-[#C45A41]" />
                 )}
                 <item.icon className={`h-[18px] w-[18px] shrink-0 transition-colors duration-200 ${isActive ? "text-white" : ""}`} strokeWidth={1.5} />
                 {!collapsed && (

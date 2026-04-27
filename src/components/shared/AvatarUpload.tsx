@@ -76,7 +76,7 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
         {currentUrl ? (
           <img src={currentUrl} alt={displayName} className="h-full w-full object-cover" />
         ) : (
-          <div className={`h-full w-full bg-gradient-to-br from-[#2B4C66] to-[#1E374B] flex items-center justify-center`}>
+          <div className={`h-full w-full bg-gradient-to-br from-[#2B2B2B] to-[#020202] flex items-center justify-center`}>
             <span className={`${textClass} font-semibold text-white`}>{initial}</span>
           </div>
         )}

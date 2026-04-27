@@ -58,15 +58,15 @@ const Navbar: React.FC = () => {
                 to={to}
                 className={`relative text-[13px] font-semibold px-3.5 py-2 rounded-xl transition-all duration-200 ${
                   location.pathname === to
-                    ? scrolled ? "text-[#1E374B]" : "text-white"
+                    ? scrolled ? "text-[#020202]" : "text-white"
                     : scrolled
-                      ? "text-gray-500 hover:text-[#1E374B] hover:bg-gray-50"
+                      ? "text-gray-500 hover:text-[#020202] hover:bg-gray-50"
                       : "text-white/85 hover:text-white hover:bg-white/10 drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
                 }`}
               >
                 {label}
                 {location.pathname === to && (
-                  <span className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-gradient-to-r from-transparent via-[#C2A86B] to-transparent" />
+                  <span className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-gradient-to-r from-transparent via-[#C45A41] to-transparent" />
                 )}
               </Link>
             ))}
@@ -89,7 +89,7 @@ const Navbar: React.FC = () => {
               onClick={toggleLang}
               className={`inline-flex items-center gap-1.5 text-[12px] font-bold h-9 px-3 rounded-lg transition-all ${
                 scrolled
-                  ? "text-gray-500 hover:text-[#2B4C66] hover:bg-gray-50"
+                  ? "text-gray-500 hover:text-[#2B2B2B] hover:bg-gray-50"
                   : "text-white/90 hover:text-white hover:bg-white/10 drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
               }`}
             >
@@ -103,11 +103,11 @@ const Navbar: React.FC = () => {
               to="/auth/login?type=owner"
               className={`group inline-flex items-center gap-1.5 text-[13px] font-semibold h-9 px-3.5 rounded-xl transition-all ${
                 scrolled
-                  ? "text-gray-600 hover:text-[#A88A4A] hover:bg-[#C2A86B]/5"
+                  ? "text-gray-600 hover:text-[#A24832] hover:bg-[#C45A41]/5"
                   : "text-white hover:bg-white/10 drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
               }`}
             >
-              <Crown className={`w-3.5 h-3.5 ${scrolled ? "text-[#C2A86B]" : "text-[#D7C084]"}`} strokeWidth={1.8} />
+              <Crown className={`w-3.5 h-3.5 ${scrolled ? "text-[#C45A41]" : "text-[#D7C084]"}`} strokeWidth={1.8} />
               {isAr ? "دخول الملاك" : "Owner Login"}
             </Link>
 
@@ -115,7 +115,7 @@ const Navbar: React.FC = () => {
               to="/auth/login"
               className={`group inline-flex items-center gap-2 h-10 px-5 text-[13px] font-bold rounded-xl hover:-translate-y-0.5 transition-all duration-300 ${
                 scrolled
-                  ? "bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white hover:shadow-[0_8px_24px_-8px_rgba(43,76,102,0.55)]"
+                  ? "bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white hover:shadow-[0_8px_24px_-8px_rgba(43,76,102,0.55)]"
                   : "bg-white/10 text-white border border-white/25 backdrop-blur-md hover:bg-white/15 hover:border-white/40"
               }`}
             >
@@ -131,7 +131,7 @@ const Navbar: React.FC = () => {
               onClick={toggleLang}
               className={`inline-flex items-center gap-1 text-[11px] font-bold h-9 w-9 rounded-xl transition-all justify-center ${
                 scrolled
-                  ? "text-gray-500 hover:text-[#2B4C66] hover:bg-gray-100"
+                  ? "text-gray-500 hover:text-[#2B2B2B] hover:bg-gray-100"
                   : "text-white/80 bg-white/10 hover:bg-white/20"
               }`}
               aria-label="Toggle language"
@@ -142,7 +142,7 @@ const Navbar: React.FC = () => {
               onClick={() => setMobileOpen(!mobileOpen)}
               className={`inline-flex items-center justify-center h-9 w-9 rounded-xl transition-colors ${
                 scrolled
-                  ? "bg-[#2B4C66]/5 hover:bg-[#2B4C66]/10 text-[#1E374B]"
+                  ? "bg-[#2B2B2B]/5 hover:bg-[#2B2B2B]/10 text-[#020202]"
                   : "bg-white/10 hover:bg-white/20 text-white/80"
               }`}
               aria-label="Toggle menu"
@@ -183,22 +183,22 @@ const Navbar: React.FC = () => {
                     to={to}
                     className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all ${
                       isActive
-                        ? "bg-gradient-to-r from-[#2B4C66]/10 to-[#C2A86B]/5 text-[#1E374B] font-bold"
+                        ? "bg-gradient-to-r from-[#2B2B2B]/10 to-[#C45A41]/5 text-[#020202] font-bold"
                         : "text-gray-700 font-semibold hover:bg-gray-50"
                     }`}
                   >
                     <div
                       className={`flex items-center justify-center w-9 h-9 rounded-xl ${
                         isActive
-                          ? "bg-gradient-to-br from-[#2B4C66] to-[#1E374B] text-white"
-                          : "bg-gray-100 text-[#2B4C66]"
+                          ? "bg-gradient-to-br from-[#2B2B2B] to-[#020202] text-white"
+                          : "bg-gray-100 text-[#2B2B2B]"
                       }`}
                     >
                       <Icon className="w-4 h-4" strokeWidth={1.8} />
                     </div>
                     <span className="text-[14.5px] flex-1">{label}</span>
                     {isActive && (
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#C2A86B]" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#C45A41]" />
                     )}
                   </Link>
                 );
@@ -212,23 +212,23 @@ const Navbar: React.FC = () => {
             <div className="space-y-2.5">
               <Link
                 to="/auth/login?type=owner"
-                className="flex items-center gap-3 w-full h-[52px] px-4 rounded-2xl border border-[#C2A86B]/25 bg-gradient-to-br from-[#C2A86B]/[0.06] to-[#C2A86B]/[0.02] hover:from-[#C2A86B]/10 hover:to-[#C2A86B]/5 transition-all"
+                className="flex items-center gap-3 w-full h-[52px] px-4 rounded-2xl border border-[#C45A41]/25 bg-gradient-to-br from-[#C45A41]/[0.06] to-[#C45A41]/[0.02] hover:from-[#C45A41]/10 hover:to-[#C45A41]/5 transition-all"
               >
-                <Crown className="w-5 h-5 text-[#A88A4A]" strokeWidth={1.8} />
+                <Crown className="w-5 h-5 text-[#A24832]" strokeWidth={1.8} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#A88A4A]">
+                  <p className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#A24832]">
                     {isAr ? "للملاك" : "FOR OWNERS"}
                   </p>
-                  <p className="text-[14px] font-bold text-[#1E374B] truncate">
+                  <p className="text-[14px] font-bold text-[#020202] truncate">
                     {isAr ? "دخول الملاك" : "Owner Login"}
                   </p>
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-[#A88A4A]" strokeWidth={2} />
+                <ArrowUpRight className="w-4 h-4 text-[#A24832]" strokeWidth={2} />
               </Link>
 
               <Link
                 to="/auth/login"
-                className="flex items-center gap-3 w-full h-[52px] px-4 rounded-2xl bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white shadow-[0_8px_24px_-8px_rgba(43,76,102,0.55)]"
+                className="flex items-center gap-3 w-full h-[52px] px-4 rounded-2xl bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white shadow-[0_8px_24px_-8px_rgba(43,76,102,0.55)]"
               >
                 <Building2 className="w-5 h-5 text-white" strokeWidth={1.8} />
                 <div className="flex-1 min-w-0">

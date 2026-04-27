@@ -578,7 +578,7 @@ const LandSubmissionForm: React.FC<Props> = ({ initialData, ownerProfiles, isAdm
                       <button
                         type="button"
                         onClick={() => handleOpenPrivateFile(p)}
-                        className="flex items-center gap-2 text-[12px] text-[#1E374B] hover:text-primary truncate"
+                        className="flex items-center gap-2 text-[12px] text-[#020202] hover:text-primary truncate"
                       >
                         <FileText className="h-3.5 w-3.5 shrink-0" />
                         <span className="truncate">{isAr ? `مستند ${i + 1}` : `Document ${i + 1}`}</span>

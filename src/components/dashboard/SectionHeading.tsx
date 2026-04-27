@@ -29,7 +29,7 @@ export const SectionHeading: React.FC<Props> = ({ title, subtitle, icon: Icon, t
           </div>
         )}
         <div className="min-w-0">
-          <h3 className="text-[16px] font-bold text-[#1E374B] dark:text-white truncate tracking-tight">
+          <h3 className="text-[16px] font-bold text-[#020202] dark:text-white truncate tracking-tight">
             {title}
           </h3>
           {subtitle && (

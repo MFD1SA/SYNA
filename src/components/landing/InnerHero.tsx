@@ -62,12 +62,12 @@ const InnerHero: React.FC<InnerHeroProps> = ({
           {/* Gradient overlays — darker toward the text side (skipped for illustrations) */}
           {!illustrated && (
             <>
-              <div className="absolute inset-0 z-[1] bg-gradient-to-br from-[#0F1F2E]/95 via-[#1E374B]/85 to-[#0F1F2E]/70" />
+              <div className="absolute inset-0 z-[1] bg-gradient-to-br from-[#020202]/95 via-[#020202]/85 to-[#020202]/70" />
               <div
                 className={`absolute inset-0 z-[2] ${
                   isAr
-                    ? "bg-gradient-to-l from-transparent via-[#1E374B]/50 to-[#0F1F2E]/80"
-                    : "bg-gradient-to-r from-[#0F1F2E]/80 via-[#1E374B]/50 to-transparent"
+                    ? "bg-gradient-to-l from-transparent via-[#020202]/50 to-[#020202]/80"
+                    : "bg-gradient-to-r from-[#020202]/80 via-[#020202]/50 to-transparent"
                 }`}
               />
             </>
@@ -77,8 +77,8 @@ const InnerHero: React.FC<InnerHeroProps> = ({
             <div
               className={`absolute inset-0 z-[2] ${
                 isAr
-                  ? "bg-gradient-to-l from-[#0F1F2E]/80 via-[#0F1F2E]/40 to-transparent"
-                  : "bg-gradient-to-r from-[#0F1F2E]/80 via-[#0F1F2E]/40 to-transparent"
+                  ? "bg-gradient-to-l from-[#020202]/80 via-[#020202]/40 to-transparent"
+                  : "bg-gradient-to-r from-[#020202]/80 via-[#020202]/40 to-transparent"
               }`}
             />
           )}
@@ -86,23 +86,33 @@ const InnerHero: React.FC<InnerHeroProps> = ({
       ) : (
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(135deg, #1E374B 0%, #2B4C66 50%, #1E374B 100%)" }}
+          style={{ background: "linear-gradient(135deg, #020202 0%, #2B2B2B 50%, #020202 100%)" }}
         />
       )}
 
-      {/* Decorative dot pattern */}
+      {/* Decorative architectural grid — subtle blueprint mesh */}
       <div
-        className="absolute inset-0 z-[3] opacity-[0.04]"
+        className="absolute inset-0 z-[3] opacity-[0.06] mix-blend-screen"
         style={{
-          backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+          backgroundImage:
+            "linear-gradient(to right, #FFFFFF 1px, transparent 1px), linear-gradient(to bottom, #FFFFFF 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
+        }}
+      />
+      {/* Fine dot mesh on top of grid for depth */}
+      <div
+        className="absolute inset-0 z-[3] opacity-[0.05]"
+        style={{
+          backgroundImage: "radial-gradient(circle at 1px 1px, #DFD8D2 1px, transparent 0)",
           backgroundSize: "32px 32px",
         }}
       />
 
-      {/* Glow blobs */}
+      {/* DOMA palette glow — Orange + Beige tints + darker depth blob */}
       <div className="absolute inset-0 z-[3] pointer-events-none">
-        <div className="absolute -top-20 end-20 w-80 h-80 rounded-full bg-[#C2A86B]/15 blur-3xl" />
-        <div className="absolute top-40 start-10 w-64 h-64 rounded-full bg-[#2B4C66]/25 blur-3xl" />
+        <div className="absolute -top-24 end-16 w-[420px] h-[420px] rounded-full bg-[#C45A41]/20 blur-[110px]" />
+        <div className="absolute top-32 start-8 w-72 h-72 rounded-full bg-[#DFD8D2]/12 blur-3xl" />
+        <div className="absolute -bottom-24 start-1/3 w-[520px] h-[260px] rounded-full bg-[#6899B4]/10 blur-3xl" />
       </div>
 
       <div className="container relative z-[10]">
@@ -122,7 +132,7 @@ const InnerHero: React.FC<InnerHeroProps> = ({
 
         {/* Title */}
         <div className="max-w-3xl">
-          <h1 className="relative text-[26px] sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-5 tracking-tight leading-[1.15]">
+          <h1 className={`relative text-[26px] sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-5 tracking-tight leading-[1.15] ${isAr ? "" : "font-display"}`}>
             {title}
           </h1>
           <p className="text-[14px] sm:text-[15px] md:text-[17px] text-white/70 max-w-2xl leading-relaxed mt-4 md:mt-5">

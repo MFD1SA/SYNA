@@ -110,7 +110,7 @@ const AdminSeoPages: React.FC = () => {
           <input
             type="text"
             placeholder={isAr ? "بحث في العناوين أو الـ slug..." : "Search titles or slugs..."}
-            className="w-full h-10 ps-10 pe-3 rounded-xl bg-white dark:bg-slate-700 border border-slate-200/70 dark:border-white/10 text-[13px] focus:outline-none focus:border-[#2B4C66]/30"
+            className="w-full h-10 ps-10 pe-3 rounded-xl bg-white dark:bg-slate-700 border border-slate-200/70 dark:border-white/10 text-[13px] focus:outline-none focus:border-[#2B2B2B]/30"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -169,7 +169,7 @@ const AdminSeoPages: React.FC = () => {
                 {filtered.map((r) => (
                   <tr key={r.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] cursor-pointer" onClick={() => navigate(`/admincp/seo/pages/${r.id}`)}>
                     <td className="px-4 py-3">
-                      <p className="font-semibold text-[#1E374B] dark:text-white line-clamp-1">{r.title}</p>
+                      <p className="font-semibold text-[#020202] dark:text-white line-clamp-1">{r.title}</p>
                       <p className="text-[11px] text-slate-400 font-mono line-clamp-1" dir="ltr">{r.slug}</p>
                     </td>
                     <td className="px-4 py-3 text-slate-500 text-[12px]">
@@ -177,7 +177,7 @@ const AdminSeoPages: React.FC = () => {
                     </td>
                     <td className="px-4 py-3 text-slate-500 text-[12px] uppercase font-mono" dir="ltr">{r.locale}</td>
                     <td className="px-4 py-3">{statusBadge(r.status)}</td>
-                    <td className="px-4 py-3 text-end font-bold text-[#1E374B] dark:text-white" dir="ltr">
+                    <td className="px-4 py-3 text-end font-bold text-[#020202] dark:text-white" dir="ltr">
                       {r.quality_score ?? 0}
                     </td>
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
@@ -187,7 +187,7 @@ const AdminSeoPages: React.FC = () => {
                             href={`${r.locale === "en" ? "/en" : ""}${r.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#2B4C66] hover:bg-[#2B4C66]/5 flex items-center justify-center transition-colors"
+                            className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#2B2B2B] hover:bg-[#2B2B2B]/5 flex items-center justify-center transition-colors"
                             title={isAr ? "فتح" : "Open"}
                           >
                             <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.8} />

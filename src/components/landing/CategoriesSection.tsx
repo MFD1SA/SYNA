@@ -39,12 +39,12 @@ const CategoriesSection: React.FC = () => {
       dir={isAr ? "rtl" : "ltr"}
     >
       {/* Decorative orbs */}
-      <div className="absolute top-20 start-20 w-72 h-72 rounded-full bg-[#C2A86B]/[0.08] blur-3xl pointer-events-none" />
-      <div className="absolute bottom-20 end-20 w-72 h-72 rounded-full bg-[#2B4C66]/[0.08] blur-3xl pointer-events-none" />
+      <div className="absolute top-20 start-20 w-72 h-72 rounded-full bg-[#C45A41]/[0.08] blur-3xl pointer-events-none" />
+      <div className="absolute bottom-20 end-20 w-72 h-72 rounded-full bg-[#2B2B2B]/[0.08] blur-3xl pointer-events-none" />
 
       <div className="container relative">
         <div className="text-center mb-10 md:mb-14 max-w-3xl mx-auto">
-          <h2 className="text-[26px] sm:text-[34px] md:text-[44px] font-bold text-[#1E374B] mb-4 md:mb-5 tracking-tight leading-[1.15] md:leading-[1.1]">
+          <h2 className="text-[26px] sm:text-[34px] md:text-[44px] font-bold text-[#020202] mb-4 md:mb-5 tracking-tight leading-[1.15] md:leading-[1.1]">
             {t.categories.title}
           </h2>
           <p className="text-[14px] md:text-[16px] text-gray-600 leading-[1.8] max-w-2xl mx-auto mt-4 md:mt-5">
@@ -65,27 +65,27 @@ const CategoriesSection: React.FC = () => {
                 <div
                   className={`absolute inset-x-0 top-0 h-1 ${
                     isGold
-                      ? "bg-gradient-to-r from-[#C2A86B] via-[#D7C084] to-transparent"
-                      : "bg-gradient-to-r from-[#2B4C66] via-[#3A6088] to-transparent"
+                      ? "bg-gradient-to-r from-[#C45A41] via-[#D7C084] to-transparent"
+                      : "bg-gradient-to-r from-[#2B2B2B] via-[#3A6088] to-transparent"
                   }`}
                 />
 
                 {/* Corner glow */}
                 <div
                   className={`absolute -top-20 -end-20 w-60 h-60 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
-                    isGold ? "bg-[#C2A86B]/20" : "bg-[#2B4C66]/15"
+                    isGold ? "bg-[#C45A41]/20" : "bg-[#2B2B2B]/15"
                   }`}
                 />
 
                 {/* Icon */}
                 <div className="relative mb-8 flex items-center justify-between">
-                  <cat.icon className={`w-8 h-8 ${isGold ? "text-[#A88A4A]" : "text-[#2B4C66]"}`} strokeWidth={1.7} />
-                  <span className={`text-[10px] font-bold tracking-[0.14em] uppercase ${isGold ? "text-[#A88A4A]" : "text-[#2B4C66]"}`}>
+                  <cat.icon className={`w-8 h-8 ${isGold ? "text-[#A24832]" : "text-[#2B2B2B]"}`} strokeWidth={1.7} />
+                  <span className={`text-[10px] font-bold tracking-[0.14em] uppercase ${isGold ? "text-[#A24832]" : "text-[#2B2B2B]"}`}>
                     {i === 0 ? (isAr ? "للملاك" : "FOR OWNERS") : (isAr ? "للمطورين" : "FOR DEVELOPERS")}
                   </span>
                 </div>
 
-                <h3 className="relative text-[20px] sm:text-[22px] lg:text-[26px] font-bold text-[#1E374B] mb-3 md:mb-4 tracking-tight">
+                <h3 className="relative text-[20px] sm:text-[22px] lg:text-[26px] font-bold text-[#020202] mb-3 md:mb-4 tracking-tight">
                   {cat.title}
                 </h3>
                 <p className="relative text-[13.5px] md:text-[14px] text-gray-600 leading-[1.85] mb-5 md:mb-7">
@@ -96,17 +96,17 @@ const CategoriesSection: React.FC = () => {
                 <div className="relative flex flex-wrap gap-x-4 gap-y-2 mb-8">
                   {cat.features.map((f, j) => (
                     <div key={j} className="flex items-center gap-1.5 text-[12px] text-gray-500 font-medium">
-                      <CheckCircle2 className={`w-3.5 h-3.5 ${isGold ? "text-[#C2A86B]" : "text-[#2B4C66]"}`} strokeWidth={2} />
+                      <CheckCircle2 className={`w-3.5 h-3.5 ${isGold ? "text-[#C45A41]" : "text-[#2B2B2B]"}`} strokeWidth={2} />
                       {f}
                     </div>
                   ))}
                 </div>
 
-                <div className="relative inline-flex items-center gap-2 text-[13px] font-bold text-[#1E374B] group-hover:gap-3.5 transition-all duration-300">
-                  <span className={isGold ? "group-hover:text-[#A88A4A]" : "group-hover:text-[#2B4C66]"}>
+                <div className="relative inline-flex items-center gap-2 text-[13px] font-bold text-[#020202] group-hover:gap-3.5 transition-all duration-300">
+                  <span className={isGold ? "group-hover:text-[#A24832]" : "group-hover:text-[#2B2B2B]"}>
                     {cat.cta}
                   </span>
-                  <Arrow className={`w-4 h-4 ${isGold ? "text-[#C2A86B]" : "text-[#2B4C66]"}`} strokeWidth={2} />
+                  <Arrow className={`w-4 h-4 ${isGold ? "text-[#C45A41]" : "text-[#2B2B2B]"}`} strokeWidth={2} />
                 </div>
               </Link>
             );

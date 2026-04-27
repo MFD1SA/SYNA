@@ -247,7 +247,7 @@ const AdminOwners: React.FC = () => {
         {/* KPIs */}
         <div className="grid grid-cols-3 gap-3 mb-5">
           {[
-            { label: isAr ? "إجمالي الملاك" : "Total Owners", value: owners.length, icon: User, color: "text-[#2B4C66]", bg: "bg-[#2B4C66]/8" },
+            { label: isAr ? "إجمالي الملاك" : "Total Owners", value: owners.length, icon: User, color: "text-[#2B2B2B]", bg: "bg-[#2B2B2B]/8" },
             { label: isAr ? "إجمالي الأراضي" : "Total Lands", value: totalLands, icon: MapPin, color: "text-amber-600", bg: "bg-amber-500/8" },
             { label: isAr ? "أراضي معتمدة" : "Approved Lands", value: approvedLands, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-500/8" },
           ].map(kpi => (

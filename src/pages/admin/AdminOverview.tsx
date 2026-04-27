@@ -90,8 +90,8 @@ const AdminOverview: React.FC = () => {
       label: isAr ? "صفقات نشطة" : "Active Deals",
       value: data.activeDeals,
       icon: Handshake,
-      accent: "text-[#2B4C66]",
-      bg: "bg-[#2B4C66]/8",
+      accent: "text-[#2B2B2B]",
+      bg: "bg-[#2B2B2B]/8",
       href: "/admincp/deals",
       subtitle: isAr ? "قيد التنفيذ" : "In Progress",
     },
@@ -163,21 +163,21 @@ const AdminOverview: React.FC = () => {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {priorityKPIs.map((kpi) => {
                 const content = (
-                  <div className="group relative bg-white rounded-2xl border border-gray-200/40 p-5 transition-all duration-300 hover:shadow-[0_8px_30px_-12px_rgba(43,76,102,0.12)] hover:border-[#2B4C66]/10">
+                  <div className="group relative bg-white rounded-2xl border border-gray-200/40 p-5 transition-all duration-300 hover:shadow-[0_8px_30px_-12px_rgba(43,76,102,0.12)] hover:border-[#2B2B2B]/10">
                     <div className="flex items-center justify-between mb-3.5">
                       <span className="text-[10.5px] font-semibold text-gray-400/90 uppercase tracking-[0.1em]">{kpi.label}</span>
                       <div className={`h-9 w-9 rounded-xl ${kpi.bg} flex items-center justify-center`}>
                         <kpi.icon className={`h-[18px] w-[18px] ${kpi.accent}`} strokeWidth={1.5} />
                       </div>
                     </div>
-                    <p className="text-[30px] font-bold text-[#1E374B] leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
+                    <p className="text-[30px] font-bold text-[#020202] leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
                       {kpi.value.toLocaleString("en-US")}
                     </p>
                     {kpi.subtitle && (
                       <p className="mt-2.5 text-[11px] text-gray-400 font-medium">{kpi.subtitle}</p>
                     )}
                     {kpi.href && (
-                      <ArrowUpRight className="absolute end-3.5 bottom-3.5 h-3.5 w-3.5 text-gray-200 transition-all duration-300 group-hover:text-[#C2A86B]" strokeWidth={1.5} />
+                      <ArrowUpRight className="absolute end-3.5 bottom-3.5 h-3.5 w-3.5 text-gray-200 transition-all duration-300 group-hover:text-[#C45A41]" strokeWidth={1.5} />
                     )}
                   </div>
                 );
@@ -189,16 +189,16 @@ const AdminOverview: React.FC = () => {
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {secondaryKPIs.map((kpi) => {
                 const content = (
-                  <div className="group flex items-center gap-4 bg-white rounded-2xl border border-gray-200/40 px-5 py-4 transition-all duration-300 hover:shadow-[0_4px_16px_-6px_rgba(43,76,102,0.08)] hover:border-[#2B4C66]/10">
+                  <div className="group flex items-center gap-4 bg-white rounded-2xl border border-gray-200/40 px-5 py-4 transition-all duration-300 hover:shadow-[0_4px_16px_-6px_rgba(43,76,102,0.08)] hover:border-[#2B2B2B]/10">
                     <div>
-                      <p className="text-[22px] font-bold text-[#1E374B] leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
+                      <p className="text-[22px] font-bold text-[#020202] leading-none tracking-tight" dir="ltr" style={{ fontVariantNumeric: "tabular-nums" }}>
                         {kpi.value.toLocaleString("en-US")}
                       </p>
                       <p className="mt-1.5 text-[11px] text-gray-400 font-medium">{kpi.label}</p>
                     </div>
                     <div className="ms-auto text-end">
                       <kpi.icon className="h-4 w-4 text-gray-300/80 mb-1 ms-auto" strokeWidth={1.5} />
-                      {kpi.subtitle && <p className="text-[10px] text-[#C2A86B] font-medium">{kpi.subtitle}</p>}
+                      {kpi.subtitle && <p className="text-[10px] text-[#C45A41] font-medium">{kpi.subtitle}</p>}
                     </div>
                   </div>
                 );
@@ -212,8 +212,8 @@ const AdminOverview: React.FC = () => {
               <div className="lg:col-span-2">
                 <div className="bg-white rounded-2xl border border-gray-200/40 p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
                   <div className="flex items-center gap-2.5 mb-1">
-                    <Activity className="h-4 w-4 text-[#C2A86B]" strokeWidth={1.5} />
-                    <h2 className="text-[14px] font-semibold text-[#1E374B]">{isAr ? "تحليل الأداء" : "Performance Analytics"}</h2>
+                    <Activity className="h-4 w-4 text-[#C45A41]" strokeWidth={1.5} />
+                    <h2 className="text-[14px] font-semibold text-[#020202]">{isAr ? "تحليل الأداء" : "Performance Analytics"}</h2>
                   </div>
                   <AdminAnalyticsCharts />
                 </div>
@@ -224,20 +224,20 @@ const AdminOverview: React.FC = () => {
                 {/* Recent Users */}
                 <div className="bg-white dark:bg-slate-900/60 rounded-2xl border border-gray-200/60 dark:border-white/10 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
                   <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100/60 dark:border-white/10">
-                    <h3 className="text-[13px] font-semibold text-[#1E374B] dark:text-white flex items-center gap-2.5">
-                      <Users className="h-4 w-4 text-[#2B4C66] dark:text-[#9BBEDB]" strokeWidth={1.8} />
+                    <h3 className="text-[13px] font-semibold text-[#020202] dark:text-white flex items-center gap-2.5">
+                      <Users className="h-4 w-4 text-[#2B2B2B] dark:text-[#9BBEDB]" strokeWidth={1.8} />
                       {isAr ? "آخر المسجلين" : "Recent Users"}
                     </h3>
-                    <span className="text-[10px] text-[#A88A4A] dark:text-[#D7C084] font-semibold bg-[#C2A86B]/[0.12] dark:bg-[#C2A86B]/20 px-2.5 py-0.5 rounded-full">{isAr ? "آخر 5" : "Last 5"}</span>
+                    <span className="text-[10px] text-[#A24832] dark:text-[#D7C084] font-semibold bg-[#C45A41]/[0.12] dark:bg-[#C45A41]/20 px-2.5 py-0.5 rounded-full">{isAr ? "آخر 5" : "Last 5"}</span>
                   </div>
                   <div className="p-2">
                     {data.recentUsers.map((p: any) => (
-                      <div key={p.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-[#2B4C66]/[0.04] dark:hover:bg-white/5 transition-all duration-200">
+                      <div key={p.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-[#2B2B2B]/[0.04] dark:hover:bg-white/5 transition-all duration-200">
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-semibold text-[#1E374B] dark:text-white">{p.full_name || p.email}</p>
+                          <p className="truncate text-[13px] font-semibold text-[#020202] dark:text-white">{p.full_name || p.email}</p>
                           <p className="truncate text-[11px] text-slate-500 dark:text-slate-300">{new Date(p.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { month: "short", day: "numeric" })}</p>
                         </div>
-                        <span className="ms-3 shrink-0 text-[10px] font-bold text-[#2B4C66] dark:text-[#9BBEDB] bg-[#2B4C66]/[0.1] dark:bg-[#2B4C66]/30 px-2.5 py-0.5 rounded-full">
+                        <span className="ms-3 shrink-0 text-[10px] font-bold text-[#2B2B2B] dark:text-[#9BBEDB] bg-[#2B2B2B]/[0.1] dark:bg-[#2B2B2B]/30 px-2.5 py-0.5 rounded-full">
                           {p.subscription_type === "property_management" ? (isAr ? "مالك" : "Owner") : (isAr ? "مطور" : "Dev")}
                         </span>
                       </div>
@@ -251,19 +251,19 @@ const AdminOverview: React.FC = () => {
                 {/* Recent Deals */}
                 <div className="bg-white dark:bg-slate-900/60 rounded-2xl border border-gray-200/60 dark:border-white/10 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
                   <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100/60 dark:border-white/10">
-                    <h3 className="text-[13px] font-semibold text-[#1E374B] dark:text-white flex items-center gap-2.5">
-                      <Handshake className="h-4 w-4 text-[#2B4C66] dark:text-[#9BBEDB]" strokeWidth={1.8} />
+                    <h3 className="text-[13px] font-semibold text-[#020202] dark:text-white flex items-center gap-2.5">
+                      <Handshake className="h-4 w-4 text-[#2B2B2B] dark:text-[#9BBEDB]" strokeWidth={1.8} />
                       {isAr ? "آخر الصفقات" : "Recent Deals"}
                     </h3>
-                    <Link to="/admincp/deals" className="text-[11px] text-[#A88A4A] dark:text-[#D7C084] hover:text-[#2B4C66] dark:hover:text-white font-semibold transition-colors">
+                    <Link to="/admincp/deals" className="text-[11px] text-[#A24832] dark:text-[#D7C084] hover:text-[#2B2B2B] dark:hover:text-white font-semibold transition-colors">
                       {isAr ? "عرض الكل" : "View All"}
                     </Link>
                   </div>
                   <div className="p-2">
                     {data.recentDeals.map((d: any) => (
-                      <div key={d.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-[#2B4C66]/[0.04] dark:hover:bg-white/5 transition-all duration-200">
+                      <div key={d.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-[#2B2B2B]/[0.04] dark:hover:bg-white/5 transition-all duration-200">
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-semibold text-[#1E374B] dark:text-white">
+                          <p className="truncate text-[13px] font-semibold text-[#020202] dark:text-white">
                             {(d.developers as any)?.marketing_brand_name || (d.developers as any)?.company_name || "—"}
                           </p>
                           <p className="truncate text-[11px] text-slate-500 dark:text-slate-300">
@@ -272,7 +272,7 @@ const AdminOverview: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-2 ms-3 shrink-0">
                           <div className={`h-1.5 w-1.5 rounded-full ${healthDot(d.health)}`} />
-                          <span className="text-[10px] font-bold text-[#2B4C66] dark:text-[#9BBEDB] bg-[#2B4C66]/[0.1] dark:bg-[#2B4C66]/30 px-2.5 py-0.5 rounded-full">
+                          <span className="text-[10px] font-bold text-[#2B2B2B] dark:text-[#9BBEDB] bg-[#2B2B2B]/[0.1] dark:bg-[#2B2B2B]/30 px-2.5 py-0.5 rounded-full">
                             {d.current_stage?.replace(/_/g, " ")}
                           </span>
                         </div>
@@ -287,8 +287,8 @@ const AdminOverview: React.FC = () => {
                 {/* Quick Navigation */}
                 <div className="bg-white dark:bg-slate-900/60 rounded-2xl border border-gray-200/60 dark:border-white/10 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
                   <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100/60 dark:border-white/10">
-                    <BookOpen className="h-4 w-4 text-[#A88A4A] dark:text-[#D7C084]" strokeWidth={1.8} />
-                    <h3 className="text-[13px] font-semibold text-[#1E374B] dark:text-white">{isAr ? "تنقل سريع" : "Quick Navigation"}</h3>
+                    <BookOpen className="h-4 w-4 text-[#A24832] dark:text-[#D7C084]" strokeWidth={1.8} />
+                    <h3 className="text-[13px] font-semibold text-[#020202] dark:text-white">{isAr ? "تنقل سريع" : "Quick Navigation"}</h3>
                   </div>
                   <div className="p-2 space-y-0.5">
                     {[
@@ -296,15 +296,15 @@ const AdminOverview: React.FC = () => {
                       { icon: Landmark, label: isAr ? "الملاك" : "Owners", desc: isAr ? "إنشاء حسابات، إدارة الأراضي" : "Create accounts, manage lands", href: "/admincp/owners" },
                       { icon: Handshake, label: isAr ? "الصفقات" : "Deals", desc: isAr ? "متابعة المراحل" : "Track stages", href: "/admincp/deals" },
                     ].map((item) => (
-                      <Link key={item.href} to={item.href} className="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-[#2B4C66]/[0.05] dark:hover:bg-white/5">
-                        <div className="h-9 w-9 rounded-xl bg-[#2B4C66]/[0.08] dark:bg-[#2B4C66]/30 flex items-center justify-center group-hover:bg-[#2B4C66]/[0.15] dark:group-hover:bg-[#2B4C66]/50 transition-all duration-200">
-                          <item.icon className="h-4 w-4 shrink-0 text-[#2B4C66] dark:text-[#9BBEDB] group-hover:text-[#1E374B] dark:group-hover:text-white transition-colors duration-200" strokeWidth={1.8} />
+                      <Link key={item.href} to={item.href} className="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-[#2B2B2B]/[0.05] dark:hover:bg-white/5">
+                        <div className="h-9 w-9 rounded-xl bg-[#2B2B2B]/[0.08] dark:bg-[#2B2B2B]/30 flex items-center justify-center group-hover:bg-[#2B2B2B]/[0.15] dark:group-hover:bg-[#2B2B2B]/50 transition-all duration-200">
+                          <item.icon className="h-4 w-4 shrink-0 text-[#2B2B2B] dark:text-[#9BBEDB] group-hover:text-[#020202] dark:group-hover:text-white transition-colors duration-200" strokeWidth={1.8} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-[13px] font-semibold text-[#1E374B] dark:text-white">{item.label}</p>
+                          <p className="text-[13px] font-semibold text-[#020202] dark:text-white">{item.label}</p>
                           <p className="text-[10px] text-slate-500 dark:text-slate-300">{item.desc}</p>
                         </div>
-                        <ArrowRight className="h-3 w-3 text-slate-300 dark:text-slate-500 group-hover:text-[#C2A86B] dark:group-hover:text-[#D7C084] transition-colors duration-200" strokeWidth={1.8} />
+                        <ArrowRight className="h-3 w-3 text-slate-300 dark:text-slate-500 group-hover:text-[#C45A41] dark:group-hover:text-[#D7C084] transition-colors duration-200" strokeWidth={1.8} />
                       </Link>
                     ))}
                   </div>

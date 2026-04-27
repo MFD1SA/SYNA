@@ -124,7 +124,7 @@ const OfferDetailPage: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="h-7 w-7 animate-spin rounded-full border-r-2 border-t-2 border-[#2B4C66]" />
+        <div className="h-7 w-7 animate-spin rounded-full border-r-2 border-t-2 border-[#2B2B2B]" />
       </div>
     );
   }
@@ -132,9 +132,9 @@ const OfferDetailPage: React.FC = () => {
   if (!offer) return <Navigate to="/offers" replace />;
 
   const isPartnership = offer.type === "partnership";
-  const accentColor = isPartnership ? "#2B4C66" : "#0F766E";
-  const accentBg = isPartnership ? "bg-[#2B4C66]" : "bg-emerald-600";
-  const accentText = isPartnership ? "text-[#2B4C66]" : "text-emerald-700";
+  const accentColor = isPartnership ? "#2B2B2B" : "#0F766E";
+  const accentBg = isPartnership ? "bg-[#2B2B2B]" : "bg-emerald-600";
+  const accentText = isPartnership ? "text-[#2B2B2B]" : "text-emerald-700";
 
   // Calculated metrics (visual richness from real data)
   const expectedReturn = isPartnership
@@ -194,11 +194,11 @@ const OfferDetailPage: React.FC = () => {
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-3.5">
           <div className="flex items-center gap-1.5 md:gap-2 text-[12px] md:text-[13px] overflow-x-auto whitespace-nowrap">
-            <Link to="/" className="text-gray-400 hover:text-[#2B4C66] transition-colors font-medium">{isAr ? "الرئيسية" : "Home"}</Link>
+            <Link to="/" className="text-gray-400 hover:text-[#2B2B2B] transition-colors font-medium">{isAr ? "الرئيسية" : "Home"}</Link>
             <Chevron className="h-3 w-3 text-gray-300" strokeWidth={2} />
-            <Link to="/offers" className="text-gray-400 hover:text-[#2B4C66] transition-colors font-medium">{isAr ? "العروض العقارية" : "Offers"}</Link>
+            <Link to="/offers" className="text-gray-400 hover:text-[#2B2B2B] transition-colors font-medium">{isAr ? "العروض العقارية" : "Offers"}</Link>
             <Chevron className="h-3 w-3 text-gray-300" strokeWidth={2} />
-            <span className="text-[#2B4C66] font-semibold truncate max-w-[180px]">{isAr ? offer.city.ar : offer.city.en}</span>
+            <span className="text-[#2B2B2B] font-semibold truncate max-w-[180px]">{isAr ? offer.city.ar : offer.city.en}</span>
           </div>
         </div>
       </div>
@@ -280,17 +280,17 @@ const OfferDetailPage: React.FC = () => {
               {/* ═══════ WHY THIS OPPORTUNITY — Pillars ═══════ */}
               <div className="bg-gradient-to-br from-[#F7F9FB] via-white to-[#F7F9FB] rounded-2xl border border-gray-100 p-5 md:p-7">
                 <div className="flex items-center gap-2.5 mb-5 md:mb-6">
-                  <Sparkles className="w-6 h-6 text-[#A88A4A]" strokeWidth={1.7} />
+                  <Sparkles className="w-6 h-6 text-[#A24832]" strokeWidth={1.7} />
                   <h2 className="text-[17px] md:text-[19px] font-bold text-gray-900">
                     {isAr ? "لماذا هذه الفرصة" : "Why This Opportunity"}
                   </h2>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-3 md:gap-4">
                   {pillars.map((p, i) => (
-                    <div key={i} className="flex items-start gap-3 rounded-xl bg-white border border-gray-100 p-4 hover:border-[#C2A86B]/30 hover:shadow-[0_8px_24px_-12px_rgba(194,168,107,0.25)] transition-all">
-                      <p.icon className="w-6 h-6 text-[#A88A4A] shrink-0 mt-0.5" strokeWidth={1.7} />
+                    <div key={i} className="flex items-start gap-3 rounded-xl bg-white border border-gray-100 p-4 hover:border-[#C45A41]/30 hover:shadow-[0_8px_24px_-12px_rgba(194,168,107,0.25)] transition-all">
+                      <p.icon className="w-6 h-6 text-[#A24832] shrink-0 mt-0.5" strokeWidth={1.7} />
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-[14px] font-bold text-[#1E374B] mb-1">{p.title}</h3>
+                        <h3 className="text-[14px] font-bold text-[#020202] mb-1">{p.title}</h3>
                         <p className="text-[12.5px] text-gray-500 leading-[1.7]">{p.desc}</p>
                       </div>
                     </div>
@@ -319,8 +319,8 @@ const OfferDetailPage: React.FC = () => {
               )}
 
               {/* ═══════ PROCESS JOURNEY ═══════ */}
-              <div className="bg-[#0F1F2E] rounded-2xl p-5 md:p-7 overflow-hidden relative">
-                <div className="absolute -top-10 -end-10 w-48 h-48 rounded-full bg-[#C2A86B]/15 blur-3xl pointer-events-none" />
+              <div className="bg-[#020202] rounded-2xl p-5 md:p-7 overflow-hidden relative">
+                <div className="absolute -top-10 -end-10 w-48 h-48 rounded-full bg-[#C45A41]/15 blur-3xl pointer-events-none" />
                 <div className="relative">
                   <div className="flex items-center gap-2.5 mb-5 md:mb-6">
                     <Gauge className="w-6 h-6 text-[#D7C084]" strokeWidth={1.7} />
@@ -334,7 +334,7 @@ const OfferDetailPage: React.FC = () => {
                         <div className="shrink-0 relative">
                           <stage.icon className="w-6 h-6 text-[#D7C084]" strokeWidth={1.7} />
                           {i < stages.length - 1 && (
-                            <div className="absolute top-8 start-1/2 -translate-x-1/2 w-px h-3 bg-[#C2A86B]/20" />
+                            <div className="absolute top-8 start-1/2 -translate-x-1/2 w-px h-3 bg-[#C45A41]/20" />
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
@@ -351,7 +351,7 @@ const OfferDetailPage: React.FC = () => {
               {/* ═══════ TRUST & COMPLIANCE STRIP ═══════ */}
               <div className="bg-white rounded-2xl border border-gray-100 p-5 md:p-7">
                 <div className="flex items-center gap-2.5 mb-5">
-                  <ShieldCheck className="w-6 h-6 text-[#2B4C66]" strokeWidth={1.7} />
+                  <ShieldCheck className="w-6 h-6 text-[#2B2B2B]" strokeWidth={1.7} />
                   <h2 className="text-[17px] md:text-[19px] font-bold text-gray-900">
                     {isAr ? "الحماية والمطابقة" : "Protection & Compliance"}
                   </h2>
@@ -363,7 +363,7 @@ const OfferDetailPage: React.FC = () => {
                     { icon: Scale, label: isAr ? "حوكمة نظامية" : "Regulatory Governance" },
                   ].map((item, i) => (
                     <div key={i} className="flex items-center gap-2.5 rounded-xl bg-gray-50 px-4 py-3">
-                      <item.icon className="w-4 h-4 text-[#2B4C66] shrink-0" strokeWidth={1.8} />
+                      <item.icon className="w-4 h-4 text-[#2B2B2B] shrink-0" strokeWidth={1.8} />
                       <span className="text-[12.5px] font-semibold text-gray-700">{item.label}</span>
                     </div>
                   ))}
@@ -372,7 +372,7 @@ const OfferDetailPage: React.FC = () => {
 
               {/* Mobile CTA */}
               <div className="lg:hidden">
-                <Link to="/auth/login" className="flex w-full items-center justify-center gap-3 h-[56px] bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[15px] font-bold rounded-2xl hover:shadow-[0_14px_40px_-12px_rgba(43,76,102,0.45)] transition-all shadow-[0_8px_24px_-8px_rgba(43,76,102,0.35)]">
+                <Link to="/auth/login" className="flex w-full items-center justify-center gap-3 h-[56px] bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white text-[15px] font-bold rounded-2xl hover:shadow-[0_14px_40px_-12px_rgba(43,76,102,0.45)] transition-all shadow-[0_8px_24px_-8px_rgba(43,76,102,0.35)]">
                   <Building2 className="h-5 w-5" strokeWidth={1.5} />
                   {isAr ? "سجّل دخول كمطور للتقديم" : "Developer Login to Apply"}
                   <ArrowUpRight className="h-4 w-4 opacity-70" strokeWidth={2} />
@@ -386,7 +386,7 @@ const OfferDetailPage: React.FC = () => {
 
                 {/* Summary card */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_8px_30px_-10px_rgba(15,31,46,0.12)] overflow-hidden">
-                  <div className={`h-1 bg-gradient-to-r from-[#C2A86B] via-[#D7C084] to-[#C2A86B]`} />
+                  <div className={`h-1 bg-gradient-to-r from-[#C45A41] via-[#D7C084] to-[#C45A41]`} />
 
                   <div className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
@@ -398,7 +398,7 @@ const OfferDetailPage: React.FC = () => {
                     </div>
 
                     {/* Price/Value headline */}
-                    <div className={`rounded-xl ${isPartnership ? "bg-[#2B4C66]/[0.04] border-[#2B4C66]/15" : "bg-emerald-50 border-emerald-100"} border p-4`}>
+                    <div className={`rounded-xl ${isPartnership ? "bg-[#2B2B2B]/[0.04] border-[#2B2B2B]/15" : "bg-emerald-50 border-emerald-100"} border p-4`}>
                       <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold mb-1">
                         {isAr ? "عائد متوقع" : "Expected Return"}
                       </p>
@@ -427,13 +427,13 @@ const OfferDetailPage: React.FC = () => {
                   </div>
 
                   <div className="px-6 pb-6">
-                    <Link to="/auth/login" className="group flex w-full items-center justify-center gap-2.5 h-[52px] bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[14px] font-bold rounded-xl hover:shadow-[0_12px_30px_-8px_rgba(43,76,102,0.5)] hover:-translate-y-0.5 transition-all shadow-[0_6px_16px_-4px_rgba(43,76,102,0.35)]">
+                    <Link to="/auth/login" className="group flex w-full items-center justify-center gap-2.5 h-[52px] bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white text-[14px] font-bold rounded-xl hover:shadow-[0_12px_30px_-8px_rgba(43,76,102,0.5)] hover:-translate-y-0.5 transition-all shadow-[0_6px_16px_-4px_rgba(43,76,102,0.35)]">
                       <Building2 className="h-4 w-4" strokeWidth={1.8} />
                       {isAr ? "دخول المطورين للتقديم" : "Developer Login to Apply"}
                       <ArrowUpRight className="h-3.5 w-3.5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
                     </Link>
                     <div className="mt-3 flex items-center justify-center gap-1.5 text-[10.5px] text-gray-400">
-                      <ShieldCheck className="h-3 w-3 text-[#C2A86B]" strokeWidth={2} />
+                      <ShieldCheck className="h-3 w-3 text-[#C45A41]" strokeWidth={2} />
                       <span>{isAr ? "بياناتك مشفّرة — NDA رقمي قبل أي كشف" : "Encrypted • Digital NDA before any disclosure"}</span>
                     </div>
                   </div>
@@ -452,16 +452,16 @@ const OfferDetailPage: React.FC = () => {
                     ].map((s, i) => (
                       <div key={i} className="flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
-                          <s.icon className="w-5 h-5 text-[#2B4C66]" strokeWidth={1.7} />
+                          <s.icon className="w-5 h-5 text-[#2B2B2B]" strokeWidth={1.7} />
                           <span className="text-[12.5px] text-gray-600 font-medium">{s.label}</span>
                         </div>
-                        <span className="text-[14px] font-bold text-[#1E374B]" dir="ltr">{s.value}</span>
+                        <span className="text-[14px] font-bold text-[#020202]" dir="ltr">{s.value}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <Link to="/offers" className="flex items-center gap-2 text-[13px] text-gray-400 hover:text-[#2B4C66] transition-colors font-medium group">
+                <Link to="/offers" className="flex items-center gap-2 text-[13px] text-gray-400 hover:text-[#2B2B2B] transition-colors font-medium group">
                   <Arrow className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" strokeWidth={1.7} />
                   {isAr ? "العودة لجميع العروض" : "Back to all offers"}
                 </Link>
@@ -477,14 +477,14 @@ const OfferDetailPage: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 md:px-6">
             <div className="flex items-end justify-between mb-8 md:mb-10">
               <div>
-                <h2 className="text-[22px] md:text-[28px] font-bold text-[#1E374B] tracking-tight mb-2">
+                <h2 className="text-[22px] md:text-[28px] font-bold text-[#020202] tracking-tight mb-2">
                   {isAr ? "فرص مشابهة" : "Similar Opportunities"}
                 </h2>
                 <p className="text-[13px] md:text-[14px] text-gray-500">
                   {isAr ? "عروض قد تهمّك من نفس النوع" : "Offers you may be interested in"}
                 </p>
               </div>
-              <Link to="/offers" className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold text-gray-600 hover:text-[#2B4C66] transition-colors">
+              <Link to="/offers" className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold text-gray-600 hover:text-[#2B2B2B] transition-colors">
                 {isAr ? "عرض الكل" : "View All"}
                 <Arrow className="h-3.5 w-3.5" strokeWidth={2} />
               </Link>
@@ -503,7 +503,7 @@ const OfferDetailPage: React.FC = () => {
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
-                    <span className={`absolute top-3 start-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold text-white backdrop-blur-md ${r.type === "partnership" ? "bg-[#2B4C66]/85" : "bg-emerald-600/85"}`}>
+                    <span className={`absolute top-3 start-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold text-white backdrop-blur-md ${r.type === "partnership" ? "bg-[#2B2B2B]/85" : "bg-emerald-600/85"}`}>
                       {r.type === "partnership" ? <Handshake className="w-3 h-3" strokeWidth={2} /> : <Gem className="w-3 h-3" strokeWidth={2} />}
                       {isAr ? offerTypeLabels[r.type].ar : offerTypeLabels[r.type].en}
                     </span>
@@ -523,14 +523,14 @@ const OfferDetailPage: React.FC = () => {
                         {r.area_sqm.toLocaleString("en-US")} {isAr ? "م²" : "sqm"}
                       </span>
                     </div>
-                    <h3 className="text-[14px] font-bold text-gray-900 mb-2 leading-snug line-clamp-2 group-hover:text-[#2B4C66] transition-colors">
+                    <h3 className="text-[14px] font-bold text-gray-900 mb-2 leading-snug line-clamp-2 group-hover:text-[#2B2B2B] transition-colors">
                       {isAr ? r.title.ar : r.title.en}
                     </h3>
                     <div className="flex items-center justify-between mt-3">
-                      <span className="text-[12px] font-bold text-[#2B4C66]">
+                      <span className="text-[12px] font-bold text-[#2B2B2B]">
                         {isAr ? "عرض التفاصيل" : "View Details"}
                       </span>
-                      <ArrowUpRight className="h-4 w-4 text-gray-300 group-hover:text-[#2B4C66] group-hover:rotate-12 transition-all" strokeWidth={2} />
+                      <ArrowUpRight className="h-4 w-4 text-gray-300 group-hover:text-[#2B2B2B] group-hover:rotate-12 transition-all" strokeWidth={2} />
                     </div>
                   </div>
                 </Link>

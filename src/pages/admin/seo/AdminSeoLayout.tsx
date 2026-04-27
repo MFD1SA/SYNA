@@ -26,7 +26,7 @@ const AdminSeoLayout: React.FC = () => {
     <AdminLayout>
       <div dir={isAr ? "rtl" : "ltr"}>
         <header className="mb-6">
-          <h1 className="text-[24px] md:text-[28px] font-bold text-[#1E374B] tracking-tight">
+          <h1 className="text-[24px] md:text-[28px] font-bold text-[#020202] tracking-tight">
             {isAr ? "مركز التحكم في SEO" : "SEO Control Center"}
           </h1>
           <p className="mt-1 text-[13px] text-slate-500">
@@ -47,8 +47,8 @@ const AdminSeoLayout: React.FC = () => {
                 className={({ isActive }) => cn(
                   "inline-flex items-center gap-2 h-9 px-3.5 rounded-xl text-[12.5px] font-semibold transition-all",
                   isActive
-                    ? "bg-white dark:bg-slate-800 text-[#1E374B] dark:text-white shadow-[0_2px_8px_-4px_rgba(15,31,46,0.15)]"
-                    : "text-slate-500 dark:text-slate-400 hover:text-[#1E374B] dark:hover:text-white"
+                    ? "bg-white dark:bg-slate-800 text-[#020202] dark:text-white shadow-[0_2px_8px_-4px_rgba(15,31,46,0.15)]"
+                    : "text-slate-500 dark:text-slate-400 hover:text-[#020202] dark:hover:text-white"
                 )}
               >
                 <t.icon className="h-3.5 w-3.5" strokeWidth={1.8} />

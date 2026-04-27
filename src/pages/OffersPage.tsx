@@ -117,8 +117,8 @@ const OffersPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#FAFBFC] relative overflow-hidden" dir={isAr ? "rtl" : "ltr"}>
       <div className="pointer-events-none absolute inset-0 z-0">
-        <div className="absolute -top-24 end-[-10%] w-[520px] h-[520px] rounded-full bg-[#C2A86B]/10 blur-[120px]" />
-        <div className="absolute bottom-[-10%] start-[-8%] w-[560px] h-[560px] rounded-full bg-[#2B4C66]/10 blur-[130px]" />
+        <div className="absolute -top-24 end-[-10%] w-[520px] h-[520px] rounded-full bg-[#C45A41]/10 blur-[120px]" />
+        <div className="absolute bottom-[-10%] start-[-8%] w-[560px] h-[560px] rounded-full bg-[#2B2B2B]/10 blur-[130px]" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#FAFBFC] via-white to-[#FAFBFC]" />
       </div>
 
@@ -141,10 +141,10 @@ const OffersPage: React.FC = () => {
           <div className="max-w-7xl mx-auto px-6">
 
             {/* Privacy disclaimer — opportunities shown are demonstrative, not real listings */}
-            <div className="mb-6 rounded-2xl bg-gradient-to-r from-[#2B4C66]/[0.06] via-[#C2A86B]/[0.08] to-[#2B4C66]/[0.06] ring-1 ring-[#C2A86B]/30 px-5 md:px-6 py-4 md:py-4.5 flex items-start gap-3.5">
-              <ShieldCheck className="w-5 h-5 md:w-6 md:h-6 text-[#A88A4A] shrink-0 mt-0.5" strokeWidth={1.7} />
+            <div className="mb-6 rounded-2xl bg-gradient-to-r from-[#2B2B2B]/[0.06] via-[#C45A41]/[0.08] to-[#2B2B2B]/[0.06] ring-1 ring-[#C45A41]/30 px-5 md:px-6 py-4 md:py-4.5 flex items-start gap-3.5">
+              <ShieldCheck className="w-5 h-5 md:w-6 md:h-6 text-[#A24832] shrink-0 mt-0.5" strokeWidth={1.7} />
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] md:text-[14px] font-bold text-[#1E374B] mb-1 leading-snug">
+                <p className="text-[13px] md:text-[14px] font-bold text-[#020202] mb-1 leading-snug">
                   {isAr ? "الفرص المعروضة أمثلة توضيحية" : "Displayed opportunities are illustrative examples"}
                 </p>
                 <p className="text-[12px] md:text-[12.5px] text-gray-600 leading-[1.8]">
@@ -157,12 +157,12 @@ const OffersPage: React.FC = () => {
 
             {!loading && items.length > 0 && (
               <div className="mb-10 rounded-3xl bg-white ring-1 ring-slate-200/70 shadow-[0_8px_30px_-12px_rgba(15,31,46,0.08)] px-6 md:px-8 py-6 md:py-7 relative overflow-hidden">
-                <div className="absolute top-0 start-0 w-full h-0.5 bg-gradient-to-r from-[#C2A86B]/60 via-[#2B4C66]/40 to-[#C2A86B]/60" />
+                <div className="absolute top-0 start-0 w-full h-0.5 bg-gradient-to-r from-[#C45A41]/60 via-[#2B2B2B]/40 to-[#C45A41]/60" />
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
                   <div className="flex items-center gap-4">
-                    <Sparkles className="w-6 h-6 text-[#A88A4A]" strokeWidth={1.7} />
+                    <Sparkles className="w-6 h-6 text-[#A24832]" strokeWidth={1.7} />
                     <div>
-                      <p className="text-[28px] md:text-[32px] font-bold text-[#1E374B] leading-none tracking-tight" dir="ltr">
+                      <p className="text-[28px] md:text-[32px] font-bold text-[#020202] leading-none tracking-tight" dir="ltr">
                         {filtered.length}
                       </p>
                       <p className="text-[12px] md:text-[13px] text-gray-500 font-semibold mt-1 tracking-wide">
@@ -185,8 +185,8 @@ const OffersPage: React.FC = () => {
                           onClick={() => setActiveChip(chip.id)}
                           className={`inline-flex items-center h-9 px-4 rounded-full text-[12.5px] font-bold transition-all ${
                             active
-                              ? "bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white shadow-[0_6px_16px_-6px_rgba(43,76,102,0.5)]"
-                              : "bg-slate-50 text-gray-500 hover:bg-slate-100 hover:text-[#1E374B] ring-1 ring-slate-200/70"
+                              ? "bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white shadow-[0_6px_16px_-6px_rgba(43,76,102,0.5)]"
+                              : "bg-slate-50 text-gray-500 hover:bg-slate-100 hover:text-[#020202] ring-1 ring-slate-200/70"
                           }`}
                         >
                           {isAr ? chip.labelAr : chip.labelEn}
@@ -204,8 +204,8 @@ const OffersPage: React.FC = () => {
               </div>
             ) : filtered.length === 0 ? (
               <div className="py-28 text-center">
-                <MapPin className="h-10 w-10 text-[#A88A4A] mx-auto mb-6" strokeWidth={1.6} />
-                <h3 className="text-[18px] md:text-[20px] font-bold text-[#1E374B] mb-2">
+                <MapPin className="h-10 w-10 text-[#A24832] mx-auto mb-6" strokeWidth={1.6} />
+                <h3 className="text-[18px] md:text-[20px] font-bold text-[#020202] mb-2">
                   {isAr ? "لا توجد عروض نشطة حالياً" : "No active offers right now"}
                 </h3>
                 <p className="text-[13px] md:text-[14px] text-gray-500 max-w-md mx-auto leading-relaxed">
@@ -238,7 +238,7 @@ const OffersPage: React.FC = () => {
 
                         <div className="absolute top-4 start-4">
                           <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wide backdrop-blur-md text-white ${
-                            isLand ? "bg-[#A88A4A]/85" : isPartnership ? "bg-[#2B4C66]/85" : "bg-emerald-600/85"
+                            isLand ? "bg-[#A24832]/85" : isPartnership ? "bg-[#2B2B2B]/85" : "bg-emerald-600/85"
                           }`}>
                             {isLand
                               ? <Landmark className="w-3 h-3" strokeWidth={2} />
@@ -257,7 +257,7 @@ const OffersPage: React.FC = () => {
                       </div>
 
                       <div className="p-5 md:p-6 flex flex-col flex-1">
-                        <h3 className="text-[16.5px] md:text-[17px] font-bold text-gray-900 mb-3 leading-snug line-clamp-2 group-hover:text-[#2B4C66] transition-colors duration-200">
+                        <h3 className="text-[16.5px] md:text-[17px] font-bold text-gray-900 mb-3 leading-snug line-clamp-2 group-hover:text-[#2B2B2B] transition-colors duration-200">
                           {isAr ? item.title.ar : item.title.en}
                         </h3>
                         {item.description && (
@@ -268,12 +268,12 @@ const OffersPage: React.FC = () => {
 
                         <div className="flex flex-wrap items-center gap-2 mb-5">
                           {item.usageType && usageTypeLabels[item.usageType] && (
-                            <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#2B4C66]/[0.06] text-[11px] font-bold text-[#2B4C66] tracking-wide">
+                            <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#2B2B2B]/[0.06] text-[11px] font-bold text-[#2B2B2B] tracking-wide">
                               {isAr ? usageTypeLabels[item.usageType].ar : usageTypeLabels[item.usageType].en}
                             </span>
                           )}
                           {item.usageType && !usageTypeLabels[item.usageType] && (
-                            <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#2B4C66]/[0.06] text-[11px] font-bold text-[#2B4C66] tracking-wide">
+                            <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#2B2B2B]/[0.06] text-[11px] font-bold text-[#2B2B2B] tracking-wide">
                               {item.usageType}
                             </span>
                           )}
@@ -286,7 +286,7 @@ const OffersPage: React.FC = () => {
                         </div>
 
                         <div className="mt-auto">
-                          <span className="group/cta flex w-full items-center justify-center gap-2 h-[46px] rounded-xl bg-gradient-to-r from-[#2B4C66] to-[#1E374B] text-white text-[13px] font-bold shadow-[0_6px_18px_-6px_rgba(43,76,102,0.45)] group-hover:shadow-[0_10px_24px_-8px_rgba(43,76,102,0.55)] transition-all">
+                          <span className="group/cta flex w-full items-center justify-center gap-2 h-[46px] rounded-xl bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white text-[13px] font-bold shadow-[0_6px_18px_-6px_rgba(43,76,102,0.45)] group-hover:shadow-[0_10px_24px_-8px_rgba(43,76,102,0.55)] transition-all">
                             {isAr ? "عرض التفاصيل" : "View Details"}
                             <ArrowUpRight className="h-3.5 w-3.5 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" strokeWidth={2} />
                           </span>

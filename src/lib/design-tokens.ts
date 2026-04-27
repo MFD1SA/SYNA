@@ -4,11 +4,11 @@
  */
 
 export const colors = {
-  primary: "#2B4C66",
-  deep: "#1E374B",
-  gold: "#C2A86B",
+  primary: "#2B2B2B",
+  deep: "#020202",
+  gold: "#C45A41",
   goldLight: "#D7C084",
-  goldDeep: "#A88A4A",
+  goldDeep: "#A24832",
   sand: "#F7F4ED",
   mist: "#F7F8FA",
   line: "rgba(15, 31, 46, 0.10)",
@@ -32,9 +32,9 @@ export const glass = {
   neutral:
     "bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-white/60 dark:border-white/10",
   gold:
-    "bg-[#FAF6EC]/70 dark:bg-[#1E374B]/60 backdrop-blur-xl border border-[#C2A86B]/30 dark:border-[#C2A86B]/20",
+    "bg-[#FAF6EC]/70 dark:bg-[#020202]/60 backdrop-blur-xl border border-[#C45A41]/30 dark:border-[#C45A41]/20",
   blue:
-    "bg-[#EEF3F7]/70 dark:bg-[#1E374B]/60 backdrop-blur-xl border border-[#2B4C66]/15 dark:border-[#2B4C66]/30",
+    "bg-[#EEF3F7]/70 dark:bg-[#020202]/60 backdrop-blur-xl border border-[#2B2B2B]/15 dark:border-[#2B2B2B]/30",
   hero:
     "bg-gradient-to-br from-white/80 via-white/70 to-white/60 dark:from-slate-900/70 dark:via-slate-900/60 dark:to-slate-900/50 backdrop-blur-2xl border border-white/70 dark:border-white/10",
 } as const;
@@ -42,8 +42,8 @@ export const glass = {
 export type Tone = "primary" | "gold" | "success" | "warn" | "danger" | "neutral";
 
 export const toneRing: Record<Tone, string> = {
-  primary: "ring-[#2B4C66]/20 text-[#2B4C66]",
-  gold: "ring-[#C2A86B]/25 text-[#A88A4A]",
+  primary: "ring-[#2B2B2B]/20 text-[#2B2B2B]",
+  gold: "ring-[#C45A41]/25 text-[#A24832]",
   success: "ring-emerald-500/20 text-emerald-600",
   warn: "ring-amber-500/25 text-amber-600",
   danger: "ring-rose-500/25 text-rose-600",
@@ -51,8 +51,8 @@ export const toneRing: Record<Tone, string> = {
 };
 
 export const toneBg: Record<Tone, string> = {
-  primary: "bg-[#2B4C66]/[0.07]",
-  gold: "bg-[#C2A86B]/[0.12]",
+  primary: "bg-[#2B2B2B]/[0.07]",
+  gold: "bg-[#C45A41]/[0.12]",
   success: "bg-emerald-50",
   warn: "bg-amber-50",
   danger: "bg-rose-50",
@@ -60,8 +60,8 @@ export const toneBg: Record<Tone, string> = {
 };
 
 export const toneText: Record<Tone, string> = {
-  primary: "text-[#2B4C66]",
-  gold: "text-[#A88A4A]",
+  primary: "text-[#2B2B2B]",
+  gold: "text-[#A24832]",
   success: "text-emerald-700",
   warn: "text-amber-700",
   danger: "text-rose-700",

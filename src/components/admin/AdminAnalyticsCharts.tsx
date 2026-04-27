@@ -81,26 +81,26 @@ const AdminAnalyticsCharts: React.FC = () => {
           onClick={() => setActiveTab("overview")}
           className={`px-4 py-2.5 text-[13px] font-medium transition-colors relative ${
             activeTab === "overview"
-              ? "text-[#2B4C66]"
+              ? "text-[#2B2B2B]"
               : "text-gray-400 hover:text-gray-600"
           }`}
         >
           {isAr ? "نظرة عامة" : "Overview"}
           {activeTab === "overview" && (
-            <span className="absolute bottom-0 start-0 end-0 h-[2px] bg-[#2B4C66] rounded-full" />
+            <span className="absolute bottom-0 start-0 end-0 h-[2px] bg-[#2B2B2B] rounded-full" />
           )}
         </button>
         <button
           onClick={() => setActiveTab("revenue")}
           className={`px-4 py-2.5 text-[13px] font-medium transition-colors relative ${
             activeTab === "revenue"
-              ? "text-[#2B4C66]"
+              ? "text-[#2B2B2B]"
               : "text-gray-400 hover:text-gray-600"
           }`}
         >
           {isAr ? "الطلبات والصفقات" : "Requests & Deals"}
           {activeTab === "revenue" && (
-            <span className="absolute bottom-0 start-0 end-0 h-[2px] bg-[#2B4C66] rounded-full" />
+            <span className="absolute bottom-0 start-0 end-0 h-[2px] bg-[#2B2B2B] rounded-full" />
           )}
         </button>
       </div>
@@ -110,22 +110,22 @@ const AdminAnalyticsCharts: React.FC = () => {
         {activeTab === "overview" ? (
           <>
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-sm bg-[#2B4C66]" />
+              <span className="h-2.5 w-2.5 rounded-sm bg-[#2B2B2B]" />
               {isAr ? "مستخدمون" : "Users"}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-sm bg-[#C2A86B]" />
+              <span className="h-2.5 w-2.5 rounded-sm bg-[#C45A41]" />
               {isAr ? "أراضي" : "Lands"}
             </span>
           </>
         ) : (
           <>
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#2B4C66]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#2B2B2B]" />
               {isAr ? "صفقات" : "Deals"}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#C2A86B]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#C45A41]" />
               {isAr ? "طلبات" : "Requests"}
             </span>
           </>
@@ -138,12 +138,12 @@ const AdminAnalyticsCharts: React.FC = () => {
           <ComposedChart data={monthly} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
             <defs>
               <linearGradient id="barFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#2B4C66" stopOpacity={0.9} />
-                <stop offset="100%" stopColor="#2B4C66" stopOpacity={0.6} />
+                <stop offset="0%" stopColor="#2B2B2B" stopOpacity={0.9} />
+                <stop offset="100%" stopColor="#2B2B2B" stopOpacity={0.6} />
               </linearGradient>
               <linearGradient id="barFill2" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#C2A86B" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="#C2A86B" stopOpacity={0.5} />
+                <stop offset="0%" stopColor="#C45A41" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="#C45A41" stopOpacity={0.5} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false} />
@@ -159,28 +159,28 @@ const AdminAnalyticsCharts: React.FC = () => {
           <AreaChart data={monthly} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
             <defs>
               <linearGradient id="areaDeals" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#2B4C66" stopOpacity={0.15} />
-                <stop offset="100%" stopColor="#2B4C66" stopOpacity={0} />
+                <stop offset="0%" stopColor="#2B2B2B" stopOpacity={0.15} />
+                <stop offset="100%" stopColor="#2B2B2B" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="areaRequests" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#C2A86B" stopOpacity={0.15} />
-                <stop offset="100%" stopColor="#C2A86B" stopOpacity={0} />
+                <stop offset="0%" stopColor="#C45A41" stopOpacity={0.15} />
+                <stop offset="100%" stopColor="#C45A41" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false} />
             <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#999" }} axisLine={false} tickLine={false} dy={8} />
             <YAxis tick={{ fontSize: 11, fill: "#999" }} axisLine={false} tickLine={false} />
             <Tooltip contentStyle={tooltipStyle} />
-            <Area type="monotone" dataKey="deals" stroke="#2B4C66" fill="url(#areaDeals)" name={isAr ? "صفقات" : "Deals"} strokeWidth={2.5} dot={{ r: 4, fill: "#2B4C66", strokeWidth: 2, stroke: "#fff" }} activeDot={{ r: 6, strokeWidth: 2, stroke: "#fff" }} />
-            <Area type="monotone" dataKey="requests" stroke="#C2A86B" fill="url(#areaRequests)" name={isAr ? "طلبات" : "Requests"} strokeWidth={2.5} dot={{ r: 4, fill: "#C2A86B", strokeWidth: 2, stroke: "#fff" }} activeDot={{ r: 6, strokeWidth: 2, stroke: "#fff" }} />
+            <Area type="monotone" dataKey="deals" stroke="#2B2B2B" fill="url(#areaDeals)" name={isAr ? "صفقات" : "Deals"} strokeWidth={2.5} dot={{ r: 4, fill: "#2B2B2B", strokeWidth: 2, stroke: "#fff" }} activeDot={{ r: 6, strokeWidth: 2, stroke: "#fff" }} />
+            <Area type="monotone" dataKey="requests" stroke="#C45A41" fill="url(#areaRequests)" name={isAr ? "طلبات" : "Requests"} strokeWidth={2.5} dot={{ r: 4, fill: "#C45A41", strokeWidth: 2, stroke: "#fff" }} activeDot={{ r: 6, strokeWidth: 2, stroke: "#fff" }} />
           </AreaChart>
         </ResponsiveContainer>
       )}
 
       {/* Conversion KPI inline */}
       <div className="flex items-center gap-4 rounded-xl bg-gradient-to-r from-gray-50 to-transparent px-5 py-3.5 border border-gray-100">
-        <div className="h-10 w-10 rounded-lg bg-[#2B4C66]/10 flex items-center justify-center">
-          <span className="text-[16px] font-bold text-[#2B4C66]">{conversionRate}%</span>
+        <div className="h-10 w-10 rounded-lg bg-[#2B2B2B]/10 flex items-center justify-center">
+          <span className="text-[16px] font-bold text-[#2B2B2B]">{conversionRate}%</span>
         </div>
         <div>
           <p className="text-[13px] font-medium text-gray-700">{isAr ? "معدل التحويل" : "Conversion Rate"}</p>

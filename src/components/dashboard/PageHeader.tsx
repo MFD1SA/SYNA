@@ -54,25 +54,25 @@ const variantStyles: Record<PageHeaderVariant, {
   accent: string;
 }> = {
   admin: {
-    iconBg: "bg-gradient-to-br from-[#2B4C66] to-[#1E374B]",
-    iconRing: "ring-1 ring-[#C2A86B]/40",
-    iconColor: "text-[#C2A86B]",
-    eyebrow: "text-[#C2A86B]",
-    accent: "from-[#C2A86B]/0 via-[#C2A86B]/40 to-[#C2A86B]/0",
+    iconBg: "bg-gradient-to-br from-[#2B2B2B] to-[#020202]",
+    iconRing: "ring-1 ring-[#C45A41]/40",
+    iconColor: "text-[#C45A41]",
+    eyebrow: "text-[#C45A41]",
+    accent: "from-[#C45A41]/0 via-[#C45A41]/40 to-[#C45A41]/0",
   },
   owner: {
-    iconBg: "bg-gradient-to-br from-[#C2A86B] to-[#A88A4A]",
+    iconBg: "bg-gradient-to-br from-[#C45A41] to-[#A24832]",
     iconRing: "ring-1 ring-white/40 dark:ring-white/10",
     iconColor: "text-white",
-    eyebrow: "text-[#A88A4A]",
-    accent: "from-[#C2A86B]/0 via-[#C2A86B]/50 to-[#C2A86B]/0",
+    eyebrow: "text-[#A24832]",
+    accent: "from-[#C45A41]/0 via-[#C45A41]/50 to-[#C45A41]/0",
   },
   developer: {
-    iconBg: "bg-gradient-to-br from-[#2B4C66] to-[#1E374B]",
+    iconBg: "bg-gradient-to-br from-[#2B2B2B] to-[#020202]",
     iconRing: "ring-1 ring-white/30 dark:ring-white/10",
     iconColor: "text-white",
-    eyebrow: "text-[#2B4C66] dark:text-[#9FB7CC]",
-    accent: "from-[#2B4C66]/0 via-[#2B4C66]/40 to-[#2B4C66]/0",
+    eyebrow: "text-[#2B2B2B] dark:text-[#9FB7CC]",
+    accent: "from-[#2B2B2B]/0 via-[#2B2B2B]/40 to-[#2B2B2B]/0",
   },
 };
 
@@ -130,7 +130,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                 {eyebrow}
               </p>
             )}
-            <h1 className="text-[22px] md:text-[26px] font-bold text-[#1E374B] dark:text-white tracking-tight leading-tight">
+            <h1 className="text-[22px] md:text-[26px] font-bold text-[#020202] dark:text-white tracking-tight leading-tight">
               {isAr ? titleAr : titleEn}
             </h1>
             {(descAr || descEn) && (

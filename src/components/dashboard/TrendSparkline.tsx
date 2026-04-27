@@ -15,7 +15,7 @@ export const TrendSparkline: React.FC<Props> = ({
   data,
   width = 220,
   height = 64,
-  color = "#2B4C66",
+  color = "#2B2B2B",
   className,
   showArea = true,
 }) => {

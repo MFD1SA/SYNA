@@ -45,7 +45,7 @@ const CommissionAgreementModal: React.FC<Props> = ({
   const displayPhone = phone?.trim() || (isAr ? "غير محدد" : "Not provided");
   const displayCR = crNumber?.trim() || (isAr ? "غير محدد" : "Not provided");
 
-  const articleHeadingClass = "font-bold text-[#1E374B] text-[16px] border-s-[4px] border-[#2B4C66] ps-4 py-1 mb-3";
+  const articleHeadingClass = "font-bold text-[#020202] text-[16px] border-s-[4px] border-[#2B2B2B] ps-4 py-1 mb-3";
 
   const fontFamily = isAr
     ? "'IBM Plex Sans Arabic', system-ui, sans-serif"
@@ -87,7 +87,7 @@ const CommissionAgreementModal: React.FC<Props> = ({
           .agreement-section { break-inside: avoid; page-break-inside: avoid; }
           .print-header {
             display: flex !important;
-            border-bottom: 2px solid #1E374B !important;
+            border-bottom: 2px solid #020202 !important;
             padding-bottom: 14px !important;
             margin-bottom: 20px !important;
           }
@@ -101,7 +101,7 @@ const CommissionAgreementModal: React.FC<Props> = ({
         <div className="max-w-[900px] mx-auto px-6 md:px-10 h-[60px] flex items-center justify-between">
           <button
             onClick={onDecline}
-            className="flex items-center gap-2 text-[13px] font-medium text-gray-500 hover:text-[#2B4C66] transition-colors"
+            className="flex items-center gap-2 text-[13px] font-medium text-gray-500 hover:text-[#2B2B2B] transition-colors"
           >
             <BackArrow className="w-4 h-4" strokeWidth={1.5} />
             {isAr ? "العودة للتسجيل" : "Back to Registration"}
@@ -109,7 +109,7 @@ const CommissionAgreementModal: React.FC<Props> = ({
           <div className="flex items-center gap-4">
             <button
               onClick={handlePrint}
-              className="flex items-center gap-2 text-[12px] font-medium text-gray-500 hover:text-[#2B4C66] px-3 py-1.5 rounded-md border border-gray-200 hover:border-[#2B4C66]/30 transition-colors"
+              className="flex items-center gap-2 text-[12px] font-medium text-gray-500 hover:text-[#2B2B2B] px-3 py-1.5 rounded-md border border-gray-200 hover:border-[#2B2B2B]/30 transition-colors"
               title={isAr ? "طباعة الاتفاقية" : "Print agreement"}
             >
               <Printer className="w-3.5 h-3.5" strokeWidth={1.5} />
@@ -131,7 +131,7 @@ const CommissionAgreementModal: React.FC<Props> = ({
           <div className="print-header print-only agreement-section" style={{ alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
             <img src={logoImg} alt="SINA" style={{ height: "36px", width: "auto", objectFit: "contain" }} />
             <div style={{ textAlign: isAr ? "left" : "right", fontSize: "10px", color: "#6B7280" }}>
-              <div style={{ fontWeight: 700, color: "#1E374B", fontSize: "11px", marginBottom: "2px" }}>
+              <div style={{ fontWeight: 700, color: "#020202", fontSize: "11px", marginBottom: "2px" }}>
                 {isAr ? "سينا للتطوير العقاري" : "SINA Real Estate Development"}
               </div>
               <div>{isAr ? `رقم المرجع: ${refNumber}` : `Ref #: ${refNumber}`}</div>
@@ -141,10 +141,10 @@ const CommissionAgreementModal: React.FC<Props> = ({
 
           {/* ═══════ Page Header (screen) ═══════ */}
           <div className="text-center mb-10 agreement-section no-print">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-5 p-2" style={{ background: "linear-gradient(135deg, #2B4C66, #1E374B)" }}>
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-5 p-2" style={{ background: "linear-gradient(135deg, #2B2B2B, #020202)" }}>
               <img src={logoImg} alt="SINA" className="w-full h-full object-contain brightness-0 invert" />
             </div>
-            <h1 className="text-[28px] md:text-[32px] font-bold text-[#1E374B] tracking-tight mb-3">
+            <h1 className="text-[28px] md:text-[32px] font-bold text-[#020202] tracking-tight mb-3">
               {isAr ? "اتفاقية الخدمات والأتعاب المهنية" : "Professional Services & Fees Agreement"}
             </h1>
             <p className="text-[15px] text-gray-500 max-w-[550px] mx-auto leading-relaxed">
@@ -152,9 +152,9 @@ const CommissionAgreementModal: React.FC<Props> = ({
                 ? "وثيقة ملزمة قانونياً — يرجى مراجعة جميع البنود بعناية قبل الموافقة"
                 : "Legally binding document — please review all clauses carefully before accepting"}
             </p>
-            <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full bg-[#2B4C66]/[0.06] border border-[#2B4C66]/10">
-              <Calendar className="w-3.5 h-3.5 text-[#2B4C66]/60" strokeWidth={1.5} />
-              <span className="text-[12px] font-medium text-[#2B4C66]/70">
+            <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full bg-[#2B2B2B]/[0.06] border border-[#2B2B2B]/10">
+              <Calendar className="w-3.5 h-3.5 text-[#2B2B2B]/60" strokeWidth={1.5} />
+              <span className="text-[12px] font-medium text-[#2B2B2B]/70">
                 {isAr ? `تاريخ: ${agreementDate}` : `Date: ${agreementDate}`}
               </span>
               <span className="text-[11px] text-gray-400 ms-1">• {refNumber}</span>
@@ -164,7 +164,7 @@ const CommissionAgreementModal: React.FC<Props> = ({
 
           {/* Print title */}
           <div className="print-only text-center mb-6 agreement-section">
-            <h1 style={{ fontSize: "18px", fontWeight: 700, color: "#1E374B", marginBottom: "4px" }}>
+            <h1 style={{ fontSize: "18px", fontWeight: 700, color: "#020202", marginBottom: "4px" }}>
               {isAr ? "اتفاقية الخدمات والأتعاب المهنية" : "Professional Services & Fees Agreement"}
             </h1>
             <p style={{ fontSize: "10px", color: "#6B7280" }}>
@@ -180,11 +180,11 @@ const CommissionAgreementModal: React.FC<Props> = ({
                 {isAr ? "الطرف الأول — مقدّم الخدمات" : "First Party — Service Provider"}
               </p>
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center p-2 shrink-0" style={{ background: "linear-gradient(135deg, #2B4C66, #1E374B)" }}>
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center p-2 shrink-0" style={{ background: "linear-gradient(135deg, #2B2B2B, #020202)" }}>
                   <img src={logoImg} alt="SINA" className="w-full h-full object-contain brightness-0 invert" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[15px] font-bold text-[#1E374B]">{isAr ? "سينا للتطوير العقاري" : "SINA Real Estate Development"}</p>
+                  <p className="text-[15px] font-bold text-[#020202]">{isAr ? "سينا للتطوير العقاري" : "SINA Real Estate Development"}</p>
                   <p className="text-[11px] text-gray-400">{isAr ? "مشغّل ومدير الخدمات العقارية" : "Real Estate Services Operator"}</p>
                 </div>
               </div>
@@ -196,15 +196,15 @@ const CommissionAgreementModal: React.FC<Props> = ({
                 {isAr ? "الطرف الثاني — المطوّر العقاري" : "Second Party — The Developer"}
               </p>
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-xl bg-[#C2A86B]/15 flex items-center justify-center overflow-hidden shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-[#C45A41]/15 flex items-center justify-center overflow-hidden shrink-0">
                   {developerLogoUrl ? (
                     <img src={developerLogoUrl} alt={displayCompany} className="w-full h-full object-contain p-1" />
                   ) : (
-                    <Building2 className="w-5 h-5 text-[#C2A86B]" strokeWidth={1.5} />
+                    <Building2 className="w-5 h-5 text-[#C45A41]" strokeWidth={1.5} />
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[15px] font-bold text-[#1E374B] truncate">{displayCompany}</p>
+                  <p className="text-[15px] font-bold text-[#020202] truncate">{displayCompany}</p>
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-gray-400">
                     <span className="flex items-center gap-1">
                       <User className="w-3 h-3" strokeWidth={1.5} />
@@ -223,12 +223,12 @@ const CommissionAgreementModal: React.FC<Props> = ({
           </div>
 
           {/* ═══════ Fees Summary ═══════ */}
-          <div className="rounded-2xl border border-[#2B4C66]/10 bg-white p-6 md:p-8 mb-8 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] agreement-section">
+          <div className="rounded-2xl border border-[#2B2B2B]/10 bg-white p-6 md:p-8 mb-8 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] agreement-section">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-9 h-9 rounded-xl bg-[#2B4C66]/[0.07] flex items-center justify-center">
-                <Percent className="w-4 h-4 text-[#2B4C66]" strokeWidth={1.5} />
+              <div className="w-9 h-9 rounded-xl bg-[#2B2B2B]/[0.07] flex items-center justify-center">
+                <Percent className="w-4 h-4 text-[#2B2B2B]" strokeWidth={1.5} />
               </div>
-              <h2 className="text-[16px] font-bold text-[#1E374B]">
+              <h2 className="text-[16px] font-bold text-[#020202]">
                 {isAr ? "ملخص هيكل الأتعاب" : "Fees Structure Summary"}
               </h2>
             </div>
@@ -243,8 +243,8 @@ const CommissionAgreementModal: React.FC<Props> = ({
               </div>
               <Separator />
               <div className="flex justify-between items-center py-2">
-                <span className="font-bold text-[#1E374B] text-[16px]">{isAr ? "إجمالي الأتعاب المهنية" : "Total Professional Fees"}</span>
-                <span className="font-bold text-[#2B4C66] text-[20px]" dir="ltr">4.00%</span>
+                <span className="font-bold text-[#020202] text-[16px]">{isAr ? "إجمالي الأتعاب المهنية" : "Total Professional Fees"}</span>
+                <span className="font-bold text-[#2B2B2B] text-[20px]" dir="ltr">4.00%</span>
               </div>
             </div>
             <div className="mt-5 flex items-start gap-3 rounded-xl bg-blue-50/80 border border-blue-200/50 p-4">
@@ -260,10 +260,10 @@ const CommissionAgreementModal: React.FC<Props> = ({
           {/* ═══════ Full Agreement Text ═══════ */}
           <div className="rounded-2xl border border-gray-200/80 bg-white shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] mb-8 agreement-section">
             <div className="px-6 md:px-8 py-5 border-b border-gray-100 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#2B4C66]/[0.07] flex items-center justify-center">
-                <FileText className="w-4 h-4 text-[#2B4C66]" strokeWidth={1.5} />
+              <div className="w-9 h-9 rounded-xl bg-[#2B2B2B]/[0.07] flex items-center justify-center">
+                <FileText className="w-4 h-4 text-[#2B2B2B]" strokeWidth={1.5} />
               </div>
-              <h2 className="text-[16px] font-bold text-[#1E374B]">
+              <h2 className="text-[16px] font-bold text-[#020202]">
                 {isAr ? "نص الاتفاقية الكامل" : "Full Agreement Text"}
               </h2>
             </div>
@@ -271,7 +271,7 @@ const CommissionAgreementModal: React.FC<Props> = ({
             <div className="px-6 md:px-8 py-8 text-[15px] leading-[2.1] text-gray-700">
               {isAr ? (
                 <div className="space-y-7">
-                  <p className="font-bold text-[#1E374B] text-[19px] text-center pb-4 border-b-2 border-[#2B4C66]/10">
+                  <p className="font-bold text-[#020202] text-[19px] text-center pb-4 border-b-2 border-[#2B2B2B]/10">
                     اتفاقية الخدمات والأتعاب المهنية — سينا للتطوير العقاري
                   </p>
 
@@ -317,9 +317,9 @@ const CommissionAgreementModal: React.FC<Props> = ({
                   <div>
                     <p className={articleHeadingClass}>المادة الرابعة: هيكل الأتعاب المهنية</p>
                     <div className="space-y-2 ps-1">
-                      <p>١. <strong>عمولة السعي العقاري:</strong> <span dir="ltr" className="text-[#2B4C66] font-bold">2.50%</span> من قيمة الأرض، مستحقة للوسيط العقاري وفقاً لنظام الوساطة العقارية.</p>
-                      <p>٢. <strong>أتعاب المنصة:</strong> <span dir="ltr" className="text-[#2B4C66] font-bold">1.50%</span> من قيمة الأرض، مقابل الخدمات التشغيلية والتقنية والاستشارية التي تقدمها المنصة.</p>
-                      <p>٣. <strong>إجمالي الأتعاب المهنية:</strong> <span dir="ltr" className="text-[#2B4C66] font-bold">4.00%</span> من قيمة الأرض.</p>
+                      <p>١. <strong>عمولة السعي العقاري:</strong> <span dir="ltr" className="text-[#2B2B2B] font-bold">2.50%</span> من قيمة الأرض، مستحقة للوسيط العقاري وفقاً لنظام الوساطة العقارية.</p>
+                      <p>٢. <strong>أتعاب المنصة:</strong> <span dir="ltr" className="text-[#2B2B2B] font-bold">1.50%</span> من قيمة الأرض، مقابل الخدمات التشغيلية والتقنية والاستشارية التي تقدمها المنصة.</p>
+                      <p>٣. <strong>إجمالي الأتعاب المهنية:</strong> <span dir="ltr" className="text-[#2B2B2B] font-bold">4.00%</span> من قيمة الأرض.</p>
                       <p className="text-[13px] text-gray-500 italic mt-2">تُحتسب النسب المذكورة على قيمة الأرض فقط ولا تشمل قيمة التطوير أو التشييد.</p>
                     </div>
                   </div>
@@ -421,7 +421,7 @@ const CommissionAgreementModal: React.FC<Props> = ({
                 </div>
               ) : (
                 <div className="space-y-7">
-                  <p className="font-bold text-[#1E374B] text-[19px] text-center pb-4 border-b-2 border-[#2B4C66]/10">
+                  <p className="font-bold text-[#020202] text-[19px] text-center pb-4 border-b-2 border-[#2B2B2B]/10">
                     Professional Services & Fees Agreement — SINA Real Estate Development
                   </p>
 
@@ -463,9 +463,9 @@ const CommissionAgreementModal: React.FC<Props> = ({
                   <div>
                     <p className={articleHeadingClass}>Article 4: Professional Fees Structure</p>
                     <div className="space-y-2 ps-1">
-                      <p>1. <strong>Real Estate Brokerage Fee:</strong> <span dir="ltr" className="text-[#2B4C66] font-bold">2.50%</span> of the Land Value, due under the Real Estate Brokerage Law.</p>
-                      <p>2. <strong>Platform Services Fee:</strong> <span dir="ltr" className="text-[#2B4C66] font-bold">1.50%</span> of the Land Value, for operational, technical, and advisory services.</p>
-                      <p>3. <strong>Total Professional Fees:</strong> <span dir="ltr" className="text-[#2B4C66] font-bold">4.00%</span> of the Land Value.</p>
+                      <p>1. <strong>Real Estate Brokerage Fee:</strong> <span dir="ltr" className="text-[#2B2B2B] font-bold">2.50%</span> of the Land Value, due under the Real Estate Brokerage Law.</p>
+                      <p>2. <strong>Platform Services Fee:</strong> <span dir="ltr" className="text-[#2B2B2B] font-bold">1.50%</span> of the Land Value, for operational, technical, and advisory services.</p>
+                      <p>3. <strong>Total Professional Fees:</strong> <span dir="ltr" className="text-[#2B2B2B] font-bold">4.00%</span> of the Land Value.</p>
                       <p className="text-[13px] text-gray-500 italic mt-2">All percentages are calculated on the Land Value only and exclude development or construction value.</p>
                     </div>
                   </div>
@@ -572,7 +572,7 @@ const CommissionAgreementModal: React.FC<Props> = ({
               <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
                 <Shield className="w-4 h-4 text-emerald-600" strokeWidth={1.5} />
               </div>
-              <h2 className="text-[16px] font-bold text-[#1E374B]">
+              <h2 className="text-[16px] font-bold text-[#020202]">
                 {isAr ? "الإقرار والموافقة" : "Acknowledgment & Acceptance"}
               </h2>
             </div>
@@ -580,15 +580,15 @@ const CommissionAgreementModal: React.FC<Props> = ({
             <label
               className={`flex items-start gap-4 cursor-pointer p-5 rounded-xl border-2 transition-all mb-6 ${
                 checked
-                  ? "border-[#2B4C66]/30 bg-[#2B4C66]/[0.03] shadow-[0_0_0_4px_rgba(43,76,102,0.06)]"
-                  : "border-gray-200 bg-gray-50/50 hover:border-[#2B4C66]/15 hover:bg-white"
+                  ? "border-[#2B2B2B]/30 bg-[#2B2B2B]/[0.03] shadow-[0_0_0_4px_rgba(43,76,102,0.06)]"
+                  : "border-gray-200 bg-gray-50/50 hover:border-[#2B2B2B]/15 hover:bg-white"
               }`}
             >
               <input
                 type="checkbox"
                 checked={checked}
                 onChange={(e) => setChecked(e.target.checked)}
-                className="mt-1 rounded border-gray-300 w-5 h-5 accent-[#2B4C66]"
+                className="mt-1 rounded border-gray-300 w-5 h-5 accent-[#2B2B2B]"
               />
               <span className="text-[14px] text-gray-700 leading-[1.9]">
                 {isAr
@@ -610,7 +610,7 @@ const CommissionAgreementModal: React.FC<Props> = ({
                 className="flex-1 h-[52px] text-white text-[14px] font-semibold rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2.5"
                 style={{
                   background: checked
-                    ? "linear-gradient(135deg, #2B4C66 0%, #1E374B 100%)"
+                    ? "linear-gradient(135deg, #2B2B2B 0%, #020202 100%)"
                     : "#9CA3AF",
                 }}
               >

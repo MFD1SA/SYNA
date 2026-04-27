@@ -335,17 +335,17 @@ const CrmBrowseLands: React.FC = () => {
       <DashboardShell isAr={isAr} accent="blue">
         {/* ═══ HERO ═══ */}
         <BentoCard variant="hero" span="full" padding="lg" className="relative overflow-hidden mb-5">
-          <div className="absolute top-0 end-0 w-60 h-60 bg-[#2B4C66]/10 rounded-full blur-3xl -me-20 -mt-20 pointer-events-none" />
+          <div className="absolute top-0 end-0 w-60 h-60 bg-[#2B2B2B]/10 rounded-full blur-3xl -me-20 -mt-20 pointer-events-none" />
           <div className="relative flex items-start justify-between gap-4 flex-wrap">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#2B4C66]/25 dark:border-[#7BA3C5]/35 text-[11px] font-semibold text-[#2B4C66] dark:text-[#9CC3DD]">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#2B2B2B]/25 dark:border-[#7BA3C5]/35 text-[11px] font-semibold text-[#2B2B2B] dark:text-[#9CC3DD]">
                   <Search className="w-3 h-3" strokeWidth={1.7} />
                   {isAr ? "استعراض الفرص" : "Browse"}
                 </span>
                 {isVerified && <StatusBadge variant="success" dot>{isAr ? "موثّق" : "Verified"}</StatusBadge>}
               </div>
-              <h1 className="text-[24px] md:text-[28px] font-bold text-[#1E374B] dark:text-white tracking-tight">
+              <h1 className="text-[24px] md:text-[28px] font-bold text-[#020202] dark:text-white tracking-tight">
                 {isAr ? "استعرض الفرص العقارية" : "Browse Opportunities"}
               </h1>
               <p className="mt-1 text-[13px] text-slate-600 dark:text-slate-300">
@@ -355,7 +355,7 @@ const CrmBrowseLands: React.FC = () => {
             {!loading && (
               <div className="px-4 py-2.5 rounded-xl bg-white/70 dark:bg-slate-800/60 border border-white/60 dark:border-white/10">
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">{isAr ? "النتائج" : "Results"}</p>
-                <p className="text-[22px] font-bold text-[#1E374B] dark:text-white tracking-tight leading-none mt-1" dir="ltr">
+                <p className="text-[22px] font-bold text-[#020202] dark:text-white tracking-tight leading-none mt-1" dir="ltr">
                   {filtered.length}
                 </p>
               </div>
@@ -421,7 +421,7 @@ const CrmBrowseLands: React.FC = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-[12px] text-slate-500 hover:text-[#2B4C66] h-10"
+                className="text-[12px] text-slate-500 hover:text-[#2B2B2B] h-10"
                 onClick={() => { setSearchQuery(""); setUsageFilter("all"); setAreaFilter("all"); }}
               >
                 {isAr ? "إعادة ضبط" : "Reset"}
@@ -433,13 +433,13 @@ const CrmBrowseLands: React.FC = () => {
           {(usageFilter !== "all" || areaFilter !== "all" || searchQuery) && (
             <div className="mt-3 flex flex-wrap gap-1.5">
               {searchQuery && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#2B4C66]/25 dark:border-[#7BA3C5]/35 text-[11px] font-semibold text-[#2B4C66] dark:text-[#9CC3DD]">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#2B2B2B]/25 dark:border-[#7BA3C5]/35 text-[11px] font-semibold text-[#2B2B2B] dark:text-[#9CC3DD]">
                   <Search className="w-3 h-3" strokeWidth={1.7} />{searchQuery}
-                  <button onClick={() => setSearchQuery("")} className="hover:text-[#1E374B] dark:hover:text-white"><XCircle className="w-3 h-3" strokeWidth={1.7} /></button>
+                  <button onClick={() => setSearchQuery("")} className="hover:text-[#020202] dark:hover:text-white"><XCircle className="w-3 h-3" strokeWidth={1.7} /></button>
                 </span>
               )}
               {usageFilter !== "all" && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#C2A86B]/35 dark:border-[#C2A86B]/40 text-[11px] font-semibold text-[#A88A4A] dark:text-[#D4BC8A]">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#C45A41]/35 dark:border-[#C45A41]/40 text-[11px] font-semibold text-[#A24832] dark:text-[#D4BC8A]">
                   {isAr ? usageLabels[usageFilter]?.ar : usageLabels[usageFilter]?.en}
                   <button onClick={() => setUsageFilter("all")} className="hover:text-[#866C3A] dark:hover:text-[#E5D4A6]"><XCircle className="w-3 h-3" strokeWidth={1.7} /></button>
                 </span>
@@ -528,7 +528,7 @@ const CrmBrowseLands: React.FC = () => {
                           <TooltipTrigger asChild>
                             {/* Wrapper span: disabled buttons don't fire pointer events so Radix can't detect hover */}
                             <span className="flex-1" tabIndex={0}>
-                              <Button size="sm" variant="outline" className="w-full text-xs gap-1 border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10" disabled>
+                              <Button size="sm" variant="outline" className="w-full text-xs gap-1 border-[#2B2B2B]/30 text-[#2B2B2B] hover:bg-[#2B2B2B]/5 dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10" disabled>
                                 <Send className="h-3 w-3" strokeWidth={1.7} />{isAr ? "تقديم طلب" : "Apply"}
                               </Button>
                             </span>
@@ -540,7 +540,7 @@ const CrmBrowseLands: React.FC = () => {
                           </TooltipContent>
                         </Tooltip>
                       ) : (
-                        <Button size="sm" variant="outline" className="flex-1 text-xs gap-1 border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 hover:text-[#1E374B] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10" onClick={() => handleApplyClick(l)}>
+                        <Button size="sm" variant="outline" className="flex-1 text-xs gap-1 border-[#2B2B2B]/30 text-[#2B2B2B] hover:bg-[#2B2B2B]/5 hover:text-[#020202] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10" onClick={() => handleApplyClick(l)}>
                           <Send className="h-3 w-3" strokeWidth={1.7} />{isAr ? "تقديم طلب" : "Apply"}
                         </Button>
                       )
@@ -634,7 +634,7 @@ const CrmBrowseLands: React.FC = () => {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span tabIndex={0}>
-                          <Button variant="outline" className="gap-1.5 border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10" disabled>
+                          <Button variant="outline" className="gap-1.5 border-[#2B2B2B]/30 text-[#2B2B2B] hover:bg-[#2B2B2B]/5 dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10" disabled>
                             <Send className="h-4 w-4" strokeWidth={1.7} />{isAr ? "تقديم طلب شراكة" : "Submit Request"}
                           </Button>
                         </span>
@@ -646,7 +646,7 @@ const CrmBrowseLands: React.FC = () => {
                       </TooltipContent>
                     </Tooltip>
                   ) : (
-                    <Button variant="outline" className="gap-1.5 border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 hover:text-[#1E374B] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10" onClick={() => { setDetailDialog(null); handleApplyClick(detailDialog); }}>
+                    <Button variant="outline" className="gap-1.5 border-[#2B2B2B]/30 text-[#2B2B2B] hover:bg-[#2B2B2B]/5 hover:text-[#020202] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10" onClick={() => { setDetailDialog(null); handleApplyClick(detailDialog); }}>
                       <Send className="h-4 w-4" strokeWidth={1.7} />{isAr ? "تقديم طلب شراكة" : "Submit Request"}
                     </Button>
                   )
@@ -717,7 +717,7 @@ const CrmBrowseLands: React.FC = () => {
                 variant="outline"
                 onClick={handleSubmitRequest}
                 disabled={!requestForm.fee_acknowledged || submitting}
-                className="border-[#2B4C66]/30 text-[#2B4C66] hover:bg-[#2B4C66]/5 hover:text-[#1E374B] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10"
+                className="border-[#2B2B2B]/30 text-[#2B2B2B] hover:bg-[#2B2B2B]/5 hover:text-[#020202] dark:border-[#7BA3C5]/40 dark:text-[#9CC3DD] dark:hover:bg-[#7BA3C5]/10"
               >
                 {submitting ? (isAr ? "جارٍ الإرسال..." : "Submitting...") : (isAr ? "إرسال الطلب" : "Submit Request")}
               </Button>

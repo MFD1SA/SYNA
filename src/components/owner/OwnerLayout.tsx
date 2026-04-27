@@ -60,7 +60,7 @@ const OwnerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setMobileNavOpen(true)}
-              className="lg:hidden h-9 w-9 rounded-xl bg-[#C2A86B]/10 hover:bg-[#C2A86B]/20 text-[#A88A4A] dark:text-[#D7C084] flex items-center justify-center transition-colors"
+              className="lg:hidden h-9 w-9 rounded-xl bg-[#C45A41]/10 hover:bg-[#C45A41]/20 text-[#A24832] dark:text-[#D7C084] flex items-center justify-center transition-colors"
               aria-label="Open menu"
             >
               <Menu className="h-4 w-4" strokeWidth={2} />

@@ -31,8 +31,8 @@ const UserAvatarMenu: React.FC<Props> = ({ variant = "blue", settingsPath }) => 
   }, [avatarUrl]);
 
   const colors = variant === "gold"
-    ? { bg: "bg-[#C2A86B]/15 dark:bg-[#C2A86B]/25", bgHover: "hover:bg-[#C2A86B]/25 dark:hover:bg-[#C2A86B]/35", text: "text-[#A88A4A] dark:text-[#D7C084]", ring: "ring-[#C2A86B]/30" }
-    : { bg: "bg-[#2B4C66]/10 dark:bg-[#2B4C66]/30", bgHover: "hover:bg-[#2B4C66]/15 dark:hover:bg-[#2B4C66]/40", text: "text-[#2B4C66] dark:text-[#7FA7C4]", ring: "ring-[#2B4C66]/25" };
+    ? { bg: "bg-[#C45A41]/15 dark:bg-[#C45A41]/25", bgHover: "hover:bg-[#C45A41]/25 dark:hover:bg-[#C45A41]/35", text: "text-[#A24832] dark:text-[#D7C084]", ring: "ring-[#C45A41]/30" }
+    : { bg: "bg-[#2B2B2B]/10 dark:bg-[#2B2B2B]/30", bgHover: "hover:bg-[#2B2B2B]/15 dark:hover:bg-[#2B2B2B]/40", text: "text-[#2B2B2B] dark:text-[#7FA7C4]", ring: "ring-[#2B2B2B]/25" };
 
   // Close on outside click
   useEffect(() => {
@@ -130,7 +130,7 @@ const UserAvatarMenu: React.FC<Props> = ({ variant = "blue", settingsPath }) => 
             {isImpersonating && (
               <button
                 onClick={handleBackToAdmin}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] text-[#2B4C66] dark:text-[#7FA7C4] hover:bg-[#2B4C66]/5 dark:hover:bg-white/5 transition-colors font-semibold"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] text-[#2B2B2B] dark:text-[#7FA7C4] hover:bg-[#2B2B2B]/5 dark:hover:bg-white/5 transition-colors font-semibold"
               >
                 <Shield className="h-4 w-4" strokeWidth={1.7} />
                 {isAr ? "العودة للوحة الأدمن" : "Back to Admin Panel"}
