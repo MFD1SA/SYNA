@@ -9,15 +9,15 @@ import { useNavigate } from "react-router-dom";
 //               instantly readable as "real-estate developer", replaces
 //               the generic Building2)
 import { ArrowLeft, ArrowRight, LandPlot, HardHat, ShieldCheck } from "lucide-react";
-// Hero image — premium contemporary villa with infinity pool at
-// 5969×3979 (well above 4K). Stronger composition than the previous
-// twilight cottage: open architectural lines, white concrete + warm
-// wood ceiling + glass panels, mirror-still pool reflecting the
-// upper deck — communicates "premium real-estate development" before
-// any copy is read. Served as-is, no filter or recolor.
+// Hero image — golden-hour metropolitan skyline at 5472×3648 (above
+// 4K). The sun bursting between skyscrapers paints the city in DOMA-
+// orange tones, communicating "real-estate development at city
+// scale" instead of a single residence. Sense of grandeur + warm
+// brand-aligned palette + huge canvas for the headline overlay.
 //
-// Hosted from /public/ (not import-bundled) so the URL stays stable
-// and can be preloaded from index.html, making the image the actual
+// Served as-is — no filter, no crop, no recolor — per the standing
+// brief ("بدون أي تعديل نهائياً وقطيعاً"). Hosted from /public/ so
+// the URL is stable and preloaded from index.html, making it the
 // LCP element instead of fighting the JS bundle for paint priority.
 const heroHomeImg = "/hero-doma-4k.jpg";
 
