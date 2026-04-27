@@ -2,9 +2,17 @@ import React from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Crown, Building2, ShieldCheck } from "lucide-react";
-// Iconic Saudi architecture — King Abdullah Financial District (KAFD), Riyadh.
-// Night skyline with motion-blurred traffic, unmistakably Saudi.
-import heroHomeImg from "@/assets/riyadh-kafd.png";
+// Hero image — modern real-estate development at twilight (3840×2560,
+// native 4K). The previous KAFD asset was 640×640 and pixelated on retina
+// / 4K screens; this professional architectural shot conveys the
+// platform's whole concept (real-estate development partnerships) without
+// crop or post-processing, per the brief: "بدون أي تعديل نهائياً وقطيعاً"
+// (use as-is, do not modify).
+//
+// Served from /public/ (not import-bundled) so the URL stays stable and
+// can be preloaded from index.html, making the image the actual LCP
+// element instead of fighting the JS bundle for paint priority.
+const heroHomeImg = "/hero-doma-4k.jpg";
 
 /**
  * Homepage hero — attached image is used as the FULL BACKGROUND of the hero.
@@ -52,7 +60,9 @@ const HeroSection: React.FC = () => {
             {t.hero.title}
           </h1>
 
-          <p className="text-[15px] sm:text-[16.5px] md:text-[18px] text-white/85 leading-[1.8] max-w-xl mt-5 md:mt-6 drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]">
+          {/* Subtitle — opt-in Thmanyah Sans (the only place in the
+              entire app that uses this typeface, per the brief). */}
+          <p className="font-thmanyah text-[15px] sm:text-[16.5px] md:text-[18px] text-white/85 leading-[1.8] max-w-xl mt-5 md:mt-6 drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]">
             {t.hero.subtitle}
           </p>
 

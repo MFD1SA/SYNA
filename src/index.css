@@ -23,6 +23,39 @@
   font-display: swap;
 }
 
+/* ─────────────────────────────────────────────────────────────────────
+   Thmanyah Sans — opt-in display face for the homepage hero subtitle.
+   Loaded as the licensed Thmanyah typeface (woff2). Bundled with three
+   weights so the same family covers paragraph + emphasised body. NOT
+   set as the default body font — apply via the `font-thmanyah` utility
+   only where the brief calls for it (currently: HeroSection subtitle).
+   ───────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('/fonts/thmanyahsans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('/fonts/thmanyahsans-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('/fonts/thmanyahsans-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-thmanyah {
+  font-family: 'Thmanyah Sans', 'Tajawal', system-ui, sans-serif !important;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -66,6 +66,13 @@
     <!-- Performance hints for the fonts + Supabase origin used on first paint -->
     <link rel="preconnect" href="https://nqbobxtlwzvtzxqcdfdo.supabase.co" crossorigin />
     <link rel="dns-prefetch" href="https://nqbobxtlwzvtzxqcdfdo.supabase.co" />
+    <!-- LCP hint: preload the homepage hero (4K, ~2 MB). Marked
+         fetchpriority="high" so the browser kicks off the download
+         before the JS bundle even parses. Stable /public/ URL. -->
+    <link rel="preload" as="image" href="/hero-doma-4k.jpg" fetchpriority="high" />
+    <!-- Self-hosted display fonts — preload so the hero subtitle
+         renders in Thmanyah on first paint (no FOUT). -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/thmanyahsans-Regular.woff2" crossorigin />
 
     <!-- Organization JSON-LD (helps Google build the knowledge panel) -->
     <script type="application/ld+json">
