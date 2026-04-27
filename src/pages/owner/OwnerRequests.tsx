@@ -21,7 +21,6 @@ import {
 import StudyPanel from "@/components/study/StudyPanel";
 import MeetingPanel from "@/components/meeting/MeetingPanel";
 import MeetingReportPanel from "@/components/meeting/MeetingReportPanel";
-import DeveloperReportPanel from "@/components/developer-report/DeveloperReportPanel";
 import NegotiationPanel from "@/components/negotiation/NegotiationPanel";
 import DealClosingPanel from "@/components/negotiation/DealClosingPanel";
 import { getNDAConsentsForUser, submitNDADecision, type NDAConsent } from "@/services/nda.service";
@@ -548,13 +547,6 @@ const OwnerRequests: React.FC = () => {
                       viewerRole="owner"
                       isAr={isAr}
                       onPhaseChange={() => { refreshAll(); }}
-                    />
-                    <DeveloperReportPanel
-                      requestId={req.id}
-                      developerId={req.developer_id}
-                      currentPhase={phase}
-                      viewerRole="owner"
-                      isAr={isAr}
                     />
                     <NegotiationPanel
                       requestId={req.id}

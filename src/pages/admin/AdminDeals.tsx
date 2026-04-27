@@ -41,7 +41,6 @@ import { transitionDealPhase, phaseLabels, phaseColors, TERMINAL_PHASES, type De
 import StudyPanel from "@/components/study/StudyPanel";
 import MeetingPanel from "@/components/meeting/MeetingPanel";
 import MeetingReportPanel from "@/components/meeting/MeetingReportPanel";
-import DeveloperReportPanel from "@/components/developer-report/DeveloperReportPanel";
 import NegotiationPanel from "@/components/negotiation/NegotiationPanel";
 import DealClosingPanel from "@/components/negotiation/DealClosingPanel";
 
@@ -693,13 +692,6 @@ const AdminDeals: React.FC = () => {
                         onPhaseChange={() => { setViewReq(null); fetchAll(); }}
                       />
                     )}
-                    <DeveloperReportPanel
-                      requestId={viewReq.id}
-                      developerId={viewReq.developer_id}
-                      currentPhase={phase}
-                      viewerRole="admin"
-                      isAr={isAr}
-                    />
                     <NegotiationPanel
                       requestId={viewReq.id}
                       currentPhase={phase}
