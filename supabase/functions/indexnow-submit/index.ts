@@ -26,9 +26,13 @@ const ENDPOINT = "https://api.indexnow.org/indexnow";
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
+// Static paths to push. NO /en/* entries — those routes aren't wired
+// in the React router and would resolve to a soft-404 (catch-all
+// renders <NotFound /> with HTTP 200). Submitting them to IndexNow
+// pollutes Bing/Yandex with broken URLs and burns our submission
+// quota. Re-add /en variants when the English route table lands.
 const STATIC_PATHS = [
   "/",
-  "/en",
   "/about",
   "/how-it-works",
   "/partnerships",
@@ -41,6 +45,8 @@ const STATIC_PATHS = [
   "/blog",
   "/terms",
   "/privacy",
+  "/for-owners",
+  "/for-developers",
 ];
 
 async function collectAllUrls(): Promise<string[]> {
@@ -57,30 +63,34 @@ async function collectAllUrls(): Promise<string[]> {
   (offers ?? []).forEach((o: any) => {
     if (!o.slug) return;
     urls.add(`${SITE}/offers/${encodeURIComponent(o.slug)}`);
-    urls.add(`${SITE}/en/offers/${encodeURIComponent(o.slug)}`);
   });
 
+  // Match the sitemap's gating exactly — only featured + approved lands
+  // are publicly viewable. Submitting non-featured ids would push
+  // soft-404s to Bing/Yandex.
   const { data: lands } = await client
     .from("lands")
     .select("id")
     .eq("is_active", true)
     .eq("owner_approved", true)
+    .eq("is_featured", true)
     .limit(5000);
   (lands ?? []).forEach((l: any) => {
     if (!l.id) return;
     urls.add(`${SITE}/opportunity/${l.id}`);
-    urls.add(`${SITE}/en/opportunity/${l.id}`);
   });
 
+  // SEO pages — Arabic only; /en/* slugs would resolve to soft-404.
   const { data: seoPages } = await client
     .from("seo_pages")
     .select("slug, locale")
     .eq("status", "published")
     .eq("noindex", false)
+    .eq("locale", "ar")
     .limit(50000);
   (seoPages ?? []).forEach((p: any) => {
-    const path = p.locale === "en" ? `/en${p.slug}` : p.slug;
-    urls.add(`${SITE}${path}`);
+    if (!p.slug) return;
+    urls.add(`${SITE}${p.slug}`);
   });
 
   return Array.from(urls);

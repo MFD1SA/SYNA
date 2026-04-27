@@ -41,12 +41,26 @@
     <link rel="alternate" hreflang="ar" href="https://cidoma.com/" />
     <link rel="alternate" hreflang="x-default" href="https://cidoma.com/" />
 
-    <!-- Search Console verification: Google uses file-based verification
-         (/google78ccfc58b8ce98c5.html in public/). Bing verification is
-         not configured yet — the tag is removed (instead of shipping a
-         placeholder) so bots don't trip on an invalid token. Re-add with
-         the real token from Bing Webmaster Tools when ready. -->
-    <!-- <meta name="msvalidate.01" content="..." /> -->
+    <!-- Search Console verification.
+         Google uses file-based verification (/google78ccfc58b8ce98c5.html
+         in public/). Bing/Yandex tokens aren't configured yet — re-add
+         the real tokens from Bing Webmaster Tools and Yandex.Webmaster.
+         Without these the IndexNow firehose still works (Bing accepts
+         submissions even from unverified hosts), but Search Console
+         visibility / coverage reports stay dark. -->
+    <!-- <meta name="msvalidate.01" content="REPLACE_BING_TOKEN" /> -->
+    <!-- <meta name="yandex-verification" content="REPLACE_YANDEX_TOKEN" /> -->
+
+    <!-- Discoverability hints -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1" />
+    <meta name="bingbot" content="index, follow" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="geo.region" content="SA" />
+    <meta name="geo.placename" content="Riyadh" />
+    <meta name="geo.position" content="24.7136;46.6753" />
+    <meta name="ICBM" content="24.7136, 46.6753" />
+    <meta name="keywords" content="عقارات السعودية, شراكات تطوير عقاري, أراضي للاستثمار, ملاك أراضي, مطورين عقاريين, استثمار عقاري, الرياض, جدة, الدمام, تطوير عقاري, شراكة استثمارية, real estate Saudi Arabia, land partnership" />
 
 
     <!-- Performance hints for the fonts + Supabase origin used on first paint -->
@@ -84,18 +98,167 @@
       "name": "سينا",
       "alternateName": "SINA",
       "url": "https://cidoma.com",
-      "inLanguage": ["ar", "en"],
+      "inLanguage": "ar",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://cidoma.com/opportunities?q={search_term_string}",
+        "target": "https://cidoma.com/offers?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
+    }
+    </script>
+
+    <!-- RealEstateAgent — surfaces SINA for "real estate Saudi Arabia"
+         knowledge-panel queries; merges with the Organization node above
+         via the shared @id pattern. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "RealEstateAgent",
+      "@id": "https://cidoma.com/#org",
+      "name": "سينا للاستثمارات العقارية",
+      "alternateName": "SINA Real Estate Investments",
+      "url": "https://cidoma.com",
+      "logo": "https://cidoma.com/favicon.png",
+      "image": "https://cidoma.com/og-image.png",
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "SA",
+        "addressRegion": "Riyadh"
+      },
+      "areaServed": [
+        { "@type": "City", "name": "Riyadh" },
+        { "@type": "City", "name": "Jeddah" },
+        { "@type": "City", "name": "Dammam" },
+        { "@type": "City", "name": "Khobar" },
+        { "@type": "Country", "name": "Saudi Arabia" }
+      ],
+      "knowsAbout": [
+        "Real Estate Partnership",
+        "Land Investment",
+        "Property Development",
+        "شراكات التطوير العقاري",
+        "استثمار الأراضي"
+      ]
+    }
+    </script>
+
+    <!-- FAQPage — earns rich-result eligibility for "كيف تعمل سينا" type
+         queries. Mirrors the most common items from the public /faq page. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "ما هي منصة سينا للاستثمارات العقارية؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "سينا منصة رقمية تربط ملاك الأراضي بالمطورين العقاريين والمستثمرين في المملكة العربية السعودية، عبر نظام شراكات موثّق وحوكمة متكاملة من اتفاقيات السرية حتى إقفال الصفقة."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "كيف يستفيد ملاك الأراضي من المنصة؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "يقوم المالك بنشر أرضه على المنصة، تستقبل عروض الشراكة من مطورين معتمدين، تختار العرض الأنسب، ثم تنتقل عبر مراحل دراسة الجدوى والاجتماع والتفاوض حتى توقيع الاتفاقية النهائية."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "ما الذي يقدمه المطورون عبر منصة سينا؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "يستعرض المطور المعتمد مشاريع جاهزة على أراضٍ متاحة، يقدم دراسة جدوى، يدخل في مفاوضات شفافة مع المالك، ويوقّع شراكة بترتيب قانوني كامل عبر منصة سينا."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "هل تخدم سينا جميع مدن المملكة؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "نعم، تغطي سينا الرياض وجدة والدمام والخبر وبقية المدن السعودية، مع تركيز على الأراضي والمشاريع داخل المنطقتين الوسطى والشرقية والغربية."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "هل التسجيل في منصة سينا مجاني؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "التسجيل والاطلاع على الفرص والعروض مجاني للملاك والمطورين. تسري الرسوم فقط على الباقات الاحترافية ووفق قيمة الصفقة عند إقفالها."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- BreadcrumbList for the homepage. Per-page hooks override this
+         via useMetaTags(structuredData) on inner routes. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "الرئيسية", "item": "https://cidoma.com/" }
+      ]
     }
     </script>
   </head>
 
   <body>
     <div id="root"></div>
+
+    <!-- Crawler-visible fallback. The app renders client-side, so the
+         body is empty for any crawler that doesn't execute JavaScript
+         (Bing partial-render, Yandex, ChatGPT/Perplexity scrapers,
+         LinkedIn preview bot). The block below gives them a clean
+         summary of what the site is and what each section is about so
+         the page is indexable on text alone. Hidden from sighted users
+         by default — JS strips it on mount. -->
+    <noscript>
+      <div style="max-width: 960px; margin: 0 auto; padding: 24px; font-family: system-ui, -apple-system, sans-serif; line-height: 1.7; color: #0F1F2E; direction: rtl; text-align: right;">
+        <h1 style="font-size: 28px; font-weight: 800; margin: 0 0 12px;">سينا للاستثمارات العقارية | SINA</h1>
+        <p style="font-size: 16px; margin: 0 0 20px; color: #334155;">
+          منصة رقمية احترافية تربط ملاك الأراضي بالمطورين العقاريين والمستثمرين في المملكة العربية السعودية،
+          عبر بيئة شراكات موثّقة وحوكمة كاملة من اتفاقيات السرية حتى توقيع الصفقة.
+        </p>
+
+        <h2 style="font-size: 20px; font-weight: 700; margin: 24px 0 8px;">لماذا سينا؟</h2>
+        <ul style="margin: 0; padding-inline-start: 20px;">
+          <li>توثيق كامل لمراحل الشراكة بين المالك والمطور.</li>
+          <li>اعتماد المطورين والملاك بسجلات تجارية موثقة.</li>
+          <li>إدارة حوكمة الصفقة (NDA، دراسة جدوى، اجتماع، تفاوض، إقفال).</li>
+          <li>تحليل ذكي لمحفظة المطور — مشاريع، أخبار، وحضور سوشيال ميديا.</li>
+        </ul>
+
+        <h2 style="font-size: 20px; font-weight: 700; margin: 24px 0 8px;">روابط رئيسية</h2>
+        <ul style="margin: 0; padding-inline-start: 20px;">
+          <li><a href="/about">عن المنصة</a></li>
+          <li><a href="/how-it-works">كيف تعمل سينا</a></li>
+          <li><a href="/partnerships">الشراكات</a></li>
+          <li><a href="/partnerships/owners">ملاك الأراضي</a></li>
+          <li><a href="/partnerships/developers">المطورون العقاريون</a></li>
+          <li><a href="/offers">أحدث العروض</a></li>
+          <li><a href="/opportunities">الفرص الاستثمارية</a></li>
+          <li><a href="/blog">المدونة</a></li>
+          <li><a href="/faq">الأسئلة الشائعة</a></li>
+          <li><a href="/contact">تواصل معنا</a></li>
+        </ul>
+
+        <h2 style="font-size: 20px; font-weight: 700; margin: 24px 0 8px;">المناطق المخدومة</h2>
+        <p style="margin: 0 0 8px;">
+          الرياض · جدة · الدمام · الخبر · مكة المكرمة · المدينة المنورة · الأحساء — وسائر المناطق داخل المملكة العربية السعودية.
+        </p>
+
+        <p style="font-size: 13px; color: #64748B; margin-top: 24px;">
+          هذا الموقع يستخدم JavaScript لتحميل المحتوى التفاعلي.
+          لتجربة المنصة كاملة، فضلاً قم بتفعيل JavaScript في المتصفح.
+        </p>
+      </div>
+    </noscript>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
