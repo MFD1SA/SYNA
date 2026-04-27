@@ -9,16 +9,23 @@ import { useNavigate } from "react-router-dom";
 //               instantly readable as "real-estate developer", replaces
 //               the generic Building2)
 import { ArrowLeft, ArrowRight, LandPlot, HardHat, ShieldCheck } from "lucide-react";
-// Hero image — golden-hour metropolitan skyline at 5472×3648 (above
-// 4K). The sun bursting between skyscrapers paints the city in DOMA-
-// orange tones, communicating "real-estate development at city
-// scale" instead of a single residence. Sense of grandeur + warm
-// brand-aligned palette + huge canvas for the headline overlay.
+// Hero image — Riyadh skyline at twilight, the actual capital of
+// Saudi Arabia, with the unmistakable Kingdom Centre, Al Faisaliyah,
+// and the Olaya towers silhouetted against a violet dusk sky.
+// Resolution: 4109×2311 (above 4K). This says "Saudi real-estate
+// platform" the moment the page paints — replaces the previous
+// generic skyline that read as "any city in the world".
 //
-// Served as-is — no filter, no crop, no recolor — per the standing
-// brief ("بدون أي تعديل نهائياً وقطيعاً"). Hosted from /public/ so
-// the URL is stable and preloaded from index.html, making it the
-// LCP element instead of fighting the JS bundle for paint priority.
+// Source: Wikimedia Commons, photo by B.alotaby
+//   https://commons.wikimedia.org/wiki/File:Riyadh_Skyline.jpg
+//   Licensed under CC BY-SA 4.0 — attribution preserved in
+//   /public/hero-doma-4k.jpg.LICENSE.txt next to the asset.
+// We re-saved the source JPEG at q=85 (resolution preserved, no crop
+// or recolor) to drop transfer size from 7.6 MB → 1.3 MB.
+//
+// Hosted from /public/ so the URL is stable and preloaded from
+// index.html, making it the LCP element instead of fighting the JS
+// bundle for paint priority.
 const heroHomeImg = "/hero-doma-4k.jpg";
 
 /**

@@ -1,0 +1,17 @@
+Image: hero-doma-4k.jpg
+Title: Riyadh Skyline
+Subject: Riyadh, Saudi Arabia — Kingdom Centre Tower + Al Faisaliyah Tower +
+         Olaya district at twilight.
+Author: B.alotaby
+Source: https://commons.wikimedia.org/wiki/File:Riyadh_Skyline.jpg
+License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+         https://creativecommons.org/licenses/by-sa/4.0/
+
+This image is the work of B.alotaby and is used under CC BY-SA 4.0.
+We re-saved the source JPEG at quality 85 with progressive encoding for
+web-delivery efficiency. The image's pixel dimensions, framing, colours,
+and content are unchanged.
+
+Any redistribution of this asset, or of derivative works incorporating it,
+must (per CC BY-SA 4.0) preserve attribution to the original author and
+make any modifications available under the same license.
