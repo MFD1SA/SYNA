@@ -9,16 +9,16 @@ import { useNavigate } from "react-router-dom";
 //               instantly readable as "real-estate developer", replaces
 //               the generic Building2)
 import { ArrowLeft, ArrowRight, LandPlot, HardHat, ShieldCheck } from "lucide-react";
-// Hero image — modern real-estate development at twilight (3840×2560,
-// native 4K). The previous KAFD asset was 640×640 and pixelated on retina
-// / 4K screens; this professional architectural shot conveys the
-// platform's whole concept (real-estate development partnerships) without
-// crop or post-processing, per the brief: "بدون أي تعديل نهائياً وقطيعاً"
-// (use as-is, do not modify).
+// Hero image — premium contemporary villa with infinity pool at
+// 5969×3979 (well above 4K). Stronger composition than the previous
+// twilight cottage: open architectural lines, white concrete + warm
+// wood ceiling + glass panels, mirror-still pool reflecting the
+// upper deck — communicates "premium real-estate development" before
+// any copy is read. Served as-is, no filter or recolor.
 //
-// Served from /public/ (not import-bundled) so the URL stays stable and
-// can be preloaded from index.html, making the image the actual LCP
-// element instead of fighting the JS bundle for paint priority.
+// Hosted from /public/ (not import-bundled) so the URL stays stable
+// and can be preloaded from index.html, making the image the actual
+// LCP element instead of fighting the JS bundle for paint priority.
 const heroHomeImg = "/hero-doma-4k.jpg";
 
 /**
