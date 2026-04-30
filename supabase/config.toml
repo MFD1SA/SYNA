@@ -1,4 +1,4 @@
-project_id = "ocizyrlruajynauipuwq"
+project_id = "nqbobxtlwzvtzxqcdfdo"
 
 # Every edge function is pinned below. Supabase defaults to
 # verify_jwt = true when an entry is omitted, but pinning explicitly

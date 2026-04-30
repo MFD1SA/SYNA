@@ -13,6 +13,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useAdminRole } from "@/hooks/useAdminRole";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import { isImpersonationSession } from "@/integrations/supabase/impersonateClient";
 import logoImg from "@/assets/logo.png";
 
@@ -24,6 +25,10 @@ const CrmLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const isAr = lang === "ar";
   const isImpersonating = isImpersonationSession();
+
+  // Private developer surface — robots disallow + meta noindex (defence
+  // in depth). Mirrors the OwnerLayout/AdminLayout treatment.
+  useMetaTags({ noindex: true, nofollow: true });
 
   const navItems = [
     { label: { ar: "لوحة التحكم", en: "Dashboard" }, href: "/crm/dashboard", icon: Gauge },

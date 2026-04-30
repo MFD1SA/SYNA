@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { log } from "@/lib/logger";
 
 export interface DeveloperAgreement {
   id: string;
@@ -35,7 +36,7 @@ export async function getMyCommissionAgreement(): Promise<DeveloperAgreement | n
     .maybeSingle();
 
   if (error) {
-    console.error("Error fetching agreement:", error);
+    log.error("Error fetching agreement:", error);
     return null;
   }
   return data as DeveloperAgreement | null;
@@ -55,7 +56,7 @@ export async function getAgreementByUserId(userId: string): Promise<DeveloperAgr
     .maybeSingle();
 
   if (error) {
-    console.error("Error fetching agreement:", error);
+    log.error("Error fetching agreement:", error);
     return null;
   }
   return data as DeveloperAgreement | null;
@@ -87,7 +88,7 @@ export async function getAgreementsByUserIds(
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error batch-fetching agreements:", error);
+    log.error("Error batch-fetching agreements:", error);
     return {};
   }
 

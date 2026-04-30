@@ -4,6 +4,7 @@ import AdminSidebar from "./AdminSidebar";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import { supabase } from "@/integrations/supabase/client";
 import { Bell, Search, X, Check, Loader2, Settings, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,11 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isAr = lang === "ar";
+
+  // Admin surface is private and gated; robots disallow handles 99% of bots
+  // but the meta noindex protects against any UI link that leaks externally
+  // (an admin sharing an audit-log permalink in chat, for example).
+  useMetaTags({ noindex: true, nofollow: true });
 
   // Page title mapping for breadcrumb
   const pageTitles: Record<string, { ar: string; en: string }> = {

@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { log } from "@/lib/logger";
 import { transitionDealPhase } from "./dealPhase.service";
 
 /* ── Types ── */
@@ -160,7 +161,7 @@ export async function createReport(params: {
     // Transition deal phase to report_pending_approval
     const result = await transitionDealPhase(params.requestId, "report_pending_approval" as any);
     if (!result.success) {
-      console.warn("Phase transition note:", result.error);
+      log.warn("Phase transition note:", result.error);
     }
 
     // Trigger email notification
@@ -172,7 +173,7 @@ export async function createReport(params: {
           report_id: (report as any).id,
         },
       });
-    } catch (e) { console.warn("Email notification failed:", e); }
+    } catch (e) { log.warn("Email notification failed:", e); }
 
     return { success: true, report: report as unknown as MeetingReport };
   } catch (err: any) {
@@ -219,7 +220,7 @@ export async function submitApproval(params: {
         nextPhase as any,
         params.notes,
       );
-      if (!result.success) console.warn("Phase transition note:", result.error);
+      if (!result.success) log.warn("Phase transition note:", result.error);
     }
 
     // Trigger email notification
@@ -232,7 +233,7 @@ export async function submitApproval(params: {
           actor_role: actorRole,
         },
       });
-    } catch (e) { console.warn("Email notification failed:", e); }
+    } catch (e) { log.warn("Email notification failed:", e); }
 
     return { success: true };
   } catch (err: any) {

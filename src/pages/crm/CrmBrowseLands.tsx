@@ -123,8 +123,17 @@ const CrmBrowseLands: React.FC = () => {
         ndaConsents.forEach(n => { map[n.land_id] = n.status; });
         setNdaMap(map);
       }
-      // Select only fields needed for display — exclude owner_name to prevent identity leakage
-      const { data } = await supabase.from("lands").select("id, city, district, land_area_sqm, usage_type, partnership_goal, street_width_m, created_at, brokerage_license_number, brokerage_license_status, vision_summary, image_url, gallery_urls, is_active, owner_approved, owner_id, partnership_model, project_type").eq("is_active", true).eq("owner_approved", true).is("deleted_at", null).order("created_at", { ascending: false });
+      // Browse via the column-safe view `lands_developer_browse` rather
+      // than the base table — the view is the only path the database
+      // allows for developers without a deal context. It excludes
+      // owner_id, owner_name, deed/plot/plan numbers, exact GPS, and
+      // money fields (P0 audit C-01/C-02 fix). Once a deal_request is
+      // submitted the verified-developer policy on the base table opens
+      // up for that specific land via `is_developer_in_land_context`.
+      const { data } = await supabase
+        .from("lands_developer_browse" as any)
+        .select("id, city, district, land_area_sqm, usage_type, partnership_goal, street_width_m, created_at, brokerage_license_status, vision_summary, image_url, gallery_urls, is_active, owner_approved, partnership_model, project_type")
+        .order("created_at", { ascending: false });
       setLands(data || []);
       setLoading(false);
     };
@@ -191,27 +200,16 @@ const CrmBrowseLands: React.FC = () => {
           .catch((e) => console.error("notify-interest failed", e));
       }
 
-      // Legacy secondary path (kept for existing deal-notification pipeline).
-      try {
-        const { data: devInfo } = await supabase.from("developers").select("company_name, email").eq("id", developerId).maybeSingle();
-        if (targetLand?.owner_id) {
-          const { data: ownerProfile } = await supabase.from("profiles").select("email, full_name").eq("user_id", targetLand.owner_id).maybeSingle();
-          await supabase.functions.invoke("send-deal-notification", {
-            body: {
-              type: "request_submitted",
-              developer_name: devInfo?.company_name || "",
-              developer_email: devInfo?.email || "",
-              owner_name: ownerProfile?.full_name || "",
-              owner_email: ownerProfile?.email || "",
-              owner_user_id: targetLand.owner_id,
-              land_city: targetLand.city,
-              land_district: targetLand.district,
-            },
-          });
-        }
-      } catch (e) {
-        console.error("Notification error:", e);
-      }
+      // Legacy secondary notification path: previously fetched the
+      // owner's profile client-side via the dev's session and forwarded
+      // name/email to send-deal-notification. After the audit C-02 fix
+      // owner_id is no longer exposed to developers (and `profiles` RLS
+      // would have blocked the client-side read anyway, so this branch
+      // was effectively dead — name/email always arrived empty).
+      // notify-interest above is the canonical owner-notification
+      // pathway: it runs server-side with service-role and resolves the
+      // owner from lands.owner_id internally, so no information is lost
+      // by removing the legacy fan-out.
 
       setRequestDialog(null);
       setRequestForm({ proposal_summary: "", proposed_project_type: "", google_drive_link: "", fee_acknowledged: false });

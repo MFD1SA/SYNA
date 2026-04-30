@@ -97,14 +97,14 @@ const CrmDashboard: React.FC = () => {
           // soft-deleted by admin would otherwise see a stale "active deals"
           // tile that doesn't match /crm/deals.
           const [landsRes, reqRes, dealsActive, dealsClosed, reqPending, reqApproved, reqRejected, todayRes] = await Promise.all([
-            supabase.from("lands").select("id", { count: "exact", head: true }).eq("is_active", true).eq("owner_approved", true).is("deleted_at", null),
+            supabase.from("lands_developer_browse" as any).select("id", { count: "exact", head: true }),
             supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).is("deleted_at", null),
             supabase.from("deals").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).is("deleted_at", null).neq("current_stage", "deal_closed").neq("current_stage", "deal_cancelled"),
             supabase.from("deals").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).is("deleted_at", null).eq("current_stage", "deal_closed"),
             supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).is("deleted_at", null).eq("status", "pending"),
             supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).is("deleted_at", null).eq("status", "approved"),
             supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).is("deleted_at", null).eq("status", "rejected"),
-            supabase.from("lands").select("id", { count: "exact", head: true }).eq("is_active", true).eq("owner_approved", true).is("deleted_at", null).gte("created_at", todayStart.toISOString()),
+            supabase.from("lands_developer_browse" as any).select("id", { count: "exact", head: true }).gte("created_at", todayStart.toISOString()),
           ]);
           if (cancelled) return;
           setDevKpi({

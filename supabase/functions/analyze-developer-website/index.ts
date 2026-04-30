@@ -32,12 +32,33 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const publicSiteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://cidoma.com";
+const allowedRootDomain = (Deno.env.get("ALLOWED_ROOT_DOMAIN") ?? "cidoma.com").toLowerCase();
 
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+// ── CORS: allow only cidoma.com + subdomains (and localhost for dev). ──
+// This function is JWT-protected so the JWT itself is the access gate,
+// but locking CORS adds defence-in-depth so a malicious page elsewhere
+// can't pop a popup, smuggle a logged-in user's session, and use the
+// browser to call this function on the user's behalf.
+function buildCors(origin: string | null): Record<string, string> {
+  let allow = publicSiteUrl;
+  if (origin) {
+    try {
+      const h = new URL(origin).hostname.toLowerCase();
+      if (h === allowedRootDomain || h.endsWith(`.${allowedRootDomain}`) || h === "localhost") {
+        allow = origin;
+      }
+    } catch {
+      /* keep default */
+    }
+  }
+  return {
+    "Access-Control-Allow-Origin": allow,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    Vary: "Origin",
+  };
+}
 
 // ─── Browser-grade fetch headers (some sites block non-browser UAs) ──
 const browserHeaders: HeadersInit = {
@@ -164,6 +185,121 @@ function detectSocials(html: string): { platform: string; url: string }[] {
     }
   }
   return out;
+}
+
+// ─── Google Business profile detection ───────────────────────────────
+// Companies link to their Google Maps / Google Business listing in many
+// shapes:
+//   https://maps.google.com/?cid=12345
+//   https://www.google.com/maps/place/Name/@lat,lng
+//   https://goo.gl/maps/abc123
+//   https://maps.app.goo.gl/abc
+//   https://g.page/some-handle
+// We can't fetch reviews from Google directly without an API key (heavy
+// bot blocking + ToS), but we surface the URL so the user can click
+// through, and we score "has Google Business presence" as a content
+// signal.
+function detectGoogleBusinessUrl(html: string): string | null {
+  const patterns: RegExp[] = [
+    /https?:\/\/(?:www\.|maps\.)?google\.com\/maps\/place\/[^\s"'<>]+/i,
+    /https?:\/\/maps\.google\.com\/\?cid=\d+/i,
+    /https?:\/\/maps\.google\.com\/maps\?[^\s"'<>]+/i,
+    /https?:\/\/goo\.gl\/maps\/[A-Za-z0-9_-]+/i,
+    /https?:\/\/maps\.app\.goo\.gl\/[A-Za-z0-9_-]+/i,
+    /https?:\/\/g\.page\/[A-Za-z0-9_.-]+/i,
+  ];
+  for (const re of patterns) {
+    const m = html.match(re);
+    if (m) return m[0].replace(/[)\.,;'"]+$/, "");
+  }
+  return null;
+}
+
+// ─── Reviews extraction ──────────────────────────────────────────────
+// Reads schema.org AggregateRating + Review nodes from JSON-LD and
+// returns a normalised structure. Many real-estate developer sites
+// embed an aggregate rating from Google reviews this way (e.g. via
+// the Trustindex or ReviewSnipping plugin). We never inflate values
+// — if the site doesn't publish reviews in machine-readable form we
+// return nothing.
+interface ReviewItem {
+  author?: string;
+  rating?: number;
+  date?: string;
+  body?: string;
+}
+interface ReviewsBlock {
+  aggregate: { rating: number; count: number; best: number } | null;
+  items: ReviewItem[];
+}
+
+function extractReviews(blocks: unknown[]): ReviewsBlock {
+  const all = blocks.flatMap(flattenLd);
+  let aggregate: ReviewsBlock["aggregate"] = null;
+  const items: ReviewItem[] = [];
+  const seenBodies = new Set<string>();
+
+  // Pull AggregateRating from the org / org.aggregateRating
+  for (const node of all) {
+    if (!node || typeof node !== "object") continue;
+    const n = node as Record<string, unknown>;
+    const t = n["@type"];
+    const tArr = Array.isArray(t) ? t : [t];
+    const isAgg = tArr.some((x) => typeof x === "string" && x.toLowerCase() === "aggregaterating");
+    const aggNode = isAgg ? n : (n.aggregateRating as Record<string, unknown> | undefined);
+    if (aggNode && typeof aggNode === "object") {
+      const rv = parseFloat(String((aggNode as Record<string, unknown>).ratingValue ?? ""));
+      const cv = parseInt(String((aggNode as Record<string, unknown>).reviewCount ?? (aggNode as Record<string, unknown>).ratingCount ?? ""), 10);
+      const bv = parseFloat(String((aggNode as Record<string, unknown>).bestRating ?? "5"));
+      if (Number.isFinite(rv) && rv > 0) {
+        aggregate = {
+          rating: Math.round(rv * 10) / 10,
+          count: Number.isFinite(cv) ? cv : 0,
+          best: Number.isFinite(bv) && bv > 0 ? bv : 5,
+        };
+        if (aggregate) break;
+      }
+    }
+  }
+
+  // Pull individual Review nodes
+  for (const node of all) {
+    if (!node || typeof node !== "object") continue;
+    const n = node as Record<string, unknown>;
+    const t = n["@type"];
+    const tArr = Array.isArray(t) ? t : [t];
+    const isReview = tArr.some((x) => typeof x === "string" && x.toLowerCase() === "review");
+    if (!isReview) continue;
+    const author = (() => {
+      const a = n.author;
+      if (typeof a === "string") return a.slice(0, 80);
+      if (a && typeof a === "object") {
+        const name = (a as Record<string, unknown>).name;
+        if (typeof name === "string") return name.slice(0, 80);
+      }
+      return undefined;
+    })();
+    const rating = (() => {
+      const r = n.reviewRating;
+      if (r && typeof r === "object") {
+        const v = parseFloat(String((r as Record<string, unknown>).ratingValue ?? ""));
+        if (Number.isFinite(v)) return v;
+      }
+      const ratingDirect = parseFloat(String(n.rating ?? ""));
+      if (Number.isFinite(ratingDirect)) return ratingDirect;
+      return undefined;
+    })();
+    const dateRaw = n.datePublished ?? n.dateCreated;
+    const date = typeof dateRaw === "string" ? dateRaw.slice(0, 10) : undefined;
+    const body = typeof n.reviewBody === "string" ? n.reviewBody.slice(0, 400)
+      : typeof n.description === "string" ? n.description.slice(0, 400) : undefined;
+    if (body && seenBodies.has(body.slice(0, 120))) continue;
+    if (body) seenBodies.add(body.slice(0, 120));
+    items.push({ author, rating, date, body });
+    if (items.length >= 8) break;
+  }
+
+  return { aggregate, items };
 }
 
 function parseJsonLdBlocks(html: string): unknown[] {
@@ -807,6 +943,7 @@ function computeContentScore(input: {
 
 // ─── Handler ─────────────────────────────────────────────────────────
 Deno.serve(async (req) => {
+  const CORS = buildCors(req.headers.get("origin"));
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
   const t0 = Date.now();
 

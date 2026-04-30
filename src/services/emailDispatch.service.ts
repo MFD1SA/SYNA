@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { log } from "@/lib/logger";
 
 /*
  * Safe wrapper around `send-platform-email` edge function.
@@ -73,14 +74,14 @@ export async function safeSendPlatformEmail(params: SafeEmailParams): Promise<Sa
     }
 
     const errMsg = error?.message ?? (data as { error?: string } | null)?.error ?? "unknown";
-    console.warn(`[safeSendPlatformEmail] invoke failed for ${params.eventType}:`, errMsg);
+    log.warn(`[safeSendPlatformEmail] invoke failed for ${params.eventType}:`, errMsg);
 
     // Fall through to retry-queue fallback
     const queued = await enqueueFallback(params.eventType, entityType, entityId, errMsg);
     return { sent: false, queued, error: errMsg };
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
-    console.warn(`[safeSendPlatformEmail] invoke threw for ${params.eventType}:`, errMsg);
+    log.warn(`[safeSendPlatformEmail] invoke threw for ${params.eventType}:`, errMsg);
     const queued = await enqueueFallback(params.eventType, entityType, entityId, errMsg);
     return { sent: false, queued, error: errMsg };
   }
@@ -94,7 +95,7 @@ async function enqueueFallback(
 ): Promise<boolean> {
   if (!entityId || !entityType) {
     // Can't enqueue without an entity to resolve — accept the loss.
-    console.warn(
+    log.warn(
       "[safeSendPlatformEmail] no entity id/type; cannot enqueue retry",
     );
     return false;
@@ -107,7 +108,7 @@ async function enqueueFallback(
       _error: errorMsg,
     });
     if (rpcErr) {
-      console.error(
+      log.error(
         "[safeSendPlatformEmail] enqueue RPC failed:",
         rpcErr.message,
       );
@@ -115,7 +116,7 @@ async function enqueueFallback(
     }
     return true;
   } catch (err) {
-    console.error("[safeSendPlatformEmail] enqueue threw:", err);
+    log.error("[safeSendPlatformEmail] enqueue threw:", err);
     return false;
   }
 }

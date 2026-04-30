@@ -12,6 +12,7 @@ import MobileNavOverlay from "@/components/dashboard/MobileNavOverlay";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import { isImpersonationSession } from "@/integrations/supabase/impersonateClient";
 import logoImg from "@/assets/logo.png";
 
@@ -22,6 +23,11 @@ const OwnerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const isAr = lang === "ar";
   const isImpersonating = isImpersonationSession();
+
+  // Dashboards are private application surfaces — they MUST NOT be indexed.
+  // robots.txt already disallows /owner/, but a stale link shared on social
+  // would still surface in some crawlers; the meta tag is belt-and-braces.
+  useMetaTags({ noindex: true, nofollow: true });
 
   const navItems = [
     { label: { ar: "لوحة التحكم", en: "Dashboard" }, href: "/owner/dashboard", icon: Gauge },

@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { log } from "@/lib/logger";
 import { transitionDealPhase } from "./dealPhase.service";
 import { safeSendPlatformEmail } from "./emailDispatch.service";
 
@@ -89,7 +90,7 @@ export async function closeDealWon(params: {
 
     // Transition to closed_won
     const result = await transitionDealPhase(params.requestId, "closed_won" as any);
-    if (!result.success) console.warn("Phase transition note:", result.error);
+    if (!result.success) log.warn("Phase transition note:", result.error);
 
     // Send notification — safeSendPlatformEmail never throws; on failure
     // it enqueues a retry row via RPC so the email-retry cron picks it up.
@@ -98,7 +99,7 @@ export async function closeDealWon(params: {
       dealRequestId: params.requestId,
     });
     if (!emailRes.sent && !emailRes.queued) {
-      console.warn(
+      log.warn(
         "[dealClosing.closeDealWon] email neither sent nor queued:",
         emailRes.error,
       );
@@ -137,7 +138,7 @@ export async function closeDealLost(params: {
       "closed_lost" as any,
       params.rejectionReason,
     );
-    if (!result.success) console.warn("Phase transition note:", result.error);
+    if (!result.success) log.warn("Phase transition note:", result.error);
 
     // Send notification via safe wrapper — queues retry on failure.
     const emailRes = await safeSendPlatformEmail({
@@ -145,7 +146,7 @@ export async function closeDealLost(params: {
       dealRequestId: params.requestId,
     });
     if (!emailRes.sent && !emailRes.queued) {
-      console.warn(
+      log.warn(
         "[dealClosing.closeDealLost] email neither sent nor queued:",
         emailRes.error,
       );

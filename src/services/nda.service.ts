@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { log } from "@/lib/logger";
 
 export type NDAActorRole = "developer" | "owner";
 
@@ -31,7 +32,7 @@ export async function getNDAForLand(userId: string, landId: string, actorRole: N
     .maybeSingle();
 
   if (error) {
-    console.error("Error fetching NDA consent:", error);
+    log.error("Error fetching NDA consent:", error);
     return null;
   }
   return data as NDAConsent | null;
@@ -69,7 +70,7 @@ export async function getNDAConsentsForUser(userId: string, actorRole?: NDAActor
   const { data, error } = await query;
 
   if (error) {
-    console.error("Error fetching NDA consents:", error);
+    log.error("Error fetching NDA consents:", error);
     return [];
   }
   return (data || []) as NDAConsent[];

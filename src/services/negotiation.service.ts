@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { log } from "@/lib/logger";
 import { transitionDealPhase } from "./dealPhase.service";
 
 /* ── Types ── */
@@ -91,7 +92,7 @@ export async function createRound(params: {
     // If this is the first round, transition to negotiation_active
     if (roundNumber === 1) {
       const result = await transitionDealPhase(params.requestId, "negotiation_active" as any);
-      if (!result.success) console.warn("Phase transition note:", result.error);
+      if (!result.success) log.warn("Phase transition note:", result.error);
     }
 
     // Fire email notification
@@ -103,7 +104,7 @@ export async function createRound(params: {
           round_number: roundNumber,
         },
       });
-    } catch (e) { console.warn("Email notification failed:", e); }
+    } catch (e) { log.warn("Email notification failed:", e); }
 
     return { success: true, round: round as unknown as NegotiationRound };
   } catch (err: any) {
@@ -137,11 +138,11 @@ export async function respondToRound(params: {
     if (params.decision === "accepted") {
       // Move to final_approval
       const result = await transitionDealPhase(params.requestId, "final_approval" as any);
-      if (!result.success) console.warn("Phase transition note:", result.error);
+      if (!result.success) log.warn("Phase transition note:", result.error);
     } else if (params.decision === "rejected") {
       // Negotiation failed → closed_lost
       const result = await transitionDealPhase(params.requestId, "closed_lost" as any, params.notes);
-      if (!result.success) console.warn("Phase transition note:", result.error);
+      if (!result.success) log.warn("Phase transition note:", result.error);
     }
     // counter_offer: phase stays at negotiation_active, a new round will be created
 
@@ -153,7 +154,7 @@ export async function respondToRound(params: {
           deal_request_id: params.requestId,
         },
       });
-    } catch (e) { console.warn("Email notification failed:", e); }
+    } catch (e) { log.warn("Email notification failed:", e); }
 
     return { success: true };
   } catch (err: any) {

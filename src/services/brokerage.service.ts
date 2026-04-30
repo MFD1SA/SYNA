@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { log } from "@/lib/logger";
 
 export interface BrokerageContract {
   id: string;
@@ -28,7 +29,7 @@ export async function getContractByLandId(landId: string): Promise<BrokerageCont
     .maybeSingle();
 
   if (error) {
-    console.error("Error fetching brokerage contract:", error);
+    log.error("Error fetching brokerage contract:", error);
     return null;
   }
   return data as BrokerageContract | null;
@@ -55,7 +56,7 @@ export async function getContractsByLandIds(
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error batch-fetching brokerage contracts:", error);
+    log.error("Error batch-fetching brokerage contracts:", error);
     return {};
   }
 
@@ -80,7 +81,7 @@ export async function getContractsByOwnerId(ownerId: string): Promise<BrokerageC
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching brokerage contracts:", error);
+    log.error("Error fetching brokerage contracts:", error);
     return [];
   }
   return (data || []) as BrokerageContract[];
@@ -108,7 +109,7 @@ export async function createBrokerageContract(contract: {
     .single();
 
   if (error) {
-    console.error("Error creating brokerage contract:", error);
+    log.error("Error creating brokerage contract:", error);
     throw error;
   }
   return data as BrokerageContract;
@@ -127,7 +128,7 @@ export async function updateBrokerageContract(
     .eq("id", id);
 
   if (error) {
-    console.error("Error updating brokerage contract:", error);
+    log.error("Error updating brokerage contract:", error);
     throw error;
   }
 }
@@ -144,7 +145,7 @@ export async function getContractFileUrl(filePath: string): Promise<string | nul
     .createSignedUrl(filePath, 3600);
 
   if (error) {
-    console.error("Error getting contract file URL:", error);
+    log.error("Error getting contract file URL:", error);
     return null;
   }
   return data?.signedUrl ?? null;

@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { log } from "@/lib/logger";
 import { transitionDealPhase } from "./dealPhase.service";
 
 export interface DealMeeting {
@@ -93,7 +94,7 @@ export async function proposeMeeting(params: {
     const result = await transitionDealPhase(params.requestId, "meeting_proposed");
     if (!result.success) {
       // Phase might already be meeting_proposed (reschedule case)
-      console.warn("Phase transition note:", result.error);
+      log.warn("Phase transition note:", result.error);
     }
 
     return { success: true, meeting: meeting as unknown as DealMeeting };
