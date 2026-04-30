@@ -170,8 +170,10 @@ const AdminTeam: React.FC = () => {
     try {
       await supabase.from("admin_permissions").delete().eq("id", deleteMember.id);
       await supabase.from("user_roles").delete().eq("user_id", deleteMember.user_id).eq("role", "admin");
+      // target_kind: "supervisor" gates this on is_super_admin so a
+      // delegated staff member with perm_developers can't delete a peer.
       const res = await supabase.functions.invoke("create-owner", {
-        body: { action: "delete_user", user_id: deleteMember.user_id },
+        body: { action: "delete_user", user_id: deleteMember.user_id, target_kind: "supervisor" },
       });
       if (res.error) log.warn("Auth delete warning:", res.error);
       if (user) await logAudit(user.id, user.email, "delete", "supervisor", deleteMember.id, { email: deleteMember.user_email });
@@ -188,8 +190,12 @@ const AdminTeam: React.FC = () => {
     if (!passwordDialog || !supervisorNewPassword) return;
     setUpdatingPassword(true);
     try {
+      // target_kind: "supervisor" tells the edge function to gate this
+      // reset on is_super_admin (NOT a perm_* domain delegation), so a
+      // staff member with perm_developers can't reset another staff
+      // member's password.
       const res = await supabase.functions.invoke("create-owner", {
-        body: { action: "update_password", user_id: passwordDialog.user_id, new_password: supervisorNewPassword },
+        body: { action: "update_password", user_id: passwordDialog.user_id, new_password: supervisorNewPassword, target_kind: "supervisor" },
       });
       if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
       if (user) await logAudit(user.id, user.email, "reset_password", "supervisor", passwordDialog.id);

@@ -176,7 +176,7 @@ function detectSocials(html: string): { platform: string; url: string }[] {
     if (!ms) continue;
     for (const u of ms) {
       if (seenPlatform.has(platform)) break;
-      const clean = u.replace(/[)\.,;]+$/, "");
+      const clean = u.replace(/[).,;]+$/, "");
       if (/\b(share|sharer|intent|dialog\b)/i.test(clean)) continue;
       seenPlatform.add(platform);
       out.push({ platform, url: clean });
@@ -210,7 +210,7 @@ function detectGoogleBusinessUrl(html: string): string | null {
   ];
   for (const re of patterns) {
     const m = html.match(re);
-    if (m) return m[0].replace(/[)\.,;'"]+$/, "");
+    if (m) return m[0].replace(/[).,;'"]+$/, "");
   }
   return null;
 }
@@ -487,7 +487,7 @@ function parseProjectPage(html: string, pageUrl: string): ProjectCard | null {
 
   let title = h1 || stripTags(ogTitle) || stripTags(docTitle) || "";
   // Strip site-name suffixes: "Project X | Acme" → "Project X"
-  title = title.replace(/\s*[\|\-–—]\s*[^|\-–—]{2,80}$/, "").trim().slice(0, 180);
+  title = title.replace(/\s*[|\-–—]\s*[^|\-–—]{2,80}$/, "").trim().slice(0, 180);
   if (!title || title.length < 4) return null;
 
   let summary = stripTags(ogDesc) || stripTags(metaDesc) || "";
@@ -509,7 +509,7 @@ function parseProjectPage(html: string, pageUrl: string): ProjectCard | null {
   // Best-effort location extraction from the page text
   let location = "";
   const locMatch =
-    html.match(/(?:located in|location\s*[:\-]\s*|في\s+مدينة\s+|بحي\s+|بمدينة\s+)\s*([\u0600-\u06FFa-zA-Z\s,]{3,60})/i);
+    html.match(/(?:located in|location\s*[:-]\s*|في\s+مدينة\s+|بحي\s+|بمدينة\s+)\s*([\u0600-\u06FFa-zA-Z\s,]{3,60})/i);
   if (locMatch) {
     location = stripTags(locMatch[1]).replace(/[,.\s]+$/, "").slice(0, 80);
   }
@@ -732,7 +732,7 @@ async function enrichSocialProfile(item: { platform: string; url: string }): Pro
   const ogTitle = extractMeta(html, /<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
   const ogImage = extractMeta(html, /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
   const ogDesc = extractMeta(html, /<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
-  if (ogTitle) profile.display_name = stripTags(ogTitle).slice(0, 120).replace(/\s*[\|\-–—]\s*(youtube|facebook|tiktok|instagram|linkedin|twitter|x|pinterest|snapchat).*$/i, "").trim();
+  if (ogTitle) profile.display_name = stripTags(ogTitle).slice(0, 120).replace(/\s*[|\-–—]\s*(youtube|facebook|tiktok|instagram|linkedin|twitter|x|pinterest|snapchat).*$/i, "").trim();
   if (ogImage && !ogImage.startsWith("data:")) profile.avatar_url = ogImage;
   if (ogDesc) profile.bio = stripTags(ogDesc).slice(0, 280);
 

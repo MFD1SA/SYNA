@@ -158,8 +158,13 @@ const AdminOwners: React.FC = () => {
     if (!passwordDialog || !newPassword) return;
     setUpdatingPassword(true);
     try {
+      // target_kind: "owner" routes the permission check to perm_owners
+      // (instead of the historical perm_developers fallback). Required
+      // since the audit; without it, a staff member with only perm_owners
+      // would have been blocked from resetting a password they should be
+      // allowed to reset.
       const res = await supabase.functions.invoke("create-owner", {
-        body: { action: "update_password", user_id: passwordDialog.owner_id, new_password: newPassword },
+        body: { action: "update_password", user_id: passwordDialog.owner_id, new_password: newPassword, target_kind: "owner" },
       });
       if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
       if (user) await logAudit(user.id, user.email, "reset_password", "owner", passwordDialog.owner_id);
@@ -191,8 +196,9 @@ const AdminOwners: React.FC = () => {
       }
 
       // Step 2 — drop the auth user via service-role edge function.
+      // target_kind: "owner" routes the permission check to perm_owners.
       const res = await supabase.functions.invoke("create-owner", {
-        body: { action: "delete_user", user_id: deleteDialog.owner_id },
+        body: { action: "delete_user", user_id: deleteDialog.owner_id, target_kind: "owner" },
       });
       if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
       if (user) await logAudit(user.id, user.email, "delete", "owner", deleteDialog.owner_id);

@@ -364,6 +364,10 @@ Deno.serve(async (req) => {
       // operating on via `target_kind`; we accept any of:
       //   - "developer"  → perm_developers
       //   - "owner"      → perm_owners
+      //   - "supervisor" → super-admin only (resetting another staff
+      //                    account's password is a privileged operation
+      //                    and must NOT be possible from a perm_*
+      //                    delegation alone)
       // Falling back to perm_developers covers the historical AdminDevelopers
       // call site that did not send `target_kind` (we want the existing
       // panel to keep working without a coordinated frontend ship).
@@ -372,27 +376,49 @@ Deno.serve(async (req) => {
       if (!isStrongPassword(new_password)) throw new Error("Password must be at least 10 chars and include upper/lowercase letters, number, and symbol");
       if (user_id === caller.id) throw new Error("Cannot change your own password from this endpoint");
 
-      const requiredPerm =
-        target_kind === "owner"
-          ? "perm_owners"
-          : target_kind === "developer"
-            ? "perm_developers"
-            : "perm_developers";
-      if (!hasPerm(requiredPerm)) {
-        throw new Error("Insufficient permissions");
+      // Super-admin gate for supervisor resets — domain permissions are
+      // not sufficient since a perm_developers grant should NOT confer
+      // the ability to override a peer's credentials.
+      if (target_kind === "supervisor") {
+        if (!callerPerms?.is_super_admin) {
+          throw new Error("Insufficient permissions");
+        }
+        // Defensive check: target must actually be a staff/admin row,
+        // not an owner or developer being mislabeled.
+        const { data: targetRoles } = await adminClient
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user_id);
+        const isAdminTarget = (targetRoles || []).some((r: any) => r.role === "admin");
+        if (!isAdminTarget) {
+          throw new Error("Target is not a staff/admin account");
+        }
+      } else {
+        const requiredPerm =
+          target_kind === "owner"
+            ? "perm_owners"
+            : target_kind === "developer"
+              ? "perm_developers"
+              : "perm_developers";
+        if (!hasPerm(requiredPerm)) {
+          throw new Error("Insufficient permissions");
+        }
       }
 
       const { error } = await adminClient.auth.admin.updateUserById(user_id, { password: new_password });
       if (error) throw error;
 
       // Audit so a super admin can later see which staff member changed
-      // which developer's password.
+      // which user's password.
+      const auditEntityType =
+        target_kind === "supervisor" ? "supervisor" :
+        target_kind === "owner" ? "owner" : "developer";
       await writeAuditLog(
         adminClient,
         caller.id,
         caller.email || null,
         "admin_update_password",
-        target_kind === "owner" ? "owner" : "developer",
+        auditEntityType,
         user_id,
         { target_kind: target_kind || "developer" },
       );
@@ -409,28 +435,48 @@ Deno.serve(async (req) => {
       // cascade has already succeeded; if we reject the auth-delete the
       // developer row is already gone, so the orphan is benign and we
       // log a warning at the call site rather than rolling back.
+      // Supervisor deletions require super-admin (a perm_developers
+      // delegation must NOT be enough to delete a peer).
       const { user_id, target_kind } = body;
       if (!user_id) throw new Error("user_id required");
+      if (user_id === caller.id) throw new Error("Cannot delete your own account from this endpoint");
 
-      const requiredPerm =
-        target_kind === "owner"
-          ? "perm_owners"
-          : target_kind === "developer"
-            ? "perm_developers"
-            : "perm_developers";
-      if (!hasPerm(requiredPerm)) {
-        throw new Error("Insufficient permissions");
+      if (target_kind === "supervisor") {
+        if (!callerPerms?.is_super_admin) {
+          throw new Error("Insufficient permissions");
+        }
+        const { data: targetRoles } = await adminClient
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user_id);
+        const isAdminTarget = (targetRoles || []).some((r: any) => r.role === "admin");
+        if (!isAdminTarget) {
+          throw new Error("Target is not a staff/admin account");
+        }
+      } else {
+        const requiredPerm =
+          target_kind === "owner"
+            ? "perm_owners"
+            : target_kind === "developer"
+              ? "perm_developers"
+              : "perm_developers";
+        if (!hasPerm(requiredPerm)) {
+          throw new Error("Insufficient permissions");
+        }
       }
 
       const { error } = await adminClient.auth.admin.deleteUser(user_id);
       if (error) throw error;
 
+      const auditEntityType =
+        target_kind === "supervisor" ? "supervisor" :
+        target_kind === "owner" ? "owner" : "developer";
       await writeAuditLog(
         adminClient,
         caller.id,
         caller.email || null,
         "admin_delete_auth_user",
-        target_kind === "owner" ? "owner" : "developer",
+        auditEntityType,
         user_id,
         { target_kind: target_kind || "developer" },
       );
