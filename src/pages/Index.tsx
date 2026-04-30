@@ -15,6 +15,7 @@ import Footer from "@/components/landing/Footer";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getActiveOffers, offerTypeLabels, usageTypeLabels } from "@/data/offers";
 import { MapPin, Ruler, ArrowUpRight, ArrowLeft, ArrowRight as ArrowRightIcon, HelpCircle } from "lucide-react";
+import { log } from "@/lib/logger";
 
 const OffersPreview: React.FC<{ isAr: boolean }> = ({ isAr }) => {
   const [offers, setOffers] = useState<any[]>([]);
@@ -33,7 +34,7 @@ const OffersPreview: React.FC<{ isAr: boolean }> = ({ isAr }) => {
       })
       .catch((err) => {
         if (cancelled) return;
-        console.error("Index.OffersPreview getActiveOffers error:", err);
+        log.error("Index.OffersPreview getActiveOffers error:", err);
       });
     return () => { cancelled = true; };
   }, []);

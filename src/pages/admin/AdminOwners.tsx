@@ -17,6 +17,7 @@ import {
   Search, MapPin, Ruler, CheckCircle2, Loader2, Shield, Phone, LogIn,
   Send
 } from "lucide-react";
+import { log } from "@/lib/logger";
 
 const AdminOwners: React.FC = () => {
   const { user } = useAuth();
@@ -185,7 +186,7 @@ const AdminOwners: React.FC = () => {
         { _owner_user_id: deleteDialog.owner_id } as any
       );
       if (cascadeErr) {
-        console.warn("Owner cascade warning:", cascadeErr.message);
+        log.warn("Owner cascade warning:", cascadeErr.message);
         // Don't abort — the owner may simply have no lands yet.
       }
 

@@ -39,6 +39,7 @@ import {
 import { getMyCommissionAgreement, type DeveloperAgreement } from "@/services/agreements.service";
 import AvatarUpload from "@/components/shared/AvatarUpload";
 import logoImg from "@/assets/logo.png";
+import { log } from "@/lib/logger";
 
 type DeveloperRow = Tables<"developers">;
 
@@ -965,7 +966,7 @@ const CrmSettings: React.FC = () => {
       // for forensic trails.
       try {
         await logAudit(user?.id || "", user?.email, "password.change", "auth", user?.id || "", {});
-      } catch (e) { console.error("Audit log failed:", e); }
+      } catch (e) { log.error("Audit log failed:", e); }
     } finally {
       setSavingPassword(false);
       savingPasswordRef.current = false;
@@ -1016,7 +1017,7 @@ const CrmSettings: React.FC = () => {
             _entity_id: developer.id,
           })
           .then((res) => {
-            if (res.error) console.warn("[CrmSettings] notify_all_admins:", res.error.message);
+            if (res.error) log.warn("[CrmSettings] notify_all_admins:", res.error.message);
           });
       }
 
@@ -1086,7 +1087,7 @@ const CrmSettings: React.FC = () => {
           developer.id,
           { fields: Object.keys(updateObj), cr_file_uploaded: !!crFile },
         );
-      } catch (e) { console.error("Audit log failed:", e); }
+      } catch (e) { log.error("Audit log failed:", e); }
     } catch (error: any) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: error.message || (isAr ? "فشل حفظ البيانات" : "Failed to save data") });
     } finally {

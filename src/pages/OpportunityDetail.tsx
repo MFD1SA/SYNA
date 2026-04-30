@@ -12,6 +12,7 @@ import {
   Target, TrendingUp, Shield, Calendar, Maximize2,
   MoveHorizontal, MoveVertical, Route, Handshake, Loader2
 } from "lucide-react";
+import { log } from "@/lib/logger";
 
 const usageLabels: Record<string, { ar: string; en: string }> = {
   residential: { ar: "سكني", en: "Residential" },
@@ -77,7 +78,7 @@ const OpportunityDetail: React.FC = () => {
         .maybeSingle();
       if (cancelled) return;
       if (error) {
-        console.error("OpportunityDetail fetch error:", error);
+        log.error("OpportunityDetail fetch error:", error);
         toast({
           variant: "destructive",
           title: isAr ? "تعذر تحميل الفرصة" : "Could not load opportunity",

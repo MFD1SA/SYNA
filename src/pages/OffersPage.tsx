@@ -15,6 +15,7 @@ const heroImg = "/heroes/offers.jpg";
 import fallback1 from "@/assets/riyadh-kafd-elite.png";
 import fallback2 from "@/assets/riyadh-residential.png";
 import fallback3 from "@/assets/riyadh-kafd.png";
+import { log } from "@/lib/logger";
 const fallbackImages = [fallback1, fallback2, fallback3];
 const pickFallback = (id: string): string => {
   let h = 0;
@@ -99,7 +100,7 @@ const OffersPage: React.FC = () => {
 
         setItems([...offerItems, ...landItems]);
       } catch (e) {
-        console.error(e);
+        log.error(e);
       } finally {
         setLoading(false);
       }

@@ -20,6 +20,7 @@ import LandSubmissionForm from "@/components/land/LandSubmissionForm";
 import LegalDocPrintView from "@/components/land/LegalDocPrintView";
 import { LandFormData, usageLabels, goalLabels } from "@/components/land/LandFormConstants";
 import { getContractByLandId, createBrokerageContract, updateBrokerageContract, getContractFileUrl, type BrokerageContract } from "@/services/brokerage.service";
+import { log } from "@/lib/logger";
 
 const AdminLands: React.FC = () => {
   const { lang } = useLanguage();
@@ -176,7 +177,7 @@ const AdminLands: React.FC = () => {
             entity_id: editingId,
           })
           .then(({ error: notifError }) => {
-            if (notifError) console.warn("[AdminLands] owner approval notification failed:", notifError.message);
+            if (notifError) log.warn("[AdminLands] owner approval notification failed:", notifError.message);
           });
       }
 
@@ -195,7 +196,7 @@ const AdminLands: React.FC = () => {
             },
           });
         } catch (e) {
-          console.error("Draft notification error:", e);
+          log.error("Draft notification error:", e);
         }
       }
 
@@ -288,7 +289,7 @@ const AdminLands: React.FC = () => {
           entity_id: id,
         })
         .then(({ error: notifError }) => {
-          if (notifError) console.warn("[AdminLands] publish toggle notification failed:", notifError.message);
+          if (notifError) log.warn("[AdminLands] publish toggle notification failed:", notifError.message);
         });
     }
 

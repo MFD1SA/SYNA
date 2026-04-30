@@ -20,6 +20,7 @@ import { defaultLandForm, LandFormData } from "@/components/land/LandFormConstan
 import {
   Handshake, Building2, MapPin, Eye, FileText,
 } from "lucide-react";
+import { log } from "@/lib/logger";
 
 const OwnerDeals: React.FC = () => {
   const { user } = useAuth();
@@ -50,7 +51,7 @@ const OwnerDeals: React.FC = () => {
         if (error) throw error;
         setDeals(data || []);
       } catch (err: any) {
-        console.error("Failed to fetch deals:", err);
+        log.error("Failed to fetch deals:", err);
         toast({
           variant: "destructive",
           title: isAr ? "فشل تحميل الصفقات" : "Failed to load deals",
@@ -70,7 +71,7 @@ const OwnerDeals: React.FC = () => {
       if (error) throw error;
       setMeetings(data || []);
     } catch (err: any) {
-      console.error("Failed to fetch deal meetings:", err);
+      log.error("Failed to fetch deal meetings:", err);
       setMeetings([]);
       toast({
         variant: "destructive",
@@ -258,7 +259,7 @@ const OwnerDeals: React.FC = () => {
               "deal",
               viewDeal.id,
               { land_id: viewDeal.land_id, developer_id: viewDeal.developer_id },
-            ).catch((e) => console.error("Audit log failed:", e));
+            ).catch((e) => log.error("Audit log failed:", e));
           }}
         />
       )}

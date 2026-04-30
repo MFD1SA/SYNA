@@ -15,6 +15,7 @@ import {
   type DealClosing,
   outcomeLabels, outcomeColors, commissionTypeLabels,
 } from "@/services/dealClosing.service";
+import { log } from "@/lib/logger";
 
 interface DealClosingPanelProps {
   requestId: string;
@@ -55,7 +56,7 @@ const DealClosingPanel: React.FC<DealClosingPanelProps> = ({
     try {
       const c = await getClosing(requestId);
       setClosing(c);
-    } catch (e) { console.error(e); }
+    } catch (e) { log.error(e); }
     setLoading(false);
   }, [requestId, currentPhase]);
 

@@ -25,6 +25,7 @@ import StatusBadge from "@/components/dashboard/StatusBadge";
 import QuickActions from "@/components/dashboard/QuickActions";
 import EmptyState from "@/components/dashboard/EmptyState";
 import TrendSparkline from "@/components/dashboard/TrendSparkline";
+import { log } from "@/lib/logger";
 
 interface DevProfile {
   id: string;
@@ -133,7 +134,7 @@ const CrmDashboard: React.FC = () => {
         }
       } catch (err: any) {
         if (cancelled) return;
-        console.error("Failed to fetch CRM dashboard data:", err);
+        log.error("Failed to fetch CRM dashboard data:", err);
         // Surface to the user — a silently-empty dashboard looks like a
         // privilege problem, not a network one. The toast lets them retry.
         toast({

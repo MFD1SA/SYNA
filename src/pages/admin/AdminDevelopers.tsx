@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil, KeyRound, Eye, EyeOff, Download, Globe, FileText, LogIn, Loader2, Banknote } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 import { getAgreementByUserId, getAgreementsByUserIds, type DeveloperAgreement } from "@/services/agreements.service";
+import { log } from "@/lib/logger";
 
 type Developer = Database["public"]["Tables"]["developers"]["Row"];
 
@@ -91,7 +92,7 @@ const AdminDevelopers: React.FC = () => {
         setAgreementMap(agMap);
       }
     } catch (err) {
-      console.error("fetchDevs error:", err);
+      log.error("fetchDevs error:", err);
     } finally {
       setLoading(false);
     }
@@ -148,7 +149,7 @@ const AdminDevelopers: React.FC = () => {
         toast({ title: isAr ? (status === "verified" ? "تم التوثيق" : "تم الرفض") : (status === "verified" ? "Verified" : "Rejected") });
       }
     } catch (err) {
-      console.error("updateStatus error:", err);
+      log.error("updateStatus error:", err);
     } finally {
       fetchDevs();
     }
@@ -180,7 +181,7 @@ const AdminDevelopers: React.FC = () => {
         body: { action: "delete_user", user_id: deleteDialog.user_id, target_kind: "developer" },
       });
       if (res.error || res.data?.error) {
-        console.warn("Auth user delete warning:", res.data?.error || res.error?.message);
+        log.warn("Auth user delete warning:", res.data?.error || res.error?.message);
       }
 
       toast({ title: isAr ? "تم حذف المطور" : "Developer deleted" });
@@ -240,7 +241,7 @@ const AdminDevelopers: React.FC = () => {
       setPasswordDialog(null);
       setNewPassword("");
     } catch (err: any) {
-      console.error("[Admin] Password update failed:", err);
+      log.error("[Admin] Password update failed:", err);
       toast({ variant: "destructive", title: isAr ? "فشل تحديث كلمة المرور" : "Password update failed", description: err.message });
     }
     setUpdatingPassword(false);

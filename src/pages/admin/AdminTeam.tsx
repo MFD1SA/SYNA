@@ -18,6 +18,7 @@ import {
   Loader2, User, Mail, KeyRound, HardHat, Landmark, Handshake,
   FileText, Bot, ClipboardList, Building2, UserPlus, Lock, CheckCircle2
 } from "lucide-react";
+import { log } from "@/lib/logger";
 
 interface AdminPerm {
   id: string;
@@ -172,7 +173,7 @@ const AdminTeam: React.FC = () => {
       const res = await supabase.functions.invoke("create-owner", {
         body: { action: "delete_user", user_id: deleteMember.user_id },
       });
-      if (res.error) console.warn("Auth delete warning:", res.error);
+      if (res.error) log.warn("Auth delete warning:", res.error);
       if (user) await logAudit(user.id, user.email, "delete", "supervisor", deleteMember.id, { email: deleteMember.user_email });
       toast({ title: isAr ? "تم حذف المشرف" : "Supervisor deleted" });
       setDeleteMember(null);

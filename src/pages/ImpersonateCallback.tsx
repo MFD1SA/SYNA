@@ -10,6 +10,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { setImpersonationActive } from "@/integrations/supabase/impersonateClient";
+import { log } from "@/lib/logger";
 
 const ImpersonateCallback: React.FC = () => {
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ const ImpersonateCallback: React.FC = () => {
           navigate("/", { replace: true });
         }
       } catch (err: any) {
-        console.error("[ImpersonateCallback] Error:", err);
+        log.error("[ImpersonateCallback] Error:", err);
         setError(err.message || "Failed to process impersonation");
       }
     };

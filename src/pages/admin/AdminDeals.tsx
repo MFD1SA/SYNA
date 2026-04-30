@@ -43,6 +43,7 @@ import MeetingPanel from "@/components/meeting/MeetingPanel";
 import MeetingReportPanel from "@/components/meeting/MeetingReportPanel";
 import NegotiationPanel from "@/components/negotiation/NegotiationPanel";
 import DealClosingPanel from "@/components/negotiation/DealClosingPanel";
+import { log } from "@/lib/logger";
 
 const statusLabels: Record<string, { ar: string; en: string }> = {
   pending: { ar: "معلق", en: "Pending" },
@@ -157,7 +158,7 @@ const AdminDeals: React.FC = () => {
         setDealMeetings(meetingsMap);
       }
     } catch (err) {
-      console.error("fetchAll error:", err);
+      log.error("fetchAll error:", err);
     } finally {
       setLoading(false);
     }
@@ -318,7 +319,7 @@ const AdminDeals: React.FC = () => {
         });
       } catch (auditErr) {
         // Audit failure must not roll back a committed stage change.
-        console.error("[AdminDeals] audit log for stage advance failed:", auditErr);
+        log.error("[AdminDeals] audit log for stage advance failed:", auditErr);
       }
       // Send stage change notification
       try {

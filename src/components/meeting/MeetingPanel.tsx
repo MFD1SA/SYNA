@@ -16,6 +16,7 @@ import {
   meetingStatusLabels, meetingStatusColors,
   type DealMeeting, type MeetingStatus,
 } from "@/services/meeting.service";
+import { log } from "@/lib/logger";
 
 const statusIcons: Record<MeetingStatus, React.ElementType> = {
   proposed: Calendar,
@@ -63,7 +64,7 @@ const MeetingPanel: React.FC<MeetingPanelProps> = ({ requestId, currentPhase, vi
       try {
         const data = await getMeetings(requestId);
         setMeetings(data);
-      } catch (e) { console.error(e); }
+      } catch (e) { log.error(e); }
       setLoading(false);
     };
     fetch();

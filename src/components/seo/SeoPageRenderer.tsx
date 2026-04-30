@@ -9,6 +9,7 @@ import { useMetaTags } from "@/hooks/useMetaTags";
 import { getSeoPageBySlug } from "@/services/seo/pages.service";
 import type { SeoPage } from "@/types/seo";
 import { ArrowLeft, ArrowRight, ChevronRight, ChevronLeft } from "lucide-react";
+import { log } from "@/lib/logger";
 
 interface Props {
   /** The URL slug (e.g. "/sa/riyadh" or "/properties/villas"). Built from the route. */
@@ -58,7 +59,7 @@ export const SeoPageRenderer: React.FC<Props> = ({ slug }) => {
       })
       .catch((err) => {
         if (!cancelled) {
-          console.error("[SeoPageRenderer] fetch error:", err);
+          log.error("[SeoPageRenderer] fetch error:", err);
           setNotFound(true);
           setLoading(false);
         }

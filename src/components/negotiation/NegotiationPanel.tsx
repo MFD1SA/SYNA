@@ -15,6 +15,7 @@ import {
   type NegotiationRound, type ResponseDecision, type ProposedTerms,
   responseLabels, responseColors,
 } from "@/services/negotiation.service";
+import { log } from "@/lib/logger";
 
 interface NegotiationPanelProps {
   requestId: string;
@@ -63,7 +64,7 @@ const NegotiationPanel: React.FC<NegotiationPanelProps> = ({
     try {
       const r = await getRounds(requestId);
       setRounds(r);
-    } catch (e) { console.error(e); }
+    } catch (e) { log.error(e); }
     setLoading(false);
   }, [requestId, isNegotiationPhase]);
 

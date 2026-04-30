@@ -23,6 +23,7 @@ import LegalDocPrintView from "@/components/land/LegalDocPrintView";
 import { stageConfig, healthLabels, commissionStatusLabels } from "@/components/deal/dealStageConfig";
 import { defaultLandForm, LandFormData } from "@/components/land/LandFormConstants";
 import { DRIVE_ALLOWED_HOSTS } from "@/lib/urlSafe";
+import { log } from "@/lib/logger";
 
 /**
  * P2.4 — Drive URL validation. Hostname check was already in place, but
@@ -83,7 +84,7 @@ const CrmDeals: React.FC = () => {
     if (!user) return;
     const { data: devProfile, error: devErr } = await supabase.from("developers").select("id").eq("user_id", user.id).maybeSingle();
     if (devErr) {
-      console.error("Failed to load developer profile:", devErr);
+      log.error("Failed to load developer profile:", devErr);
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: devErr.message });
       setLoading(false);
       return;
@@ -104,7 +105,7 @@ const CrmDeals: React.FC = () => {
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
     if (error) {
-      console.error("Failed to load deals:", error);
+      log.error("Failed to load deals:", error);
       toast({ variant: "destructive", title: isAr ? "تعذر تحميل الصفقات" : "Could not load deals", description: error.message });
     }
     setDeals(data || []);
@@ -182,7 +183,7 @@ const CrmDeals: React.FC = () => {
           viewDeal.id,
           { to_stage: nextStage, document_url: driveUrl.trim() },
         );
-      } catch (e) { console.error("Audit log failed:", e); }
+      } catch (e) { log.error("Audit log failed:", e); }
     } catch (err: any) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
     } finally {
@@ -213,7 +214,7 @@ const CrmDeals: React.FC = () => {
           viewDeal.id,
           { land_id: viewDeal.land_id, closed_at: data?.deal?.closed_at || null },
         );
-      } catch (e) { console.error("Audit log failed:", e); }
+      } catch (e) { log.error("Audit log failed:", e); }
     } catch (err: any) {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: err.message });
     } finally {
@@ -414,7 +415,7 @@ const CrmDeals: React.FC = () => {
               "deal",
               viewDeal.id,
               { land_id: viewDeal.land_id },
-            ).catch((e) => console.error("Audit log failed:", e));
+            ).catch((e) => log.error("Audit log failed:", e));
           }}
         />
       )}

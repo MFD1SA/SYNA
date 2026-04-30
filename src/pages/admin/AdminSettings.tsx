@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Settings, User, Mail, KeyRound, Eye, EyeOff, Save, Loader2, ShieldCheck, Clock, Timer, ShieldAlert, RotateCcw } from "lucide-react";
 import AvatarUpload from "@/components/shared/AvatarUpload";
+import { log } from "@/lib/logger";
 
 const DEFAULT_DEADLINES = {
   request_acceptance_days: 14,

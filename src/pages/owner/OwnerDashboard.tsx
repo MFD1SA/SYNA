@@ -30,6 +30,7 @@ import {
   Loader2, BarChart3, Users, GitCompareArrows, ExternalLink,
   Info, XCircle, CalendarClock, Clock, Activity, LineChart, ShieldCheck, Lock
 } from "lucide-react";
+import { log } from "@/lib/logger";
 
 const statusLabels: Record<string, { ar: string; en: string; color: string }> = {
   active_approved: { ar: "نشطة - تم الاعتماد", en: "Active - Approved", color: "bg-primary/5 text-primary border-primary/20" },
@@ -144,7 +145,7 @@ const OwnerDashboard: React.FC = () => {
           try {
             const idResult = await resolvePartyIdentities(approved.map(r => r.id));
             setPartyIdentities(prev => ({ ...prev, ...idResult.identities }));
-          } catch (e) { console.error("Identity resolve error:", e); }
+          } catch (e) { log.error("Identity resolve error:", e); }
         }
       }
       setLoading(false);
@@ -182,10 +183,10 @@ const OwnerDashboard: React.FC = () => {
         try {
           const idResult = await resolvePartyIdentities(reqIds);
           setPartyIdentities(prev => ({ ...prev, ...idResult.identities }));
-        } catch (e) { console.error("Identity resolve error:", e); }
+        } catch (e) { log.error("Identity resolve error:", e); }
       }
     } catch (e: any) {
-      console.error(e);
+      log.error(e);
       toast({ variant: "destructive", title: isAr ? "خطأ في التحليل" : "Analysis Error", description: e.message });
     } finally {
       setAnalyzingLand(null);
@@ -218,7 +219,7 @@ const OwnerDashboard: React.FC = () => {
       } catch (e) {
         // Audit-log failures must not revert the approval (the DB
         // transition already committed) — but we do want a trace.
-        console.error("Audit log failed:", e);
+        log.error("Audit log failed:", e);
       }
       toast({ title: isAr ? "تمت الموافقة المبدئية" : "Preliminary approval granted" });
 
@@ -229,7 +230,7 @@ const OwnerDashboard: React.FC = () => {
             body: { type: "request_approved", developer_name: a.developer_name, developer_email: devInfo.email, owner_name: ownerName, land_city: landCity, land_district: landDistrict },
           });
         }
-      } catch (e) { console.error("Notification error:", e); }
+      } catch (e) { log.error("Notification error:", e); }
 
       setRequestPhases(prev => ({ ...prev, [a.request_id]: "under_review" }));
       setAnalyses(prev => {
@@ -259,7 +260,7 @@ const OwnerDashboard: React.FC = () => {
       toast({ title: isAr ? "تم استبعاد المطور" : "Developer excluded" });
       try {
         await supabase.functions.invoke("send-deal-notification", { body: { type: "request_rejected", developer_name: rejectDialog.devName, developer_email: rejectDialog.devEmail, owner_name: ownerName, land_city: rejectDialog.landCity, land_district: rejectDialog.landDistrict, reject_reason: rejectNotes } });
-      } catch (e) { console.error("Notification error:", e); }
+      } catch (e) { log.error("Notification error:", e); }
       setRequestPhases(prev => ({ ...prev, [rejectDialog.requestId]: "closed_lost" }));
       setAnalyses(prev => {
         const updated = { ...prev };

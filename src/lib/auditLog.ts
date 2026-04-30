@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { log } from "@/lib/logger";
 
 export const logAudit = async (
   userId: string,
@@ -18,6 +19,6 @@ export const logAudit = async (
       details: details || {},
     });
   } catch (e) {
-    console.error("Audit log error:", e);
+    log.error("Audit log error:", e);
   }
 };

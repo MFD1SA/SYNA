@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { log } from "@/lib/logger";
 
 /**
  * Central storage helpers.
@@ -116,7 +117,7 @@ export async function openPrivateFile(
     .from(bucket)
     .createSignedUrl(path, SIGNED_URL_TTL_SECONDS);
   if (error) {
-    console.error("openPrivateFile error:", error, { path, bucket });
+    log.error("openPrivateFile error:", error, { path, bucket });
     return null;
   }
   return data.signedUrl;

@@ -18,6 +18,7 @@ import MeetingPanel from "@/components/meeting/MeetingPanel";
 import MeetingReportPanel from "@/components/meeting/MeetingReportPanel";
 import NegotiationPanel from "@/components/negotiation/NegotiationPanel";
 import DealClosingPanel from "@/components/negotiation/DealClosingPanel";
+import { log } from "@/lib/logger";
 
 const phaseIconMap: Record<string, React.ElementType> = {
   nda_pending: Clock,
@@ -107,7 +108,7 @@ const CrmMyRequests: React.FC = () => {
         .order("created_at", { ascending: false }) as any;
       setRequests(data || []);
     } catch (err) {
-      console.error("Failed to fetch requests:", err);
+      log.error("Failed to fetch requests:", err);
     } finally {
       setLoading(false);
     }

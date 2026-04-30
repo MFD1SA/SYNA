@@ -13,6 +13,7 @@
  */
 
 import * as Sentry from "@sentry/react";
+import { log } from "@/lib/logger";
 
 export const SENTRY_ENABLED = !!import.meta.env.VITE_SENTRY_DSN;
 
@@ -86,7 +87,7 @@ function scrubUrl(url: string): string {
 /** Manual capture helper — for error paths we catch explicitly. */
 export function captureError(err: unknown, context?: Record<string, unknown>): void {
   if (!SENTRY_ENABLED) {
-    console.error(err, context);
+    log.error(err, context);
     return;
   }
   Sentry.captureException(err, context ? { extra: context } : undefined);

@@ -5,6 +5,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { useMetaTags } from "@/hooks/useMetaTags";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { log } from "@/lib/logger";
 
 const NotFound = () => {
   const location = useLocation();
@@ -28,7 +29,7 @@ const NotFound = () => {
   const Arrow = lang === "ar" ? ArrowRight : ArrowLeft;
 
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    log.error("404 Error: User attempted to access non-existent route:", location.pathname);
   }, [location.pathname]);
 
   return (

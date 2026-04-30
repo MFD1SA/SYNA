@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { getContractsByLandIds, getContractFileUrl, type BrokerageContract } from "@/services/brokerage.service";
 import { logAudit } from "@/lib/auditLog";
+import { log } from "@/lib/logger";
 
 const submissionStatusConfig: Record<string, { ar: string; en: string; color: string; icon: React.ElementType }> = {
   draft: { ar: "مسودة — بانتظار مراجعتك", en: "Draft — Awaiting Your Review", color: "bg-amber-500/10 text-amber-700 border-amber-500/20", icon: Clock },
@@ -78,7 +79,7 @@ const OwnerLands: React.FC = () => {
         setContractUrls(urlMap);
       }
     } catch (err: any) {
-      console.error("Failed to fetch lands:", err);
+      log.error("Failed to fetch lands:", err);
       toast({
         variant: "destructive",
         title: isAr ? "فشل تحميل الأراضي" : "Failed to load lands",
@@ -181,7 +182,7 @@ const OwnerLands: React.FC = () => {
         supabase.functions
           .invoke("notify-new-opportunity", { body: { land_id: newLandId } })
           .catch((e) => {
-            console.error("notify-new-opportunity failed", e);
+            log.error("notify-new-opportunity failed", e);
             toast({
               variant: "destructive",
               title: isAr ? "تم الحفظ لكن تعذر إشعار المطورين" : "Saved but developer notifications failed",
@@ -206,7 +207,7 @@ const OwnerLands: React.FC = () => {
             _entity_id: newLandId,
           })
           .then((res) => {
-            if (res.error) console.warn("[OwnerLands] notify_all_admins:", res.error.message);
+            if (res.error) log.warn("[OwnerLands] notify_all_admins:", res.error.message);
           });
       }
       closeDialog();

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { log } from "@/lib/logger";
 
 export type UserType = "admin" | "developer" | "owner" | "none" | "loading";
 
@@ -113,7 +114,7 @@ export const useUserType = (): UserTypeResult => {
         setUserType(resolvedType);
         setDeveloperId(resolvedDevId);
       } catch (err) {
-        console.error("useUserType error:", err);
+        log.error("useUserType error:", err);
         // Do NOT cache a "none" verdict on error. Transient RLS/network
         // failures would otherwise demote an admin/developer/owner to
         // "none" and stick there until a hard refresh.

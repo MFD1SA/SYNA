@@ -15,6 +15,7 @@ import {
 import InnerHero from "@/components/landing/InnerHero";
 // Fallback hero for the offer detail page — premium Saudi architecture.
 import offerHeroFallback from "@/assets/riyadh-kafd-elite.png";
+import { log } from "@/lib/logger";
 
 const OfferDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -106,7 +107,7 @@ const OfferDetailPage: React.FC = () => {
       })
       .catch((err) => {
         if (cancelled) return;
-        console.error("OfferDetailPage getOfferBySlug error:", err);
+        log.error("OfferDetailPage getOfferBySlug error:", err);
         setLoading(false);
       });
     getActiveOffers()
@@ -116,7 +117,7 @@ const OfferDetailPage: React.FC = () => {
       })
       .catch((err) => {
         if (cancelled) return;
-        console.error("OfferDetailPage getActiveOffers error:", err);
+        log.error("OfferDetailPage getActiveOffers error:", err);
       });
     return () => { cancelled = true; };
   }, [id]);

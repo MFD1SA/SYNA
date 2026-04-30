@@ -8,6 +8,7 @@ import PageHeader from "@/components/dashboard/PageHeader";
 import { Users, Landmark, Handshake, HardHat, FileText, CheckCircle2, ArrowUpRight, Clock, Activity, BookOpen, ArrowRight, TrendingUp, LayoutDashboard } from "lucide-react";
 import AdminAnalyticsCharts from "@/components/admin/AdminAnalyticsCharts";
 import { Link } from "react-router-dom";
+import { log } from "@/lib/logger";
 
 interface KPI {
   label: string;
@@ -77,7 +78,7 @@ const AdminOverview: React.FC = () => {
           recentDeals: recentDealsRes.data || [],
         });
       } catch (err) {
-        console.error("AdminOverview fetchData error:", err);
+        log.error("AdminOverview fetchData error:", err);
       } finally {
         setLoading(false);
       }

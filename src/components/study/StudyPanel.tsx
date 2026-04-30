@@ -11,6 +11,7 @@ import {
   Download, Clock, FileUp, MessageSquare, History,
 } from "lucide-react";
 import { getStudies, uploadStudy, reviewStudy, startStudyReview, getStudySignedUrl, type DealStudy } from "@/services/study.service";
+import { log } from "@/lib/logger";
 
 const studyStatusLabels: Record<string, { ar: string; en: string }> = {
   submitted: { ar: "مرفوعة", en: "Submitted" },
@@ -72,7 +73,7 @@ const StudyPanel: React.FC<StudyPanelProps> = ({ requestId, currentPhase, viewer
       try {
         const data = await getStudies(requestId);
         setStudies(data);
-      } catch (e) { console.error(e); }
+      } catch (e) { log.error(e); }
       setLoading(false);
     };
     fetch();

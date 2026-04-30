@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useRef } from "react";
+import { log } from "@/lib/logger";
 
 interface Offer {
   id: string;
@@ -91,7 +92,7 @@ const AdminOffers: React.FC = () => {
       .order("sort_order", { ascending: true });
 
     if (error) {
-      console.error(error);
+      log.error(error);
       // Try without is_active filter for admin
       toast({ variant: "destructive", title: "Error", description: error.message });
     }

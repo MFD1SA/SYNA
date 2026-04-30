@@ -16,6 +16,7 @@ import {
   outcomeLabels, outcomeColors, reportStatusLabels, reportStatusColors,
 } from "@/services/meetingReport.service";
 import { supabase } from "@/integrations/supabase/client";
+import { log } from "@/lib/logger";
 
 interface MeetingReportPanelProps {
   requestId: string;
@@ -69,7 +70,7 @@ const MeetingReportPanel: React.FC<MeetingReportPanelProps> = ({
           .limit(1)
           .maybeSingle();
         if (data) setResolvedMeetingId((data as any).id);
-      } catch (e) { console.warn("Could not resolve meeting ID:", e); }
+      } catch (e) { log.warn("Could not resolve meeting ID:", e); }
     })();
   }, [meetingId, requestId, isReportPhase]);
 
@@ -82,7 +83,7 @@ const MeetingReportPanel: React.FC<MeetingReportPanelProps> = ({
         const a = await getApprovals(r.id);
         setApprovals(a);
       }
-    } catch (e) { console.error(e); }
+    } catch (e) { log.error(e); }
     setLoading(false);
   }, [requestId, currentPhase]);
 

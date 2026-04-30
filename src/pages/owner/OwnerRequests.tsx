@@ -39,6 +39,7 @@ import {
   type PartyIdentity,
   type RevealLevel,
 } from "@/services/identityReveal.service";
+import { log } from "@/lib/logger";
 
 /* ── Phase → Icon map ── */
 const phaseIconMap: Record<string, React.ElementType> = {
@@ -163,7 +164,7 @@ const OwnerRequests: React.FC = () => {
       try {
         const result = await resolvePartyIdentities(reqs.map(r => r.id));
         setIdentities(result.identities);
-      } catch (e) { console.error("Identity resolve error:", e); }
+      } catch (e) { log.error("Identity resolve error:", e); }
     }
 
     setLoading(false);
@@ -214,7 +215,7 @@ const OwnerRequests: React.FC = () => {
       } catch (e) {
         // Audit failures must not flip the operation back to "failed"
         // in the UI — the real work already committed server-side.
-        console.error("Audit log failed:", e);
+        log.error("Audit log failed:", e);
       }
 
       const labels: Record<string, { ar: string; en: string }> = {
@@ -273,7 +274,7 @@ const OwnerRequests: React.FC = () => {
           { land_id: req.land_id, to_phase: "nda_both_accepted" },
         );
       } catch (e) {
-        console.error("Audit log failed:", e);
+        log.error("Audit log failed:", e);
       }
 
       toast({ title: isAr ? "تم قبول اتفاقية عدم الإفصاح" : "NDA accepted" });

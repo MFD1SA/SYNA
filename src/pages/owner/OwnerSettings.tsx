@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { User, Lock, Eye, EyeOff, Shield } from "lucide-react";
 import AvatarUpload from "@/components/shared/AvatarUpload";
+import { log } from "@/lib/logger";
 
 /* Minimum password length is a platform-wide policy. AdminSettings uses
  * the same constant; keep them in lock-step. 10 chars + mix of classes is
@@ -56,7 +57,7 @@ const OwnerSettings: React.FC = () => {
         }
       } catch (err: any) {
         if (cancelled) return;
-        console.error("Failed to fetch profile:", err);
+        log.error("Failed to fetch profile:", err);
         toast({
           variant: "destructive",
           title: isAr ? "تعذر تحميل الملف" : "Could not load profile",
@@ -86,7 +87,7 @@ const OwnerSettings: React.FC = () => {
         await logAudit(user.id, user.email, "profile.update", "profile", user.id, {
           fields: ["full_name", "phone", "avatar_url"],
         });
-      } catch (e) { console.error("Audit log failed:", e); }
+      } catch (e) { log.error("Audit log failed:", e); }
     } finally {
       setSaving(false);
       savingProfileRef.current = false;
@@ -129,7 +130,7 @@ const OwnerSettings: React.FC = () => {
       // success (especially on success, actually, for forensic trails).
       try {
         await logAudit(user?.id || "", user?.email, "password.change", "auth", user?.id || "", {});
-      } catch (e) { console.error("Audit log failed:", e); }
+      } catch (e) { log.error("Audit log failed:", e); }
     } finally {
       setSaving(false);
       savingPasswordRef.current = false;

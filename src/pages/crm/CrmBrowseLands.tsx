@@ -30,6 +30,7 @@ import BentoCard from "@/components/dashboard/BentoCard";
 import StatusBadge from "@/components/dashboard/StatusBadge";
 import { getNDAConsentsForUser, submitNDADecision, type NDAConsent } from "@/services/nda.service";
 import { phaseLabels, phaseColors, type DealPhase } from "@/services/dealPhase.service";
+import { log } from "@/lib/logger";
 
 const usageLabels: Record<string, { ar: string; en: string }> = {
   residential: { ar: "سكني", en: "Residential" },
@@ -99,7 +100,7 @@ const CrmBrowseLands: React.FC = () => {
       .eq("developer_id", devId)
       .is("deleted_at", null);
     if (error) {
-      console.error("Failed to load existing deal_requests:", error);
+      log.error("Failed to load existing deal_requests:", error);
       return;
     }
     if (data) {
@@ -189,7 +190,7 @@ const CrmBrowseLands: React.FC = () => {
             insertedReq.id,
             { land_id: landId, proposed_project_type: requestForm.proposed_project_type },
           );
-        } catch (e) { console.error("Audit log failed:", e); }
+        } catch (e) { log.error("Audit log failed:", e); }
       }
 
       // Primary: unified owner-facing notification (Resend email + in-app row).
@@ -197,7 +198,7 @@ const CrmBrowseLands: React.FC = () => {
       if (insertedReq?.id) {
         supabase.functions
           .invoke("notify-interest", { body: { deal_request_id: insertedReq.id } })
-          .catch((e) => console.error("notify-interest failed", e));
+          .catch((e) => log.error("notify-interest failed", e));
       }
 
       // Legacy secondary notification path: previously fetched the
@@ -253,7 +254,7 @@ const CrmBrowseLands: React.FC = () => {
       if (user) {
         try {
           await logAudit(user.id, user.email, "nda.accept", "land", landId, { role: "developer" });
-        } catch (e) { console.error("Audit log failed:", e); }
+        } catch (e) { log.error("Audit log failed:", e); }
       }
     } else {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: result.error });
@@ -277,7 +278,7 @@ const CrmBrowseLands: React.FC = () => {
       if (user) {
         try {
           await logAudit(user.id, user.email, "nda.reject", "land", landId, { role: "developer" });
-        } catch (e) { console.error("Audit log failed:", e); }
+        } catch (e) { log.error("Audit log failed:", e); }
       }
     } else {
       toast({ variant: "destructive", title: isAr ? "خطأ" : "Error", description: result.error });

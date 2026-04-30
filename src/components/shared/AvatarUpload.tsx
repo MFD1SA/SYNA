@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Camera, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buildSafeStoragePath, SAFE_IMAGE_MIMES, UnsafeFileTypeError } from "@/lib/storageSafe";
+import { log } from "@/lib/logger";
 
 interface AvatarUploadProps {
   /** Current image URL */
@@ -60,9 +61,9 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
       onUpload(data.publicUrl);
     } catch (err) {
       if (err instanceof UnsafeFileTypeError) {
-        console.warn("Rejected upload:", err.message);
+        log.warn("Rejected upload:", err.message);
       } else {
-        console.error("Upload error:", err);
+        log.error("Upload error:", err);
       }
     }
     setUploading(false);
