@@ -30,6 +30,7 @@ import BentoCard from "@/components/dashboard/BentoCard";
 import StatusBadge from "@/components/dashboard/StatusBadge";
 import { getNDAConsentsForUser, submitNDADecision, type NDAConsent } from "@/services/nda.service";
 import { phaseLabels, phaseColors, type DealPhase } from "@/services/dealPhase.service";
+import { landsRepo } from "@/repositories/lands.repository";
 import { log } from "@/lib/logger";
 
 const usageLabels: Record<string, { ar: string; en: string }> = {
@@ -124,18 +125,14 @@ const CrmBrowseLands: React.FC = () => {
         ndaConsents.forEach(n => { map[n.land_id] = n.status; });
         setNdaMap(map);
       }
-      // Browse via the column-safe view `lands_developer_browse` rather
-      // than the base table — the view is the only path the database
-      // allows for developers without a deal context. It excludes
-      // owner_id, owner_name, deed/plot/plan numbers, exact GPS, and
-      // money fields (P0 audit C-01/C-02 fix). Once a deal_request is
-      // submitted the verified-developer policy on the base table opens
-      // up for that specific land via `is_developer_in_land_context`.
-      const { data } = await supabase
-        .from("lands_developer_browse" as any)
-        .select("id, city, district, land_area_sqm, usage_type, partnership_goal, street_width_m, created_at, brokerage_license_status, vision_summary, image_url, gallery_urls, is_active, owner_approved, partnership_model, project_type")
-        .order("created_at", { ascending: false });
-      setLands(data || []);
+      // Browse via the central repository which reads the column-safe
+      // `lands_developer_browse` view. The view excludes owner_id,
+      // owner_name, deed/plot/plan numbers, exact GPS, and money
+      // fields (P0 audit C-01/C-02 fix). Once a deal_request is
+      // submitted, the verified-developer policy on the base table
+      // opens up for that specific land via is_developer_in_land_context.
+      const data = await landsRepo.forDeveloperBrowse();
+      setLands(data);
       setLoading(false);
     };
     fetchAll();

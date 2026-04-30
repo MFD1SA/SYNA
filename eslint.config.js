@@ -30,7 +30,23 @@ export default tseslint.config(
       "no-empty": "off",
       "@typescript-eslint/no-empty-object-type": "off",
       "@typescript-eslint/no-require-imports": "off",
+      // Force every src/* file to use the central logger instead of
+      // raw console.* (audit C-04). The logger silences debug/info in
+      // production, scrubs Supabase error shapes to drop PII, and
+      // keeps Sentry attribution clean. `console.warn` and
+      // `console.error` are still allowed as escape hatches for
+      // bootstrap code that runs before the logger module loads
+      // (ErrorBoundary, sentry init); the rule warns instead of
+      // erroring so those rare cases don't block CI.
+      "no-console": ["warn", { allow: ["warn", "error"] }],
     },
+  },
+  {
+    // Files that legitimately need raw console.*: the logger module
+    // itself, the ErrorBoundary which runs before module init, and
+    // the Sentry shim which has to log its own bootstrap state.
+    files: ["src/lib/logger.ts", "src/components/ErrorBoundary.tsx", "src/lib/sentry.ts"],
+    rules: { "no-console": "off" },
   },
   {
     files: ["src/components/ui/**/*.{ts,tsx}", "src/contexts/**/*.{ts,tsx}", "src/i18n/**/*.{ts,tsx}"],

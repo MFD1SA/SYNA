@@ -26,6 +26,7 @@ import QuickActions from "@/components/dashboard/QuickActions";
 import EmptyState from "@/components/dashboard/EmptyState";
 import TrendSparkline from "@/components/dashboard/TrendSparkline";
 import { log } from "@/lib/logger";
+import { landsRepo } from "@/repositories/lands.repository";
 
 interface DevProfile {
   id: string;
@@ -97,26 +98,29 @@ const CrmDashboard: React.FC = () => {
           // rows must never count toward KPIs. A developer whose deal was
           // soft-deleted by admin would otherwise see a stale "active deals"
           // tile that doesn't match /crm/deals.
-          const [landsRes, reqRes, dealsActive, dealsClosed, reqPending, reqApproved, reqRejected, todayRes] = await Promise.all([
-            supabase.from("lands_developer_browse" as any).select("id", { count: "exact", head: true }),
+          // Mix of repository-routed counts (the browse view) and direct
+          // Supabase counts for deal-context tables. Promise.all keeps
+          // the dashboard paint-fast even with eight queries.
+          const [browsedLands, todayOpportunities, reqRes, dealsActive, dealsClosed, reqPending, reqApproved, reqRejected] = await Promise.all([
+            landsRepo.countForDeveloperBrowse(),
+            landsRepo.countForDeveloperBrowse({ sinceISO: todayStart.toISOString() }),
             supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).is("deleted_at", null),
             supabase.from("deals").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).is("deleted_at", null).neq("current_stage", "deal_closed").neq("current_stage", "deal_cancelled"),
             supabase.from("deals").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).is("deleted_at", null).eq("current_stage", "deal_closed"),
             supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).is("deleted_at", null).eq("status", "pending"),
             supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).is("deleted_at", null).eq("status", "approved"),
             supabase.from("deal_requests").select("id", { count: "exact", head: true }).eq("developer_id", devProfile.id).is("deleted_at", null).eq("status", "rejected"),
-            supabase.from("lands_developer_browse" as any).select("id", { count: "exact", head: true }).gte("created_at", todayStart.toISOString()),
           ]);
           if (cancelled) return;
           setDevKpi({
-            browsedLands: landsRes.count ?? 0,
+            browsedLands,
             sentRequests: reqRes.count ?? 0,
             activeDeals: dealsActive.count ?? 0,
             closedDeals: dealsClosed.count ?? 0,
             pendingRequests: reqPending.count ?? 0,
             approvedRequests: reqApproved.count ?? 0,
             rejectedRequests: reqRejected.count ?? 0,
-            todayOpportunities: todayRes.count ?? 0,
+            todayOpportunities,
           });
 
           // Pull the developer's most recent deal request to drive the

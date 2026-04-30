@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { log } from "@/lib/logger";
+import { safeExtension, SAFE_DOC_MIMES, SAFE_IMAGE_MIMES } from "@/lib/storageSafe";
 
 /**
  * Central storage helpers.
@@ -9,6 +10,14 @@ import { log } from "@/lib/logger";
  *   • `land-documents`   — PRIVATE. Use `uploadPrivateFile` and store the PATH
  *                          (NOT the URL). Call `openPrivateFile` to get a
  *                          short-lived signed URL when displaying/downloading.
+ *
+ * MIME safety:
+ *   The previous `extFromName(file.name)` derivation embedded the user-
+ *   supplied filename's extension into the storage path — `evil.png.html`
+ *   would have stored as `.html`, flipping CDN content-type sniffing and
+ *   serving user-controlled HTML/SVG inline as same-origin assets. Now
+ *   `safeExtension(file, SAFE_*_MIMES)` validates the MIME type and
+ *   derives the extension from it, refusing anything outside the safelist.
  *
  * Legacy records may contain a full `getPublicUrl` string for a private bucket
  * (non-working link). `openPrivateFile` handles that too by extracting the
@@ -34,27 +43,27 @@ export type PublicBucket = "land-images";
  */
 const SIGNED_URL_TTL_SECONDS = 300; // 5 min
 
-const extFromName = (name: string) => {
-  const dot = name.lastIndexOf(".");
-  return dot > -1 ? name.slice(dot + 1).toLowerCase() : "bin";
-};
-
 /**
  * Upload a private file. Returns the storage PATH (not a URL).
  * Path layout: `{ownerId}/{uuid}.{ext}` — aligns with RLS policy that
  * restricts writes to `(storage.foldername(name))[1] = auth.uid()::text`
  * for owners. For admin-uploaded files on behalf of an owner, pass the
  * owner's id as `ownerId`.
+ *
+ * Allowed MIME types: PDF + JPEG/PNG/WEBP (deeds + krokis + scanned
+ * supplementary documents). Anything else throws UnsafeFileTypeError.
  */
 export async function uploadPrivateFile(
   file: File,
   bucket: PrivateBucket,
   ownerId: string,
 ): Promise<string> {
-  const path = `${ownerId}/${crypto.randomUUID()}.${extFromName(file.name)}`;
+  const ext = safeExtension(file, SAFE_DOC_MIMES);
+  const path = `${ownerId}/${crypto.randomUUID()}.${ext}`;
   const { error } = await supabase.storage.from(bucket).upload(path, file, {
     cacheControl: "3600",
     upsert: false,
+    contentType: file.type,
   });
   if (error) throw error;
   return path;
@@ -62,15 +71,20 @@ export async function uploadPrivateFile(
 
 /**
  * Upload a public image. Returns the public URL, safe to store as-is.
+ *
+ * Allowed MIME types: JPEG/PNG/WEBP only — no SVG (XSS via inline-script
+ * payloads), no PDF, no anything else.
  */
 export async function uploadPublicImage(
   file: File,
   bucket: PublicBucket,
 ): Promise<string> {
-  const path = `${crypto.randomUUID()}.${extFromName(file.name)}`;
+  const ext = safeExtension(file, SAFE_IMAGE_MIMES);
+  const path = `${crypto.randomUUID()}.${ext}`;
   const { error } = await supabase.storage.from(bucket).upload(path, file, {
     cacheControl: "3600",
     upsert: false,
+    contentType: file.type,
   });
   if (error) throw error;
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);

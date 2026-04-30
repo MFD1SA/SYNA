@@ -50,6 +50,18 @@ interface AuditRow {
   details: Record<string, any> | null;
 }
 
+interface DeadLetterEmail {
+  id: string;
+  event_type: string;
+  recipient_email: string;
+  status: string;
+  attempts: number;
+  max_attempts: number;
+  error: string | null;
+  created_at: string;
+  last_attempt_at: string | null;
+}
+
 const AdminMonitoring: React.FC = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
@@ -61,12 +73,16 @@ const AdminMonitoring: React.FC = () => {
   const [rejected, setRejected] = useState<RejectedDeal[]>([]);
   const [invites, setInvites] = useState<AuditRow[]>([]);
   const [failedEmails, setFailedEmails] = useState<AuditRow[]>([]);
+  // Dead-letter queue: emails the retry cron has given up on
+  // (status = 'failed' AND attempts >= max_attempts). These will
+  // never auto-retry — admin needs to triage manually.
+  const [deadLetter, setDeadLetter] = useState<DeadLetterEmail[]>([]);
 
   const load = useCallback(async () => {
     setLoading(true);
     const stuckThreshold = new Date(Date.now() - STUCK_DAYS * 24 * 60 * 60 * 1000).toISOString();
 
-    const [stuckRes, rejectedRes, inviteRes] = await Promise.all([
+    const [stuckRes, rejectedRes, inviteRes, dlqRes] = await Promise.all([
       supabase
         .from("deal_requests")
         .select("id, current_phase, updated_at, lands(city, district), developers(company_name)")
@@ -86,6 +102,13 @@ const AdminMonitoring: React.FC = () => {
         .eq("action", "owner.invite")
         .order("created_at", { ascending: false })
         .limit(20),
+      // Dead-letter queue: emails that exhausted retries
+      supabase
+        .from("email_log" as any)
+        .select("id, event_type, recipient_email, status, attempts, max_attempts, error, created_at, last_attempt_at")
+        .eq("status", "failed")
+        .order("created_at", { ascending: false })
+        .limit(50),
     ]);
 
     setStuck((stuckRes.data as any) || []);
@@ -94,6 +117,13 @@ const AdminMonitoring: React.FC = () => {
     const inviteRows = (inviteRes.data as AuditRow[]) || [];
     setInvites(inviteRows);
     setFailedEmails(inviteRows.filter((r) => r.details?.email_sent === false));
+
+    // Filter to truly dead-letter rows: attempts >= max_attempts.
+    // Rows still under max are pending retry, not stuck.
+    const dlq = ((dlqRes.data as DeadLetterEmail[]) || []).filter(
+      (r) => r.attempts >= r.max_attempts,
+    );
+    setDeadLetter(dlq);
 
     setLoading(false);
   }, []);
@@ -163,6 +193,51 @@ const AdminMonitoring: React.FC = () => {
             loading={loading}
           />
         </div>
+
+        {/* Dead-letter queue: emails that exhausted retries.
+            Appears as a banner ABOVE the detail sections so the
+            admin sees it first. The retry cron will not pick these
+            up again (attempts >= max_attempts) — manual intervention
+            required (resend, update template, fix recipient, etc.). */}
+        {deadLetter.length > 0 && (
+          <Section
+            icon={XOctagon}
+            titleAr="إيميلات في طابور الفشل النهائي (Dead-Letter)"
+            titleEn="Dead-Letter Email Queue"
+            descAr="استنفذت جميع محاولات الإرسال — تتطلب تدخل يدوي"
+            descEn="Exhausted all retry attempts — requires manual triage"
+          >
+            <div className="space-y-2">
+              {deadLetter.map((e) => (
+                <div
+                  key={e.id}
+                  className="rounded-xl border border-red-200/60 bg-red-50/30 p-4 flex items-start gap-3 hover:border-red-300 transition-all"
+                >
+                  <Mail className="h-4 w-4 text-red-500 shrink-0 mt-0.5" strokeWidth={1.8} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-medium text-gray-800 truncate">
+                        {e.event_type} → {e.recipient_email}
+                      </p>
+                      <Badge variant="outline" className="text-[10px] bg-red-500/10 text-red-700 border-red-500/20">
+                        {isAr ? `${e.attempts}/${e.max_attempts} محاولات` : `${e.attempts}/${e.max_attempts} attempts`}
+                      </Badge>
+                    </div>
+                    {e.error && (
+                      <p className="text-xs text-red-600 mt-1 truncate" dir="ltr" title={e.error}>
+                        {e.error.slice(0, 200)}
+                      </p>
+                    )}
+                    <p className="text-[11px] text-gray-500 mt-1">
+                      {isAr ? "آخر محاولة: " : "Last attempt: "}
+                      <span dir="ltr">{e.last_attempt_at ? relative(e.last_attempt_at) : isAr ? "—" : "—"}</span>
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
 
         {/* Stuck deals */}
         <Section

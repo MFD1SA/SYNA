@@ -17,6 +17,26 @@ import { log } from "@/lib/logger";
 
 export const SENTRY_ENABLED = !!import.meta.env.VITE_SENTRY_DSN;
 
+/**
+ * Surface a console warning at app boot when running in production
+ * mode WITHOUT a configured DSN. The audit found that production
+ * deployments could ship without Sentry attached and nobody would
+ * notice (errors only show up when a user reports them). This warning
+ * is visible in the browser console + Vercel runtime logs and is
+ * loud enough to catch during smoke tests.
+ *
+ * It's deliberately a console.warn (not log.warn) so it runs before
+ * the logger module's own level gating — debug/info would be silent
+ * in production but this MUST surface there.
+ */
+if (typeof window !== "undefined" && import.meta.env.MODE === "production" && !SENTRY_ENABLED) {
+  // eslint-disable-next-line no-console
+  console.warn(
+    "[sentry] VITE_SENTRY_DSN is not set in this production build. " +
+    "Errors will NOT be reported. Set the env var on Vercel to enable monitoring.",
+  );
+}
+
 export function initSentry(): void {
   if (!SENTRY_ENABLED) return;
 
