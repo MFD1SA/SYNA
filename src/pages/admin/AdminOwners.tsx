@@ -18,6 +18,7 @@ import {
   Send
 } from "lucide-react";
 import { log } from "@/lib/logger";
+import { getInvokeErrorMessage } from "@/lib/edgeError";
 
 const AdminOwners: React.FC = () => {
   const { user } = useAuth();
@@ -57,7 +58,7 @@ const AdminOwners: React.FC = () => {
       const res = await supabase.functions.invoke("invite-owner", {
         body: { email: inviteForm.email, full_name: inviteForm.full_name },
       });
-      if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      if (res.error || res.data?.error) throw new Error(await getInvokeErrorMessage(res));
       setInviteResult({
         email: res.data.email,
         email_sent: !!res.data.email_sent,
@@ -82,7 +83,7 @@ const AdminOwners: React.FC = () => {
       const { data, error } = await supabase.functions.invoke("impersonate-user", {
         body: { target_user_id: userId },
       });
-      if (error || data?.error) throw new Error(data?.error || error?.message);
+      if (error || data?.error) throw new Error(await getInvokeErrorMessage({ data, error }));
       if (data?.verify_url) {
         // Tokens live ONLY in the URL fragment of verify_url (never sent
         // to any server). Edge function no longer ships raw tokens in the
@@ -136,7 +137,7 @@ const AdminOwners: React.FC = () => {
       const res = await supabase.functions.invoke("create-owner", {
         body: { email: form.email, password: form.password, full_name: form.full_name },
       });
-      if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      if (res.error || res.data?.error) throw new Error(await getInvokeErrorMessage(res));
       if (user) await logAudit(user.id, user.email, "create", "owner", undefined, { email: form.email });
       // Send notification email to admin
       try {
@@ -166,7 +167,7 @@ const AdminOwners: React.FC = () => {
       const res = await supabase.functions.invoke("create-owner", {
         body: { action: "update_password", user_id: passwordDialog.owner_id, new_password: newPassword, target_kind: "owner" },
       });
-      if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      if (res.error || res.data?.error) throw new Error(await getInvokeErrorMessage(res));
       if (user) await logAudit(user.id, user.email, "reset_password", "owner", passwordDialog.owner_id);
       toast({ title: isAr ? "تم تحديث كلمة المرور" : "Password updated" });
       setPasswordDialog(null);
@@ -200,7 +201,7 @@ const AdminOwners: React.FC = () => {
       const res = await supabase.functions.invoke("create-owner", {
         body: { action: "delete_user", user_id: deleteDialog.owner_id, target_kind: "owner" },
       });
-      if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      if (res.error || res.data?.error) throw new Error(await getInvokeErrorMessage(res));
       if (user) await logAudit(user.id, user.email, "delete", "owner", deleteDialog.owner_id);
       toast({ title: isAr ? "تم حذف الحساب" : "Account deleted" });
       setDeleteDialog(null);

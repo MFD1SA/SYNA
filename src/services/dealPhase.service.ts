@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { extractEdgeError } from "@/lib/edgeError";
 
 export type DealPhase =
   | "nda_pending"
@@ -214,7 +215,15 @@ export async function transitionDealPhase(
     body: { request_id: requestId, target_phase: targetPhase, reason: reason || null },
   });
 
-  if (error) return { success: false, error: error.message };
+  // supabase-js v2 wraps non-2xx responses in FunctionsHttpError whose
+  // `.message` is always the unhelpful "Edge Function returned a non-2xx
+  // status code". The real reason ("Role X cannot perform", "Transition
+  // not allowed", etc.) is in the response body — we extract it here so
+  // the user sees an actionable message instead of the generic wrapper.
+  if (error) {
+    const detail = await extractEdgeError(error);
+    return { success: false, error: detail };
+  }
   if (data?.error) return { success: false, error: data.error };
   return {
     success: true,

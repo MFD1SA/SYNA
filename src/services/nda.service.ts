@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { log } from "@/lib/logger";
+import { extractEdgeError } from "@/lib/edgeError";
 
 export type NDAActorRole = "developer" | "owner";
 
@@ -84,8 +85,12 @@ export async function submitNDADecision(landId: string, action: "accept" | "reje
     body: { land_id: landId, action, actor_role: actorRole },
   });
 
+  // Without extractEdgeError the user gets the generic
+  // "Edge Function returned a non-2xx status code" instead of the real
+  // server-side reason (e.g. "Already accepted", "Land not found").
   if (error) {
-    return { success: false, error: error.message };
+    const detail = await extractEdgeError(error);
+    return { success: false, error: detail };
   }
   if (data?.error) {
     return { success: false, error: data.error };

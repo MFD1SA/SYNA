@@ -169,9 +169,20 @@ const AdminDeals: React.FC = () => {
   const handleApprove = async (req: any) => {
     setActionLoading(true);
     try {
-      // Transition to under_review via Edge Function if not already there
+      // Transition to under_review ONLY when the request is still at the
+      // intake stage. Any later phase (study_*, meeting_*, report_*, etc.)
+      // is already past intake — driving the state machine backwards to
+      // `under_review` is illegal in the whitelist (nda_both_accepted is
+      // the only legal source for that target) and the edge function
+      // rightfully returns 400. For those later phases we just update the
+      // legacy `status` column + create the deal row.
       const phase = req.current_phase as DealPhase | undefined;
-      if (phase && phase !== "under_review" && !TERMINAL_PHASES.includes(phase)) {
+      const PRE_REVIEW_PHASES: DealPhase[] = [
+        "nda_pending",
+        "nda_developer_accepted",
+        "nda_both_accepted",
+      ];
+      if (phase && PRE_REVIEW_PHASES.includes(phase)) {
         const transResult = await transitionDealPhase(req.id, "under_review");
         if (!transResult.success) throw new Error(transResult.error || "Phase transition failed");
       }

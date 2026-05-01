@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { logAudit } from "@/lib/auditLog";
+import { extractEdgeError } from "@/lib/edgeError";
 import CrmLayout from "@/components/crm/CrmLayout";
 import DealAutomationPanel, { DealDocumentItem } from "@/components/crm/DealAutomationPanel";
 import DashboardShell from "@/components/dashboard/DashboardShell";
@@ -145,7 +146,7 @@ const CrmDeals: React.FC = () => {
     setValidatingLink(true);
     try {
       const { data, error } = await supabase.functions.invoke("deal-drive-automation", { body: { action: "validate_link", documentUrl: parsed.data } });
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(await extractEdgeError(error));
       if (!data?.valid) throw new Error(data?.error || "Validation failed");
       setLinkValidated(true);
       setValidationNote(isAr ? "تم التحقق من الرابط بنجاح." : "Link validated successfully.");
@@ -164,7 +165,7 @@ const CrmDeals: React.FC = () => {
     setActionLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("deal-drive-automation", { body: { action: "submit_drive_link", dealId: viewDeal.id, documentUrl: driveUrl.trim() } });
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(await extractEdgeError(error));
       if (!data?.success) throw new Error(data?.error);
       const nextStage = data?.deal?.current_stage || "agreements_prepared";
       setViewDeal((prev: any) => prev ? { ...prev, current_stage: nextStage } : prev);
@@ -199,7 +200,7 @@ const CrmDeals: React.FC = () => {
     setActionLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("deal-drive-automation", { body: { action: "close_deal", dealId: viewDeal.id } });
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(await extractEdgeError(error));
       if (!data?.success) throw new Error(data?.error);
       setViewDeal((prev: any) => prev ? { ...prev, current_stage: "deal_closed", closed_at: data?.deal?.closed_at } : prev);
       setDeals((prev) => prev.map((d) => (d.id === viewDeal.id ? { ...d, current_stage: "deal_closed" } : d)));

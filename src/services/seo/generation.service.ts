@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { extractEdgeError } from "@/lib/edgeError";
 import type { SeoGenerationRun } from "@/types/seo";
 
 export interface TriggerGenerationInput {
@@ -31,12 +32,16 @@ export async function triggerSeoGeneration(
   const { data, error } = await supabase.functions.invoke("seo-generate", {
     body: input,
   });
-  if (error) throw new Error(error.message);
+  if (error) {
+    // Surface the real server-side error instead of the generic
+    // "Edge Function returned a non-2xx status code" wrapper.
+    const detail = await extractEdgeError(error);
+    throw new Error(detail);
+  }
   return data as TriggerGenerationResult;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const runsTable = () => supabase.from("seo_generation_runs" as any);
+const runsTable = () => supabase.from("seo_generation_runs" as never);
 
 export async function listGenerationRuns(limit = 20): Promise<SeoGenerationRun[]> {
   const { data, error } = await runsTable()
@@ -64,12 +69,14 @@ export async function waitForRun(
   const pollInterval = opts.pollIntervalMs ?? 3000;
   const timeout = opts.timeoutMs ?? 10 * 60 * 1000; // 10 min cap
   const deadline = Date.now() + timeout;
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  // Refactored from `while (true)` to a deadline-driven loop so the
+  // exit condition is intrinsic to the loop header rather than relying
+  // on the inner `if` returns + an eslint-disable on no-constant-condition.
+  while (Date.now() <= deadline) {
     const run = await getGenerationRun(runId);
     if (!run) throw new Error("Run not found");
     if (run.status === "completed" || run.status === "failed") return run;
-    if (Date.now() > deadline) throw new Error("Poll timed out");
     await new Promise((r) => setTimeout(r, pollInterval));
   }
+  throw new Error("Poll timed out");
 }

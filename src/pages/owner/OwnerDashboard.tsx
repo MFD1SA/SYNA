@@ -209,8 +209,23 @@ const OwnerDashboard: React.FC = () => {
   const handleApproveRequest = async (a: DeveloperAnalysis, landCity: string, landDistrict?: string) => {
     setActionLoading(true);
     try {
-      const result = await transitionDealPhase(a.request_id, "under_review");
-      if (!result.success) throw new Error(result.error || "Transition failed");
+      // Guard: under_review is only a legal target from `nda_both_accepted`.
+      // If the request has already advanced past intake (study_*, meeting_*,
+      // etc.) the transition would 400. Look up the current phase and skip
+      // the transition if we're past the intake gate; the rest of this
+      // handler still runs (legacy approval, email, audit) so the UX
+      // doesn't silently fail. Idempotency: if already at under_review the
+      // service returns alreadyAtTarget=true.
+      const currentPhase = requestPhases[a.request_id];
+      const isPreReview = !currentPhase
+        || currentPhase === "nda_pending"
+        || currentPhase === "nda_developer_accepted"
+        || currentPhase === "nda_both_accepted"
+        || currentPhase === "under_review";
+      if (isPreReview) {
+        const result = await transitionDealPhase(a.request_id, "under_review");
+        if (!result.success) throw new Error(result.error || "Transition failed");
+      }
 
       try {
         await logAudit(user?.id || "", user?.email, "owner_approve_request", "deal_request", a.request_id, {

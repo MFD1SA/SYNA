@@ -16,6 +16,7 @@ import { Search, CheckCircle2, XCircle, Clock, Trash2, HardHat, Pencil, KeyRound
 import type { Database } from "@/integrations/supabase/types";
 import { getAgreementByUserId, getAgreementsByUserIds, type DeveloperAgreement } from "@/services/agreements.service";
 import { log } from "@/lib/logger";
+import { getInvokeErrorMessage } from "@/lib/edgeError";
 
 type Developer = Database["public"]["Tables"]["developers"]["Row"];
 
@@ -66,7 +67,7 @@ const AdminDevelopers: React.FC = () => {
       const { data, error } = await supabase.functions.invoke("impersonate-user", {
         body: { target_user_id: userId },
       });
-      if (error || data?.error) throw new Error(data?.error || error?.message);
+      if (error || data?.error) throw new Error(await getInvokeErrorMessage({ data, error }));
       if (data?.verify_url) {
         // Tokens live ONLY in the URL fragment of verify_url (never sent
         // to any server). Edge function no longer ships raw tokens in the
@@ -231,8 +232,7 @@ const AdminDevelopers: React.FC = () => {
           target_kind: "developer",
         },
       });
-      if (res.error) throw new Error(res.error.message || "Function call failed");
-      if (res.data?.error) throw new Error(res.data.error);
+      if (res.error || res.data?.error) throw new Error(await getInvokeErrorMessage(res, "Function call failed"));
       if (!res.data?.success) throw new Error(isAr ? "لم يتم تحديث كلمة المرور" : "Password was not updated");
       toast({ 
         title: isAr ? "تم تحديث كلمة المرور بنجاح ✓" : "Password updated successfully ✓",

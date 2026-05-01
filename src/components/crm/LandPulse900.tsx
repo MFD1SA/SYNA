@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { extractEdgeError } from "@/lib/edgeError";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Radar, RefreshCw, MapPin, Building2, Home, ShoppingBag, Loader2 } from "lucide-react";
@@ -27,7 +28,12 @@ const LandPulse900: React.FC<LandPulse900Props> = ({ landId, lat, lng }) => {
         body: { land_id: landId, lat, lng, force_refresh: forceRefresh },
       });
 
-      if (fnError) throw fnError;
+      if (fnError) {
+        // Surface the real server-side message instead of the generic
+        // "Edge Function returned a non-2xx status code" wrapper.
+        const detail = await extractEdgeError(fnError);
+        throw new Error(detail);
+      }
       setData(result);
     } catch (e: any) {
       setError(e.message || "Error fetching pulse data");

@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Settings, User, Mail, KeyRound, Eye, EyeOff, Save, Loader2, ShieldCheck, Clock, Timer, ShieldAlert, RotateCcw } from "lucide-react";
 import AvatarUpload from "@/components/shared/AvatarUpload";
 import { log } from "@/lib/logger";
+import { getInvokeErrorMessage } from "@/lib/edgeError";
 
 const DEFAULT_DEADLINES = {
   request_acceptance_days: 14,
@@ -213,7 +214,7 @@ const AdminSettings: React.FC = () => {
       const { data, error } = await supabase.functions.invoke("create-owner", {
         body: { action: "update_primary_admin_email", email: primaryAdminEmail.trim().toLowerCase() },
       });
-      if (error || data?.error) throw new Error(data?.error || error?.message);
+      if (error || data?.error) throw new Error(await getInvokeErrorMessage({ data, error }));
       setPrimaryAdminEmail(data.primary_admin_email);
       toast({ title: isAr ? "تم تحديث بريد المسؤول الرئيسي ✓" : "Primary admin email updated ✓" });
     } catch (err: any) {
@@ -240,7 +241,7 @@ const AdminSettings: React.FC = () => {
       const { data, error } = await supabase.functions.invoke("create-owner", {
         body: { action, new_password: primaryAdminPassword, display_name: "Primary Admin" },
       });
-      if (error || data?.error) throw new Error(data?.error || error?.message);
+      if (error || data?.error) throw new Error(await getInvokeErrorMessage({ data, error }));
       toast({
         title: action === "trigger_primary_admin_recovery"
           ? (isAr ? "تم تنفيذ استعادة المسؤول الرئيسي ✓" : "Primary admin recovery triggered ✓")

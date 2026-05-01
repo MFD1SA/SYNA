@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { extractEdgeError } from "@/lib/edgeError";
 
 /* ── Reveal levels ── */
 export type RevealLevel = "anonymous" | "brand_visible" | "full";
@@ -29,7 +30,12 @@ export async function resolvePartyIdentities(
     body: { request_ids: requestIds },
   });
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    // Surface the real server-side error instead of the generic
+    // "Edge Function returned a non-2xx status code" wrapper.
+    const detail = await extractEdgeError(error);
+    throw new Error(detail);
+  }
   if (data?.error) throw new Error(data.error);
 
   return {

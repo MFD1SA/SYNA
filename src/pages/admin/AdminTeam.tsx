@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { logAudit } from "@/lib/auditLog";
+import { getInvokeErrorMessage } from "@/lib/edgeError";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -102,7 +103,7 @@ const AdminTeam: React.FC = () => {
           permissions: Object.fromEntries(PERM_KEYS.map(k => [k, addForm[k]])),
         },
       });
-      if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      if (res.error || res.data?.error) throw new Error(await getInvokeErrorMessage(res));
       if (user) await logAudit(user.id, user.email, "create", "supervisor", res.data?.user_id, { email: addForm.email });
       toast({ title: isAr ? "تمت إضافة المشرف" : "Supervisor added" });
       setAddOpen(false);
@@ -197,7 +198,7 @@ const AdminTeam: React.FC = () => {
       const res = await supabase.functions.invoke("create-owner", {
         body: { action: "update_password", user_id: passwordDialog.user_id, new_password: supervisorNewPassword, target_kind: "supervisor" },
       });
-      if (res.error || res.data?.error) throw new Error(res.data?.error || res.error?.message);
+      if (res.error || res.data?.error) throw new Error(await getInvokeErrorMessage(res));
       if (user) await logAudit(user.id, user.email, "reset_password", "supervisor", passwordDialog.id);
       toast({ title: isAr ? "تم تحديث كلمة المرور" : "Password updated" });
       setPasswordDialog(null);

@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useMetaTags } from "@/hooks/useMetaTags";
 import { supabase } from "@/integrations/supabase/client";
-import { Bell, Search, X, Check, Loader2, Settings, LogOut } from "lucide-react";
+import { Bell, Search, X, Loader2, Settings, LogOut, ChevronRight, UserPlus, HardHat, Briefcase, Mail, Cog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -190,13 +190,17 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     navigate("/");
   };
 
-  const typeLabels: Record<string, { icon: string; color: string }> = {
-    new_owner: { icon: "👤", color: "text-blue-600" },
-    new_developer: { icon: "🏗️", color: "text-violet-600" },
-    deal_stage: { icon: "📋", color: "text-amber-600" },
-    deal_request: { icon: "📩", color: "text-primary" },
-    system: { icon: "⚙️", color: "text-muted-foreground" },
+  // Lucide-based notification icons keep the visual language consistent with
+  // the sidebar/page-headers; the previous emoji set looked off-brand against
+  // the otherwise quiet, monochrome chrome.
+  const typeLabels: Record<string, { Icon: React.ElementType; color: string; bg: string }> = {
+    new_owner: { Icon: UserPlus, color: "text-blue-600", bg: "bg-blue-50" },
+    new_developer: { Icon: HardHat, color: "text-violet-600", bg: "bg-violet-50" },
+    deal_stage: { Icon: Briefcase, color: "text-amber-600", bg: "bg-amber-50" },
+    deal_request: { Icon: Mail, color: "text-[#C45A41]", bg: "bg-[#C45A41]/10" },
+    system: { Icon: Cog, color: "text-gray-500", bg: "bg-gray-50" },
   };
+  const fallbackNotifMeta = { Icon: Bell, color: "text-gray-500", bg: "bg-gray-50" };
 
   const searchTypeLabels: Record<string, { ar: string; en: string; color: string }> = {
     land: { ar: "أرض", en: "Land", color: "bg-emerald-50 text-emerald-600 border-emerald-200" },
@@ -212,13 +216,14 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         {/* Top bar */}
         <header className="sticky top-0 z-30 flex h-[60px] items-center justify-between bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl border-b border-gray-100/80 dark:border-white/10 px-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-4">
-            {/* Page title / breadcrumb */}
+            {/* Page title / breadcrumb — chevron separator reads cleaner than
+                a slash and matches the rest of the iconography in the chrome. */}
             {currentPage && (
-              <div className="hidden sm:flex items-center gap-2 me-2">
-                <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">{isAr ? "لوحة الإدارة" : "Admin"}</span>
-                <span className="text-gray-300 text-[10px]">/</span>
+              <nav aria-label="Breadcrumb" className="hidden sm:flex items-center gap-1.5 me-2">
+                <span className="text-[10.5px] font-semibold uppercase tracking-[0.1em] text-gray-400">{isAr ? "الإدارة" : "Admin"}</span>
+                <ChevronRight className={`h-3 w-3 text-gray-300 ${isAr ? "rotate-180" : ""}`} strokeWidth={2} aria-hidden="true" />
                 <span className="text-[13px] font-semibold text-[#020202] dark:text-white">{isAr ? currentPage.ar : currentPage.en}</span>
-              </div>
+              </nav>
             )}
 
             {/* Search */}
@@ -293,27 +298,36 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     )}
                   </div>
                   {notifications.length === 0 ? (
-                    <p className="py-12 text-center text-[13px] text-gray-400">{isAr ? "لا توجد إشعارات" : "No notifications"}</p>
+                    <div className="py-12 px-6 text-center">
+                      <Bell className="h-7 w-7 text-gray-200 mx-auto mb-2" strokeWidth={1.4} />
+                      <p className="text-[13px] text-gray-400">{isAr ? "لا توجد إشعارات" : "No notifications"}</p>
+                    </div>
                   ) : (
-                    notifications.map(n => (
-                      <button
-                        key={n.id}
-                        className={`flex w-full items-start gap-3 px-5 py-3.5 text-start hover:bg-[#2B2B2B]/[0.02] transition-all duration-150 border-b border-gray-50 last:border-0 ${!n.is_read ? "bg-[#2B2B2B]/[0.02]" : ""}`}
-                        onClick={() => markAsRead(n.id)}
-                      >
-                        <span className="text-sm mt-0.5">{typeLabels[n.type]?.icon || "📌"}</span>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1.5">
-                            <p className="text-[13px] font-medium text-gray-800 truncate">{n.title}</p>
-                            {!n.is_read && <span className="h-1.5 w-1.5 rounded-full bg-[#C45A41] shrink-0" />}
+                    notifications.map(n => {
+                      const meta = typeLabels[n.type] ?? fallbackNotifMeta;
+                      const NotifIcon = meta.Icon;
+                      return (
+                        <button
+                          key={n.id}
+                          className={`flex w-full items-start gap-3 px-5 py-3.5 text-start hover:bg-[#2B2B2B]/[0.02] transition-all duration-150 border-b border-gray-50 last:border-0 ${!n.is_read ? "bg-[#2B2B2B]/[0.02]" : ""}`}
+                          onClick={() => markAsRead(n.id)}
+                        >
+                          <div className={`mt-0.5 h-7 w-7 rounded-lg ${meta.bg} flex items-center justify-center shrink-0`}>
+                            <NotifIcon className={`h-3.5 w-3.5 ${meta.color}`} strokeWidth={1.7} />
                           </div>
-                          <p className="text-[11px] text-gray-500 line-clamp-2 mt-0.5">{n.message}</p>
-                          <p className="text-[10px] text-gray-400 mt-1">
-                            {new Date(n.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
-                          </p>
-                        </div>
-                      </button>
-                    ))
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5">
+                              <p className="text-[13px] font-medium text-gray-800 truncate">{n.title}</p>
+                              {!n.is_read && <span className="h-1.5 w-1.5 rounded-full bg-[#C45A41] shrink-0" />}
+                            </div>
+                            <p className="text-[11px] text-gray-500 line-clamp-2 mt-0.5">{n.message}</p>
+                            <p className="text-[10px] text-gray-400 mt-1">
+                              {new Date(n.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    })
                   )}
                 </div>
               )}

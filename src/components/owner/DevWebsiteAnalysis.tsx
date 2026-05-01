@@ -2,19 +2,19 @@ import React, { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Globe, Loader2, Building2, ExternalLink, AreaChart, X, CheckCircle2, XCircle,
-  Share2, ShieldCheck, Gauge, AlertTriangle, Briefcase, Newspaper, CalendarDays,
-  Languages as LanguagesIcon, MapPin, TrendingUp, Trophy, Users, Sparkles,
-  Calendar, MessageCircle, PlayCircle, Lock, Image as ImageIcon,
+  Globe, Loader2, Building2, ExternalLink, AreaChart, X, AlertTriangle,
+  Briefcase, Newspaper, CalendarDays, Languages as LanguagesIcon, MapPin,
+  Calendar, Image as ImageIcon, Trophy, Share2, Hash, Layers,
 } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════════════════════
-   v8 — content-focused business intelligence
-   Renders projects/news/social/expansion data extracted directly from
-   the developer's website. No domain/SEO technicals are shown.
+   v9 — project-centric report.
+   The analysis is strictly limited to the developer's PROJECT
+   PORTFOLIO and the supporting content the developer publishes
+   themselves (news, events, office locations, social channels).
+   No domain/hosting/SEO analytics, no scoring, no recommendations.
    ─────────────────────────────────────────────────────────────────── */
 
 type FailureKind = "dns" | "timeout" | "refused" | "http_error" | "other";
@@ -86,22 +86,16 @@ function classifyFailure(
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   Response shape (matches v8 edge function)
+   Response shape — must mirror v9 edge function exactly.
    ─────────────────────────────────────────────────────────────────── */
-
-interface ScoreSignal {
-  label_ar: string;
-  label_en: string;
-  weight: number;
-  passed: boolean;
-  value?: string;
-}
 
 interface ProjectCard {
   title: string;
   summary: string;
   image_url: string;
   location: string;
+  status: string;
+  project_type: string;
   url: string;
 }
 
@@ -113,21 +107,9 @@ interface NewsArticle {
   url: string;
 }
 
-interface SocialProfile {
-  display_name?: string;
-  avatar_url?: string;
-  bio?: string;
-  followers?: number;
-  followers_text?: string;
-  videos_count?: number;
-  recent_items?: Array<{ title: string; thumbnail_url?: string; published_at?: string }>;
-}
-
-interface SocialPlatform {
+interface SocialLink {
   platform: string;
   url: string;
-  accessible: boolean;
-  profile: SocialProfile | null;
 }
 
 interface AddressRow { country?: string; city?: string; full?: string }
@@ -149,65 +131,33 @@ interface AnalysisResult {
   };
 
   projects: {
-    pages_found: number;
-    has_dedicated_section: boolean;
+    listing_pages_found: number;
     listing_url: string;
-    detailed_items: ProjectCard[];
+    items: ProjectCard[];
+    status_breakdown: Record<string, number>;
+    type_breakdown: Record<string, number>;
   };
 
   news: {
-    pages_found: number;
-    has_section: boolean;
     listing_url: string;
     recent_in_last_year: number;
     articles: NewsArticle[];
   };
 
   events: {
-    pages_found: number;
+    listing_url: string;
     sample_titles: string[];
-    listing_url: string;
   };
 
-  careers: {
-    has_careers_page: boolean;
-    listing_url: string;
-  };
+  social_links: SocialLink[];
 
-  social_presence: {
-    count: number;
-    accessible_count: number;
-    platforms: SocialPlatform[];
+  locations: {
+    offices: AddressRow[];
+    languages: string[];
   };
-
-  expansion: {
-    office_locations_count: number;
-    addresses: AddressRow[];
-    languages_supported: string[];
-    international: boolean;
-  };
-
-  trust_signals: {
-    has_about_page: boolean;
-    has_contact_page: boolean;
-    has_organization_schema: boolean;
-    has_logo: boolean;
-    has_clear_description: boolean;
-  };
-
-  score: number;
-  score_band: "weak" | "fair" | "strong" | "excellent";
-  score_breakdown: ScoreSignal[];
 }
 
 interface Props { developerName: string; developerId: string; isAr: boolean; autoUrl?: string; }
-
-const bandStyles: Record<AnalysisResult["score_band"], { ar: string; en: string; cls: string; ring: string }> = {
-  weak:      { ar: "ضعيف",  en: "Weak",     cls: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/15 dark:text-rose-200 dark:border-rose-400/30", ring: "ring-rose-300/40" },
-  fair:      { ar: "مقبول", en: "Fair",     cls: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-200 dark:border-amber-400/30", ring: "ring-amber-300/40" },
-  strong:    { ar: "قوي",   en: "Strong",   cls: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-200 dark:border-emerald-400/30", ring: "ring-emerald-300/40" },
-  excellent: { ar: "ممتاز", en: "Excellent", cls: "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-100 dark:border-emerald-400/40", ring: "ring-emerald-400/50" },
-};
 
 const platformLabel: Record<string, { ar: string; en: string }> = {
   twitter:   { ar: "تويتر / X",  en: "X (Twitter)" },
@@ -221,7 +171,7 @@ const platformLabel: Record<string, { ar: string; en: string }> = {
   pinterest: { ar: "بنترست",     en: "Pinterest" },
 };
 
-// Per-platform brand tint for the social card chrome.
+// Per-platform brand tint for the social link chip.
 const platformTint: Record<string, string> = {
   twitter:   "bg-black text-white",
   linkedin:  "bg-[#0A66C2] text-white",
@@ -234,11 +184,16 @@ const platformTint: Record<string, string> = {
   pinterest: "bg-[#E60023] text-white",
 };
 
-function formatFollowers(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
-}
+// Status colour tone — purely visual, NOT a quality judgement.
+// "completed" gets emerald, "under construction" amber, etc.
+const statusTone = (statusKey: string): string => {
+  const k = statusKey.toLowerCase();
+  if (/complete|delivered|handed|مكتمل|منجز/i.test(k)) return "bg-emerald-50 text-emerald-700 border-emerald-200";
+  if (/construction|progress|قيد/i.test(k)) return "bg-amber-50 text-amber-700 border-amber-200";
+  if (/coming|planned|upcoming|قريب/i.test(k)) return "bg-violet-50 text-violet-700 border-violet-200";
+  if (/selling|sale|بيع/i.test(k)) return "bg-blue-50 text-blue-700 border-blue-200";
+  return "bg-gray-50 text-gray-700 border-gray-200";
+};
 
 /* ═══════════════════════════════════════════════════════════════════
    Component
@@ -326,7 +281,49 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
       }
 
       if (!mountedRef.current) return;
-      setResult(data.result as AnalysisResult);
+      // Defensive normalisation — if any expected branch is missing
+      // from the response (e.g. a stale edge-function version, or a
+      // future shape change), substitute a safe default rather than
+      // letting render-time `.length` reads on undefined throw and
+      // bubble up to the global ErrorBoundary.
+      const raw = (data.result || {}) as Partial<AnalysisResult>;
+      const normalised: AnalysisResult = {
+        website: raw.website || cleaned,
+        developer_name: raw.developer_name,
+        fetched_at: raw.fetched_at || new Date().toISOString(),
+        company: {
+          name: raw.company?.name || developerName || "",
+          legal_name: raw.company?.legal_name || "",
+          tagline: raw.company?.tagline || "",
+          description: raw.company?.description || "",
+          logo_url: raw.company?.logo_url || "",
+          founded: raw.company?.founded || "",
+          industry: raw.company?.industry || "",
+          headquarters: raw.company?.headquarters || "",
+        },
+        projects: {
+          listing_pages_found: raw.projects?.listing_pages_found ?? 0,
+          listing_url: raw.projects?.listing_url || "",
+          items: Array.isArray(raw.projects?.items) ? raw.projects!.items : [],
+          status_breakdown: raw.projects?.status_breakdown || {},
+          type_breakdown: raw.projects?.type_breakdown || {},
+        },
+        news: {
+          listing_url: raw.news?.listing_url || "",
+          recent_in_last_year: raw.news?.recent_in_last_year ?? 0,
+          articles: Array.isArray(raw.news?.articles) ? raw.news!.articles : [],
+        },
+        events: {
+          listing_url: raw.events?.listing_url || "",
+          sample_titles: Array.isArray(raw.events?.sample_titles) ? raw.events!.sample_titles : [],
+        },
+        social_links: Array.isArray(raw.social_links) ? raw.social_links : [],
+        locations: {
+          offices: Array.isArray(raw.locations?.offices) ? raw.locations!.offices : [],
+          languages: Array.isArray(raw.locations?.languages) ? raw.locations!.languages : [],
+        },
+      };
+      setResult(normalised);
     } catch (e: unknown) {
       if (!mountedRef.current) return;
       const msg = e instanceof Error ? e.message : String(e);
@@ -359,7 +356,7 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
         </div>
         <Button onClick={analyze} disabled={loading} size="sm" className="h-11 px-5 rounded-xl gap-2 font-medium">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <AreaChart className="h-4 w-4" />}
-          {isAr ? "تحليل شامل" : "Run Analysis"}
+          {isAr ? "تحليل المشاريع" : "Analyze Projects"}
         </Button>
       </div>
 
@@ -368,12 +365,12 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
         <div className="flex flex-col items-center justify-center py-12 gap-3 rounded-2xl border border-border/50 bg-card/60">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <p className="text-sm font-medium text-foreground">
-            {isAr ? "نُحلِّل المحتوى..." : "Analysing content..."}
+            {isAr ? "نُحلِّل مشاريع المطور..." : "Analyzing the developer's projects..."}
           </p>
           <p className="text-[11px] text-muted-foreground max-w-sm text-center">
             {isAr
-              ? "نزور صفحات المشاريع والأخبار، ونثري حسابات السوشيال ميديا — قد يستغرق ذلك حتى ٢٠ ثانية."
-              : "Visiting project, news pages and enriching social profiles — may take up to 20s."}
+              ? "نزور صفحات المشاريع ونستخرج تفاصيل كل مشروع منشور — قد يستغرق ذلك حتى ٢٠ ثانية."
+              : "Visiting project pages and extracting per-project detail — may take up to 20s."}
           </p>
         </div>
       )}
@@ -425,7 +422,7 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
       {/* Result */}
       {result && !loading && (
         <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
-          {/* Hero band */}
+          {/* Header — company identity, no score */}
           <div className="relative p-5 md:p-6 border-b border-border/50 bg-gradient-to-br from-primary/5 via-background to-background">
             <div className="absolute top-3 end-3">
               <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => setResult(null)}>
@@ -433,7 +430,7 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
               </Button>
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pe-10">
-              <div className={`shrink-0 h-16 w-16 rounded-2xl bg-background border border-border flex items-center justify-center overflow-hidden ring-2 ring-offset-2 ring-offset-background ${bandStyles[result.score_band].ring}`}>
+              <div className="shrink-0 h-16 w-16 rounded-2xl bg-background border border-border flex items-center justify-center overflow-hidden">
                 {result.company.logo_url ? (
                   <img src={result.company.logo_url} alt={result.company.name} className="h-full w-full object-contain p-2"
                     onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
@@ -456,28 +453,18 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
                   {result.website} <ExternalLink className="h-3 w-3" />
                 </a>
               </div>
-              <div className="shrink-0 flex flex-col items-center gap-1.5">
-                <div className={`flex items-baseline gap-0.5 px-3 py-2 rounded-xl border ${bandStyles[result.score_band].cls}`} dir="ltr">
-                  <span className="text-3xl font-extrabold tabular-nums">{result.score}</span>
-                  <span className="text-xs opacity-70">/100</span>
-                </div>
-                <Badge variant="outline" className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 ${bandStyles[result.score_band].cls}`}>
-                  {isAr ? bandStyles[result.score_band].ar : bandStyles[result.score_band].en}
-                </Badge>
-              </div>
             </div>
           </div>
 
-          {/* KPIs (5 content metrics) */}
+          {/* Quick numbers — pure factual counts of what was extracted. */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-border/40 border-b border-border/50">
             <Kpi
               icon={<Briefcase className="h-4 w-4" />}
               label={isAr ? "المشاريع" : "Projects"}
-              value={result.projects.pages_found}
-              sub={result.projects.detailed_items.length > 0
-                ? (isAr ? `${result.projects.detailed_items.length} موثَّق` : `${result.projects.detailed_items.length} documented`)
-                : (isAr ? "غير منشور" : "not published")}
-              tone={result.projects.detailed_items.length >= 3 ? "good" : result.projects.pages_found > 0 ? "fair" : "muted"}
+              value={result.projects.items.length}
+              sub={result.projects.listing_pages_found > 0
+                ? (isAr ? `${result.projects.listing_pages_found} قسم` : `${result.projects.listing_pages_found} section${result.projects.listing_pages_found === 1 ? "" : "s"}`)
+                : (isAr ? "—" : "—")}
             />
             <Kpi
               icon={<Newspaper className="h-4 w-4" />}
@@ -486,35 +473,88 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
               sub={result.news.recent_in_last_year > 0
                 ? (isAr ? `${result.news.recent_in_last_year} حديثة` : `${result.news.recent_in_last_year} recent`)
                 : (isAr ? "—" : "—")}
-              tone={result.news.recent_in_last_year >= 2 ? "good" : result.news.articles.length > 0 ? "fair" : "muted"}
             />
             <Kpi
               icon={<Share2 className="h-4 w-4" />}
               label={isAr ? "السوشيال" : "Social"}
-              value={result.social_presence.count}
-              sub={result.social_presence.accessible_count > 0
-                ? (isAr ? `${result.social_presence.accessible_count} متاحة` : `${result.social_presence.accessible_count} readable`)
-                : (isAr ? "روابط فقط" : "links only")}
-              tone={result.social_presence.count >= 3 ? "good" : result.social_presence.count > 0 ? "fair" : "muted"}
+              value={result.social_links.length}
+              sub={result.social_links.length > 0
+                ? result.social_links.slice(0, 3).map((s) => platformLabel[s.platform]?.[isAr ? "ar" : "en"] || s.platform).join(" · ")
+                : (isAr ? "—" : "—")}
             />
             <Kpi
               icon={<MapPin className="h-4 w-4" />}
               label={isAr ? "المكاتب" : "Offices"}
-              value={result.expansion.office_locations_count}
-              sub={result.expansion.international ? (isAr ? "دولي" : "International") : (isAr ? "محلي" : "Domestic")}
-              tone={result.expansion.office_locations_count >= 2 ? "good" : "muted"}
+              value={result.locations.offices.length}
+              sub={result.locations.offices[0]?.country || result.locations.offices[0]?.city || (isAr ? "—" : "—")}
             />
             <Kpi
               icon={<LanguagesIcon className="h-4 w-4" />}
               label={isAr ? "اللغات" : "Languages"}
-              value={result.expansion.languages_supported.length}
-              sub={result.expansion.languages_supported.slice(0, 3).join(" / ").toUpperCase() || "—"}
-              tone={result.expansion.languages_supported.length >= 2 ? "good" : "muted"}
+              value={result.locations.languages.length}
+              sub={result.locations.languages.slice(0, 3).join(" / ").toUpperCase() || "—"}
             />
           </div>
 
           <div className="p-5 md:p-6 space-y-6">
-            {/* About */}
+            {/* Projects — the centerpiece. */}
+            <Section
+              title={isAr ? "محفظة المشاريع" : "Project Portfolio"}
+              icon={<Briefcase className="h-3.5 w-3.5" />}
+              badge={result.projects.items.length > 0 ? `${result.projects.items.length}` : undefined}
+              action={result.projects.listing_url ? (
+                <a href={result.projects.listing_url} target="_blank" rel="noopener noreferrer"
+                  className="text-[11px] text-primary hover:underline inline-flex items-center gap-1">
+                  {isAr ? "زيارة قسم المشاريع" : "Visit projects"} <ExternalLink className="h-3 w-3" />
+                </a>
+              ) : undefined}
+            >
+              {/* Status & type breakdown — factual counts, no judgment. */}
+              {(Object.keys(result.projects.status_breakdown).length > 0 || Object.keys(result.projects.type_breakdown).length > 0) && (
+                <div className="mb-4 grid sm:grid-cols-2 gap-3">
+                  {Object.keys(result.projects.status_breakdown).length > 0 && (
+                    <BreakdownStrip
+                      icon={<Layers className="h-3 w-3" />}
+                      label={isAr ? "حالة المشاريع" : "Project Status"}
+                      entries={Object.entries(result.projects.status_breakdown)}
+                      isAr={isAr}
+                      tonePicker={statusTone}
+                    />
+                  )}
+                  {Object.keys(result.projects.type_breakdown).length > 0 && (
+                    <BreakdownStrip
+                      icon={<Hash className="h-3 w-3" />}
+                      label={isAr ? "نوع المشروع" : "Project Type"}
+                      entries={Object.entries(result.projects.type_breakdown)}
+                      isAr={isAr}
+                      tonePicker={() => "bg-gray-50 text-gray-700 border-gray-200"}
+                    />
+                  )}
+                </div>
+              )}
+
+              {result.projects.items.length > 0 ? (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {result.projects.items.map((p, i) => (
+                    <ProjectCardView key={i} project={p} isAr={isAr} />
+                  ))}
+                </div>
+              ) : result.projects.listing_pages_found > 0 ? (
+                <p className="text-[12.5px] text-muted-foreground">
+                  {isAr
+                    ? "وُجد قسم مشاريع لكن لم نتمكن من قراءة تفاصيل المشاريع الفردية آلياً."
+                    : "Portfolio section detected but per-project details could not be machine-read."}
+                </p>
+              ) : (
+                <p className="text-[12.5px] text-muted-foreground">
+                  {isAr
+                    ? "لم نعثر على قسم مشاريع منشور على الموقع."
+                    : "No published projects section was found on the website."}
+                </p>
+              )}
+            </Section>
+
+            {/* About — factual company information from JSON-LD / about page. */}
             {(result.company.description || result.company.founded || result.company.headquarters || result.company.industry) && (
               <Section title={isAr ? "نبذة عن الشركة" : "About the Company"} icon={<Building2 className="h-3.5 w-3.5" />}>
                 {result.company.description && (
@@ -534,41 +574,12 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
               </Section>
             )}
 
-            {/* Projects — detailed cards */}
-            {(result.projects.has_dedicated_section || result.projects.detailed_items.length > 0) && (
+            {/* News */}
+            {result.news.articles.length > 0 && (
               <Section
-                title={isAr ? "محفظة المشاريع" : "Project Portfolio"}
-                icon={<Briefcase className="h-3.5 w-3.5" />}
-                badge={result.projects.pages_found > 0 ? `${result.projects.pages_found}` : undefined}
-                action={result.projects.listing_url ? (
-                  <a href={result.projects.listing_url} target="_blank" rel="noopener noreferrer"
-                    className="text-[11px] text-primary hover:underline inline-flex items-center gap-1">
-                    {isAr ? "زيارة قسم المشاريع" : "Visit projects"} <ExternalLink className="h-3 w-3" />
-                  </a>
-                ) : undefined}
-              >
-                {result.projects.detailed_items.length > 0 ? (
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {result.projects.detailed_items.map((p, i) => (
-                      <ProjectCardView key={i} project={p} isAr={isAr} />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-[12.5px] text-muted-foreground">
-                    {isAr
-                      ? "وُجد قسم مشاريع لكن لم نتمكن من قراءة تفاصيل المشاريع الفردية آلياً."
-                      : "Portfolio section detected but per-project details could not be machine-read."}
-                  </p>
-                )}
-              </Section>
-            )}
-
-            {/* News — detailed cards */}
-            {(result.news.has_section || result.news.articles.length > 0) && (
-              <Section
-                title={isAr ? "الأخبار والنشاط الإعلامي" : "News & Press Activity"}
+                title={isAr ? "الأخبار والإعلانات" : "News & Announcements"}
                 icon={<Newspaper className="h-3.5 w-3.5" />}
-                badge={result.news.pages_found > 0 ? `${result.news.pages_found}` : undefined}
+                badge={`${result.news.articles.length}`}
                 action={result.news.listing_url ? (
                   <a href={result.news.listing_url} target="_blank" rel="noopener noreferrer"
                     className="text-[11px] text-primary hover:underline inline-flex items-center gap-1">
@@ -576,34 +587,20 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
                   </a>
                 ) : undefined}
               >
-                {result.news.recent_in_last_year > 0 && (
-                  <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-200 dark:border-emerald-400/30 px-3 py-1 text-[11.5px] text-emerald-700 dark:text-emerald-200 font-medium">
-                    <TrendingUp className="h-3.5 w-3.5" />
-                    {isAr
-                      ? `${result.news.recent_in_last_year} خبر منشور خلال آخر ١٢ شهر`
-                      : `${result.news.recent_in_last_year} item${result.news.recent_in_last_year === 1 ? "" : "s"} published in last 12 months`}
-                  </div>
-                )}
-                {result.news.articles.length > 0 ? (
-                  <div className="space-y-2">
-                    {result.news.articles.slice(0, 8).map((a, i) => (
-                      <NewsCardView key={i} article={a} isAr={isAr} />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-[12.5px] text-muted-foreground">
-                    {isAr ? "وُجد قسم الأخبار لكن لم نستخرج عناوين جاهزة." : "News section found but headlines could not be extracted."}
-                  </p>
-                )}
+                <div className="space-y-2">
+                  {result.news.articles.slice(0, 8).map((a, i) => (
+                    <NewsCardView key={i} article={a} isAr={isAr} />
+                  ))}
+                </div>
               </Section>
             )}
 
             {/* Events */}
-            {(result.events.pages_found > 0 || result.events.sample_titles.length > 0) && (
+            {result.events.sample_titles.length > 0 && (
               <Section
-                title={isAr ? "الفعاليات والاجتماعات" : "Events & Meetings"}
+                title={isAr ? "الفعاليات" : "Events"}
                 icon={<CalendarDays className="h-3.5 w-3.5" />}
-                badge={result.events.pages_found > 0 ? `${result.events.pages_found}` : undefined}
+                badge={`${result.events.sample_titles.length}`}
                 action={result.events.listing_url ? (
                   <a href={result.events.listing_url} target="_blank" rel="noopener noreferrer"
                     className="text-[11px] text-primary hover:underline inline-flex items-center gap-1">
@@ -611,63 +608,44 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
                   </a>
                 ) : undefined}
               >
-                {result.events.sample_titles.length > 0 ? (
-                  <ul className="grid sm:grid-cols-2 gap-1.5">
-                    {result.events.sample_titles.map((t, i) => (
-                      <li key={i} className="flex items-start gap-2 text-[13px] text-foreground rounded-lg border border-border/40 bg-background/50 px-2.5 py-1.5">
-                        <CalendarDays className="h-3.5 w-3.5 text-violet-500 mt-0.5 shrink-0" />
-                        <span className="line-clamp-2">{t}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-[12.5px] text-muted-foreground">
-                    {isAr ? "وُجد قسم فعاليات لكن العناوين غير قابلة للقراءة آلياً." : "Events section detected but titles not machine-readable."}
-                  </p>
-                )}
+                <ul className="grid sm:grid-cols-2 gap-1.5">
+                  {result.events.sample_titles.map((t, i) => (
+                    <li key={i} className="flex items-start gap-2 text-[13px] text-foreground rounded-lg border border-border/40 bg-background/50 px-2.5 py-1.5">
+                      <CalendarDays className="h-3.5 w-3.5 text-violet-500 mt-0.5 shrink-0" />
+                      <span className="line-clamp-2">{t}</span>
+                    </li>
+                  ))}
+                </ul>
               </Section>
             )}
 
-            {/* Social — enriched cards */}
-            {result.social_presence.platforms.length > 0 && (
+            {/* Social channels — links only, no enrichment. */}
+            {result.social_links.length > 0 && (
               <Section
-                title={isAr ? "حسابات التواصل الاجتماعي" : "Social Media Accounts"}
+                title={isAr ? "قنوات التواصل الاجتماعي" : "Social Channels"}
                 icon={<Share2 className="h-3.5 w-3.5" />}
-                badge={`${result.social_presence.count}`}
+                badge={`${result.social_links.length}`}
               >
-                {result.social_presence.accessible_count < result.social_presence.count && (
-                  <p className="text-[11.5px] text-muted-foreground mb-3 flex items-start gap-1.5">
-                    <Lock className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                    <span>
-                      {isAr
-                        ? "بعض المنصّات (مثل تويتر/X وإنستغرام وفيسبوك) تحجب القراءة الآلية للزوّار غير المسجَّلين، فيظهر الرابط فقط."
-                        : "Some platforms (e.g. X/Twitter, Instagram, Facebook) block anonymous bots, so we show the link only."}
-                    </span>
-                  </p>
-                )}
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {result.social_presence.platforms.map((s, i) => (
-                    <SocialCard key={i} platform={s} isAr={isAr} />
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {result.social_links.map((s, i) => (
+                    <SocialLinkChip key={i} link={s} isAr={isAr} />
                   ))}
                 </div>
               </Section>
             )}
 
-            {/* Expansion */}
-            {(result.expansion.addresses.length > 0
-              || result.expansion.languages_supported.length > 0
-              || result.careers.has_careers_page
-              || result.expansion.international) && (
-              <Section title={isAr ? "التوسُّع والنمو" : "Expansion & Growth"} icon={<TrendingUp className="h-3.5 w-3.5" />}>
+            {/* Office locations & languages — factual list, zero recommendation language. */}
+            {(result.locations.offices.length > 0 || result.locations.languages.length > 0) && (
+              <Section title={isAr ? "المواقع واللغات" : "Locations & Languages"} icon={<MapPin className="h-3.5 w-3.5" />}>
                 <div className="grid md:grid-cols-2 gap-3">
-                  {result.expansion.addresses.length > 0 && (
+                  {result.locations.offices.length > 0 && (
                     <div className="rounded-xl border border-border/40 bg-background/50 p-3">
                       <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-muted-foreground mb-2">
                         <MapPin className="h-3 w-3" />
-                        {isAr ? `المواقع (${result.expansion.office_locations_count})` : `Locations (${result.expansion.office_locations_count})`}
+                        {isAr ? `المكاتب (${result.locations.offices.length})` : `Offices (${result.locations.offices.length})`}
                       </div>
                       <ul className="space-y-1">
-                        {result.expansion.addresses.map((a, i) => (
+                        {result.locations.offices.map((a, i) => (
                           <li key={i} className="text-[12.5px] text-foreground flex items-start gap-2">
                             <span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary/60 shrink-0" />
                             <span>{a.full || [a.city, a.country].filter(Boolean).join(", ") || "—"}</span>
@@ -676,92 +654,27 @@ const DevWebsiteAnalysis: React.FC<Props> = ({ developerName, developerId, isAr,
                       </ul>
                     </div>
                   )}
-                  {result.expansion.languages_supported.length > 0 && (
+                  {result.locations.languages.length > 0 && (
                     <div className="rounded-xl border border-border/40 bg-background/50 p-3">
                       <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-muted-foreground mb-2">
                         <LanguagesIcon className="h-3 w-3" />
-                        {isAr ? "اللغات المدعومة" : "Supported Languages"}
+                        {isAr ? "اللغات المنشورة" : "Published Languages"}
                       </div>
                       <div className="flex flex-wrap gap-1.5">
-                        {result.expansion.languages_supported.map((l, i) => (
+                        {result.locations.languages.map((l, i) => (
                           <span key={i} className="text-[11px] font-mono uppercase rounded-md border border-border bg-background px-2 py-0.5">{l}</span>
                         ))}
                       </div>
-                    </div>
-                  )}
-                  {result.careers.has_careers_page && (
-                    <div className="rounded-xl border border-emerald-200/60 dark:border-emerald-400/30 bg-emerald-50/60 dark:bg-emerald-500/10 p-3">
-                      <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-emerald-700 dark:text-emerald-300 mb-1">
-                        <Users className="h-3 w-3" />
-                        {isAr ? "صفحة وظائف نشطة" : "Active careers page"}
-                      </div>
-                      <p className="text-[12px] text-emerald-800/90 dark:text-emerald-100/80">
-                        {isAr ? "مؤشِّر إيجابي على نمو الفريق والشركة." : "Positive signal of team & company growth."}
-                      </p>
-                      {result.careers.listing_url && (
-                        <a href={result.careers.listing_url} target="_blank" rel="noopener noreferrer"
-                          className="text-[11px] text-emerald-700 dark:text-emerald-200 hover:underline inline-flex items-center gap-1 mt-1">
-                          {isAr ? "عرض صفحة الوظائف" : "View careers page"} <ExternalLink className="h-3 w-3" />
-                        </a>
-                      )}
-                    </div>
-                  )}
-                  {result.expansion.international && (
-                    <div className="rounded-xl border border-blue-200/60 dark:border-blue-400/30 bg-blue-50/60 dark:bg-blue-500/10 p-3">
-                      <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-blue-700 dark:text-blue-300 mb-1">
-                        <Sparkles className="h-3 w-3" />
-                        {isAr ? "حضور دولي" : "International presence"}
-                      </div>
-                      <p className="text-[12px] text-blue-800/90 dark:text-blue-100/80">
-                        {isAr ? "الموقع متاح بأكثر من لغة، مما يوحي بسوق دولي." : "Site published in 2+ languages — suggests international market reach."}
-                      </p>
                     </div>
                   )}
                 </div>
               </Section>
             )}
 
-            {/* Trust signals (content-relevant only) */}
-            <Section title={isAr ? "مؤشِّرات الثقة" : "Trust Signals"} icon={<ShieldCheck className="h-3.5 w-3.5" />}>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                <Trust label={isAr ? "شعار الشركة" : "Company logo"} ok={result.trust_signals.has_logo} />
-                <Trust label={isAr ? "وصف واضح للشركة" : "Clear company description"} ok={result.trust_signals.has_clear_description} />
-                <Trust label={isAr ? "صفحة من نحن" : "About page"} ok={result.trust_signals.has_about_page} />
-                <Trust label={isAr ? "صفحة اتصال" : "Contact page"} ok={result.trust_signals.has_contact_page} />
-                <Trust label={isAr ? "بيانات منظَّمة موثَّقة" : "Verified structured data"} ok={result.trust_signals.has_organization_schema} />
-              </div>
-            </Section>
-
-            {/* Score breakdown */}
-            <Section title={isAr ? "كيف احتُسبت الدرجة؟" : "How the score was computed"} icon={<Gauge className="h-3.5 w-3.5" />}>
-              <div className="grid sm:grid-cols-2 gap-1.5">
-                {result.score_breakdown.map((s, i) => (
-                  <div key={i} className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${
-                    s.passed
-                      ? "border-emerald-200/60 bg-emerald-50/40 dark:border-emerald-400/20 dark:bg-emerald-500/5"
-                      : "border-border/40 bg-background/40"
-                  }`}>
-                    {s.passed
-                      ? <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                      : <XCircle className="h-4 w-4 text-muted-foreground/50 shrink-0" />}
-                    <span className={`text-[12.5px] flex-1 ${s.passed ? "text-foreground" : "text-muted-foreground"}`}>
-                      {isAr ? s.label_ar : s.label_en}
-                    </span>
-                    {s.value && (
-                      <span className="text-[10.5px] tabular-nums font-mono text-muted-foreground" dir="ltr">{s.value}</span>
-                    )}
-                    <span className={`text-[10.5px] tabular-nums font-bold shrink-0 ${
-                      s.passed ? "text-emerald-700 dark:text-emerald-300" : "text-muted-foreground/60"
-                    }`} dir="ltr">{s.passed ? `+${s.weight}` : `0/${s.weight}`}</span>
-                  </div>
-                ))}
-              </div>
-            </Section>
-
             <p className="text-[10.5px] text-muted-foreground text-center pt-3 border-t border-border/30">
               {isAr
-                ? `تمّ التحليل في ${new Date(result.fetched_at).toLocaleString("ar-SA-u-nu-latn")} • محتوى مستخرج مباشرةً من الموقع وحسابات السوشيال ميديا — بلا ذكاء اصطناعي`
-                : `Analysed at ${new Date(result.fetched_at).toLocaleString("en-US")} • Content extracted directly from the website & social profiles — no AI`}
+                ? `تمّ التحليل في ${new Date(result.fetched_at).toLocaleString("ar-SA-u-nu-latn")} • محتوى مستخرج مباشرةً من صفحات المطور — بلا ذكاء اصطناعي وبلا توصيات`
+                : `Analyzed at ${new Date(result.fetched_at).toLocaleString("en-US")} • Content extracted directly from the developer's pages — no AI, no recommendations`}
             </p>
           </div>
         </div>
@@ -803,25 +716,16 @@ const Kpi: React.FC<{
   label: string;
   value: number;
   sub?: string;
-  tone: "good" | "fair" | "muted";
-}> = ({ icon, label, value, sub, tone }) => {
-  const toneCls =
-    tone === "good"
-      ? "text-emerald-700 dark:text-emerald-300"
-      : tone === "fair"
-        ? "text-amber-700 dark:text-amber-300"
-        : "text-muted-foreground";
-  return (
-    <div className="bg-card p-3 md:p-4 flex flex-col gap-1">
-      <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-muted-foreground">
-        <span className={toneCls}>{icon}</span>
-        <span className="truncate">{label}</span>
-      </div>
-      <p className="text-2xl font-extrabold text-foreground tabular-nums leading-none mt-1" dir="ltr">{value}</p>
-      {sub && <p className="text-[10.5px] text-muted-foreground line-clamp-1">{sub}</p>}
+}> = ({ icon, label, value, sub }) => (
+  <div className="bg-card p-3 md:p-4 flex flex-col gap-1">
+    <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-muted-foreground">
+      <span className="text-muted-foreground">{icon}</span>
+      <span className="truncate">{label}</span>
     </div>
-  );
-};
+    <p className="text-2xl font-extrabold text-foreground tabular-nums leading-none mt-1" dir="ltr">{value}</p>
+    {sub && <p className="text-[10.5px] text-muted-foreground line-clamp-1">{sub}</p>}
+  </div>
+);
 
 const DataRow: React.FC<{ icon: React.ReactNode; label: string; value: string }> = ({ icon, label, value }) => (
   <div className="rounded-lg border border-border/40 bg-background/40 px-3 py-2 min-w-0">
@@ -833,16 +737,31 @@ const DataRow: React.FC<{ icon: React.ReactNode; label: string; value: string }>
   </div>
 );
 
-const Trust: React.FC<{ label: string; ok: boolean }> = ({ label, ok }) => (
-  <div className={`flex items-center gap-2 rounded-lg border px-2.5 py-2 ${
-    ok
-      ? "border-emerald-200/60 bg-emerald-50/40 dark:border-emerald-400/20 dark:bg-emerald-500/5"
-      : "border-border/40 bg-background/40"
-  }`}>
-    {ok
-      ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-      : <XCircle className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />}
-    <span className={`text-[12px] line-clamp-2 leading-tight ${ok ? "text-foreground" : "text-muted-foreground"}`}>{label}</span>
+// Renders a "Status: 5 completed · 3 under construction" style chip strip.
+// Pure facts, never editorialized.
+const BreakdownStrip: React.FC<{
+  icon: React.ReactNode;
+  label: string;
+  entries: [string, number][];
+  isAr: boolean;
+  tonePicker: (key: string) => string;
+}> = ({ icon, label, entries, tonePicker }) => (
+  <div className="rounded-xl border border-border/40 bg-background/50 p-3">
+    <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wider text-muted-foreground mb-2">
+      {icon}
+      {label}
+    </div>
+    <div className="flex flex-wrap gap-1.5">
+      {entries.map(([key, count], i) => (
+        <span
+          key={i}
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11.5px] font-medium ${tonePicker(key)}`}
+        >
+          <span>{key}</span>
+          <span className="tabular-nums font-bold" dir="ltr">{count}</span>
+        </span>
+      ))}
+    </div>
   </div>
 );
 
@@ -870,21 +789,41 @@ const ProjectCardView: React.FC<{ project: ProjectCard; isAr: boolean }> = ({ pr
         <div className="hidden absolute inset-0 items-center justify-center bg-muted">
           <ImageIcon className="h-8 w-8 text-muted-foreground/40" />
         </div>
+        {/* Status chip overlay — only when present in source. */}
+        {project.status && (
+          <span className={`absolute top-2 start-2 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold backdrop-blur-sm ${statusTone(project.status)}`}>
+            {project.status}
+          </span>
+        )}
       </div>
     ) : (
-      <div className="h-36 w-full bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center">
+      <div className="relative h-36 w-full bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center">
         <Trophy className="h-9 w-9 text-amber-500/60" />
+        {project.status && (
+          <span className={`absolute top-2 start-2 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold backdrop-blur-sm ${statusTone(project.status)}`}>
+            {project.status}
+          </span>
+        )}
       </div>
     )}
     <div className="p-3 flex-1 flex flex-col gap-1.5">
       <h6 className="text-[13.5px] font-semibold text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
         {project.title}
       </h6>
-      {project.location && (
-        <p className="text-[11px] text-muted-foreground inline-flex items-center gap-1">
-          <MapPin className="h-3 w-3" /> {project.location}
-        </p>
-      )}
+      <div className="flex flex-wrap items-center gap-1.5">
+        {project.project_type && (
+          <span className="inline-flex items-center gap-1 rounded-md bg-muted/60 border border-border/40 px-1.5 py-0.5 text-[10.5px] text-muted-foreground">
+            <Hash className="h-2.5 w-2.5" />
+            {project.project_type}
+          </span>
+        )}
+        {project.location && (
+          <span className="inline-flex items-center gap-1 rounded-md bg-muted/60 border border-border/40 px-1.5 py-0.5 text-[10.5px] text-muted-foreground">
+            <MapPin className="h-2.5 w-2.5" />
+            {project.location}
+          </span>
+        )}
+      </div>
       {project.summary && (
         <p className="text-[12px] text-muted-foreground line-clamp-3 leading-snug">{project.summary}</p>
       )}
@@ -937,97 +876,25 @@ const NewsCardView: React.FC<{ article: NewsArticle; isAr: boolean }> = ({ artic
   </a>
 );
 
-const SocialCard: React.FC<{ platform: SocialPlatform; isAr: boolean }> = ({ platform, isAr }) => {
-  const lbl = platformLabel[platform.platform] || { ar: platform.platform, en: platform.platform };
-  const tint = platformTint[platform.platform] || "bg-primary/10 text-primary";
-  const profile = platform.profile;
-
+const SocialLinkChip: React.FC<{ link: SocialLink; isAr: boolean }> = ({ link, isAr }) => {
+  const lbl = platformLabel[link.platform] || { ar: link.platform, en: link.platform };
+  const tint = platformTint[link.platform] || "bg-primary/10 text-primary";
+  const handle = link.url.replace(/^https?:\/\//, "").replace(/\/$/, "");
   return (
     <a
-      href={platform.url}
+      href={link.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex flex-col rounded-xl border border-border/40 bg-background/50 hover:border-primary/30 overflow-hidden transition-colors"
+      className="group flex items-center gap-3 rounded-xl border border-border/40 bg-background/50 hover:border-primary/30 overflow-hidden transition-colors"
     >
-      {/* Header strip with platform color */}
-      <div className={`flex items-center justify-between gap-2 px-3 py-2 ${tint}`}>
-        <span className="inline-flex items-center gap-2 text-[12.5px] font-bold">
-          <Share2 className="h-3.5 w-3.5" />
-          {isAr ? lbl.ar : lbl.en}
-        </span>
-        {!platform.accessible && (
-          <span className="inline-flex items-center gap-1 text-[10px] font-medium opacity-90">
-            <Lock className="h-3 w-3" />
-            {isAr ? "محمي" : "Protected"}
-          </span>
-        )}
+      <div className={`shrink-0 h-11 w-11 flex items-center justify-center ${tint}`}>
+        <Share2 className="h-4 w-4" />
       </div>
-
-      {/* Body */}
-      <div className="flex items-start gap-3 p-3">
-        {profile?.avatar_url ? (
-          <img
-            src={profile.avatar_url}
-            alt=""
-            loading="lazy"
-            className="shrink-0 h-12 w-12 rounded-full object-cover bg-muted border border-border/40"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-          />
-        ) : (
-          <div className="shrink-0 h-12 w-12 rounded-full bg-muted/60 border border-border/40 flex items-center justify-center">
-            <Share2 className="h-5 w-5 text-muted-foreground/50" />
-          </div>
-        )}
-        <div className="flex-1 min-w-0">
-          {profile?.display_name ? (
-            <p className="text-[13px] font-semibold text-foreground truncate">{profile.display_name}</p>
-          ) : (
-            <p className="text-[13px] font-semibold text-foreground truncate" dir="ltr">{platform.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}</p>
-          )}
-          {profile?.bio && (
-            <p className="text-[11.5px] text-muted-foreground line-clamp-2 leading-snug mt-0.5">{profile.bio}</p>
-          )}
-          <div className="flex items-center gap-2 mt-1.5 text-[10.5px] text-muted-foreground">
-            {profile?.followers && (
-              <span className="inline-flex items-center gap-1 font-semibold text-foreground tabular-nums" dir="ltr">
-                <Users className="h-3 w-3" />
-                {profile.followers_text || formatFollowers(profile.followers)}
-                <span className="font-normal text-muted-foreground">{isAr ? " متابع" : " followers"}</span>
-              </span>
-            )}
-            {profile?.videos_count && (
-              <span className="inline-flex items-center gap-1 tabular-nums" dir="ltr">
-                <PlayCircle className="h-3 w-3" />
-                {profile.videos_count}
-                <span>{isAr ? " فيديو" : " videos"}</span>
-              </span>
-            )}
-            {!profile && (
-              <span className="inline-flex items-center gap-1">
-                <ExternalLink className="h-3 w-3" />
-                {isAr ? "زيارة الحساب" : "Visit profile"}
-              </span>
-            )}
-          </div>
-        </div>
+      <div className="flex-1 min-w-0 pe-3 py-1">
+        <p className="text-[12.5px] font-semibold text-foreground truncate">{isAr ? lbl.ar : lbl.en}</p>
+        <p className="text-[10.5px] text-muted-foreground truncate" dir="ltr">{handle}</p>
       </div>
-
-      {/* Recent items (e.g. YouTube videos) */}
-      {profile?.recent_items && profile.recent_items.length > 0 && (
-        <div className="border-t border-border/30 px-3 py-2 bg-muted/20">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5 font-bold">
-            {isAr ? "آخر المنشورات" : "Recent posts"}
-          </p>
-          <ul className="space-y-1">
-            {profile.recent_items.slice(0, 3).map((it, i) => (
-              <li key={i} className="text-[11.5px] text-foreground/90 line-clamp-1 flex items-start gap-1.5">
-                <MessageCircle className="h-3 w-3 text-muted-foreground/60 mt-0.5 shrink-0" />
-                <span className="line-clamp-1">{it.title}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <ExternalLink className="h-3 w-3 me-3 text-muted-foreground/60 group-hover:text-primary transition-colors" />
     </a>
   );
 };

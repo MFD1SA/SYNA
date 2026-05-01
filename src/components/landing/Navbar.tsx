@@ -164,67 +164,73 @@ const Navbar: React.FC = () => {
 
             <div className={`w-px h-5 ${overDark ? "bg-white/20" : "bg-gray-200"}`} />
 
+            {/* Owner login — quiet ghost button with a small DOMA-orange
+                accent dot. The previous version used a 20×20 gradient pill
+                that read as "loud chip" on the navbar; trimmed to 16×16
+                with a thinner LandPlot mark for a more SaaS-grade weight. */}
             <Link
               to="/auth/login?type=owner"
-              className={`group inline-flex items-center gap-1.5 text-[13px] font-semibold h-9 px-3.5 rounded-xl transition-all ${
+              className={`group inline-flex items-center gap-2 text-[12.5px] font-semibold h-9 px-3 rounded-lg transition-all ${
                 overDark
-                  ? "text-white hover:bg-white/10 drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
-                  : "text-gray-600 hover:text-[#A24832] hover:bg-[#C45A41]/5"
+                  ? "text-white/90 hover:text-white hover:bg-white/10 drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+                  : "text-gray-600 hover:text-[#A24832] hover:bg-[#C45A41]/[0.06]"
               }`}
             >
-              {/* Owner badge — DOMA Orange gradient pill so the icon
-                  reads as a premium ownership signal in either theme. */}
-              <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-gradient-to-br from-[#C45A41] to-[#A24832] shadow-[0_2px_6px_-2px_rgba(196,90,65,0.5)]">
-                <LandPlot className="w-3 h-3 text-white" strokeWidth={2.2} />
+              <span className="inline-flex items-center justify-center w-4 h-4 rounded-md bg-gradient-to-br from-[#C45A41] to-[#A24832]">
+                <LandPlot className="w-2.5 h-2.5 text-white" strokeWidth={2.2} />
               </span>
               {isAr ? "دخول الملاك" : "Owner Login"}
             </Link>
 
+            {/* Developer login — primary CTA, slimmer profile (h-9, px-4)
+                so the navbar doesn't feel top-heavy. Drops the hover
+                translate-y micro-animation that gave a slightly amateur
+                bounce on hover. */}
             <Link
               to="/auth/login"
-              className={`group inline-flex items-center gap-2 h-10 px-5 text-[13px] font-bold rounded-xl hover:-translate-y-0.5 transition-all duration-300 ${
+              className={`group inline-flex items-center gap-2 h-9 px-4 text-[12.5px] font-semibold rounded-lg transition-all duration-200 ${
                 overDark
-                  ? "bg-white/10 text-white border border-white/25 backdrop-blur-md hover:bg-white/15 hover:border-white/40"
-                  : "bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white hover:shadow-[0_8px_24px_-8px_rgba(43,76,102,0.55)]"
+                  ? "bg-white/10 text-white border border-white/20 backdrop-blur-md hover:bg-white/15 hover:border-white/35"
+                  : "bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white hover:shadow-[0_4px_14px_-4px_rgba(2,2,2,0.4)]"
               }`}
             >
-              {/* Developer badge — neutral on dark surface, lifts as a
-                  white pill on the dark CTA when over light content. */}
-              <span
-                className={`inline-flex items-center justify-center w-5 h-5 rounded-md shadow-sm transition-colors ${
-                  overDark ? "bg-white/15" : "bg-white/15"
-                }`}
-              >
-                <HardHat className="w-3 h-3 text-white" strokeWidth={2.2} />
+              <span className="inline-flex items-center justify-center w-4 h-4 rounded-md bg-white/15">
+                <HardHat className="w-2.5 h-2.5 text-white" strokeWidth={2.2} />
               </span>
               {isAr ? "دخول المطورين" : "Developer Login"}
-              <ArrowUpRight className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" strokeWidth={2} />
+              <ArrowUpRight className="w-3 h-3 opacity-60 group-hover:opacity-100 transition-opacity" strokeWidth={2} />
             </Link>
           </div>
 
-          {/* Mobile — quick actions (lang + menu) */}
-          <div className="lg:hidden flex items-center gap-1">
+          {/* Mobile — quick actions (lang + menu).
+              The two buttons used to wear chip-style background pills
+              that competed visually with the logo. Switched to ghost
+              hover — quieter at rest, full SaaS polish on interaction. */}
+          <div className="lg:hidden flex items-center gap-0.5">
             <button
               onClick={toggleLang}
-              className={`inline-flex items-center gap-1 text-[11px] font-bold h-9 w-9 rounded-xl transition-all justify-center ${
+              className={`inline-flex items-center justify-center h-9 w-9 rounded-lg transition-colors ${
                 overDark
-                  ? "text-white/80 bg-white/10 hover:bg-white/20"
-                  : "text-gray-500 hover:text-[#2B2B2B] hover:bg-gray-100"
+                  ? "text-white/80 hover:text-white hover:bg-white/10"
+                  : "text-gray-500 hover:text-[#2B2B2B] hover:bg-gray-100/80"
               }`}
               aria-label="Toggle language"
             >
-              <Globe className="w-4 h-4" strokeWidth={1.8} />
+              <Globe className="w-[17px] h-[17px]" strokeWidth={1.7} />
             </button>
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className={`inline-flex items-center justify-center h-9 w-9 rounded-xl transition-colors ${
+              className={`inline-flex items-center justify-center h-9 w-9 rounded-lg transition-colors ${
                 overDark
-                  ? "bg-white/10 hover:bg-white/20 text-white/80"
-                  : "bg-[#2B2B2B]/5 hover:bg-[#2B2B2B]/10 text-[#020202]"
+                  ? "text-white/85 hover:text-white hover:bg-white/10"
+                  : "text-[#020202] hover:bg-gray-100/80"
               }`}
               aria-label="Toggle menu"
+              aria-expanded={mobileOpen}
             >
-              {mobileOpen ? <X className="w-5 h-5" strokeWidth={2} /> : <Menu className="w-5 h-5" strokeWidth={2} />}
+              {mobileOpen
+                ? <X className="w-[18px] h-[18px]" strokeWidth={1.7} />
+                : <Menu className="w-[18px] h-[18px]" strokeWidth={1.7} />}
             </button>
           </div>
         </div>
@@ -243,37 +249,40 @@ const Navbar: React.FC = () => {
           onClick={() => setMobileOpen(false)}
         />
 
-        {/* Drawer panel */}
+        {/* Drawer panel — slimmer rounded corners, lighter shadow, less
+            vertical padding. The drawer used to feel like a "tray" with
+            heavy 3xl rounding + 20px shadow that read as toy-like; now
+            it sits as a quiet sheet that gets out of the way. */}
         <div
-          className={`absolute top-[64px] inset-x-0 bg-white rounded-b-3xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.2)] transition-all duration-300 ${
+          className={`absolute top-[64px] inset-x-0 bg-white rounded-b-2xl shadow-[0_12px_40px_-12px_rgba(0,0,0,0.15)] border-b border-gray-100 transition-all duration-300 ${
             mobileOpen ? "translate-y-0" : "-translate-y-full"
           }`}
         >
-          <div className="px-5 pt-5 pb-7 max-h-[calc(100vh-64px)] overflow-y-auto">
-            {/* Nav links — card style */}
-            <div className="space-y-1.5">
+          <div className="px-4 pt-3 pb-5 max-h-[calc(100vh-64px)] overflow-y-auto">
+            {/* Nav links — slimmer rows, subtler active state. */}
+            <div className="space-y-0.5">
               {navLinks.map(({ to, label, icon: Icon }) => {
                 const isActive = location.pathname === to;
                 return (
                   <Link
                     key={to}
                     to={to}
-                    className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all ${
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
                       isActive
-                        ? "bg-gradient-to-r from-[#2B2B2B]/10 to-[#C45A41]/5 text-[#020202] font-bold"
-                        : "text-gray-700 font-semibold hover:bg-gray-50"
+                        ? "bg-[#2B2B2B]/[0.05] text-[#020202] font-semibold"
+                        : "text-gray-600 font-medium hover:bg-gray-50"
                     }`}
                   >
                     <div
-                      className={`flex items-center justify-center w-9 h-9 rounded-xl ${
+                      className={`flex items-center justify-center w-8 h-8 rounded-lg shrink-0 ${
                         isActive
-                          ? "bg-gradient-to-br from-[#2B2B2B] to-[#020202] text-white"
+                          ? "bg-[#020202] text-white"
                           : "bg-gray-100 text-[#2B2B2B]"
                       }`}
                     >
-                      <Icon className="w-4 h-4" strokeWidth={1.8} />
+                      <Icon className="w-[15px] h-[15px]" strokeWidth={1.7} />
                     </div>
-                    <span className="text-[14.5px] flex-1">{label}</span>
+                    <span className="text-[14px] flex-1">{label}</span>
                     {isActive && (
                       <div className="w-1.5 h-1.5 rounded-full bg-[#C45A41]" />
                     )}
@@ -283,51 +292,52 @@ const Navbar: React.FC = () => {
             </div>
 
             {/* Divider */}
-            <div className="my-5 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+            <div className="my-4 h-px bg-gray-100" />
 
-            {/* Auth CTAs */}
-            <div className="space-y-2.5">
+            {/* Auth CTAs — same DOMA brand recognition but trimmed:
+                52px rows (was 60px), 36×36 icon boxes (was 44×44), no
+                heavy ring/shadow stack. The "FOR OWNERS / FOR DEVELOPERS"
+                eyebrow stays for clarity but at lighter weight. */}
+            <div className="space-y-2">
               <Link
                 to="/auth/login?type=owner"
-                className="flex items-center gap-3 w-full h-[60px] px-4 rounded-2xl border border-[#C45A41]/25 bg-gradient-to-br from-[#C45A41]/[0.06] to-[#C45A41]/[0.02] hover:from-[#C45A41]/10 hover:to-[#C45A41]/5 transition-all"
+                className="flex items-center gap-3 w-full h-[52px] px-3.5 rounded-xl border border-[#C45A41]/20 bg-[#C45A41]/[0.04] hover:bg-[#C45A41]/[0.08] active:bg-[#C45A41]/[0.1] transition-colors"
               >
-                <span className="relative inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-[#C45A41] to-[#A24832] shadow-[0_6px_16px_-6px_rgba(196,90,65,0.55)] ring-1 ring-[#C45A41]/30 shrink-0">
-                  <LandPlot className="w-5 h-5 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" strokeWidth={2.4} />
-                  <span className="absolute inset-0 rounded-xl bg-gradient-to-tr from-white/0 via-white/15 to-white/0 pointer-events-none" />
+                <span className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-[#C45A41] to-[#A24832] shrink-0">
+                  <LandPlot className="w-4 h-4 text-white" strokeWidth={2.2} />
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#A24832]">
+                  <p className="text-[9.5px] font-semibold tracking-[0.12em] uppercase text-[#A24832]">
                     {isAr ? "للملاك" : "FOR OWNERS"}
                   </p>
-                  <p className="text-[14px] font-bold text-[#020202] truncate">
+                  <p className="text-[13.5px] font-bold text-[#020202] truncate leading-tight">
                     {isAr ? "دخول الملاك" : "Owner Login"}
                   </p>
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-[#A24832]" strokeWidth={2.2} />
+                <ArrowUpRight className="w-3.5 h-3.5 text-[#A24832]" strokeWidth={2} />
               </Link>
 
               <Link
                 to="/auth/login"
-                className="flex items-center gap-3 w-full h-[60px] px-4 rounded-2xl bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white shadow-[0_8px_24px_-8px_rgba(43,76,102,0.55)]"
+                className="flex items-center gap-3 w-full h-[52px] px-3.5 rounded-xl bg-gradient-to-r from-[#2B2B2B] to-[#020202] text-white shadow-[0_4px_14px_-6px_rgba(2,2,2,0.4)] active:shadow-none"
               >
-                <span className="relative inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-white/20 to-white/5 ring-1 ring-white/25 shadow-inner shrink-0">
-                  <HardHat className="w-5 h-5 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]" strokeWidth={2.4} />
-                  <span className="absolute inset-0 rounded-xl bg-gradient-to-tr from-white/0 via-white/10 to-white/0 pointer-events-none" />
+                <span className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-white/15 shrink-0">
+                  <HardHat className="w-4 h-4 text-white" strokeWidth={2.2} />
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-bold tracking-[0.14em] uppercase text-white/70">
+                  <p className="text-[9.5px] font-semibold tracking-[0.12em] uppercase text-white/70">
                     {isAr ? "للمطورين" : "FOR DEVELOPERS"}
                   </p>
-                  <p className="text-[14px] font-bold truncate">
+                  <p className="text-[13.5px] font-bold truncate leading-tight">
                     {isAr ? "دخول المطورين" : "Developer Login"}
                   </p>
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-white/80" strokeWidth={2.2} />
+                <ArrowUpRight className="w-3.5 h-3.5 text-white/80" strokeWidth={2} />
               </Link>
             </div>
 
             {/* Footer */}
-            <p className="mt-6 text-center text-[11px] text-gray-400">
+            <p className="mt-4 text-center text-[10.5px] text-gray-400">
               {isAr
                 ? "سينا للاستثمارات العقارية — شراكات موثّقة"
                 : "SINA — Documented Partnerships"}
