@@ -7,7 +7,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { buildCorsHeaders, renderLuxuryEmail, sendEmail, SITE_URL } from "../_shared/email.ts";
-import { createNotification, getAdminClient } from "../_shared/notifications.ts";
+import { createNotification, getAdminClient, notifyAllAdmins } from "../_shared/notifications.ts";
 import { checkRateLimit, rateLimited } from "../_shared/rate-limit.ts";
 
 interface Payload {
@@ -154,7 +154,7 @@ serve(async (req) => {
       });
     }
 
-    // In-app notification
+    // In-app notification — owner first.
     await createNotification({
       userId: land.owner_id as string,
       type: "opportunity_interest",
@@ -162,6 +162,18 @@ serve(async (req) => {
       titleEn: "New interest on your opportunity",
       messageAr: `${devName} أبدى اهتمامًا بفرصتك في ${location}`,
       messageEn: `${devName} expressed interest in your opportunity in ${land.city ?? ""}`,
+      entityType: "deal_request",
+      entityId: requestId,
+    });
+
+    // Admin fan-out — every operator sees a new request landing.
+    // Best-effort; a failure here doesn't block the owner notification.
+    await notifyAllAdmins({
+      type: "system",
+      titleAr: "طلب شراكة جديد",
+      titleEn: "New partnership request",
+      messageAr: `طلب من ${devName} على فرصة في ${location}`,
+      messageEn: `Request from ${devName} on a ${land.city ?? ""} opportunity`,
       entityType: "deal_request",
       entityId: requestId,
     });

@@ -110,6 +110,61 @@ export async function createNotification(
   return { success: true, id: data?.id };
 }
 
+/**
+ * Fan-out a single notification to every admin user.
+ *
+ * Used by deal-flow / NDA / interest events that the operator team
+ * MUST see in real-time. Backed by the SECURITY DEFINER RPC
+ * `notify_all_admins` which is allowlisted to specific notification
+ * types (see migration 20260422170200).
+ *
+ * Why we go through the RPC and not a direct INSERT loop:
+ *   - The RPC owns the recipient set (every admin user_id), so the
+ *     caller can't smuggle a non-admin user_id into the recipients.
+ *   - It enforces the allowlisted type — a typo or a hostile call
+ *     can't push arbitrary spam into admin inboxes.
+ *
+ * Fail-soft: if the RPC errors, we log and return success=false so the
+ * happy-path operation that triggered this fan-out (e.g. NDA accept)
+ * still completes — admin awareness is best-effort, not blocking.
+ */
+export async function notifyAllAdmins(input: {
+  type:
+    | "land_new_submitted"
+    | "land_cr_uploaded"
+    | "developer_cr_uploaded"
+    | "owner_complaint"
+    | "deal_abuse_flag"
+    | "system";
+  titleAr: string;
+  titleEn: string;
+  messageAr: string;
+  messageEn: string;
+  entityType?: string;
+  entityId?: string;
+}): Promise<{ success: boolean; inserted?: number; error?: string }> {
+  const admin = getAdminClient();
+  const { data, error } = await admin.rpc("notify_all_admins", {
+    _type: input.type,
+    _title_ar: input.titleAr,
+    _title_en: input.titleEn,
+    _message_ar: input.messageAr,
+    _message_en: input.messageEn,
+    _entity_type: input.entityType ?? null,
+    _entity_id: input.entityId ?? null,
+  });
+  if (error) {
+    console.error("[notifications] notifyAllAdmins failed", {
+      message: error.message,
+      type: input.type,
+      entity_type: input.entityType ?? null,
+      entity_id: input.entityId ?? null,
+    });
+    return { success: false, error: error.message };
+  }
+  return { success: true, inserted: typeof data === "number" ? data : 0 };
+}
+
 /** Bulk insert notifications — one row per recipient. */
 export async function createNotifications(
   inputs: CreateNotificationInput[],

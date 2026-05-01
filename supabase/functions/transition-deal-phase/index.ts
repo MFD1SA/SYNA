@@ -526,6 +526,51 @@ Deno.serve(async (req) => {
           );
         }
       }
+
+      // ── Admin oversight fan-out ──────────────────────────────
+      // Operators must see major lifecycle events (terminal closures,
+      // study rejections, owner-side approvals) the moment they
+      // happen. We fan these out to every admin via the allowlisted
+      // notify_all_admins RPC.
+      const ADMIN_VISIBLE_PHASES = new Set([
+        "study_required",
+        "study_approved",
+        "study_rejected",
+        "meeting_proposed",
+        "report_pending_approval",
+        "negotiation_active",
+        "final_approval",
+        "closed_won",
+        "closed_lost",
+        "cancelled",
+      ]);
+      if (ADMIN_VISIBLE_PHASES.has(targetPhase)) {
+        const { data: admins } = await adminClient
+          .from("user_roles")
+          .select("user_id")
+          .eq("role", "admin");
+        if (admins && admins.length > 0) {
+          const adminRows = admins.map((a: { user_id: string }) => ({
+            user_id: a.user_id,
+            type: "deal_update",
+            title_ar: `تحديث صفقة: ${targetPhase}`,
+            title_en: `Deal update: ${targetPhase}`,
+            message_ar: `${devLabel} → ${location} (بواسطة ${actorRole === "admin" ? "إدارة" : actorRole === "owner" ? "المالك" : "المطور"})`,
+            message_en: `${devLabel} → ${location} (by ${actorRole})`,
+            entity_type: "deal_request",
+            entity_id: requestId,
+          }));
+          const { error: adminNotifErr } = await adminClient
+            .from("notifications")
+            .insert(adminRows);
+          if (adminNotifErr) {
+            console.warn(
+              `[transition-deal-phase] admin fan-out failed for ${requestId}:`,
+              adminNotifErr.message,
+            );
+          }
+        }
+      }
     } catch (notifyErr) {
       const m = notifyErr instanceof Error ? notifyErr.message : String(notifyErr);
       console.warn(`[transition-deal-phase] notify block threw for ${requestId}:`, m);

@@ -60,6 +60,46 @@ function buildCors(origin: string | null): Record<string, string> {
   };
 }
 
+// ─── SSRF guard ──────────────────────────────────────────────────────
+// Reject any URL whose host resolves into:
+//   • non-HTTP(S) scheme (file://, gopher://, ftp://, etc.)
+//   • IPv4 literal in private/link-local/loopback/cloud-metadata ranges
+//     (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8,
+//      169.254.0.0/16, 100.64.0.0/10, 0.0.0.0/8, multicast, broadcast)
+//   • IPv6 literal in loopback/link-local/ULA ranges
+//   • Bare hostnames that look like internal LAN names (no dot)
+// This prevents a caller from steering the function's own outbound
+// fetch at the cloud-metadata endpoint or an internal service.
+function isPubliclyResolvableHost(u: URL): boolean {
+  if (u.protocol !== "https:" && u.protocol !== "http:") return false;
+  const host = u.hostname.toLowerCase();
+  if (!host) return false;
+  // Internal-network hostname forms (no dot, *.internal, *.local).
+  if (!host.includes(".")) return false;
+  if (host.endsWith(".internal") || host.endsWith(".local") || host.endsWith(".lan")) return false;
+  if (host === "localhost" || host.endsWith(".localhost")) return false;
+  // IPv4 literal check.
+  const ipv4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (ipv4) {
+    const parts = ipv4.slice(1).map((n) => parseInt(n, 10));
+    if (parts.some((p) => p < 0 || p > 255)) return false;
+    const [a, b] = parts;
+    if (a === 10) return false;                                    // 10.0.0.0/8
+    if (a === 127) return false;                                   // loopback
+    if (a === 0) return false;                                     // 0.0.0.0/8
+    if (a === 169 && b === 254) return false;                      // link-local + AWS metadata
+    if (a === 172 && b >= 16 && b <= 31) return false;             // 172.16.0.0/12
+    if (a === 192 && b === 168) return false;                      // 192.168.0.0/16
+    if (a === 100 && b >= 64 && b <= 127) return false;            // CGN 100.64.0.0/10
+    if (a >= 224) return false;                                    // multicast / broadcast
+  }
+  // IPv6 literal: just block the obvious internal forms.
+  if (host.startsWith("[")) {
+    if (host.startsWith("[::1") || host.startsWith("[fe80") || host.startsWith("[fc") || host.startsWith("[fd")) return false;
+  }
+  return true;
+}
+
 // ─── Browser-grade fetch headers (some sites block non-browser UAs) ──
 const browserHeaders: HeadersInit = {
   "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
@@ -807,6 +847,20 @@ async function enrichSocialProfile(item: { platform: string; url: string }): Pro
 // ─── Fetch helpers ───────────────────────────────────────────────────
 async function tryFetch(targetUrl: string, timeoutMs: number, byteCap: number):
   Promise<{ status: number; html: string; latency_ms: number; finalUrl: string }> {
+  // SSRF backstop on every outbound fetch — even though sub-page URLs
+  // are derived from the developer's own homepage HTML (already
+  // host-gated), a redirect could in theory land us on a private IP
+  // before we re-check. Cheap + idempotent; fail-closed if URL is
+  // malformed.
+  let parsed: URL;
+  try {
+    parsed = new URL(targetUrl);
+  } catch {
+    throw new Error(`Invalid URL: ${targetUrl}`);
+  }
+  if (!isPubliclyResolvableHost(parsed)) {
+    throw new Error(`Refusing fetch on non-public host: ${parsed.hostname}`);
+  }
   const ac = new AbortController();
   const timer = setTimeout(() => ac.abort(), timeoutMs);
   const started = Date.now();
@@ -959,12 +1013,23 @@ Deno.serve(async (req) => {
 
     const admin = createClient(supabaseUrl, serviceKey);
 
-    let website = rawUrl;
+    // ── Resolve target website ───────────────────────────────────────
+    // SECURITY: When `developer_id` is provided we ALWAYS use the DB-
+    // backed website for that developer. We do NOT allow a caller-
+    // supplied `body.website` to override it — otherwise an attacker
+    // could pass `developer_id: <victim>` + `website: <attacker.com>`
+    // and the audit/log surface would attribute the analysis to the
+    // victim while actually fetching attacker-controlled content.
+    // Free-form analysis (admin "analyze any URL" flow) uses ONLY
+    // `body.website` with NO `developer_id`.
+    let website: string | undefined;
     let developerName = "";
     if (developerId) {
       const { data: d } = await admin.from("developers").select("website, company_name").eq("id", developerId).maybeSingle();
-      if (!website) website = (d as { website?: string } | null)?.website ?? undefined;
+      website = (d as { website?: string } | null)?.website ?? undefined;
       developerName = (d as { company_name?: string } | null)?.company_name ?? "";
+    } else {
+      website = rawUrl;
     }
     if (!website || !website.trim()) {
       return new Response(JSON.stringify({ error: "Developer has no website on file" }),
@@ -974,6 +1039,19 @@ Deno.serve(async (req) => {
     const normalized = normalizeUrl(website);
     const urlObj = new URL(normalized);
     const https = urlObj.protocol === "https:";
+
+    // ── SSRF guard ───────────────────────────────────────────────────
+    // Refuse hostnames that resolve to private / link-local / loopback
+    // ranges, cloud metadata IPs, or non-public schemes. Without this,
+    // a caller could send `body.website: "http://169.254.169.254/..."`
+    // and exfiltrate the function's own cloud-metadata credentials.
+    if (!isPubliclyResolvableHost(urlObj)) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: "Refusing to fetch a non-public host",
+        details: `host=${urlObj.hostname} is in a blocked range`,
+      }), { status: 400, headers: { ...CORS, "Content-Type": "application/json" } });
+    }
 
     // ── Step 1: fetch homepage ──────────────────────────────────────
     const home = await fetchHomepage(normalized);

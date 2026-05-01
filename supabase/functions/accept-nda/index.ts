@@ -267,6 +267,40 @@ Deno.serve(async (req) => {
       }
     }
 
+    // ── Admin oversight notifications ──────────────────────────────
+    // The operator team must see every NDA decision (accept or reject)
+    // because it affects which lands can move forward. Best-effort —
+    // fan-out failure does NOT block the user response.
+    try {
+      const { data: admins } = await adminClient
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "admin");
+      if (admins && admins.length > 0) {
+        const cityLabel = (land as { city?: string } | null)?.city ?? "—";
+        const verbAr = action === "accept"
+          ? (actorRole === "owner" ? "وافق المالك" : "وافق المطور")
+          : (actorRole === "owner" ? "رفض المالك" : "رفض المطور");
+        const verbEn = action === "accept"
+          ? (actorRole === "owner" ? "Owner accepted" : "Developer accepted")
+          : (actorRole === "owner" ? "Owner rejected" : "Developer rejected");
+        const adminRows = admins.map((a: { user_id: string }) => ({
+          user_id: a.user_id,
+          type: "deal_update",
+          title_ar: "قرار NDA",
+          title_en: "NDA decision",
+          message_ar: `${verbAr} اتفاقية NDA على فرصة ${cityLabel}`,
+          message_en: `${verbEn} NDA on ${cityLabel} opportunity`,
+          entity_type: "land",
+          entity_id: landId,
+        }));
+        await adminClient.from("notifications").insert(adminRows);
+      }
+    } catch (adminNotifyErr) {
+      const m = adminNotifyErr instanceof Error ? adminNotifyErr.message : String(adminNotifyErr);
+      console.warn("[accept-nda] admin fan-out failed:", m);
+    }
+
     return new Response(JSON.stringify({
       success: true,
       status: action === "accept" ? "accepted" : "rejected",
